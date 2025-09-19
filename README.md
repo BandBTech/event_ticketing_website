@@ -1,6 +1,6 @@
 # E-Ticket - Event Ticketing Platform
 
-A beautiful, modern event ticketing platform built with Next.js 14, TypeScript, and Tailwind CSS. This application allows users to discover, search, and book tickets for various events across Nepal.
+A beautiful, modern event ticketing platform built with Next.js 15, TypeScript, and shadcn/ui. This application allows users to discover, search, and book tickets for various events.
 
 ## 🚀 Features
 
@@ -15,9 +15,9 @@ A beautiful, modern event ticketing platform built with Next.js 14, TypeScript, 
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 14 with App Router
+- **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS with custom glass morphism effects
+- **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
 - **Icons**: Phosphor Icons (Duotone variants)
 - **State Management**: Zustand
@@ -55,14 +55,6 @@ src/
     └── mockEvents.ts           # Sample event data
 ```
 
-## 🎨 Design Features
-
-- **Glass Morphism**: Beautiful frosted glass effects throughout the UI
-- **Gradient Backgrounds**: Animated gradient orbs and patterns
-- **Smooth Animations**: Hover effects and transitions
-- **Modern Typography**: Poppins and Inter font combinations
-- **Responsive Grid**: Adaptive layouts for all screen sizes
-
 ## 🚀 Getting Started
 
 1. **Install dependencies**:
@@ -77,53 +69,3 @@ src/
 
 3. **Open your browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 📱 Event Features
-
-### Event Cards
-- High-quality event images
-- Status badges (On Sale, Sale on Hold, Sold Out)
-- Category tags
-- Date and location information
-- Pricing and ticket availability
-- Hover animations and effects
-
-### Search & Filtering
-- Real-time search across event titles, descriptions, and locations
-- Category-based filtering
-- Debounced search for optimal performance
-- Clear filters functionality
-
-### Mock Data
-The application includes comprehensive mock data featuring:
-- 6 sample events across different categories
-- Realistic pricing and ticket information
-- Nepal-based venues and locations
-- Various event types (Music festivals, conferences, workshops, etc.)
-
-## 🔮 Future Enhancements
-
-- Event detail pages
-- Ticket booking flow
-- User authentication
-- Payment integration
-- Admin dashboard
-- Real-time notifications
-- Social sharing
-- Event recommendations
-
-## 🎯 User Flow
-
-1. **Landing**: Users arrive at the beautiful hero section
-2. **Discovery**: Browse featured events and categories
-3. **Search**: Use search and filters to find specific events
-4. **Explore**: View event cards with detailed information
-5. **Action**: Click to view more details or book tickets
-
-## 📄 License
-
-This project is built for demonstration purposes as part of an event ticketing platform.
-
----
-
-Built with ❤️ using modern web technologies and best practices.
