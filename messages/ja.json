@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "search": "検索",
+    "filter": "フィルター",
+    "clear": "クリア",
+    "viewDetails": "詳細を見る",
+    "edit": "編集",
+    "loadMore": "もっと見る",
+    "noResults": "イベントが見つかりません",
+    "tryAgain": "検索条件を調整するか、後でもう一度確認してください。"
+  },
+  "navigation": {
+    "events": "イベント",
+    "categories": "カテゴリー",
+    "about": "会社概要",
+    "contact": "お問い合わせ",
+    "signIn": "サインイン",
+    "organizeEvent": "イベント開催"
+  },
+  "hero": {
+    "badge": "ネパール最高のイベントプラットフォーム",
+    "title": "ネパールの素晴らしいイベントを発見",
+    "subtitle": "エキサイティングな音楽フェスティバルから刺激的なカンファレンスまで、ネパール全土で開催される最も魅力的なイベントのチケットを見つけて予約しましょう。",
+    "searchPlaceholder": "イベント、会場、場所を検索...",
+    "stats": {
+      "events": "掲載イベント",
+      "tickets": "販売チケット",
+      "cities": "対応都市"
+    }
+  },
+  "sections": {
+    "featuredEvents": {
+      "title": "注目のイベント",
+      "subtitle": "人気のイベントをお見逃しなく"
+    },
+    "upcomingEvents": {
+      "title": "今後のイベント",
+      "searchResults": "検索結果",
+      "eventsFound": "件のイベントが見つかりました",
+      "clearFilters": "フィルターをクリア"
+    },
+    "cta": {
+      "title": "イベントを開催する準備はできましたか？",
+      "subtitle": "私たちのプラットフォームを信頼する何千ものイベント主催者に参加しましょう。",
+      "organizeEvent": "イベント開催",
+      "learnMore": "詳細を見る"
+    }
+  },
+  "footer": {
+    "description": "ネパール最高のイベントチケットプラットフォーム。素晴らしいイベントを発見し、コミュニティとつながり、忘れられない体験を作りましょう。",
+    "contact": {
+      "email": "hello@e-ticket.com.np",
+      "phone": "+977-1-4567890",
+      "address": "カトマンズ、ネパール"
+    },
+    "links": {
+      "company": {
+        "title": "会社",
+        "aboutUs": "会社概要",
+        "howItWorks": "仕組み",
+        "careers": "採用情報",
+        "press": "プレス"
+      },
+      "organizers": {
+        "title": "主催者",
+        "createEvent": "イベント作成",
+        "pricing": "料金",
+        "eventManagement": "イベント管理",
+        "analytics": "分析"
+      },
+      "support": {
+        "title": "サポート",
+        "helpCenter": "ヘルプセンター",
+        "contactSupport": "サポートに連絡",
+        "eventGuidelines": "イベントガイドライン",
+        "refundPolicy": "返金ポリシー"
+      },
+      "legal": {
+        "title": "法的事項",
+        "privacyPolicy": "プライバシーポリシー",
+        "termsOfService": "利用規約",
+        "cookiePolicy": "クッキーポリシー",
+        "security": "セキュリティ"
+      }
+    },
+    "newsletter": {
+      "title": "最新情報を受け取る",
+      "subtitle": "新しいイベントや特別オファーの通知を受け取りましょう。",
+      "placeholder": "メールアドレスを入力"
+    },
+    "copyright": "© 2025 E-Ticket. 全著作権所有。",
+    "madeIn": "ネパールで❤️を込めて作成"
+  },
+  "events": {
+    "from": "から",
+    "ticketsLeft": "枚残り",
+    "soldOut": "売り切れ",
+    "priceTBA": "価格未定"
+  },
+  "languages": {
+    "en": "English",
+    "ja": "日本語",
+    "it": "Italiano"
+  }
+}

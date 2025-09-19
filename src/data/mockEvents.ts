@@ -1,0 +1,385 @@
+import { Event, EventCategory, EventStatus } from '@/types';
+
+export const eventCategories: EventCategory[] = [
+  { id: '1', name: 'Music', color: '#FF6B6B', icon: 'music-notes' },
+  { id: '2', name: 'Concert', color: '#4ECDC4', icon: 'microphone-stage' },
+  { id: '3', name: 'Festival', color: '#45B7D1', icon: 'confetti' },
+  { id: '4', name: 'Conference', color: '#96CEB4', icon: 'presentation' },
+  { id: '5', name: 'Workshop', color: '#FFEAA7', icon: 'chalkboard-teacher' },
+  { id: '6', name: 'Sports', color: '#DDA0DD', icon: 'soccer-ball' },
+];
+
+export const mockEvents: Event[] = [
+  {
+    id: '1',
+    title: 'Kathmandu Music Festival 2025',
+    description: 'The biggest music festival in Nepal featuring international and local artists. Experience three days of non-stop music, food, and entertainment in the heart of Kathmandu.',
+    imageUrl: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop',
+    bannerImageUrl: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1200&h=400&fit=crop',
+    venue: {
+      id: 'v1',
+      name: 'Dasharath Stadium',
+      address: 'Tripureshwor, Kathmandu',
+      city: 'Kathmandu',
+      country: 'Nepal',
+      capacity: 25000,
+      timezone: 'Asia/Kathmandu',
+      coordinates: { lat: 27.6915, lng: 85.2936 }
+    },
+    startDate: '2025-08-12T09:00:00Z',
+    endDate: '2025-08-14T23:00:00Z',
+    categories: [eventCategories[0], eventCategories[1], eventCategories[2]],
+    ticketTypes: [
+      {
+        id: 't1',
+        name: 'General',
+        price: 2500,
+        quantity: 15000,
+        sold: 8500,
+        description: 'General admission with access to all stages',
+        gstPercentage: 13,
+        salesStartDate: '2025-01-01T00:00:00Z',
+        salesEndDate: '2025-08-12T06:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't2',
+        name: 'Premium',
+        price: 5000,
+        quantity: 5000,
+        sold: 3200,
+        description: 'Premium seating with complimentary drinks',
+        gstPercentage: 13,
+        salesStartDate: '2025-01-01T00:00:00Z',
+        salesEndDate: '2025-08-12T06:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't3',
+        name: 'VIP',
+        price: 10000,
+        quantity: 2000,
+        sold: 1800,
+        description: 'VIP experience with backstage access',
+        gstPercentage: 13,
+        salesStartDate: '2025-01-01T00:00:00Z',
+        salesEndDate: '2025-08-12T06:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't4',
+        name: 'VVIP',
+        price: 25000,
+        quantity: 500,
+        sold: 450,
+        description: 'Ultimate VIP experience with artist meet & greet',
+        gstPercentage: 13,
+        salesStartDate: '2025-01-01T00:00:00Z',
+        salesEndDate: '2025-08-12T06:00:00Z',
+        isActive: true
+      }
+    ],
+    status: 'On Sale' as EventStatus,
+    organizerId: 'org1',
+    maxTicketsPerOrder: 10,
+    allowReEntry: true,
+    createdAt: '2024-12-01T00:00:00Z',
+    updatedAt: '2025-01-15T00:00:00Z'
+  },
+  {
+    id: '2',
+    title: 'Tech Conference Nepal 2025',
+    description: 'Join the biggest technology conference in Nepal. Learn from industry experts, network with professionals, and discover the latest trends in technology.',
+    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
+    bannerImageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=400&fit=crop',
+    venue: {
+      id: 'v2',
+      name: 'Hotel Yak & Yeti',
+      address: 'Durbar Marg, Kathmandu',
+      city: 'Kathmandu',
+      country: 'Nepal',
+      capacity: 1000,
+      timezone: 'Asia/Kathmandu',
+      coordinates: { lat: 27.7103, lng: 85.3222 }
+    },
+    startDate: '2025-09-15T08:00:00Z',
+    endDate: '2025-09-16T18:00:00Z',
+    categories: [eventCategories[3]],
+    ticketTypes: [
+      {
+        id: 't5',
+        name: 'General',
+        price: 3500,
+        quantity: 600,
+        sold: 450,
+        description: 'Full conference access with lunch',
+        gstPercentage: 13,
+        salesStartDate: '2025-02-01T00:00:00Z',
+        salesEndDate: '2025-09-15T06:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't6',
+        name: 'Premium',
+        price: 7500,
+        quantity: 300,
+        sold: 180,
+        description: 'Premium seating with networking dinner',
+        gstPercentage: 13,
+        salesStartDate: '2025-02-01T00:00:00Z',
+        salesEndDate: '2025-09-15T06:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't7',
+        name: 'VIP',
+        price: 15000,
+        quantity: 100,
+        sold: 75,
+        description: 'VIP access with speaker meet & greet',
+        gstPercentage: 13,
+        salesStartDate: '2025-02-01T00:00:00Z',
+        salesEndDate: '2025-09-15T06:00:00Z',
+        isActive: true
+      }
+    ],
+    status: 'Sale on Hold' as EventStatus,
+    organizerId: 'org2',
+    maxTicketsPerOrder: 5,
+    allowReEntry: false,
+    createdAt: '2024-11-15T00:00:00Z',
+    updatedAt: '2025-01-10T00:00:00Z'
+  },
+  {
+    id: '3',
+    title: 'Himalayan Food Festival',
+    description: 'Celebrate the rich culinary heritage of the Himalayas. Taste authentic dishes from Nepal, Tibet, Bhutan, and the Indian Himalayas.',
+    imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=600&fit=crop',
+    bannerImageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1200&h=400&fit=crop',
+    venue: {
+      id: 'v3',
+      name: 'Bhrikutimandap Exhibition Hall',
+      address: 'Bhrikutimandap, Kathmandu',
+      city: 'Kathmandu',
+      country: 'Nepal',
+      capacity: 5000,
+      timezone: 'Asia/Kathmandu',
+      coordinates: { lat: 27.6892, lng: 85.3206 }
+    },
+    startDate: '2025-10-20T10:00:00Z',
+    endDate: '2025-10-22T22:00:00Z',
+    categories: [eventCategories[2]],
+    ticketTypes: [
+      {
+        id: 't8',
+        name: 'General',
+        price: 1500,
+        quantity: 3000,
+        sold: 1200,
+        description: 'General admission with food tasting',
+        gstPercentage: 13,
+        salesStartDate: '2025-03-01T00:00:00Z',
+        salesEndDate: '2025-10-20T08:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't9',
+        name: 'Premium',
+        price: 3500,
+        quantity: 1500,
+        sold: 800,
+        description: 'Premium access with cooking workshops',
+        gstPercentage: 13,
+        salesStartDate: '2025-03-01T00:00:00Z',
+        salesEndDate: '2025-10-20T08:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't10',
+        name: 'VIP',
+        price: 7500,
+        quantity: 500,
+        sold: 350,
+        description: 'VIP experience with chef interactions',
+        gstPercentage: 13,
+        salesStartDate: '2025-03-01T00:00:00Z',
+        salesEndDate: '2025-10-20T08:00:00Z',
+        isActive: true
+      }
+    ],
+    status: 'On Sale' as EventStatus,
+    organizerId: 'org3',
+    maxTicketsPerOrder: 8,
+    allowReEntry: true,
+    createdAt: '2024-10-01T00:00:00Z',
+    updatedAt: '2025-01-05T00:00:00Z'
+  },
+  {
+    id: '4',
+    title: 'Startup Pitch Competition',
+    description: 'Watch innovative startups pitch their ideas to top investors. Network with entrepreneurs and learn about the startup ecosystem in Nepal.',
+    imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop',
+    bannerImageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&h=400&fit=crop',
+    venue: {
+      id: 'v4',
+      name: 'Kathmandu University',
+      address: 'Dhulikhel, Kavre',
+      city: 'Dhulikhel',
+      country: 'Nepal',
+      capacity: 800,
+      timezone: 'Asia/Kathmandu',
+      coordinates: { lat: 27.6244, lng: 85.5381 }
+    },
+    startDate: '2025-11-05T09:00:00Z',
+    endDate: '2025-11-05T17:00:00Z',
+    categories: [eventCategories[3], eventCategories[4]],
+    ticketTypes: [
+      {
+        id: 't11',
+        name: 'General',
+        price: 2000,
+        quantity: 500,
+        sold: 320,
+        description: 'General admission with networking lunch',
+        gstPercentage: 13,
+        salesStartDate: '2025-04-01T00:00:00Z',
+        salesEndDate: '2025-11-05T07:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't12',
+        name: 'Premium',
+        price: 5000,
+        quantity: 200,
+        sold: 150,
+        description: 'Premium seating with investor meetup',
+        gstPercentage: 13,
+        salesStartDate: '2025-04-01T00:00:00Z',
+        salesEndDate: '2025-11-05T07:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't13',
+        name: 'VIP',
+        price: 10000,
+        quantity: 100,
+        sold: 80,
+        description: 'VIP access with exclusive investor dinner',
+        gstPercentage: 13,
+        salesStartDate: '2025-04-01T00:00:00Z',
+        salesEndDate: '2025-11-05T07:00:00Z',
+        isActive: true
+      }
+    ],
+    status: 'On Sale' as EventStatus,
+    organizerId: 'org4',
+    maxTicketsPerOrder: 3,
+    allowReEntry: false,
+    createdAt: '2024-09-01T00:00:00Z',
+    updatedAt: '2025-01-12T00:00:00Z'
+  },
+  {
+    id: '5',
+    title: 'Photography Workshop: Himalayan Landscapes',
+    description: 'Learn professional photography techniques for capturing the majestic Himalayan landscapes. Includes hands-on practice and expert guidance.',
+    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+    bannerImageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop',
+    venue: {
+      id: 'v5',
+      name: 'Nagarkot View Tower',
+      address: 'Nagarkot, Bhaktapur',
+      city: 'Nagarkot',
+      country: 'Nepal',
+      capacity: 50,
+      timezone: 'Asia/Kathmandu',
+      coordinates: { lat: 27.7172, lng: 85.5197 }
+    },
+    startDate: '2025-12-01T05:00:00Z',
+    endDate: '2025-12-01T18:00:00Z',
+    categories: [eventCategories[4]],
+    ticketTypes: [
+      {
+        id: 't14',
+        name: 'General',
+        price: 8500,
+        quantity: 30,
+        sold: 25,
+        description: 'Full workshop with equipment provided',
+        gstPercentage: 13,
+        salesStartDate: '2025-05-01T00:00:00Z',
+        salesEndDate: '2025-12-01T03:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't15',
+        name: 'Premium',
+        price: 15000,
+        quantity: 20,
+        sold: 18,
+        description: 'Premium workshop with one-on-one mentoring',
+        gstPercentage: 13,
+        salesStartDate: '2025-05-01T00:00:00Z',
+        salesEndDate: '2025-12-01T03:00:00Z',
+        isActive: true
+      }
+    ],
+    status: 'On Sale' as EventStatus,
+    organizerId: 'org5',
+    maxTicketsPerOrder: 2,
+    allowReEntry: false,
+    createdAt: '2024-08-01T00:00:00Z',
+    updatedAt: '2025-01-08T00:00:00Z'
+  },
+  {
+    id: '6',
+    title: 'Everest Marathon 2025',
+    description: 'Challenge yourself in the world\'s highest marathon. Run through the breathtaking landscapes of the Everest region.',
+    imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop',
+    bannerImageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=400&fit=crop',
+    venue: {
+      id: 'v6',
+      name: 'Namche Bazaar',
+      address: 'Namche Bazaar, Solukhumbu',
+      city: 'Namche Bazaar',
+      country: 'Nepal',
+      capacity: 300,
+      timezone: 'Asia/Kathmandu',
+      coordinates: { lat: 27.8059, lng: 86.7114 }
+    },
+    startDate: '2025-05-29T06:00:00Z',
+    endDate: '2025-05-29T15:00:00Z',
+    categories: [eventCategories[5]],
+    ticketTypes: [
+      {
+        id: 't16',
+        name: 'General',
+        price: 25000,
+        quantity: 200,
+        sold: 180,
+        description: 'Marathon registration with medal and certificate',
+        gstPercentage: 13,
+        salesStartDate: '2024-12-01T00:00:00Z',
+        salesEndDate: '2025-05-15T00:00:00Z',
+        isActive: true
+      },
+      {
+        id: 't17',
+        name: 'Premium',
+        price: 45000,
+        quantity: 100,
+        sold: 95,
+        description: 'Premium package with accommodation and meals',
+        gstPercentage: 13,
+        salesStartDate: '2024-12-01T00:00:00Z',
+        salesEndDate: '2025-05-15T00:00:00Z',
+        isActive: true
+      }
+    ],
+    status: 'Sold Out' as EventStatus,
+    organizerId: 'org6',
+    maxTicketsPerOrder: 1,
+    allowReEntry: false,
+    createdAt: '2024-07-01T00:00:00Z',
+    updatedAt: '2025-01-20T00:00:00Z'
+  }
+];

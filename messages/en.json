@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "viewDetails": "View Details",
+    "edit": "Edit",
+    "loadMore": "Load More Events",
+    "noResults": "No events found",
+    "tryAgain": "Try adjusting your search criteria or check back later for new events."
+  },
+  "navigation": {
+    "events": "Events",
+    "categories": "Categories",
+    "about": "About",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "organizeEvent": "Organize Event"
+  },
+  "hero": {
+    "badge": "Nepal's Premier Event Platform",
+    "title": "Discover Amazing Events in Nepal",
+    "subtitle": "From electrifying music festivals to inspiring conferences, find and book tickets for the most exciting events happening across Nepal.",
+    "searchPlaceholder": "Search for events, venues, or locations...",
+    "stats": {
+      "events": "Events Listed",
+      "tickets": "Tickets Sold",
+      "cities": "Cities Covered"
+    }
+  },
+  "sections": {
+    "featuredEvents": {
+      "title": "Featured Events",
+      "subtitle": "Don't miss out on these popular events"
+    },
+    "upcomingEvents": {
+      "title": "Upcoming Events",
+      "searchResults": "Search Results",
+      "eventsFound": "events found",
+      "clearFilters": "Clear Filters"
+    },
+    "cta": {
+      "title": "Ready to Create Your Event?",
+      "subtitle": "Join thousands of event organizers who trust our platform to manage their events.",
+      "organizeEvent": "Organize Event",
+      "learnMore": "Learn More"
+    }
+  },
+  "footer": {
+    "description": "Nepal's premier event ticketing platform. Discover amazing events, connect with your community, and create unforgettable experiences.",
+    "contact": {
+      "email": "hello@e-ticket.com.np",
+      "phone": "+977-1-4567890",
+      "address": "Kathmandu, Nepal"
+    },
+    "links": {
+      "company": {
+        "title": "Company",
+        "aboutUs": "About Us",
+        "howItWorks": "How It Works",
+        "careers": "Careers",
+        "press": "Press"
+      },
+      "organizers": {
+        "title": "Organizers",
+        "createEvent": "Create Event",
+        "pricing": "Pricing",
+        "eventManagement": "Event Management",
+        "analytics": "Analytics"
+      },
+      "support": {
+        "title": "Support",
+        "helpCenter": "Help Center",
+        "contactSupport": "Contact Support",
+        "eventGuidelines": "Event Guidelines",
+        "refundPolicy": "Refund Policy"
+      },
+      "legal": {
+        "title": "Legal",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service",
+        "cookiePolicy": "Cookie Policy",
+        "security": "Security"
+      }
+    },
+    "newsletter": {
+      "title": "Stay Updated",
+      "subtitle": "Get notified about new events and exclusive offers.",
+      "placeholder": "Enter your email"
+    },
+    "copyright": "© 2025 E-Ticket. All rights reserved.",
+    "madeIn": "Made with ❤️ in Nepal"
+  },
+  "events": {
+    "from": "From",
+    "ticketsLeft": "tickets left",
+    "soldOut": "Sold out",
+    "priceTBA": "Price TBA"
+  },
+  "languages": {
+    "en": "English",
+    "ja": "Japanese",
+    "it": "Italian"
+  }
+}

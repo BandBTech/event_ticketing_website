@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Qualcosa è andato storto",
+    "search": "Cerca",
+    "filter": "Filtro",
+    "clear": "Cancella",
+    "viewDetails": "Vedi Dettagli",
+    "edit": "Modifica",
+    "loadMore": "Carica Altri Eventi",
+    "noResults": "Nessun evento trovato",
+    "tryAgain": "Prova ad aggiustare i criteri di ricerca o controlla più tardi per nuovi eventi."
+  },
+  "navigation": {
+    "events": "Eventi",
+    "categories": "Categorie",
+    "about": "Chi Siamo",
+    "contact": "Contatti",
+    "signIn": "Accedi",
+    "organizeEvent": "Organizza Evento"
+  },
+  "hero": {
+    "badge": "La Piattaforma Eventi Premier del Nepal",
+    "title": "Scopri Eventi Fantastici in Nepal",
+    "subtitle": "Dai festival musicali elettrizzanti alle conferenze ispiratrici, trova e prenota biglietti per gli eventi più emozionanti che si svolgono in tutto il Nepal.",
+    "searchPlaceholder": "Cerca eventi, luoghi o località...",
+    "stats": {
+      "events": "Eventi Elencati",
+      "tickets": "Biglietti Venduti",
+      "cities": "Città Coperte"
+    }
+  },
+  "sections": {
+    "featuredEvents": {
+      "title": "Eventi in Evidenza",
+      "subtitle": "Non perdere questi eventi popolari"
+    },
+    "upcomingEvents": {
+      "title": "Eventi Prossimi",
+      "searchResults": "Risultati di Ricerca",
+      "eventsFound": "eventi trovati",
+      "clearFilters": "Cancella Filtri"
+    },
+    "cta": {
+      "title": "Pronto a Creare il Tuo Evento?",
+      "subtitle": "Unisciti a migliaia di organizzatori di eventi che si fidano della nostra piattaforma per gestire i loro eventi.",
+      "organizeEvent": "Organizza Evento",
+      "learnMore": "Scopri di Più"
+    }
+  },
+  "footer": {
+    "description": "La piattaforma di biglietteria eventi premier del Nepal. Scopri eventi fantastici, connettiti con la tua comunità e crea esperienze indimenticabili.",
+    "contact": {
+      "email": "hello@e-ticket.com.np",
+      "phone": "+977-1-4567890",
+      "address": "Kathmandu, Nepal"
+    },
+    "links": {
+      "company": {
+        "title": "Azienda",
+        "aboutUs": "Chi Siamo",
+        "howItWorks": "Come Funziona",
+        "careers": "Carriere",
+        "press": "Stampa"
+      },
+      "organizers": {
+        "title": "Organizzatori",
+        "createEvent": "Crea Evento",
+        "pricing": "Prezzi",
+        "eventManagement": "Gestione Eventi",
+        "analytics": "Analisi"
+      },
+      "support": {
+        "title": "Supporto",
+        "helpCenter": "Centro Aiuto",
+        "contactSupport": "Contatta Supporto",
+        "eventGuidelines": "Linee Guida Eventi",
+        "refundPolicy": "Politica Rimborsi"
+      },
+      "legal": {
+        "title": "Legale",
+        "privacyPolicy": "Politica Privacy",
+        "termsOfService": "Termini di Servizio",
+        "cookiePolicy": "Politica Cookie",
+        "security": "Sicurezza"
+      }
+    },
+    "newsletter": {
+      "title": "Rimani Aggiornato",
+      "subtitle": "Ricevi notifiche su nuovi eventi e offerte esclusive.",
+      "placeholder": "Inserisci la tua email"
+    },
+    "copyright": "© 2025 E-Ticket. Tutti i diritti riservati.",
+    "madeIn": "Fatto con ❤️ in Nepal"
+  },
+  "events": {
+    "from": "Da",
+    "ticketsLeft": "biglietti rimasti",
+    "soldOut": "Esaurito",
+    "priceTBA": "Prezzo da Annunciare"
+  },
+  "languages": {
+    "en": "English",
+    "ja": "日本語",
+    "it": "Italiano"
+  }
+}
