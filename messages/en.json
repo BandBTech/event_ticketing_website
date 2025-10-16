@@ -103,5 +103,34 @@
     "en": "English",
     "ja": "Japanese",
     "it": "Italian"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "as Attendee",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "Enter email address",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Remember Me",
+      "forgotPassword": "Forgot Password?",
+      "loginButton": "Login",
+      "signingIn": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUpHere": "Sign up here.",
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "passwordRequired": "Password is required",
+        "passwordTooShort": "Password must be at least 6 characters long",
+        "passwordTooLong": "Password is too long"
+      },
+      "errors": {
+        "invalidCredentials": "Invalid email or password. Try: attendee@example.com / password123",
+        "loginFailed": "Login failed. Please try again."
+      },
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    }
   }
 }

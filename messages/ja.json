@@ -103,5 +103,34 @@
     "en": "English",
     "ja": "日本語",
     "it": "Italiano"
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "subtitle": "参加者として",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "emailPlaceholder": "メールアドレスを入力",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "ログイン状態を保持",
+      "forgotPassword": "パスワードを忘れた方",
+      "loginButton": "ログイン",
+      "signingIn": "ログイン中...",
+      "noAccount": "アカウントをお持ちでない方は",
+      "signUpHere": "こちらから登録",
+      "validation": {
+        "emailRequired": "メールアドレスは必須です",
+        "emailInvalid": "有効なメールアドレスを入力してください",
+        "passwordRequired": "パスワードは必須です",
+        "passwordTooShort": "パスワードは6文字以上である必要があります",
+        "passwordTooLong": "パスワードが長すぎます"
+      },
+      "errors": {
+        "invalidCredentials": "メールアドレスまたはパスワードが正しくありません。試してください: attendee@example.com / password123",
+        "loginFailed": "ログインに失敗しました。もう一度お試しください。"
+      },
+      "showPassword": "パスワードを表示",
+      "hidePassword": "パスワードを非表示"
+    }
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Ticket, CalendarDots, MapPin, Users } from '@phosphor-icons/react/dist/ssr';
+import { TicketIcon, CalendarDotsIcon, MapPinIcon, UsersIcon } from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 import { FigmaButton } from '@/components/ui/figma-button';
 import { EventSearch } from '@/components/events/EventSearch';
@@ -48,7 +48,7 @@ export default function HomePage() {
             {/* Hero Content */}
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border">
-                <Ticket size={20} className="text-blue-600" />
+                <TicketIcon size={20} className="text-blue-600" />
                 <span className="text-sm font-medium text-gray-700">
                   {t('hero.badge')}
                 </span>
@@ -126,11 +126,11 @@ export default function HomePage() {
                       </h3>
                       <div className="flex items-center gap-4 text-sm text-slate-300">
                         <div className="flex items-center gap-1">
-                          <CalendarDots size={16} />
+                          <CalendarDotsIcon weight="duotone" size={16} />
                           <span>Aug 12</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <MapPin size={16} />
+                          <MapPinIcon weight="duotone" size={16} />
                           <span>{event.venue.city}</span>
                         </div>
                       </div>
@@ -230,7 +230,7 @@ export default function HomePage() {
                 size="xl"
                 showGlow={true}
               >
-                <Users size={20} />
+                <UsersIcon weight="duotone" size={20} />
                 {t('sections.cta.organizeEvent')}
               </FigmaButton>
               <FigmaButton

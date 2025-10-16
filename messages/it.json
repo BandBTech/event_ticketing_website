@@ -103,5 +103,34 @@
     "en": "English",
     "ja": "日本語",
     "it": "Italiano"
+  },
+  "auth": {
+    "login": {
+      "title": "Accedi",
+      "subtitle": "come Partecipante",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "Inserisci indirizzo email",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Ricordami",
+      "forgotPassword": "Password Dimenticata?",
+      "loginButton": "Accedi",
+      "signingIn": "Accesso in corso...",
+      "noAccount": "Non hai un account?",
+      "signUpHere": "Registrati qui.",
+      "validation": {
+        "emailRequired": "Email è richiesta",
+        "emailInvalid": "Inserisci un indirizzo email valido",
+        "passwordRequired": "Password è richiesta",
+        "passwordTooShort": "La password deve essere di almeno 6 caratteri",
+        "passwordTooLong": "La password è troppo lunga"
+      },
+      "errors": {
+        "invalidCredentials": "Email o password non validi. Prova: attendee@example.com / password123",
+        "loginFailed": "Accesso fallito. Riprova."
+      },
+      "showPassword": "Mostra password",
+      "hidePassword": "Nascondi password"
+    }
   }
 }

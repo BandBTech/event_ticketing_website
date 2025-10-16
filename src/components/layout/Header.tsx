@@ -9,6 +9,7 @@ import { LanguageSelector } from '@/components/common/LanguageSelector';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,14 +57,16 @@ export function Header() {
 
             {/* Auth Buttons */}
             <div className="hidden sm:flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-gray-700 hover:text-blue-600 hover:bg-blue-50"
-              >
-                <User size={16} className="mr-1" />
-                {t('navigation.signIn')}
-              </Button>
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                >
+                  <User size={16} className="mr-1" />
+                  {t('navigation.signIn')}
+                </Button>
+              </Link>
               <FigmaButton
                 variant="primary"
                 size="md"
@@ -108,14 +111,17 @@ export function Header() {
                 <LanguageSelector />
                 
                 <div className="flex flex-col gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 justify-start"
-                  >
-                    <User size={16} className="mr-2" />
-                    {t('navigation.signIn')}
-                  </Button>
+                  <Link href="/login">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 justify-start w-full"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <User size={16} className="mr-2" />
+                      {t('navigation.signIn')}
+                    </Button>
+                  </Link>
                   <FigmaButton
                     variant="primary"
                     size="md"
