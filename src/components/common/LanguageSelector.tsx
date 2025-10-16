@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Globe, CaretDown } from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 import { useLanguageStore } from '@/store/languageStore';
-import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
 
 interface Language {
@@ -26,7 +25,6 @@ interface LanguageSelectorProps {
 export function LanguageSelector({ className }: LanguageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { locale, setLocale } = useLanguageStore();
-  const { t } = useTranslation(locale);
   
   const currentLang = languages.find(lang => lang.code === locale) || languages[0];
 

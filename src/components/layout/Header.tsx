@@ -1,14 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Ticket, List, X, User, Globe } from '@phosphor-icons/react/dist/ssr';
+import { Ticket, List, X, User } from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 import { FigmaButton } from '@/components/ui/figma-button';
-import { Badge } from '@/components/ui/badge';
 import { LanguageSelector } from '@/components/common/LanguageSelector';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export function Header() {

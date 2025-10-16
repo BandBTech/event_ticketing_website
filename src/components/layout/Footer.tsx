@@ -67,7 +67,7 @@ export function Footer() {
               </div>
               
               <p className="text-gray-600 leading-relaxed">
-                Nepal's premier event ticketing platform. Discover amazing events, 
+                Nepal&apos;s premier event ticketing platform. Discover amazing events, 
                 connect with your community, and create unforgettable experiences.
               </p>
 

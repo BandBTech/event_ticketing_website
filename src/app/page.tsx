@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { TicketIcon, CalendarDotsIcon, MapPinIcon, UsersIcon } from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 import { FigmaButton } from '@/components/ui/figma-button';
@@ -26,7 +27,7 @@ export default function HomePage() {
     limit: 6,
   });
 
-  const { data: featuredEvents, isLoading: featuredLoading } = useFeaturedEvents();
+  const { data: featuredEvents } = useFeaturedEvents();
   const { data: categories } = useEventCategories();
 
   const handleSearch = (query: string) => {
@@ -114,9 +115,11 @@ export default function HomePage() {
                   className="group relative overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/15 transition-all duration-300"
                 >
                   <div className="aspect-video relative overflow-hidden">
-                    <img
+                    <Image
                       src={event.imageUrl}
                       alt={event.title}
+                      width={400}
+                      height={225}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

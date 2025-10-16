@@ -2,10 +2,9 @@
 
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { CalendarDots, MapPin, ArrowRight, PencilSimple } from '@phosphor-icons/react/dist/ssr';
+import { CalendarDots, MapPin, ArrowRight } from '@phosphor-icons/react/dist/ssr';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { FigmaButton } from '@/components/ui/figma-button';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -30,18 +29,11 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getLowestPrice = (event: Event) => {
-  const prices = event.ticketTypes
-    .filter(ticket => ticket.isActive && ticket.sold < ticket.quantity)
-    .map(ticket => ticket.price);
-  return prices.length > 0 ? Math.min(...prices) : null;
-};
 
 export function EventCard({ event, className }: EventCardProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   
-  const lowestPrice = getLowestPrice(event);
   const availableTickets = event.ticketTypes.reduce(
     (total, ticket) => total + (ticket.quantity - ticket.sold),
     0

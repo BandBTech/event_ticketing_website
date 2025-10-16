@@ -1,4 +1,4 @@
-import { EventsResponse, Event, EventFilters, QueryParams } from '@/types';
+import { EventsResponse, Event, QueryParams } from '@/types';
 import { mockEvents, eventCategories } from '@/data/mockEvents';
 
 // Simulate API delay
@@ -48,18 +48,28 @@ export class ApiClient {
 
     // Apply sorting
     filteredEvents.sort((a, b) => {
-      let aValue: any = a[sortBy as keyof Event];
-      let bValue: any = b[sortBy as keyof Event];
+      let aValue: string | number | Date = a[sortBy as keyof Event] as string | number | Date;
+      let bValue: string | number | Date = b[sortBy as keyof Event] as string | number | Date;
 
       if (sortBy === 'startDate') {
         aValue = new Date(aValue).getTime();
         bValue = new Date(bValue).getTime();
       }
 
-      if (sortOrder === 'desc') {
-        return bValue - aValue;
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        if (sortOrder === 'desc') {
+          return bValue - aValue;
+        }
+        return aValue - bValue;
       }
-      return aValue - bValue;
+
+      // For string comparison
+      const aStr = String(aValue);
+      const bStr = String(bValue);
+      if (sortOrder === 'desc') {
+        return bStr.localeCompare(aStr);
+      }
+      return aStr.localeCompare(bStr);
     });
 
     // Apply pagination

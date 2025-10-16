@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 // Create validation schema with translations
-const createLoginSchema = (t: any) => z.object({
+const createLoginSchema = (t: (key: string, fallback?: string) => string) => z.object({
   email: z
     .string()
     .min(1, t('auth.login.validation.emailRequired'))

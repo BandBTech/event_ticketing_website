@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 type Locale = 'en' | 'ja' | 'it';
 
 interface TranslationMessages {
-  [key: string]: any;
+  [key: string]: string | TranslationMessages;
 }
 
 const translations: Record<Locale, () => Promise<TranslationMessages>> = {
@@ -39,7 +39,7 @@ export function useTranslation(locale: Locale = 'en') {
 
   const t = (key: string, fallback?: string): string => {
     const keys = key.split('.');
-    let value = messages;
+    let value: string | TranslationMessages = messages;
     
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {

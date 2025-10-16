@@ -20,7 +20,7 @@ interface EventStore {
   setError: (error: string | null) => void;
 }
 
-export const useEventStore = create<EventStore>((set, get) => ({
+export const useEventStore = create<EventStore>((set) => ({
   // Initial state
   events: [],
   featuredEvents: [],
