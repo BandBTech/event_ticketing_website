@@ -51,7 +51,7 @@
   "footer": {
     "description": "Nepal's premier event ticketing platform. Discover amazing events, connect with your community, and create unforgettable experiences.",
     "contact": {
-      "email": "hello@e-ticket.com.np",
+      "email": "info@timroticket.com",
       "phone": "+977-1-4567890",
       "address": "Kathmandu, Nepal"
     },
@@ -90,7 +90,7 @@
       "subtitle": "Get notified about new events and exclusive offers.",
       "placeholder": "Enter your email"
     },
-    "copyright": "© 2025 E-Ticket. All rights reserved.",
+    "copyright": "© 2025 Timro-Ticket. All rights reserved.",
     "madeIn": "Made with ❤️ in Nepal"
   },
   "events": {

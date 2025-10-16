@@ -15,7 +15,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "E-Ticket - Event Ticketing Platform",
+  title: "Timro-Ticket - Event Ticketing Platform",
   description: "Discover and book tickets for amazing events in Nepal. From music festivals to conferences, find your next experience.",
 };
 

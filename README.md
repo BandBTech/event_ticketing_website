@@ -1,4 +1,4 @@
-# E-Ticket - Event Ticketing Platform
+# Timro-Ticket - Event Ticketing Platform
 
 A beautiful, modern event ticketing platform built with Next.js 15, TypeScript, and shadcn/ui. This application allows users to discover, search, and book tickets for various events.
 

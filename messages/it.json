@@ -51,7 +51,7 @@
   "footer": {
     "description": "La piattaforma di biglietteria eventi premier del Nepal. Scopri eventi fantastici, connettiti con la tua comunità e crea esperienze indimenticabili.",
     "contact": {
-      "email": "hello@e-ticket.com.np",
+      "email": "info@timroticket.com",
       "phone": "+977-1-4567890",
       "address": "Kathmandu, Nepal"
     },
@@ -90,7 +90,7 @@
       "subtitle": "Ricevi notifiche su nuovi eventi e offerte esclusive.",
       "placeholder": "Inserisci la tua email"
     },
-    "copyright": "© 2025 E-Ticket. Tutti i diritti riservati.",
+    "copyright": "© 2025 Timro-Ticket. Tutti i diritti riservati.",
     "madeIn": "Fatto con ❤️ in Nepal"
   },
   "events": {

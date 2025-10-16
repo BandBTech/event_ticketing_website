@@ -30,7 +30,7 @@ export function Header() {
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/10 border border-blue-600/20">
               <Ticket size={24} className="text-blue-600" />
               <span className="text-xl font-bold text-gray-900 font-poppins">
-                E-Ticket
+                Timro-Ticket
               </span>
             </div>
           </div>
