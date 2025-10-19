@@ -131,6 +131,15 @@
       },
       "showPassword": "Mostra password",
       "hidePassword": "Nascondi password"
+    },
+    "signup": {
+      "phonePlaceholder": "Inserisci un numero di contatto valido",
+      "validation": {
+        "phoneRequired": "Il numero di contatto è obbligatorio"
+      }
+    },
+    "resetPassword": {
+      "subtitle": "Imposta una nuova password per"
     }
   }
 }

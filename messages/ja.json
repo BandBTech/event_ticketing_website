@@ -131,6 +131,15 @@
       },
       "showPassword": "パスワードを表示",
       "hidePassword": "パスワードを非表示"
+    },
+    "signup": {
+      "phonePlaceholder": "有効な連絡先番号を入力してください",
+      "validation": {
+        "phoneRequired": "連絡先番号は必須です"
+      }
+    },
+    "resetPassword": {
+      "subtitle": "新しいパスワードを設定してください"
     }
   }
 }

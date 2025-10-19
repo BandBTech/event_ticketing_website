@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { format } from 'date-fns';
 import { CalendarDots, MapPin, ArrowRight } from '@phosphor-icons/react/dist/ssr';
 import { Card, CardContent } from '@/components/ui/card';
@@ -40,14 +41,15 @@ export function EventCard({ event, className }: EventCardProps) {
   );
 
   return (
-    <Card className={cn(
-      "group overflow-hidden bg-white/60 backdrop-blur-[20px]",
-      "border border-white/10 border-gradient-to-r from-white/0 via-white/100 to-white/100",
-      "shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05),0px_4px_4px_0px_rgba(0,0,0,0.05),0px_1px_0px_0px_rgba(0,0,0,0.03)]",
-      "hover:shadow-lg transition-all duration-300 hover:scale-[1.02]",
-      "rounded-[10px]",
-      className
-    )}>
+    <Link href={`/events/${event.id}`} className="block">
+      <Card className={cn(
+        "group overflow-hidden bg-white/60 backdrop-blur-[20px]",
+        "border border-white/10 border-gradient-to-r from-white/0 via-white/100 to-white/100",
+        "shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05),0px_4px_4px_0px_rgba(0,0,0,0.05),0px_1px_0px_0px_rgba(0,0,0,0.03)]",
+        "hover:shadow-lg transition-all duration-300 hover:scale-[1.02]",
+        "rounded-[10px] cursor-pointer",
+        className
+      )}>
       {/* Image Section */}
       <div className="relative overflow-hidden">
         <Image
@@ -132,5 +134,6 @@ export function EventCard({ event, className }: EventCardProps) {
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 }

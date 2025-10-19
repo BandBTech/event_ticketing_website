@@ -59,7 +59,7 @@ const FigmaButton = React.forwardRef<HTMLButtonElement, FigmaButtonProps>(
     return (
       <div className="relative inline-flex">
         <Comp
-          className={cn(figmaButtonVariants({ variant, size, className }), "relative z-10")}
+          className={cn(figmaButtonVariants({ variant, size, className }), "cursor-pointer relative z-10")}
           ref={ref}
           {...props}
         >
