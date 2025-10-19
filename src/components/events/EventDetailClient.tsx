@@ -310,7 +310,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       onClick={handleJoinWaitlist}
                       className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
                     >
-                      Join the waitlist
+                      Buy Tickets
                     </Button>
                     <Button
                       onClick={handleShare}
