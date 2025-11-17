@@ -21,6 +21,7 @@ import { AuthError } from "@/lib/authService";
 import { GuestRoute } from "@/components/auth/GuestRoute";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { tokenManager } from "@/lib/tokenManager";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -50,12 +51,15 @@ export default function LoginPage() {
   const loginSchema = createLoginSchema(t);
   type LoginFormData = z.infer<typeof loginSchema>;
 
+  // Check for saved credentials on component mount
+  const savedCredentials = tokenManager.getSavedCredentials();
+  
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
+      email: savedCredentials?.email || "",
+      password: savedCredentials?.password || "",
+      rememberMe: tokenManager.hasCredentialsSaved(),
     },
     mode: "onBlur",
   });
@@ -75,15 +79,20 @@ export default function LoginPage() {
     clearError();
 
     try {
-      // Call real API login
-      await login({
-        email: data.email,
-        password: data.password,
-      });
+      // Call real API login with remember me preference
+      await login(
+        {
+          email: data.email,
+          password: data.password,
+        },
+        data.rememberMe
+      );
 
-      // Handle remember me
-      if (data.rememberMe && typeof window !== "undefined") {
-        localStorage.setItem("rememberMe", "true");
+      // Save or clear credentials based on Remember Me
+      if (data.rememberMe) {
+        tokenManager.saveCredentials(data.email, data.password);
+      } else {
+        tokenManager.clearCredentials();
       }
 
       // Show success toast

@@ -12,7 +12,7 @@ interface AuthStore {
   error: string | null;
 
   // Actions
-  login: (credentials: LoginRequest) => Promise<void>;
+  login: (credentials: LoginRequest, rememberMe?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   clearError: () => void;
@@ -29,12 +29,12 @@ export const useAuthStore = create<AuthStore>()(
       error: null,
 
       // Login action
-      login: async (credentials: LoginRequest) => {
+      login: async (credentials: LoginRequest, rememberMe: boolean = false) => {
         set({ isLoading: true, error: null });
 
         try {
-          // Call login API
-          await authService.login(credentials);
+          // Call login API with remember me preference
+          await authService.login(credentials, rememberMe);
 
           // Fetch user profile
           const profile = await authService.getProfile();

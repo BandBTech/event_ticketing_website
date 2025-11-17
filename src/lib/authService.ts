@@ -80,15 +80,17 @@ async function apiRequest<T>(
 class AuthService {
   /**
    * Login user with email and password
+   * @param credentials - Login credentials (email, password)
+   * @param rememberMe - If true, stores tokens in localStorage; if false, stores in sessionStorage
    */
-  async login(credentials: LoginRequest): Promise<TokenResponse> {
+  async login(credentials: LoginRequest, rememberMe: boolean = false): Promise<TokenResponse> {
     const tokens = await apiRequest<TokenResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
 
-    // Store tokens
-    tokenManager.setTokens(tokens.access_token, tokens.refresh_token);
+    // Store tokens with remember me preference
+    tokenManager.setTokens(tokens.access_token, tokens.refresh_token, rememberMe);
 
     return tokens;
   }
@@ -105,6 +107,7 @@ class AuthService {
 
   /**
    * Refresh access token using refresh token
+   * Preserves the original "remember me" preference
    */
   async refreshToken(): Promise<TokenResponse> {
     const refreshToken = tokenManager.getRefreshToken();
@@ -122,7 +125,9 @@ class AuthService {
       body: JSON.stringify(request),
     });
 
-    tokenManager.setTokens(tokens.access_token, tokens.refresh_token);
+    // Preserve the original remember me preference when refreshing tokens
+    const rememberMe = tokenManager.isRememberMeEnabled();
+    tokenManager.setTokens(tokens.access_token, tokens.refresh_token, rememberMe);
 
     return tokens;
   }

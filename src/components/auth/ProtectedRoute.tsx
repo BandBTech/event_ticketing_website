@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 
@@ -21,16 +21,26 @@ export function ProtectedRoute({
   redirectTo = '/login'
 }: ProtectedRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && requireAuth && !isAuthenticated) {
+    // Ensure auth is checked on mount
+    if (!authChecked) {
+      checkAuth();
+      setAuthChecked(true);
+    }
+  }, [authChecked, checkAuth]);
+
+  useEffect(() => {
+    // Only redirect after auth has been checked and is not loading
+    if (authChecked && !isLoading && requireAuth && !isAuthenticated) {
       router.push(redirectTo);
     }
-  }, [isAuthenticated, isLoading, requireAuth, redirectTo, router]);
+  }, [authChecked, isAuthenticated, isLoading, requireAuth, redirectTo, router]);
 
-  // Show loading state while checking auth
-  if (isLoading) {
+  // Show loading state while checking auth OR if auth hasn't been checked yet
+  if (!authChecked || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

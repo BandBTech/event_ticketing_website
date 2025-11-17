@@ -195,10 +195,10 @@ export default function SignupPage() {
         phone: data.phone,
       });
 
-      await authService.sendOTP({
-        identifier: data.email,
-        otp_type: "registration",
-      });
+      // await authService.sendOTP({
+      //   identifier: data.email,
+      //   otp_type: "registration",
+      // });
 
       toast.success(
         "auth.toast.otpSent",

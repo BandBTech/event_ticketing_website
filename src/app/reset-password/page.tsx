@@ -319,7 +319,10 @@ function ResetPasswordContent() {
                             </button>
                           </div>
                           {errors.newPassword && (
-                            <p className="text-sm text-destructive" role="alert">
+                            <p
+                              className="text-sm text-destructive"
+                              role="alert"
+                            >
                               {errors.newPassword.message}
                             </p>
                           )}
@@ -389,7 +392,10 @@ function ResetPasswordContent() {
                             </button>
                           </div>
                           {errors.confirmPassword && (
-                            <p className="text-sm text-destructive" role="alert">
+                            <p
+                              className="text-sm text-destructive"
+                              role="alert"
+                            >
                               {errors.confirmPassword.message}
                             </p>
                           )}
@@ -454,7 +460,13 @@ function ResetPasswordContent() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
       <ResetPasswordContent />
     </Suspense>
   );
