@@ -193,7 +193,7 @@ class AuthService {
     
     return {
       user: response,
-      message: (response as any).message
+      message: 'message' in response ? response.message : undefined
     };
   }
 
@@ -316,7 +316,7 @@ class AuthService {
     
     return {
       user: response,
-      message: (response as any).message
+      message: 'message' in response ? response.message : undefined
     };
   }
 }

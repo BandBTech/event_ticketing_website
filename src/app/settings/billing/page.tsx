@@ -57,7 +57,7 @@ export default function BillingPage() {
   const loadBillingData = async () => {
     setLoading(true);
     try {
-      const [methods, trans, inv, billingStats] = await Promise.all([
+      const [methods, trans, inv] = await Promise.all([
         BillingService.getPaymentMethods("user1"),
         BillingService.getTransactions("user1"),
         BillingService.getInvoices("user1")

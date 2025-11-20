@@ -49,3 +49,5 @@ next-env.d.ts
 
 # Thumbnails
 ._*
+
+./src/event_shared_ui

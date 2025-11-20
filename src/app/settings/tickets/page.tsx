@@ -32,15 +32,18 @@ export default function TicketsPage() {
     try {
       let ticketData: Ticket[] = [];
       const [statsData] = await Promise.all([
-        TicketService.getTicketStats('user1')
+        TicketService.getTicketStats()
       ]);
       
       if (activeTab === 'upcoming') {
-        ticketData = await TicketService.getUpcomingTickets('user1');
+        const response = await TicketService.getUpcomingTickets();
+        ticketData = response.tickets;
       } else if (activeTab === 'past') {
-        ticketData = await TicketService.getPastTickets('user1');
+        const response = await TicketService.getPastTickets();
+        ticketData = response.tickets;
       } else {
-        ticketData = await TicketService.getTickets('user1', filters);
+        const response = await TicketService.getTickets(filters);
+        ticketData = response.tickets;
       }
       
       setTickets(ticketData);
@@ -59,7 +62,7 @@ export default function TicketsPage() {
     }
     setLoading(true);
     try {
-      const results = await TicketService.searchTickets('user1', searchQuery);
+      const results = await TicketService.searchTickets(searchQuery);
       setTickets(results);
     } catch (error) {
       console.error('Failed to search tickets:', error);
@@ -74,8 +77,9 @@ export default function TicketsPage() {
       setTickets(prev => prev.map(t => 
         t.id === ticketId ? { ...t, status: 'cancelled' as const } : t
       ));
-    } catch (error: any) {
-      alert(error.message || 'Failed to cancel ticket');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to cancel ticket';
+      alert(message);
     }
   };
 

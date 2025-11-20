@@ -127,7 +127,7 @@ function ResetPasswordContent() {
 
     try {
       await authService.resetPassword({
-        reset_token: otp,
+        otp: otp,
         email_token: email,
         new_password: data.newPassword,
         confirm_password: data.confirmPassword,
