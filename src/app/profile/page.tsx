@@ -1,38 +1,52 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { UserIcon, EnvelopeIcon, CheckIcon, PencilSimpleLineIcon } from '@phosphor-icons/react';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { PhoneInput } from '@/components/ui/phone-input';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useAuthStore } from '@/store/authStore';
-import { useLanguageStore } from '@/store/languageStore';
-import { useTranslation } from '@/hooks/useTranslation';
-import { authService, AuthError } from '@/lib/authService';
-import { toast } from '@/lib/toast';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  UserIcon,
+  EnvelopeIcon,
+  CheckIcon,
+  PencilSimpleLineIcon,
+} from "@phosphor-icons/react";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useAuthStore } from "@/store/authStore";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
+import { authService, AuthError } from "@/lib/authService";
+import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { createValidationHelpers } from "@/lib/validation";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
 // Validation schema
-const createProfileSchema = (t: (key: string, fallback?: string) => string) => z.object({
-  firstName: z
-    .string()
-    .min(2, t('profile.validation.firstNameTooShort', 'First name must be at least 2 characters'))
-    .max(50, t('profile.validation.firstNameTooLong', 'First name is too long')),
-  lastName: z
-    .string()
-    .min(2, t('profile.validation.lastNameTooShort', 'Last name must be at least 2 characters'))
-    .max(50, t('profile.validation.lastNameTooLong', 'Last name is too long')),
-  phone: z
-    .string()
-    .optional(),
-});
+const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
+  const v = createValidationHelpers(t);
+
+  return z.object({
+    firstName: z
+      .string()
+      .min(1, v.required("First name"))
+      .min(3, v.minLength("First name", 2))
+      .max(50, v.maxLength("First name", 50)),
+    lastName: z
+      .string()
+      .min(1, v.required("Last name"))
+      .min(3, v.minLength("Last name", 2))
+      .max(50, v.maxLength("Last name", 50)),
+    phone: z
+      .string()
+      .min(1, v.required("Contact number"))
+      .refine((val) => isValidPhoneNumber(val), v.phone("Phone")),
+  });
+};
 
 export default function ProfilePage() {
   const { user, fetchProfile } = useAuthStore();
@@ -47,11 +61,11 @@ export default function ProfilePage() {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      phone: user?.phone || '',
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      phone: user?.phone || "",
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const {
@@ -74,14 +88,20 @@ export default function ProfilePage() {
       // Fetch updated profile
       await fetchProfile();
 
-      toast.success('profile.toast.updateSuccess', 'Profile updated successfully!');
+      toast.success(
+        "profile.toast.updateSuccess",
+        "Profile updated successfully!"
+      );
       setIsEditing(false);
     } catch (error) {
-      console.error('Profile update failed:', error);
+      console.error("Profile update failed:", error);
       if (error instanceof AuthError) {
-        toast.error('profile.toast.updateError', error.message || 'Failed to update profile');
+        toast.error(
+          "profile.toast.updateError",
+          error.message || "Failed to update profile"
+        );
       } else {
-        toast.error('profile.toast.updateError', 'Failed to update profile');
+        toast.error("profile.toast.updateError", "Failed to update profile");
       }
     } finally {
       setIsLoading(false);
@@ -90,9 +110,9 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     reset({
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      phone: user?.phone || '',
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      phone: user?.phone || "",
     });
     setIsEditing(false);
   };
@@ -106,13 +126,13 @@ export default function ProfilePage() {
           <div className="absolute -top-96 -right-96 w-[1800px] h-[800px] rounded-full opacity-30">
             <div
               className="w-full h-full bg-gradient-radial from-orange-300 via-orange-200 to-transparent animate-pulse"
-              style={{ filter: 'blur(140px)' }}
+              style={{ filter: "blur(140px)" }}
             />
           </div>
           <div className="absolute -bottom-96 -left-96 w-[1900px] h-[1000px] rounded-full opacity-25">
             <div
               className="w-full h-full bg-gradient-radial from-blue-400 via-blue-300 to-transparent animate-pulse"
-              style={{ filter: 'blur(140px)', animationDelay: '2s' }}
+              style={{ filter: "blur(140px)", animationDelay: "2s" }}
             />
           </div>
         </div>
@@ -126,10 +146,10 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900 font-poppins">
-                    {t('profile.title', 'My Profile')}
+                    {t("profile.title", "My Profile")}
                   </h1>
                   <p className="text-gray-600 mt-1">
-                    {t('profile.subtitle', 'Manage your personal information')}
+                    {t("profile.subtitle", "Manage your personal information")}
                   </p>
                 </div>
                 {!isEditing && (
@@ -139,7 +159,7 @@ export default function ProfilePage() {
                     className="flex items-center gap-2 px-4 py-1.5 rounded-lg border-primary text-primary bg-white hover:bg-blue-50 shadow-lg"
                   >
                     <PencilSimpleLineIcon size={16} weight="duotone" />
-                    {t('profile.editButton', 'Edit Profile')}
+                    {t("profile.editButton", "Edit Profile")}
                   </Button>
                 )}
               </div>
@@ -149,7 +169,8 @@ export default function ProfilePage() {
                 {/* Avatar Section */}
                 <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
-                    {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                    {user?.firstName?.charAt(0)}
+                    {user?.lastName?.charAt(0)}
                   </div>
                   <div>
                     <h2 className="text-2xl font-semibold text-gray-900">
@@ -165,22 +186,32 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="mt-6 space-y-6"
+                >
                   {/* Personal Information */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900">
-                      {t('profile.personalInfo', 'Personal Information')}
+                      {t("profile.personalInfo", "Personal Information")}
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* First Name */}
                       <div className="space-y-2">
-                        <label htmlFor="firstName" className="text-sm font-medium text-gray-900 block">
-                          {t('profile.firstName', 'First Name')}
+                        <label
+                          htmlFor="firstName"
+                          className="text-sm font-medium text-gray-900 block"
+                        >
+                          {t("profile.firstName", "First Name")}
                         </label>
                         <div className="relative">
                           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full">
-                            <UserIcon weight='duotone' size={20} className="text-gray-600" />
+                            <UserIcon
+                              weight="duotone"
+                              size={20}
+                              className="text-gray-600"
+                            />
                           </div>
                           <Input
                             id="firstName"
@@ -191,11 +222,14 @@ export default function ProfilePage() {
                               !isEditing && "bg-gray-50 cursor-not-allowed",
                               errors.firstName && "border-destructive"
                             )}
-                            {...register('firstName')}
+                            {...register("firstName")}
                           />
                         </div>
                         {errors.firstName && (
-                          <p className="text-sm text-destructive font-medium" role="alert">
+                          <p
+                            className="text-sm text-destructive font-medium"
+                            role="alert"
+                          >
                             {errors.firstName.message}
                           </p>
                         )}
@@ -203,12 +237,19 @@ export default function ProfilePage() {
 
                       {/* Last Name */}
                       <div className="space-y-2">
-                        <label htmlFor="lastName" className="text-sm font-medium text-gray-900 block">
-                          {t('profile.lastName', 'Last Name')}
+                        <label
+                          htmlFor="lastName"
+                          className="text-sm font-medium text-gray-900 block"
+                        >
+                          {t("profile.lastName", "Last Name")}
                         </label>
                         <div className="relative">
                           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full">
-                            <UserIcon weight='duotone' size={20} className="text-gray-600" />
+                            <UserIcon
+                              weight="duotone"
+                              size={20}
+                              className="text-gray-600"
+                            />
                           </div>
                           <Input
                             id="lastName"
@@ -219,11 +260,14 @@ export default function ProfilePage() {
                               !isEditing && "bg-gray-50 cursor-not-allowed",
                               errors.lastName && "border-destructive"
                             )}
-                            {...register('lastName')}
+                            {...register("lastName")}
                           />
                         </div>
                         {errors.lastName && (
-                          <p className="text-sm text-destructive font-medium" role="alert">
+                          <p
+                            className="text-sm text-destructive font-medium"
+                            role="alert"
+                          >
                             {errors.lastName.message}
                           </p>
                         )}
@@ -232,34 +276,48 @@ export default function ProfilePage() {
 
                     {/* Email (Read-only) */}
                     <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium text-gray-900 block">
-                        {t('profile.email', 'Email')}
+                      <label
+                        htmlFor="email"
+                        className="text-sm font-medium text-gray-900 block"
+                      >
+                        {t("profile.email", "Email")}
                       </label>
                       <div className="relative">
                         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full">
-                          <EnvelopeIcon weight='duotone' size={20} className="text-gray-600" />
+                          <EnvelopeIcon
+                            weight="duotone"
+                            size={20}
+                            className="text-gray-600"
+                          />
                         </div>
                         <Input
                           id="email"
                           type="email"
-                          value={user?.email || ''}
+                          value={user?.email || ""}
                           disabled
                           className="h-12 pl-16 pr-4 bg-gray-50 cursor-not-allowed"
                         />
                       </div>
                       <p className="text-xs text-gray-500">
-                        {t('profile.emailNote', 'Email cannot be changed')}
+                        {t("profile.emailNote", "Email cannot be changed")}
                       </p>
                     </div>
 
                     {/* Phone */}
                     <div className="space-y-2">
-                      <label htmlFor="phone" className="text-sm font-medium text-gray-900 block">
-                        {t('profile.phone', 'Phone Number')}
+                      <label
+                        htmlFor="phone"
+                        className="text-sm font-medium text-gray-900 block"
+                      >
+                        {t("profile.phone", "Phone Number")}
                       </label>
                       <PhoneInput
-                        value={form.watch('phone') || ''}
-                        onChange={(value) => form.setValue('phone', value || '', { shouldDirty: true })}
+                        value={form.watch("phone") || ""}
+                        onChange={(value) =>
+                          form.setValue("phone", value || "", {
+                            shouldDirty: true,
+                          })
+                        }
                         disabled={!isEditing}
                         defaultCountry="NP"
                         className={cn(
@@ -268,7 +326,10 @@ export default function ProfilePage() {
                         )}
                       />
                       {errors.phone && (
-                        <p className="text-sm text-destructive font-medium" role="alert">
+                        <p
+                          className="text-sm text-destructive font-medium"
+                          role="alert"
+                        >
                           {errors.phone.message}
                         </p>
                       )}
@@ -284,14 +345,16 @@ export default function ProfilePage() {
                         className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         <CheckIcon size={16} />
-                        {isLoading ? t('profile.saving', 'Saving...') : t('profile.saveButton', 'Save Changes')}
+                        {isLoading
+                          ? t("profile.saving", "Saving...")
+                          : t("profile.saveButton", "Save Changes")}
                       </Button>
                       <Button
                         type="button"
                         onClick={handleCancel}
                         className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-600 border-0 shadow-sm"
                       >
-                        {t('profile.cancelButton', 'Cancel')}
+                        {t("profile.cancelButton", "Cancel")}
                       </Button>
                     </div>
                   )}
@@ -302,7 +365,7 @@ export default function ProfilePage() {
               {user?.organization && (
                 <div className="glass-card rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    {t('profile.organization', 'Organization')}
+                    {t("profile.organization", "Organization")}
                   </h3>
                   <div className="flex items-center gap-4">
                     {user.organization.logo_url ? (
@@ -317,9 +380,13 @@ export default function ProfilePage() {
                       </div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-gray-900">{user.organization.name}</h4>
+                      <h4 className="font-semibold text-gray-900">
+                        {user.organization.name}
+                      </h4>
                       {user.organization.description && (
-                        <p className="text-sm text-gray-600">{user.organization.description}</p>
+                        <p className="text-sm text-gray-600">
+                          {user.organization.description}
+                        </p>
                       )}
                     </div>
                   </div>

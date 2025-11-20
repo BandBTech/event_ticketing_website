@@ -1,3 +1,3 @@
-import SignupPage from "@/event_shared_ui/register/page";
+import MultiStepRegister from './MultiStepRegister';
 
-export default SignupPage;
+export default MultiStepRegister;
