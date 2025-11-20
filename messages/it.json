@@ -135,7 +135,11 @@
     "signup": {
       "phonePlaceholder": "Inserisci un numero di contatto valido",
       "validation": {
-        "phoneRequired": "Il numero di contatto è obbligatorio"
+        "phoneRequired": "Il numero di contatto è obbligatorio",
+        "firstNameRequired": "Il nome è obbligatorio",
+        "firstNameTooLong": "Il nome è troppo lungo",
+        "firstNameTooShort": "Il nome deve contenere almeno 2 caratteri",
+        "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri"
       }
     },
     "resetPassword": {

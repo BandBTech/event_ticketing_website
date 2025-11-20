@@ -28,8 +28,11 @@ export function Header() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await logout();
-    toast.success('auth.toast.logoutSuccess', 'You have been logged out');
+    const result = await logout();
+    // [TODO: Translate Setup]
+    toast.success(
+      "", result?.message || 'Logout Successful'
+    );
     router.push('/');
   };
 
@@ -102,6 +105,24 @@ export function Header() {
                         <Link href="/settings/profile" className="cursor-pointer flex items-center">
                           <UserCircle size={16} className="mr-2" />
                           {t('navigation.profile', 'My Profile')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/settings/tickets" className="cursor-pointer flex items-center">
+                          <TicketIcon size={16} className="mr-2" />
+                          {t('navigation.myTickets', 'My Tickets')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/settings/billing" className="cursor-pointer flex items-center">
+                          <User size={16} className="mr-2" />
+                          {t('navigation.billing', 'Billing')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/settings/notifications" className="cursor-pointer flex items-center">
+                          <User size={16} className="mr-2" />
+                          {t('navigation.notifications', 'Notifications')}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />

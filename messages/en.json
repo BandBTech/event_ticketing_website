@@ -9,7 +9,17 @@
     "edit": "Edit",
     "loadMore": "Load More Events",
     "noResults": "No events found",
-    "tryAgain": "Try adjusting your search criteria or check back later for new events."
+    "tryAgain": "Try adjusting your search criteria or check back later for new events.",
+    "optional": "(Optional)",
+    "validation": {
+      "required": "{field} is required.",
+      "invalid": "{field} is invalid.",
+      "minLength": "{field} must be at least {length} characters long.",
+      "maxLength": "{field} cannot exceed {length} characters.",
+      "min": "{field} must be at least {value}.",
+      "max": "{field} cannot exceed {value}.",
+      "pattern": "{field} format is invalid."
+    }
   },
   "navigation": {
     "events": "Events",
@@ -45,19 +55,6 @@
       "updateSuccess": "Profile updated successfully!",
       "updateError": "Failed to update profile"
     }
-  },
-  "common": {
-    "loading": "Loading...",
-    "error": "Something went wrong",
-    "search": "Search",
-    "filter": "Filter",
-    "clear": "Clear",
-    "viewDetails": "View Details",
-    "edit": "Edit",
-    "loadMore": "Load More Events",
-    "noResults": "No events found",
-    "tryAgain": "Try adjusting your search criteria or check back later for new events.",
-    "optional": "(Optional)"
   },
   "hero": {
     "badge": "Nepal's Premier Event Platform",
@@ -197,20 +194,22 @@
       "termsAnd": "and",
       "privacy": "privacy policy",
       "validation": {
-        "firstNameTooShort": "First name must be at least 2 characters",
-        "firstNameTooLong": "First name is too long",
-        "lastNameTooShort": "Last name must be at least 2 characters",
-        "lastNameTooLong": "Last name is too long",
-        "emailRequired": "Email is required",
-        "emailInvalid": "Please enter a valid email address",
-        "phoneInvalid": "Please enter a valid phone number",
-        "passwordTooShort": "Password must be at least 8 characters",
-        "passwordTooLong": "Password is too long",
-        "passwordUppercase": "Password must contain at least one uppercase letter",
-        "passwordLowercase": "Password must contain at least one lowercase letter",
-        "passwordNumber": "Password must contain at least one number",
-        "passwordMismatch": "Passwords do not match",
-        "phoneRequired": "Contact number is required"
+        "firstNameTooShort": "First name must be at least 2 characters.",
+        "firstNameTooLong": "First name is too long.",
+        "lastNameTooShort": "Last name must be at least 2 characters.",
+        "lastNameTooLong": "Last name is too long.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address.",
+        "phoneInvalid": "Please enter a valid phone number.",
+        "passwordTooShort": "Password must be at least 8 characters.",
+        "passwordTooLong": "Password is too long.",
+        "passwordUppercase": "Password must contain at least one uppercase letter.",
+        "passwordLowercase": "Password must contain at least one lowercase letter.",
+        "passwordNumber": "Password must contain at least one number.",
+        "passwordMismatch": "Passwords do not match.",
+        "phoneRequired": "Contact number is required.",
+        "firstNameRequired": "First name is required.",
+        "lastNameRequired": "Last name is required."
       },
       "errors": {
         "signupFailed": "Registration failed. Please try again."
@@ -231,8 +230,8 @@
       "continueToReset": "Continue to Reset Password",
       "successMessage": "Password reset code has been sent to your email. Please check your inbox.",
       "validation": {
-        "emailRequired": "Email is required",
-        "emailInvalid": "Please enter a valid email address"
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address."
       },
       "errors": {
         "requestFailed": "Failed to send reset email. Please try again."

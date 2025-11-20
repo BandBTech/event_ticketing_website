@@ -158,7 +158,7 @@ export default function HomePage() {
                   className={cn(
                     "px-4 py-2 cursor-pointer transition-all duration-300",
                     "glass border text-gray-700 hover:bg-white/90",
-                    selectedCategory === category.name && "bg-blue-500/20 border-blue-400/50 text-blue-700"
+                    selectedCategory === category.name && "bg-primary/20 border-blue-400/50 text-primary"
                   )}
                   onClick={() => handleCategorySelect(category.name)}
                 >

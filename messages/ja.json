@@ -135,7 +135,11 @@
     "signup": {
       "phonePlaceholder": "有効な連絡先番号を入力してください",
       "validation": {
-        "phoneRequired": "連絡先番号は必須です"
+        "phoneRequired": "連絡先番号は必須です",
+        "firstNameRequired": "名は必須です",
+        "firstNameTooLong": "名前が長すぎます",
+        "firstNameTooShort": "名は少なくとも 2 文字である必要があります",
+        "lastNameTooShort": "姓は少なくとも 2 文字である必要があります"
       }
     },
     "resetPassword": {

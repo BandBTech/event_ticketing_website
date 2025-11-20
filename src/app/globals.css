@@ -228,3 +228,8 @@
 [data-sonner-toast][data-styled=true] [data-icon] {
   width: 24px !important;
 }
+
+.border-destructive.PhoneInput > button,
+.border-destructive.PhoneInput > input {
+  border-color: var(--color-destructive);
+}

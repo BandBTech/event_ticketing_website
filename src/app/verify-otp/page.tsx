@@ -227,7 +227,7 @@ function VerifyOTPContent() {
                         type="button"
                         onClick={handleResendOTP}
                         disabled={isResending}
-                        className="font-medium text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50"
+                        className="font-medium cursor-pointer text-primary hover:text-blue-700 transition-colors disabled:opacity-50"
                       >
                         {isResending ? t('auth.verifyOTP.resending', 'Resending...') : t('auth.verifyOTP.resend', 'Resend')}
                       </button>

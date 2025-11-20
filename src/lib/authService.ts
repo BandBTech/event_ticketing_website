@@ -84,7 +84,7 @@ class AuthService {
    * @param rememberMe - If true, stores tokens in localStorage; if false, stores in sessionStorage
    */
   async login(credentials: LoginRequest, rememberMe: boolean = false): Promise<TokenResponse> {
-    const tokens = await apiRequest<TokenResponse>('/auth/login', {
+    const tokens = await apiRequest<TokenResponse>('/auth/user/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -134,15 +134,23 @@ class AuthService {
 
   /**
    * Logout user
+   * Returns message from API response for toast display
    */
-  async logout(revokeAll: boolean = false): Promise<void> {
+  async logout(revokeAll: boolean = false): Promise<{ message?: string }> {
     try {
-      await api.post<void>(`/auth/logout?all=${revokeAll}`, undefined, {
-        requiresAuth: true,
-      });
+      const response = await api.post<{ message?: string }>(
+        `/auth/logout`, 
+        undefined, 
+        {
+          requiresAuth: true,
+          showErrorToast: false, // Don't show error toast - logout should always succeed locally
+        }
+      );
+      return { message: response?.message };
     } catch (error) {
       // Continue with local logout even if API call fails
       console.error('Logout API call failed:', error);
+      return { message: undefined };
     } finally {
       // Always clear tokens locally
       tokenManager.clearTokens();
@@ -162,25 +170,39 @@ class AuthService {
 
   /**
    * Register a new user
+   * Returns user profile and API message
+   * Note: New API only requires email, first_name, last_name (password set via OTP flow)
    */
   async register(userData: {
     email: string;
-    password: string;
     first_name: string;
     last_name: string;
     phone?: string;
-  }): Promise<UserProfileResponse> {
-    return await apiRequest<UserProfileResponse>('/auth/register', {
+    country_code?: string;
+  }): Promise<{ user: UserProfileResponse; message?: string }> {
+    const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/user/register', {
       method: 'POST',
-      body: JSON.stringify(userData),
+      body: JSON.stringify({
+        email: userData.email,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        phone: userData.phone,
+        country_code: userData.country_code
+      }),
     });
+    
+    return {
+      user: response,
+      message: (response as any).message
+    };
   }
 
   /**
    * Request password reset OTP
+   * Updated to use new endpoint
    */
   async requestPasswordReset(email: string): Promise<void> {
-    await apiRequest<void>('/auth/reset-password-request', {
+    await apiRequest<void>('/auth/user/reset-password-request', {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
@@ -188,16 +210,24 @@ class AuthService {
 
   /**
    * Reset password with OTP
+   * Updated to use OTP instead of reset_token and include role
    */
   async resetPassword(data: {
-    reset_token: string;
+    otp: string;              // Changed from reset_token
     email_token: string;
     new_password: string;
     confirm_password: string;
+    role?: 'user' | 'organizer' | 'admin';
   }): Promise<void> {
-    await apiRequest<void>('/auth/reset-password', {
+    await apiRequest<void>('/auth/user/reset-password', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        otp: data.otp,
+        email_token: data.email_token,
+        new_password: data.new_password,
+        confirm_password: data.confirm_password,
+        role: data.role || 'user'
+      }),
     });
   }
 
@@ -218,11 +248,13 @@ class AuthService {
   /**
    * Update user profile
    * Uses automatic token refresh from apiClient
+   * Updated to include country_code
    */
   async updateProfile(data: {
     first_name: string;
     last_name: string;
     phone?: string;
+    country_code?: string;
   }): Promise<UserProfileResponse> {
     return await api.put<UserProfileResponse>('/auth/profile', data, {
       requiresAuth: true,
@@ -231,29 +263,61 @@ class AuthService {
 
   /**
    * Send OTP
+   * Updated to include role parameter for new API
    */
   async sendOTP(data: {
     identifier: string;
     otp_type: string;
+    role?: 'user' | 'organizer' | 'admin';
   }): Promise<{ message: string; success: boolean; expires_in: number }> {
-    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/send-otp', {
+    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/user/send-otp', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        identifier: data.identifier,
+        otp_type: data.otp_type,
+        role: data.role || 'user'
+      }),
     });
   }
 
   /**
    * Verify OTP
+   * Updated to include role parameter for new API
    */
   async verifyOTP(data: {
     identifier: string;
     otp_code: string;
     otp_type: string;
+    role?: 'user' | 'organizer' | 'admin';
   }): Promise<void> {
-    await apiRequest<void>('/auth/verify-otp', {
+    await apiRequest<void>('/auth/user/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({
+        identifier: data.identifier,
+        otp_code: data.otp_code,
+        otp_type: data.otp_type,
+        role: data.role || 'user'
+      }),
+    });
+  }
+
+  /**
+   * Set password after OTP verification
+   * New endpoint for completing registration
+   */
+  async setPassword(data: {
+    email: string;
+    password: string;
+  }): Promise<{ user: UserProfileResponse; message?: string }> {
+    const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/user/set-password', {
       method: 'POST',
       body: JSON.stringify(data),
     });
+    
+    return {
+      user: response,
+      message: (response as any).message
+    };
   }
 }
 

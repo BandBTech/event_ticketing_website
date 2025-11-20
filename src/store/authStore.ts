@@ -13,7 +13,7 @@ interface AuthStore {
 
   // Actions
   login: (credentials: LoginRequest, rememberMe?: boolean) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => Promise<{ message?: string }>;
   fetchProfile: () => Promise<void>;
   clearError: () => void;
   checkAuth: () => void;
@@ -78,16 +78,23 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          await authService.logout();
-        } catch (error) {
-          console.error('Logout error:', error);
-        } finally {
+          const result = await authService.logout();
           set({
             user: null,
             isAuthenticated: false,
             isLoading: false,
             error: null,
           });
+          return result;
+        } catch (error) {
+          console.error('Logout error:', error);
+          set({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          });
+          return { message: undefined };
         }
       },
 

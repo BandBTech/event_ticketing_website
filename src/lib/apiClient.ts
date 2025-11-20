@@ -1,10 +1,12 @@
 /**
- * Centralized API Client with Auto Token Refresh
+ * Centralized API Client with Auto Token Refresh & Toast Integration
  * Optimized for Static Export / VPS Deployment
  */
 
 import { tokenManager } from './tokenManager';
 import { AuthError } from './authService';
+import { toast } from './toast';
+import { useLanguageStore } from '@/store/languageStore';
 
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sandbox.timroticket.com/api/v1';
@@ -25,6 +27,11 @@ function onTokenRefreshed(token: string) {
 export interface ApiRequestConfig extends RequestInit {
   requiresAuth?: boolean;
   skipTokenRefresh?: boolean;
+  showSuccessToast?: boolean;
+  showErrorToast?: boolean;
+  successMessage?: string;
+  errorMessage?: string;
+  translateResponse?: boolean; // If true, tries to translate API response message
 }
 
 /**
@@ -37,6 +44,11 @@ export async function apiRequest<T>(
   const {
     requiresAuth = false,
     skipTokenRefresh = false,
+    showSuccessToast = false,
+    showErrorToast = true, // Show errors by default
+    successMessage,
+    errorMessage,
+    translateResponse = false,
     headers = {},
     ...restConfig
   } = config;
@@ -103,15 +115,29 @@ export async function apiRequest<T>(
 
     // Handle other error responses
     if (!response.ok) {
-      const errorMessage = data?.message || data?.error?.message || 'An error occurred';
+      const errorMsg = data?.message || data?.error?.message || 'An error occurred';
       const errorCode = data?.error?.code || 'UNKNOWN_ERROR';
+      const errorDetails = data?.error?.details;
+      
+      // Show error toast if enabled
+      if (showErrorToast) {
+        const displayMessage = errorMessage || errorMsg;
+        toast.error('api.error', displayMessage, errorDetails);
+      }
       
       throw new AuthError(
-        errorMessage,
+        errorMsg,
         errorCode,
         response.status,
-        data?.error?.details
+        errorDetails
       );
+    }
+
+    // Success - show toast if enabled
+    if (showSuccessToast) {
+      const responseMessage = data?.message;
+      const displayMessage = successMessage || responseMessage || 'Success';
+      toast.success('api.success', displayMessage);
     }
 
     // Return successful response data
@@ -119,20 +145,37 @@ export async function apiRequest<T>(
   } catch (error) {
     // Handle network errors
     if (error instanceof AuthError) {
+      // Show error toast if not already shown and enabled
+      if (showErrorToast && error.code === 'NETWORK_ERROR') {
+        const displayMessage = errorMessage || error.message;
+        toast.error('api.networkError', displayMessage);
+      }
       throw error;
     }
     
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new AuthError(
+      const networkError = new AuthError(
         'Network error. Please check your connection.',
         'NETWORK_ERROR'
       );
+      
+      if (showErrorToast) {
+        toast.error('api.networkError', errorMessage || networkError.message);
+      }
+      
+      throw networkError;
     }
 
-    throw new AuthError(
+    const unexpectedError = new AuthError(
       'An unexpected error occurred',
       'UNEXPECTED_ERROR'
     );
+    
+    if (showErrorToast) {
+      toast.error('api.unexpectedError', errorMessage || unexpectedError.message);
+    }
+    
+    throw unexpectedError;
   }
 }
 
