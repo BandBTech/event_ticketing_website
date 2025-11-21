@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Bell, Check, CheckCheck, Trash2, Filter, X, Ticket, CreditCard, Calendar, Info } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Bell, Check, CheckCheck, Trash2, Filter, Ticket, CreditCard, Calendar, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,15 +13,10 @@ import { formatDistanceToNow } from 'date-fns';
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [filters, setFilters] = useState<NotificationFilters>({});
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    loadNotifications();
-  }, [filters]);
-
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     setLoading(true);
     try {
       const data = await NotificationService.getNotifications('user1', filters);
@@ -31,7 +26,11 @@ export default function NotificationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
 
   const handleMarkAsRead = async (id: string) => {
     try {
@@ -210,7 +209,6 @@ export default function NotificationsPage() {
                 if (!notification.read) {
                   handleMarkAsRead(notification.id);
                 }
-                setSelectedNotification(notification);
               }}
             >
               <CardHeader className="pt-4">

@@ -140,10 +140,14 @@
         "firstNameTooLong": "Il nome è troppo lungo",
         "firstNameTooShort": "Il nome deve contenere almeno 2 caratteri",
         "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri"
-      }
+      },
+      "setPassword": "Crea una password sicura per"
     },
     "resetPassword": {
       "subtitle": "Imposta una nuova password per"
+    },
+    "verifyOTP": {
+      "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti."
     }
   }
 }

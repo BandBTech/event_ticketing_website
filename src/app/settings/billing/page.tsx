@@ -3,12 +3,10 @@
 import React, { useState, useEffect } from "react";
 import {
   CreditCard,
+  DollarSign,
+  Download,
   Plus,
   Trash2,
-  Check,
-  Download,
-  DollarSign,
-  TrendingUp,
   TrendingDown,
   Receipt,
 } from "lucide-react";
@@ -45,10 +43,7 @@ export default function BillingPage() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showAddPaymentDialog, setShowAddPaymentDialog] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
+   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadBillingData();
@@ -180,10 +175,10 @@ export default function BillingPage() {
                 <div>
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold">Payment Methods</h2>
-                    <Button onClick={() => setShowAddPaymentDialog(true)}>
+                    {/* <Button onClick={() => setShowAddPaymentDialog(true)}>
                       <Plus className="h-4 w-4 mr-2" />
                       Add Method
-                    </Button>
+                    </Button> */}
                   </div>
 
                   <div className="grid gap-4">

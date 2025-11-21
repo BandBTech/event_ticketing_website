@@ -101,6 +101,7 @@ export default function MultiStepRegister() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [defaultCountry, setDefaultCountry] = useState<Country>("NP");
   const [isLoading, setIsLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
   const [registrationData, setRegistrationData] = useState<{
     email: string;
     firstName: string;
@@ -112,6 +113,50 @@ export default function MultiStepRegister() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+
+  // Load step and data from URL/sessionStorage on mount
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const stepParam = params.get("step");
+    const savedData = sessionStorage.getItem("registration_data");
+
+    if (stepParam && savedData) {
+      const step = parseInt(stepParam) as RegistrationStep;
+      if (step >= 1 && step <= 3) {
+        setCurrentStep(step);
+        setRegistrationData(JSON.parse(savedData));
+      }
+    }
+  }, []);
+
+  // Update URL when step changes
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("step", currentStep.toString());
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}?${params.toString()}`
+    );
+  }, [currentStep]);
+
+  // Save registration data to sessionStorage
+  React.useEffect(() => {
+    if (registrationData) {
+      sessionStorage.setItem(
+        "registration_data",
+        JSON.stringify(registrationData)
+      );
+    }
+  }, [registrationData]);
+
+  // Countdown timer for OTP resend
+  React.useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
 
   // Detect country from IP
   React.useEffect(() => {
@@ -151,7 +196,7 @@ export default function MultiStepRegister() {
       email: "",
       phone: "",
     },
-    mode: "onChange",
+    mode: "onChange", // Validate on change for real-time feedback
   });
 
   const onBasicInfoSubmit = async (data: BasicInfoData) => {
@@ -188,6 +233,9 @@ export default function MultiStepRegister() {
         result.message || "Verification code sent to your email"
       );
 
+      // Start 1-minute resend timer
+      setResendTimer(60);
+
       // Move to OTP verification step
       setCurrentStep(2);
     } catch (error) {
@@ -217,6 +265,7 @@ export default function MultiStepRegister() {
     defaultValues: {
       otp: "",
     },
+    mode: "onChange", // Validate on change for real-time feedback
   });
 
   const onOTPSubmit = async (data: OTPData) => {
@@ -230,7 +279,6 @@ export default function MultiStepRegister() {
         identifier: registrationData.email,
         otp_code: data.otp,
         otp_type: "registration",
-        role: "user",
       });
 
       toast.success("auth.toast.otpVerified", "Email verified successfully!");
@@ -263,13 +311,15 @@ export default function MultiStepRegister() {
       await authService.sendOTP({
         identifier: registrationData.email,
         otp_type: "registration",
-        role: "user",
       });
 
       toast.success(
         "auth.toast.otpResent",
         "New verification code sent to your email"
       );
+
+      // Restart 1-minute timer
+      setResendTimer(60);
     } catch (error) {
       toast.error(
         "auth.toast.resendFailed",
@@ -290,6 +340,7 @@ export default function MultiStepRegister() {
       password: "",
       confirmPassword: "",
     },
+    mode: "onChange", // Validate on change for real-time feedback
   });
 
   const onPasswordSubmit = async (data: PasswordData) => {
@@ -308,6 +359,9 @@ export default function MultiStepRegister() {
         "auth.toast.signupSuccess",
         result.message || "Account created successfully!"
       );
+
+      // Clear sessionStorage on successful registration
+      sessionStorage.removeItem("registration_data");
 
       // Redirect to login
       router.push(`/login?email=${encodeURIComponent(registrationData.email)}`);
@@ -602,6 +656,12 @@ export default function MultiStepRegister() {
                           <p className="font-medium">
                             {registrationData.email}
                           </p>
+                          <p className="text-gray-600">
+                            {t(
+                              "auth.verifyOTP.otpValidity",
+                              "The code will automaticaly expire after 10 minutes."
+                            )}
+                          </p>
                         </div>
 
                         <div className="space-y-4">
@@ -678,10 +738,12 @@ export default function MultiStepRegister() {
                           <button
                             type="button"
                             onClick={handleResendOTP}
-                            disabled={isLoading}
-                            className="text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                            disabled={isLoading || resendTimer > 0}
+                            className="text-blue-600 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            Resend
+                            {resendTimer > 0
+                              ? `Resend in ${resendTimer}s`
+                              : "Resend"}
                           </button>
                         </div>
                       </form>
@@ -695,7 +757,10 @@ export default function MultiStepRegister() {
                       >
                         <div className="text-center space-y-1">
                           <p className="text-sm text-gray-600">
-                            Create a secure password for
+                            {t(
+                              "auth.signup.setPassword",
+                              "Create a secure password for"
+                            )}
                           </p>
                           <p className="font-medium text-gray-900">
                             {registrationData.email}
@@ -825,15 +890,6 @@ export default function MultiStepRegister() {
                         </div>
 
                         <div className="flex gap-3">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setCurrentStep(2)}
-                            className="flex-1"
-                          >
-                            <ArrowLeftIcon size={16} className="mr-2" />
-                            Back
-                          </Button>
                           <Button
                             type="submit"
                             disabled={isLoading}

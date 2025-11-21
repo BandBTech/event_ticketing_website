@@ -1,39 +1,35 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Ticket as TicketIcon, QrCode, Download, Send, X, Calendar, MapPin, Clock, Filter, Search } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Ticket as TicketIcon, QrCode, Download, Calendar, MapPin, Clock, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TicketService } from '@/lib/ticketService';
-import { Ticket, TicketStats, TicketFilters } from '@/types/ticket';
+import { Ticket, TicketFilters } from '@/types/ticket';
 import { format } from 'date-fns';
 
 export default function TicketsPage() {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'all'>('upcoming');
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [stats, setStats] = useState<TicketStats | null>(null);
+  // const [stats, setStats] = useState<TicketStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
   const [filters, setFilters] = useState<TicketFilters>({});
 
-  useEffect(() => {
-    loadTickets();
-  }, [activeTab, filters]);
-
-  const loadTickets = async () => {
+  const loadTickets = useCallback(async () => {
     setLoading(true);
     try {
       let ticketData: Ticket[] = [];
-      const [statsData] = await Promise.all([
-        TicketService.getTicketStats()
-      ]);
+      // const [statsData] = await Promise.all([
+      //   TicketService.getTicketStats()
+      // ]);
       
       if (activeTab === 'upcoming') {
         const response = await TicketService.getUpcomingTickets();
@@ -47,13 +43,17 @@ export default function TicketsPage() {
       }
       
       setTickets(ticketData);
-      setStats(statsData);
+      // setStats(statsData);
     } catch (error) {
       console.error('Failed to load tickets:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, filters]);
+
+  useEffect(() => {
+    loadTickets();
+  }, [loadTickets]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {

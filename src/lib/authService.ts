@@ -268,14 +268,12 @@ class AuthService {
   async sendOTP(data: {
     identifier: string;
     otp_type: string;
-    role?: 'user' | 'organizer' | 'admin';
   }): Promise<{ message: string; success: boolean; expires_in: number }> {
     return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/user/send-otp', {
       method: 'POST',
       body: JSON.stringify({
         identifier: data.identifier,
         otp_type: data.otp_type,
-        role: data.role || 'user'
       }),
     });
   }

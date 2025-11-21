@@ -140,10 +140,14 @@
         "firstNameTooLong": "名前が長すぎます",
         "firstNameTooShort": "名は少なくとも 2 文字である必要があります",
         "lastNameTooShort": "姓は少なくとも 2 文字である必要があります"
-      }
+      },
+      "setPassword": "安全なパスワードを作成する"
     },
     "resetPassword": {
       "subtitle": "新しいパスワードを設定してください"
+    },
+    "verifyOTP": {
+      "otpValidity": "コードは 10 分後に自動的に期限切れになります。"
     }
   }
 }

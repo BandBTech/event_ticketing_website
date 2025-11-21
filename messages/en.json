@@ -215,7 +215,8 @@
         "signupFailed": "Registration failed. Please try again."
       },
       "showPassword": "Show password",
-      "hidePassword": "Hide password"
+      "hidePassword": "Hide password",
+      "setPassword": "Create a secure password for"
     },
     "forgotPassword": {
       "title": "Forgot Password",
@@ -282,7 +283,8 @@
         "otpIncomplete": "Please enter the complete 6-digit code",
         "verificationFailed": "Invalid OTP. Please try again.",
         "resendFailed": "Failed to resend OTP. Please try again."
-      }
+      },
+      "otpValidity": "The code will automatically expire after 10 minutes."
     },
     "toast": {
       "loginSuccess": "Welcome back!",
