@@ -34,12 +34,12 @@ const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
     firstName: z
       .string()
       .min(1, v.required("First name"))
-      .min(3, v.minLength("First name", 2))
+      .min(3, v.minLength("First name", 3))
       .max(50, v.maxLength("First name", 50)),
     lastName: z
       .string()
       .min(1, v.required("Last name"))
-      .min(3, v.minLength("Last name", 2))
+      .min(3, v.minLength("Last name", 3))
       .max(50, v.maxLength("Last name", 50)),
     phone: z
       .string()

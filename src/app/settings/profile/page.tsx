@@ -14,19 +14,26 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { authService, AuthError } from '@/lib/authService';
 import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
+import { createValidationHelpers } from '@/lib/validation';
 
 // Validation schema
-const createProfileSchema = (t: (key: string, fallback?: string) => string) => z.object({
-  firstName: z
-    .string()
-    .min(2, t('settings.profile.validation.firstNameTooShort', 'First name must be at least 2 characters'))
-    .max(50, t('settings.profile.validation.firstNameTooLong', 'First name is too long')),
-  lastName: z
-    .string()
-    .min(2, t('settings.profile.validation.lastNameTooShort', 'Last name must be at least 2 characters'))
-    .max(50, t('settings.profile.validation.lastNameTooLong', 'Last name is too long')),
-  phone: z.string().optional(),
-});
+const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
+  const v = createValidationHelpers(t);
+
+  return z.object({
+    firstName: z
+      .string()
+      .min(1, v.required("First name"))
+      .min(3, v.minLength("First name", 3))
+      .max(50, v.maxLength("First name", 50)),
+    lastName: z
+      .string()
+      .min(1, v.required("Last name"))
+      .min(3, v.minLength("Last name", 3))
+      .max(50, v.maxLength("Last name", 50)),
+    phone: z.string().optional(),
+  });
+}
 
 export default function ProfileSettingsPage() {
   const { user, fetchProfile } = useAuthStore();
