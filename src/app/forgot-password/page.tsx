@@ -118,15 +118,6 @@ export default function ForgotPasswordPage() {
 
                 {
                   <>
-                    {/* Error Message */}
-                    {error && (
-                      <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
-                        <p className="text-sm text-destructive font-medium">
-                          {error}
-                        </p>
-                      </div>
-                    )}
-
                     {/* Form */}
                     <form
                       onSubmit={handleSubmit(onSubmit)}

@@ -33,7 +33,7 @@ const createChangePasswordSchema = (
         .regex(/[A-Z]/, v.passwordUppercase())
         .regex(/[a-z]/, v.passwordLowercase())
         .regex(/[0-9]/, v.passwordNumber()),
-      confirmPassword: z.string(),
+      confirmPassword: z.string().min(1, v.required('Confirm Password')),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
       message: v.passwordMatch(),

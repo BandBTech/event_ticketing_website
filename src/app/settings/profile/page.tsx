@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,6 +15,8 @@ import { authService, AuthError } from '@/lib/authService';
 import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 import { createValidationHelpers } from '@/lib/validation';
+
+import { isValidPhoneNumber, parsePhoneNumber } from 'react-phone-number-input';
 
 // Validation schema
 const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
@@ -31,9 +33,16 @@ const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
       .min(1, v.required("Last name"))
       .min(3, v.minLength("Last name", 3))
       .max(50, v.maxLength("Last name", 50)),
-    phone: z.string().optional(),
+    phone: z
+      .string()
+      .min(1, v.required("Phone number"))
+      .refine(
+        (val) => !val || val.length === 0 || (typeof val === 'string' && isValidPhoneNumber(val)),
+        v.phone("Phone")
+      ),
   });
 }
+
 
 export default function ProfileSettingsPage() {
   const { user, fetchProfile } = useAuthStore();
@@ -45,12 +54,22 @@ export default function ProfileSettingsPage() {
   const schema = createProfileSchema(t);
   type ProfileFormData = z.infer<typeof schema>;
 
+  // Helper function to combine country code and phone number
+  const getFullPhoneNumber = (phone?: string, countryCode?: string): string => {
+    if (!phone) return '';
+    if (!countryCode) return phone;
+    // If phone already starts with +, return as is
+    if (phone.startsWith('+')) return phone;
+    // Combine country code and phone number
+    return `${countryCode}${phone}`;
+  };
+
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
-      phone: user?.phone || '',
+      phone: getFullPhoneNumber(user?.phone, user?.countryCode),
     },
     mode: 'onChange',
   });
@@ -63,14 +82,42 @@ export default function ProfileSettingsPage() {
     formState: { errors, isDirty },
   } = form;
 
+  // Update form when user data changes (e.g., after profile fetch)
+  useEffect(() => {
+    if (user) {
+      const fullPhone = user.phone && user.countryCode && !user.phone.startsWith('+')
+        ? `${user.countryCode}${user.phone}`
+        : user.phone || '';
+
+      reset({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        phone: fullPhone,
+      });
+    }
+  }, [user, reset]);
+
   const onSubmit = async (data: ProfileFormData) => {
     setIsLoading(true);
 
     try {
+      // Parse phone number if provided to extract country code
+      let parsedPhone = data.phone;
+      let countryCode: string | undefined = undefined;
+
+      if (data.phone && isValidPhoneNumber(data.phone)) {
+        const parsed = parsePhoneNumber(data.phone);
+        if (parsed) {
+          parsedPhone = parsed.nationalNumber;
+          countryCode = `+${parsed.countryCallingCode}`;
+        }
+      }
+
       await authService.updateProfile({
         first_name: data.firstName,
         last_name: data.lastName,
-        phone: data.phone || undefined,
+        phone: parsedPhone || undefined,
+        country_code: countryCode,
       });
 
       await fetchProfile();
@@ -92,7 +139,7 @@ export default function ProfileSettingsPage() {
     reset({
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
-      phone: user?.phone || '',
+      phone: getFullPhoneNumber(user?.phone, user?.countryCode),
     });
     setIsEditing(false);
   };
