@@ -81,6 +81,7 @@ export interface UserProfileResponse {
   first_name: string;
   last_name: string;
   phone?: string;
+  country_code?: string;
   is_email_verified: boolean;
   organization_id?: string;
   organization?: Organization;
@@ -117,6 +118,7 @@ export interface AuthUser {
   firstName: string;
   lastName: string;
   phone?: string;
+  countryCode?: string;
   isEmailVerified: boolean;
   organization?: Organization;
   roles: Role[];
