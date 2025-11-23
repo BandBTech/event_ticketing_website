@@ -32,7 +32,6 @@ export default function ForgotPasswordPage() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const schema = createForgotPasswordSchema(t);
@@ -54,7 +53,6 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
-    setError("");
 
     try {
       await authService.requestPasswordReset(data.email);
@@ -77,8 +75,6 @@ export default function ForgotPasswordPage() {
       const errorMessage = err instanceof AuthError
         ? (err.message || "Failed to send reset email. Please try again.")
         : "Failed to send reset email. Please try again later.";
-
-      setError(errorMessage);
 
       // Show error toast
       toast.error(errorMessage);

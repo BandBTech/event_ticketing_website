@@ -101,10 +101,10 @@ function VerifyOTPContent() {
         router.push("/");
       }
     } catch (err) {
-      console.error("OTP verification failed:", err);
 
       // Show error toast
       if (err instanceof AuthError) {
+        console.log(err.message)
         toast.error(
           err.message || "Invalid OTP. Please try again."
         );
@@ -134,11 +134,10 @@ function VerifyOTPContent() {
       // Restart 1-minute timer
       setResendTimer(60);
     } catch (err) {
-      console.error("Failed to resend OTP:", err);
       // Show error toast
       toast.error(
         "auth.toast.serverError",
-        "Failed to resend OTP. Please try again."
+        err instanceof Error ? err.message : "Failed to resend OTP. Please try again."
       );
     } finally {
       setIsResending(false);

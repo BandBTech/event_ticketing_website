@@ -55,12 +55,7 @@ const createBasicInfoSchema = (
     phone: z
       .string()
       .min(1, v.required("Contact number"))
-      .refine(
-        (val) => isValidPhoneNumber(val),
-        {
-          message: "Please enter a valid phone number for the selected country",
-        }
-      ),
+      .refine((val) => isValidPhoneNumber(val), v.phone("Phone")),
   });
 };
 
