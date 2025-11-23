@@ -11,8 +11,6 @@ import { Badge } from '@/components/ui/badge';
 import { useEvents, useFeaturedEvents, useEventCategories } from '@/hooks/useEvents';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
 import { cn } from '@/lib/utils';
 
 export default function HomePage() {
@@ -23,25 +21,28 @@ export default function HomePage() {
 
   const { data: eventsData, isLoading: eventsLoading } = useEvents({
     search: searchQuery,
-    category: selectedCategory,
     limit: 6,
   });
 
-  const { data: featuredEvents } = useFeaturedEvents();
-  const { data: categories } = useEventCategories();
+  const { data: featuredEvents } = useFeaturedEvents({
+    limit: 6,
+  });
+
+  const { data: categories } = useEventCategories({
+    limit: 20,
+  });
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
 
   const handleCategorySelect = (category: string) => {
-    setSelectedCategory(selectedCategory === category ? '' : category);
+    setSelectedCategory(category);
   };
 
   return (
     <div className="min-h-screen">
-      <Header />
-      
+
       {/* Hero Section */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -246,8 +247,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

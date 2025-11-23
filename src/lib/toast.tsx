@@ -79,7 +79,6 @@ export const toast = {
 
   error: (translationKey: string, fallback?: string, description?: string) => {
 
-    console.log(description)
     const locale = useLanguageStore.getState().locale;
     const message = getTranslation(translationKey, locale, fallback);
     const toastId = sonnerToast.error(message, {

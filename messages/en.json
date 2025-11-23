@@ -19,7 +19,8 @@
       "min": "{field} must be at least {value}.",
       "max": "{field} cannot exceed {value}.",
       "pattern": "{field} format is invalid."
-    }
+    },
+    "cancelButton": "Cancel"
   },
   "navigation": {
     "events": "Events",
@@ -300,6 +301,35 @@
       "invalidCredentials": "Invalid email or password",
       "networkError": "Network error. Please check your connection.",
       "serverError": "Something went wrong. Please try again."
+    }
+  },
+  "settings": {
+    "security": {
+      "title": "Security Settings",
+      "subtitle": "Manage your password and authentication",
+      "changePassword": "Change Password",
+      "changePasswordDesc": "Update your password regularly to keep your account secure",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPassword": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Enter new password again",
+      "updating": "Updating...",
+      "updateButton": "Update Password"
+    },
+    "title": "Settings",
+    "menu": {
+      "profile": "Profile",
+      "profileDesc": "Manage your personal information",
+      "security": "Security",
+      "securityDesc": "Password and authentication",
+      "notifications": "Notifications",
+      "notificationsDesc": "Email and push notifications",
+      "billing": "Billing",
+      "billingDesc": "Manage your payment methods",
+      "tickets": "My Tickets",
+      "ticketsDesc": "View your event tickets"
     }
   }
 }

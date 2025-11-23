@@ -24,7 +24,6 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Header } from "@/components/layout/Header";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authService, AuthError } from "@/lib/authService";
@@ -241,13 +240,13 @@ export default function MultiStepRegister() {
     } catch (error) {
       if (error instanceof AuthError) {
         toast.error(
-          "auth.toast.signupError",
+          "",
           error.message || "Registration failed. Please try again.",
           typeof error.details === "string" ? error.details : undefined
         );
       } else {
         toast.error(
-          "auth.toast.signupError",
+          "",
           "Registration failed. Please try again."
         );
       }
@@ -384,591 +383,554 @@ export default function MultiStepRegister() {
 
   return (
     <GuestRoute>
-      <div className="min-h-screen relative">
-        {/* Background with animated orbs */}
-        <div className="fixed inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
+      <div className="min-h-screen relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
+        <div className="w-full max-w-[480px] relative z-10">
+          <div className="relative">
+            <div className="glass-login-card rounded-2xl p-4 sm:p-6">
+              <div className="space-y-6 p-2 sm:p-3">
+                {/* Back Button for Step 2 */}
+                {currentStep === 2 && (
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(1)}
+                    className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    <ArrowLeftIcon size={16} />
+                    {t("auth.verifyOTP.back", "Back")}
+                  </button>
+                )}
 
-          <div className="absolute -top-96 -right-96 w-[1800px] h-[800px] rounded-full opacity-30">
-            <div
-              className="w-full h-full bg-gradient-radial from-orange-300 via-orange-200 to-transparent animate-pulse"
-              style={{ filter: "blur(140px)" }}
-            />
-          </div>
+                {/* Header */}
+                <div className="space-y-1">
+                  <div className="flex flex-col sm:flex-row items-baseline gap-1">
+                    <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-poppins">
+                      {t("auth.signup.title", "Register")}
+                    </h1>
+                    <span className="text-sm font-medium text-blue-500">
+                      {t("auth.signup.subtitle", "as Attendee")}
+                    </span>
+                  </div>
 
-          <div className="absolute -bottom-96 -left-96 w-[1900px] h-[1000px] rounded-full opacity-25">
-            <div
-              className="w-full h-full bg-gradient-radial from-blue-400 via-blue-300 to-transparent animate-pulse"
-              style={{ filter: "blur(140px)", animationDelay: "2s" }}
-            />
-          </div>
+                  {/* Progress Indicator */}
+                  <div className="flex items-center gap-2 mt-4">
+                    {[1, 2, 3].map((step) => (
+                      <div
+                        key={step}
+                        className={cn(
+                          "flex-1 h-1 rounded-full transition-colors",
+                          step <= currentStep
+                            ? "bg-blue-600"
+                            : "bg-gray-200"
+                        )}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    Step {currentStep} of 3:{" "}
+                    {currentStep === 1
+                      ? "Basic Information"
+                      : currentStep === 2
+                        ? "Verify Email"
+                        : "Set Password"}
+                  </p>
+                </div>
 
-          <div className="absolute -top-96 left-24 w-[1600px] h-[800px] rounded-full opacity-20">
-            <div
-              className="w-full h-full bg-gradient-radial from-purple-400 via-blue-400 to-transparent animate-pulse"
-              style={{ filter: "blur(200px)", animationDelay: "4s" }}
-            />
-          </div>
-
-          <div
-            className="absolute inset-0 opacity-50"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E2E8F0' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 flex flex-col min-h-screen">
-          <Header />
-
-          <main className="flex-1 flex items-center justify-center px-4 py-8 sm:py-20">
-            <div className="w-full max-w-[480px]">
-              <div className="relative">
-                <div className="glass-login-card rounded-2xl p-4 sm:p-6">
-                  <div className="space-y-6 p-2 sm:p-3">
-                    {/* Header */}
-                    <div className="space-y-1">
-                      <div className="flex flex-col sm:flex-row items-baseline gap-1">
-                        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-poppins">
-                          {t("auth.signup.title", "Register")}
-                        </h1>
-                        <span className="text-sm font-medium text-blue-500">
-                          {t("auth.signup.subtitle", "as Attendee")}
-                        </span>
+                {/* STEP 1: Basic Information */}
+                {currentStep === 1 && (
+                  <form
+                    onSubmit={basicInfoForm.handleSubmit(onBasicInfoSubmit)}
+                    className="space-y-6"
+                  >
+                    {/* Name Fields */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="firstName"
+                          className="text-sm font-medium text-gray-900 block"
+                        >
+                          {t("auth.signup.firstName", "First Name")}
+                        </label>
+                        <div className="relative">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                            <UserIcon
+                              weight="duotone"
+                              size={24}
+                              className="text-gray-600"
+                            />
+                          </div>
+                          <Input
+                            id="firstName"
+                            type="text"
+                            placeholder={t(
+                              "auth.signup.firstNamePlaceholder",
+                              "John"
+                            )}
+                            className={cn(
+                              "h-12 pl-14 pr-4 login-input",
+                              basicInfoForm.formState.errors.firstName &&
+                              "border-destructive"
+                            )}
+                            {...basicInfoForm.register("firstName")}
+                          />
+                        </div>
+                        {basicInfoForm.formState.errors.firstName && (
+                          <p className="text-sm text-destructive">
+                            {
+                              basicInfoForm.formState.errors.firstName
+                                .message
+                            }
+                          </p>
+                        )}
                       </div>
 
-                      {/* Progress Indicator */}
-                      <div className="flex items-center gap-2 mt-4">
-                        {[1, 2, 3].map((step) => (
-                          <div
-                            key={step}
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="lastName"
+                          className="text-sm font-medium text-gray-900 block"
+                        >
+                          {t("auth.signup.lastName", "Last Name")}
+                        </label>
+                        <div className="relative">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                            <UserIcon
+                              weight="duotone"
+                              size={24}
+                              className="text-gray-600"
+                            />
+                          </div>
+                          <Input
+                            id="lastName"
+                            type="text"
+                            placeholder={t(
+                              "auth.signup.lastNamePlaceholder",
+                              "Doe"
+                            )}
                             className={cn(
-                              "flex-1 h-1 rounded-full transition-colors",
-                              step <= currentStep
-                                ? "bg-blue-600"
-                                : "bg-gray-200"
+                              "h-12 login-input pl-14 pr-4",
+                              basicInfoForm.formState.errors.lastName &&
+                              "border-destructive"
+                            )}
+                            {...basicInfoForm.register("lastName")}
+                          />
+                        </div>
+                        {basicInfoForm.formState.errors.lastName && (
+                          <p className="text-sm text-destructive">
+                            {
+                              basicInfoForm.formState.errors.lastName
+                                .message
+                            }
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Email Field */}
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="email"
+                        className="text-sm font-medium text-gray-900 block"
+                      >
+                        {t("auth.signup.email", "Email")}
+                      </label>
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                          <EnvelopeSimpleIcon
+                            weight="duotone"
+                            size={24}
+                            className="text-gray-600"
+                          />
+                        </div>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder={t(
+                            "auth.signup.emailPlaceholder",
+                            "Enter email address"
+                          )}
+                          className={cn(
+                            "h-12 pl-14 pr-4 login-input",
+                            basicInfoForm.formState.errors.email &&
+                            "border-destructive"
+                          )}
+                          {...basicInfoForm.register("email")}
+                        />
+                      </div>
+                      {basicInfoForm.formState.errors.email && (
+                        <p className="text-sm text-destructive">
+                          {basicInfoForm.formState.errors.email.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Phone Field */}
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="phone"
+                        className="text-sm font-medium text-gray-900 block"
+                      >
+                        {t("auth.signup.phone", "Contact Number")}
+                      </label>
+                      <Controller
+                        name="phone"
+                        control={basicInfoForm.control}
+                        render={({ field }) => (
+                          <PhoneInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            defaultCountry={defaultCountry}
+                            placeholder={t(
+                              "auth.signup.phonePlaceholder",
+                              "981-234-5678"
+                            )}
+                            className={cn(
+                              basicInfoForm.formState.errors.phone &&
+                              "border-destructive"
                             )}
                           />
-                        ))}
-                      </div>
-                      <p className="text-xs text-gray-600 mt-2">
-                        Step {currentStep} of 3:{" "}
-                        {currentStep === 1
-                          ? "Basic Information"
-                          : currentStep === 2
-                          ? "Verify Email"
-                          : "Set Password"}
+                        )}
+                      />
+                      {basicInfoForm.formState.errors.phone && (
+                        <p className="text-sm text-destructive">
+                          {basicInfoForm.formState.errors.phone.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={isLoading}
+                      className={cn(
+                        "w-full h-12 rounded-lg font-medium",
+                        "bg-blue-600 hover:bg-blue-700 text-white",
+                        "shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+                      )}
+                    >
+                      {isLoading ? (
+                        "Sending verification code..."
+                      ) : (
+                        <>
+                          Continue
+                          <ArrowRightIcon size={20} weight="bold" />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                )}
+
+                {/* STEP 2: OTP Verification */}
+                {currentStep === 2 && registrationData && (
+                  <form
+                    onSubmit={otpForm.handleSubmit(onOTPSubmit)}
+                    className="space-y-6"
+                  >
+                    <div className="text-center">
+                      <p className="text-gray-600">
+                        Enter the 6-digit code sent to
+                      </p>
+                      <p className="font-medium">
+                        {registrationData.email}
+                      </p>
+                      <p className="text-gray-600">
+                        {t(
+                          "auth.verifyOTP.otpValidity",
+                          "The code will automaticaly expire after 10 minutes."
+                        )}
                       </p>
                     </div>
 
-                    {/* STEP 1: Basic Information */}
-                    {currentStep === 1 && (
-                      <form
-                        onSubmit={basicInfoForm.handleSubmit(onBasicInfoSubmit)}
-                        className="space-y-6"
+                    <div className="space-y-4">
+                      <Controller
+                        name="otp"
+                        control={otpForm.control}
+                        render={({ field }) => (
+                          <div className="flex justify-center">
+                            <InputOTP
+                              maxLength={6}
+                              value={field.value}
+                              onChange={field.onChange}
+                            >
+                              <InputOTPGroup>
+                                <InputOTPSlot
+                                  index={0}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={1}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={2}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={3}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={4}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={5}
+                                  className="h-14 w-14 text-lg"
+                                />
+                              </InputOTPGroup>
+                            </InputOTP>
+                          </div>
+                        )}
+                      />
+                      {otpForm.formState.errors.otp && (
+                        <p className="text-sm text-destructive text-center">
+                          {otpForm.formState.errors.otp.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex gap-3">
+                      {/* <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setCurrentStep(1)}
+                        className="flex-1"
                       >
-                        {/* Name Fields */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <label
-                              htmlFor="firstName"
-                              className="text-sm font-medium text-gray-900 block"
-                            >
-                              {t("auth.signup.firstName", "First Name")}
-                            </label>
-                            <div className="relative">
-                              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                                <UserIcon
-                                  weight="duotone"
-                                  size={24}
-                                  className="text-gray-600"
-                                />
-                              </div>
-                              <Input
-                                id="firstName"
-                                type="text"
-                                placeholder={t(
-                                  "auth.signup.firstNamePlaceholder",
-                                  "John"
-                                )}
-                                className={cn(
-                                  "h-12 pl-14 pr-4 login-input",
-                                  basicInfoForm.formState.errors.firstName &&
-                                    "border-destructive"
-                                )}
-                                {...basicInfoForm.register("firstName")}
-                              />
-                            </div>
-                            {basicInfoForm.formState.errors.firstName && (
-                              <p className="text-sm text-destructive">
-                                {
-                                  basicInfoForm.formState.errors.firstName
-                                    .message
-                                }
-                              </p>
-                            )}
-                          </div>
+                        <ArrowLeftIcon size={16} className="mr-2" />
+                        Back
+                      </Button> */}
+                      <Button
+                        type="submit"
+                        disabled={
+                          isLoading || otpForm.watch("otp").length < 6
+                        }
+                        className="flex-1 bg-blue-600 hover:bg-blue-700"
+                      >
+                        {isLoading ? "Verifying..." : "Verify Email"}
+                      </Button>
+                    </div>
 
-                          <div className="space-y-2">
-                            <label
-                              htmlFor="lastName"
-                              className="text-sm font-medium text-gray-900 block"
-                            >
-                              {t("auth.signup.lastName", "Last Name")}
-                            </label>
-                            <div className="relative">
-                              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                                <UserIcon
-                                  weight="duotone"
-                                  size={24}
-                                  className="text-gray-600"
-                                />
-                              </div>
-                              <Input
-                                id="lastName"
-                                type="text"
-                                placeholder={t(
-                                  "auth.signup.lastNamePlaceholder",
-                                  "Doe"
-                                )}
-                                className={cn(
-                                  "h-12 login-input pl-14 pr-4",
-                                  basicInfoForm.formState.errors.lastName &&
-                                    "border-destructive"
-                                )}
-                                {...basicInfoForm.register("lastName")}
-                              />
-                            </div>
-                            {basicInfoForm.formState.errors.lastName && (
-                              <p className="text-sm text-destructive">
-                                {
-                                  basicInfoForm.formState.errors.lastName
-                                    .message
-                                }
-                              </p>
-                            )}
-                          </div>
-                        </div>
+                    <div className="text-center">
+                      Didn&apos;t receive code?{" "}
+                      <button
+                        type="button"
+                        onClick={handleResendOTP}
+                        disabled={isLoading || resendTimer > 0}
+                        className="text-blue-600 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {resendTimer > 0
+                          ? `Resend in ${resendTimer}s`
+                          : "Resend"}
+                      </button>
+                    </div>
+                  </form>
+                )}
 
-                        {/* Email Field */}
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="email"
-                            className="text-sm font-medium text-gray-900 block"
-                          >
-                            {t("auth.signup.email", "Email")}
-                          </label>
-                          <div className="relative">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                              <EnvelopeSimpleIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            </div>
-                            <Input
-                              id="email"
-                              type="email"
-                              placeholder={t(
-                                "auth.signup.emailPlaceholder",
-                                "Enter email address"
-                              )}
-                              className={cn(
-                                "h-12 pl-14 pr-4 login-input",
-                                basicInfoForm.formState.errors.email &&
-                                  "border-destructive"
-                              )}
-                              {...basicInfoForm.register("email")}
-                            />
-                          </div>
-                          {basicInfoForm.formState.errors.email && (
-                            <p className="text-sm text-destructive">
-                              {basicInfoForm.formState.errors.email.message}
-                            </p>
-                          )}
-                        </div>
+                {/* STEP 3: Set Password */}
+                {currentStep === 3 && registrationData && (
+                  <form
+                    onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+                    className="space-y-6"
+                  >
+                    <div className="text-center space-y-1">
+                      <p className="text-sm text-gray-600">
+                        {t(
+                          "auth.signup.setPassword",
+                          "Create a secure password for"
+                        )}
+                      </p>
+                      <p className="font-medium text-gray-900">
+                        {registrationData.email}
+                      </p>
+                    </div>
 
-                        {/* Phone Field */}
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="phone"
-                            className="text-sm font-medium text-gray-900 block"
-                          >
-                            {t("auth.signup.phone", "Contact Number")}
-                          </label>
-                          <Controller
-                            name="phone"
-                            control={basicInfoForm.control}
-                            render={({ field }) => (
-                              <PhoneInput
-                                value={field.value}
-                                onChange={field.onChange}
-                                defaultCountry={defaultCountry}
-                                placeholder={t(
-                                  "auth.signup.phonePlaceholder",
-                                  "981-234-5678"
-                                )}
-                                className={cn(
-                                  basicInfoForm.formState.errors.phone &&
-                                    "border-destructive"
-                                )}
-                              />
-                            )}
+                    {/* Password Field */}
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="password"
+                        className="text-sm font-medium text-gray-900 block"
+                      >
+                        {t("auth.signup.password", "Password")}
+                      </label>
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                          <KeyIcon
+                            weight="duotone"
+                            size={24}
+                            className="text-gray-600"
                           />
-                          {basicInfoForm.formState.errors.phone && (
-                            <p className="text-sm text-destructive">
-                              {basicInfoForm.formState.errors.phone.message}
-                            </p>
-                          )}
                         </div>
-
-                        <Button
-                          type="submit"
-                          disabled={isLoading}
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder={t(
+                            "auth.signup.passwordPlaceholder",
+                            "••••••••••••"
+                          )}
                           className={cn(
-                            "w-full h-12 rounded-lg font-medium",
-                            "bg-blue-600 hover:bg-blue-700 text-white",
-                            "shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+                            "h-12 pl-14 pr-16 login-input",
+                            passwordForm.formState.errors.password &&
+                            "border-destructive"
                           )}
+                          {...passwordForm.register("password")}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2"
                         >
-                          {isLoading ? (
-                            "Sending verification code..."
+                          {showPassword ? (
+                            <EyeIcon
+                              size={24}
+                              className="text-gray-600"
+                              weight="duotone"
+                            />
                           ) : (
-                            <>
-                              Continue
-                              <ArrowRightIcon size={20} weight="bold" />
-                            </>
-                          )}
-                        </Button>
-                      </form>
-                    )}
-
-                    {/* STEP 2: OTP Verification */}
-                    {currentStep === 2 && registrationData && (
-                      <form
-                        onSubmit={otpForm.handleSubmit(onOTPSubmit)}
-                        className="space-y-6"
-                      >
-                        <div className="text-center">
-                          <p className="text-gray-600">
-                            Enter the 6-digit code sent to
-                          </p>
-                          <p className="font-medium">
-                            {registrationData.email}
-                          </p>
-                          <p className="text-gray-600">
-                            {t(
-                              "auth.verifyOTP.otpValidity",
-                              "The code will automaticaly expire after 10 minutes."
-                            )}
-                          </p>
-                        </div>
-
-                        <div className="space-y-4">
-                          <Controller
-                            name="otp"
-                            control={otpForm.control}
-                            render={({ field }) => (
-                              <div className="flex justify-center">
-                                <InputOTP
-                                  maxLength={6}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                >
-                                  <InputOTPGroup>
-                                    <InputOTPSlot
-                                      index={0}
-                                      className="h-14 w-14 text-lg"
-                                    />
-                                    <InputOTPSlot
-                                      index={1}
-                                      className="h-14 w-14 text-lg"
-                                    />
-                                    <InputOTPSlot
-                                      index={2}
-                                      className="h-14 w-14 text-lg"
-                                    />
-                                    <InputOTPSlot
-                                      index={3}
-                                      className="h-14 w-14 text-lg"
-                                    />
-                                    <InputOTPSlot
-                                      index={4}
-                                      className="h-14 w-14 text-lg"
-                                    />
-                                    <InputOTPSlot
-                                      index={5}
-                                      className="h-14 w-14 text-lg"
-                                    />
-                                  </InputOTPGroup>
-                                </InputOTP>
-                              </div>
-                            )}
-                          />
-                          {otpForm.formState.errors.otp && (
-                            <p className="text-sm text-destructive text-center">
-                              {otpForm.formState.errors.otp.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex gap-3">
-                          {/* <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setCurrentStep(1)}
-                            className="flex-1"
-                          >
-                            <ArrowLeftIcon size={16} className="mr-2" />
-                            Back
-                          </Button> */}
-                          <Button
-                            type="submit"
-                            disabled={
-                              isLoading || otpForm.watch("otp").length < 6
-                            }
-                            className="flex-1 bg-blue-600 hover:bg-blue-700"
-                          >
-                            {isLoading ? "Verifying..." : "Verify Email"}
-                          </Button>
-                        </div>
-
-                        <div className="text-center">
-                          Didn&apos;t receive code?{" "}
-                          <button
-                            type="button"
-                            onClick={handleResendOTP}
-                            disabled={isLoading || resendTimer > 0}
-                            className="text-blue-600 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {resendTimer > 0
-                              ? `Resend in ${resendTimer}s`
-                              : "Resend"}
-                          </button>
-                        </div>
-                      </form>
-                    )}
-
-                    {/* STEP 3: Set Password */}
-                    {currentStep === 3 && registrationData && (
-                      <form
-                        onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
-                        className="space-y-6"
-                      >
-                        <div className="text-center space-y-1">
-                          <p className="text-sm text-gray-600">
-                            {t(
-                              "auth.signup.setPassword",
-                              "Create a secure password for"
-                            )}
-                          </p>
-                          <p className="font-medium text-gray-900">
-                            {registrationData.email}
-                          </p>
-                        </div>
-
-                        {/* Password Field */}
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="password"
-                            className="text-sm font-medium text-gray-900 block"
-                          >
-                            {t("auth.signup.password", "Password")}
-                          </label>
-                          <div className="relative">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                              <KeyIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            </div>
-                            <Input
-                              id="password"
-                              type={showPassword ? "text" : "password"}
-                              placeholder={t(
-                                "auth.signup.passwordPlaceholder",
-                                "••••••••••••"
-                              )}
-                              className={cn(
-                                "h-12 pl-14 pr-16 login-input",
-                                passwordForm.formState.errors.password &&
-                                  "border-destructive"
-                              )}
-                              {...passwordForm.register("password")}
+                            <EyeClosedIcon
+                              size={24}
+                              className="text-gray-600"
+                              weight="duotone"
                             />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2"
-                            >
-                              {showPassword ? (
-                                <EyeIcon
-                                  size={24}
-                                  className="text-gray-600"
-                                  weight="duotone"
-                                />
-                              ) : (
-                                <EyeClosedIcon
-                                  size={24}
-                                  className="text-gray-600"
-                                  weight="duotone"
-                                />
-                              )}
-                            </button>
-                          </div>
-                          {passwordForm.formState.errors.password && (
-                            <p className="text-sm text-destructive">
-                              {passwordForm.formState.errors.password.message}
-                            </p>
                           )}
-                        </div>
-
-                        {/* Confirm Password Field */}
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="confirmPassword"
-                            className="text-sm font-medium text-gray-900 block"
-                          >
-                            {t(
-                              "auth.signup.confirmPassword",
-                              "Confirm Password"
-                            )}
-                          </label>
-                          <div className="relative">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                              <KeyIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            </div>
-                            <Input
-                              id="confirmPassword"
-                              type={showConfirmPassword ? "text" : "password"}
-                              placeholder={t(
-                                "auth.signup.confirmPasswordPlaceholder",
-                                "••••••••••••"
-                              )}
-                              className={cn(
-                                "h-12 pl-14 pr-16 login-input",
-                                passwordForm.formState.errors.confirmPassword &&
-                                  "border-destructive"
-                              )}
-                              {...passwordForm.register("confirmPassword")}
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setShowConfirmPassword(!showConfirmPassword)
-                              }
-                              className="absolute right-3 top-1/2 -translate-y-1/2"
-                            >
-                              {showConfirmPassword ? (
-                                <EyeIcon
-                                  size={24}
-                                  className="text-gray-600"
-                                  weight="duotone"
-                                />
-                              ) : (
-                                <EyeClosedIcon
-                                  size={24}
-                                  className="text-gray-600"
-                                  weight="duotone"
-                                />
-                              )}
-                            </button>
-                          </div>
-                          {passwordForm.formState.errors.confirmPassword && (
-                            <p className="text-sm text-destructive">
-                              {
-                                passwordForm.formState.errors.confirmPassword
-                                  .message
-                              }
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex gap-3">
-                          <Button
-                            type="submit"
-                            disabled={isLoading}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700"
-                          >
-                            {isLoading
-                              ? "Creating account..."
-                              : "Complete Registration"}
-                          </Button>
-                        </div>
-                      </form>
-                    )}
-
-                    {/* Footer - Only show on step 1 */}
-                    {currentStep === 1 && (
-                      <div className="space-y-4">
-                        <div className="text-center">
-                          <p className="text-sm text-gray-600">
-                            {t(
-                              "auth.signup.haveAccount",
-                              "Already have an account?"
-                            )}{" "}
-                            <Link
-                              href="/login"
-                              className="font-medium text-blue-600 hover:text-blue-700"
-                            >
-                              {t(
-                                "auth.signup.loginHere",
-                                "Sign in as Attendee."
-                              )}
-                            </Link>
-                          </p>
-                        </div>
-
-                        <div className="relative">
-                          <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200/50"></div>
-                          </div>
-                        </div>
-
-                        <div className="text-center pt-3">
-                          <p className="text-xs text-gray-600 leading-relaxed">
-                            {t(
-                              "auth.signup.termsPrefix",
-                              "By continuing, you consent to the fact that you have read and understood our"
-                            )}{" "}
-                            <Link
-                              href="/terms"
-                              className="text-blue-600 hover:text-blue-700 underline"
-                            >
-                              {t("auth.signup.terms", "terms and conditions")}
-                            </Link>{" "}
-                            {t("auth.signup.termsAnd", "and")}{" "}
-                            <Link
-                              href="/privacy"
-                              className="text-blue-600 hover:text-blue-700 underline"
-                            >
-                              {t("auth.signup.privacy", "privacy policy")}
-                            </Link>
-                            .
-                          </p>
-                        </div>
+                        </button>
                       </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </main>
+                      {passwordForm.formState.errors.password && (
+                        <p className="text-sm text-destructive">
+                          {passwordForm.formState.errors.password.message}
+                        </p>
+                      )}
+                    </div>
 
-          <footer className="relative z-10 border-t border-gray-200/50 bg-white/30 backdrop-blur-sm">
-            <div className="max-w-6xl mx-auto px-4 py-5">
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Developed by B&B Tech Group
-                </p>
+                    {/* Confirm Password Field */}
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="confirmPassword"
+                        className="text-sm font-medium text-gray-900 block"
+                      >
+                        {t(
+                          "auth.signup.confirmPassword",
+                          "Confirm Password"
+                        )}
+                      </label>
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                          <KeyIcon
+                            weight="duotone"
+                            size={24}
+                            className="text-gray-600"
+                          />
+                        </div>
+                        <Input
+                          id="confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder={t(
+                            "auth.signup.confirmPasswordPlaceholder",
+                            "••••••••••••"
+                          )}
+                          className={cn(
+                            "h-12 pl-14 pr-16 login-input",
+                            passwordForm.formState.errors.confirmPassword &&
+                            "border-destructive"
+                          )}
+                          {...passwordForm.register("confirmPassword")}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeIcon
+                              size={24}
+                              className="text-gray-600"
+                              weight="duotone"
+                            />
+                          ) : (
+                            <EyeClosedIcon
+                              size={24}
+                              className="text-gray-600"
+                              weight="duotone"
+                            />
+                          )}
+                        </button>
+                      </div>
+                      {passwordForm.formState.errors.confirmPassword && (
+                        <p className="text-sm text-destructive">
+                          {
+                            passwordForm.formState.errors.confirmPassword
+                              .message
+                          }
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700"
+                      >
+                        {isLoading
+                          ? "Creating account..."
+                          : "Complete Registration"}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Footer - Only show on step 1 */}
+                {currentStep === 1 && (
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <p className="text-sm text-gray-600">
+                        {t(
+                          "auth.signup.haveAccount",
+                          "Already have an account?"
+                        )}{" "}
+                        <Link
+                          href="/login"
+                          className="font-medium text-blue-600 hover:text-blue-700"
+                        >
+                          {t(
+                            "auth.signup.loginHere",
+                            "Sign in as Attendee."
+                          )}
+                        </Link>
+                      </p>
+                    </div>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200/50"></div>
+                      </div>
+                    </div>
+
+                    <div className="text-center pt-3">
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        {t(
+                          "auth.signup.termsPrefix",
+                          "By continuing, you consent to the fact that you have read and understood our"
+                        )}{" "}
+                        <Link
+                          href="/terms"
+                          className="text-blue-600 hover:text-blue-700 underline"
+                        >
+                          {t("auth.signup.terms", "terms and conditions")}
+                        </Link>{" "}
+                        {t("auth.signup.termsAnd", "and")}{" "}
+                        <Link
+                          href="/privacy"
+                          className="text-blue-600 hover:text-blue-700 underline"
+                        >
+                          {t("auth.signup.privacy", "privacy policy")}
+                        </Link>
+                        .
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          </footer>
+          </div>
         </div>
       </div>
     </GuestRoute>

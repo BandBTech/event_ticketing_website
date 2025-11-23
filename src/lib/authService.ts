@@ -242,6 +242,7 @@ class AuthService {
   }): Promise<void> {
     await api.post<void>('/auth/change-password', data, {
       requiresAuth: true,
+      showErrorToast: false, // Let the component handle error toasts to avoid duplicates
     });
   }
 
@@ -316,6 +317,32 @@ class AuthService {
       user: response,
       message: 'message' in response ? response.message : undefined
     };
+  }
+
+  /**
+   * Verify guest token for booking
+   * Used when a guest user clicks the verification link in their email
+   * Returns user data and access token for temporary authenticated session
+   */
+  async verifyGuestToken(token: string): Promise<{
+    user: UserProfileResponse;
+    token: string;
+    message?: string;
+  }> {
+    const response = await apiRequest<{
+      user: UserProfileResponse;
+      token: string;
+      message?: string;
+    }>(`/auth/guest/verify/${token}`, {
+      method: 'GET',
+    });
+
+    // Store the temporary guest token
+    if (response.token) {
+      tokenManager.setTokens(response.token, '', false); // No refresh token for guests, use session storage
+    }
+
+    return response;
   }
 }
 

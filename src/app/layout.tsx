@@ -4,6 +4,8 @@ import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,7 +54,13 @@ export default function RootLayout({
 
           <QueryProvider>
             <AuthProvider>
-              <div className="relative z-10">{children}</div>
+              <div className="relative z-10 min-h-screen flex flex-col">
+                <Header />
+                <main className="flex-grow">
+                  {children}
+                </main>
+                <Footer />
+              </div>
               <Toaster closeButton offset={{ top: "88px", right: "16px" }} />
             </AuthProvider>
           </QueryProvider>

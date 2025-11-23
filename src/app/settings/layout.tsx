@@ -1,7 +1,5 @@
 'use client';
 
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -60,55 +58,42 @@ export default function SettingsLayout({
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen relative flex flex-col">
-        {/* Background */}
-        <div className="fixed inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
-        </div>
+      <div className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Sidebar Navigation */}
+          <aside className="w-full md:w-64 flex-shrink-0">
+            <div className="rounded-xl sticky top-24">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 px-2">
+                {t('settings.title', 'Settings')}
+              </h2>
+              <nav className="space-y-1">
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
 
-        <div className="relative z-10 flex flex-col min-h-screen">
-          <Header />
-
-          <div className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
-            <div className="flex flex-col md:flex-row gap-8">
-              {/* Sidebar Navigation */}
-              <aside className="w-full md:w-64 flex-shrink-0">
-                <div className="rounded-xl sticky top-24">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4 px-2">
-                    {t('settings.title', 'Settings')}
-                  </h2>
-                  <nav className="space-y-1">
-                    {menuItems.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = pathname === item.href;
-                      
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className={cn(
-                            'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
-                            'hover:bg-gray-100',
-                            isActive && 'bg-primary/10 text-primary font-medium'
-                          )}
-                        >
-                          <Icon size={20} weight={isActive ? 'fill' : 'duotone'} />
-                          <span className="text-base">{item.label}</span>
-                        </Link>
-                      );
-                    })}
-                  </nav>
-                </div>
-              </aside>
-
-              {/* Main Content */}
-              <main className="flex-1 min-w-0">
-                {children}
-              </main>
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+                        'hover:bg-gray-100',
+                        isActive && 'bg-primary/10 text-primary font-medium'
+                      )}
+                    >
+                      <Icon size={20} weight={isActive ? 'fill' : 'duotone'} />
+                      <span className="text-base">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
             </div>
-          </div>
+          </aside>
 
-          <Footer />
+          {/* Main Content */}
+          <main className="flex-1 min-w-0">
+            {children}
+          </main>
         </div>
       </div>
     </ProtectedRoute>

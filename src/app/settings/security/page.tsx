@@ -12,24 +12,34 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { authService, AuthError } from '@/lib/authService';
 import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
+import { createValidationHelpers } from '@/lib/validation';
 
 // Validation schema
-const createChangePasswordSchema = (t: (key: string, fallback?: string) => string) => z.object({
-  currentPassword: z
-    .string()
-    .min(1, t('settings.security.validation.currentPasswordRequired', 'Current password is required')),
-  newPassword: z
-    .string()
-    .min(8, t('settings.security.validation.passwordTooShort', 'Password must be at least 8 characters'))
-    .max(100, t('settings.security.validation.passwordTooLong', 'Password is too long'))
-    .regex(/[A-Z]/, t('settings.security.validation.passwordUppercase', 'Must contain uppercase letter'))
-    .regex(/[a-z]/, t('settings.security.validation.passwordLowercase', 'Must contain lowercase letter'))
-    .regex(/[0-9]/, t('settings.security.validation.passwordNumber', 'Must contain number')),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: t('settings.security.validation.passwordMismatch', 'Passwords do not match'),
-  path: ['confirmPassword'],
-});
+const createChangePasswordSchema = (
+  t: (key: string, fallback?: string) => string
+) => {
+  const v = createValidationHelpers(t);
+
+  return z
+    .object({
+      currentPassword: z
+        .string()
+        .min(1, v.required('Current Password')),
+      newPassword: z
+        .string()
+        .min(1, v.required('Password'))
+        .min(8, v.minLength('Password', 8))
+        .max(100, v.maxLength('Password', 100))
+        .regex(/[A-Z]/, v.passwordUppercase())
+        .regex(/[a-z]/, v.passwordLowercase())
+        .regex(/[0-9]/, v.passwordNumber()),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: v.passwordMatch(),
+      path: ['confirmPassword'],
+    });
+};
 
 export default function SecuritySettingsPage() {
   const { locale } = useLanguageStore();
@@ -74,10 +84,10 @@ export default function SecuritySettingsPage() {
     } catch (error) {
       console.error('Password change failed:', error);
       if (error instanceof AuthError) {
-        const errorDescription = error.details 
+        const errorDescription = error.details
           ? (typeof error.details === 'string' ? error.details : JSON.stringify(error.details))
           : undefined;
-        toast.error('settings.toast.passwordChangeFailed', error.message || 'Failed to change password', errorDescription);
+        toast.error('', error.message || 'Failed to change password', errorDescription);
       } else {
         toast.error('settings.toast.passwordChangeFailed', 'Failed to change password');
       }
@@ -106,7 +116,7 @@ export default function SecuritySettingsPage() {
               {t('settings.security.changePassword', 'Change Password')}
             </h2>
             <p className="text-sm text-gray-600">
-              {t('settings.security.changePasswordDesc', 'Update your password to keep your account secure')}
+              {t('settings.security.changePasswordDesc', 'Update your password regularly to keep your account secure')}
             </p>
           </div>
         </div>
@@ -199,7 +209,7 @@ export default function SecuritySettingsPage() {
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 autoComplete="new-password"
-                placeholder={t('settings.security.confirmPasswordPlaceholder', 'Confirm new password')}
+                placeholder={t('settings.security.confirmPasswordPlaceholder', 'Enter new password again')}
                 className={cn(
                   "h-11 pl-11 pr-12",
                   errors.confirmPassword && "border-destructive"
@@ -237,7 +247,7 @@ export default function SecuritySettingsPage() {
               onClick={() => reset()}
               className="bg-gray-200 hover:bg-gray-300 text-gray-600"
             >
-              {t('settings.security.cancelButton', 'Cancel')}
+              {t('common.cancelButton', 'Cancel')}
             </Button>
           </div>
         </form>

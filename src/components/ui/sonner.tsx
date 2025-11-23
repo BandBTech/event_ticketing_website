@@ -1,6 +1,6 @@
 "use client"
 
-import { CheckCircleIcon, InfoIcon, WarningIcon, XCircleIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr"
+import { CheckCircleIcon, InfoIcon, WarningIcon, WarningCircleIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr"
 
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
@@ -25,11 +25,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
         },
       }}
       icons={{
-        success: <CheckCircleIcon size={24} weight="duotone" className="text-green-600 mr-1" />,
-        info: <InfoIcon size={24} weight="duotone" className="text-blue-600 mr-1" />,
-        warning: <WarningIcon size={24} weight="duotone" className="text-yellow-600 mr-1" />,
-        error: <XCircleIcon size={24} weight="duotone" className="text-destructive" />,
-        loading: <CircleNotchIcon size={24} weight="duotone" className="animate-spin text-blue-600 mr-1" />,
+        success: <CheckCircleIcon size={24} weight="fill" className="text-green-600 mr-1" />,
+        info: <InfoIcon size={24} weight="fill" className="text-blue-600 mr-1" />,
+        warning: <WarningIcon size={24} weight="fill" className="text-yellow-600 mr-1" />,
+        error: <WarningCircleIcon size={24} weight="fill" className="text-destructive" />,
+        loading: <CircleNotchIcon size={24} weight="fill" className="animate-spin text-blue-600 mr-1" />,
       }}
       {...props}
     />

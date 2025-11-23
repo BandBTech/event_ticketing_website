@@ -9,7 +9,8 @@
     "edit": "Modifica",
     "loadMore": "Carica Altri Eventi",
     "noResults": "Nessun evento trovato",
-    "tryAgain": "Prova ad aggiustare i criteri di ricerca o controlla più tardi per nuovi eventi."
+    "tryAgain": "Prova ad aggiustare i criteri di ricerca o controlla più tardi per nuovi eventi.",
+    "cancelButton": "Cancellare"
   },
   "navigation": {
     "events": "Eventi",
@@ -148,6 +149,33 @@
     },
     "verifyOTP": {
       "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti."
+    }
+  },
+  "settings": {
+    "security": {
+      "title": "Impostazioni di sicurezza",
+      "subtitle": "Gestisci la tua password e l'autenticazione",
+      "changePassword": "Cambiare la password",
+      "currentPassword": "password attuale",
+      "currentPasswordPlaceholder": "Inserisci la password attuale",
+      "newPassword": "Nuova parola d'ordine",
+      "newPasswordPlaceholder": "Inserisci la nuova password",
+      "confirmPassword": "Conferma nuova password",
+      "confirmPasswordPlaceholder": "Immettere nuovamente la nuova password",
+      "updating": "Aggiornamento...",
+      "updateButton": "Aggiorna password"
+    },
+    "title": "Impostazioni",
+    "menu": {
+      "profile": "Profilo",
+      "profileDesc": "Gestisci le tue informazioni personali",
+      "security": "Sicurezza",
+      "securityDesc": "Password e autenticazione",
+      "notifications": "Notifiche",
+      "notificationsDesc": "E-mail e notifiche push",
+      "billing": "Fatturazione",
+      "billingDesc": "Gestisci i tuoi metodi di pagamento",
+      "ticketsDesc": "Visualizza i biglietti per i tuoi eventi"
     }
   }
 }

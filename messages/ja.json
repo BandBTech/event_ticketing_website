@@ -9,7 +9,8 @@
     "edit": "編集",
     "loadMore": "もっと見る",
     "noResults": "イベントが見つかりません",
-    "tryAgain": "検索条件を調整するか、後でもう一度確認してください。"
+    "tryAgain": "検索条件を調整するか、後でもう一度確認してください。",
+    "cancelButton": "キャンセル"
   },
   "navigation": {
     "events": "イベント",
@@ -148,6 +149,34 @@
     },
     "verifyOTP": {
       "otpValidity": "コードは 10 分後に自動的に期限切れになります。"
+    }
+  },
+  "settings": {
+    "security": {
+      "title": "セキュリティ設定",
+      "subtitle": "パスワードと認証を管理する",
+      "changePassword": "パスワードを変更する",
+      "changePasswordDesc": "アカウントを安全に保つためにパスワードを定期的に更新してください",
+      "currentPassword": "現在のパスワード",
+      "currentPasswordPlaceholder": "現在のパスワードを入力してください",
+      "newPassword": "新しいパスワード",
+      "newPasswordPlaceholder": "新しいパスワードを入力してください",
+      "confirmPassword": "新しいパスワードを確認する",
+      "confirmPasswordPlaceholder": "新しいパスワードをもう一度入力してください",
+      "updating": "更新中...",
+      "updateButton": "パスワードを更新する"
+    },
+    "title": "設定",
+    "menu": {
+      "profile": "プロフィール",
+      "profileDesc": "個人情報の管理",
+      "security": "安全",
+      "securityDesc": "パスワードと認証",
+      "notifications": "通知",
+      "notificationsDesc": "メール通知とプッシュ通知",
+      "billing": "請求する",
+      "billingDesc": "支払い方法を管理する",
+      "ticketsDesc": "イベントチケットを表示する"
     }
   }
 }
