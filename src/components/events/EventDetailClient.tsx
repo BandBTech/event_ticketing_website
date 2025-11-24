@@ -9,10 +9,10 @@ import {
   HeartIcon,
   CaretDownIcon,
 } from "@phosphor-icons/react";
-import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GuestBookingDialog } from "@/components/events/GuestBookingDialog";
 import { apiClient } from "@/lib/api";
 import { Event } from "@/types/event";
 import { cn } from "@/lib/utils";
@@ -30,6 +30,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const [showLocationMap, setShowLocationMap] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showGuestBooking, setShowGuestBooking] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -69,9 +70,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen relative">
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
         <div className="relative z-10">
-          <Header />
           <main className="max-w-7xl mx-auto px-4 py-8">
             <Skeleton className="w-full h-96 mb-8" />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -92,9 +91,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   if (!event) {
     return (
       <div className="min-h-screen relative">
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
         <div className="relative z-10">
-          <Header />
           <main className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
@@ -119,25 +116,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
   return (
     <div className="min-h-screen relative">
-      {/* Background */}
-      <div className="fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
-        <div className="absolute -top-96 -right-96 w-[1800px] h-[800px] rounded-full opacity-30">
-          <div
-            className="w-full h-full bg-gradient-radial from-orange-300 via-orange-200 to-transparent animate-pulse"
-            style={{ filter: "blur(140px)" }}
-          />
-        </div>
-        <div className="absolute -bottom-96 -left-96 w-[1900px] h-[1000px] rounded-full opacity-25">
-          <div
-            className="w-full h-full bg-gradient-radial from-blue-400 via-blue-300 to-transparent animate-pulse"
-            style={{ filter: "blur(140px)", animationDelay: "2s" }}
-          />
-        </div>
-      </div>
-
       <div className="relative z-10">
-        <Header />
 
         <main className="max-w-7xl mx-auto px-4 py-8">
           {/* Hero Image */}
@@ -313,6 +292,13 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       Buy Tickets
                     </Button>
                     <Button
+                      onClick={() => setShowGuestBooking(true)}
+                      variant="outline"
+                      className="w-full h-12 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium rounded-lg"
+                    >
+                      Buy as Guest
+                    </Button>
+                    <Button
                       onClick={handleShare}
                       variant="outline"
                       className="w-full h-12 border-2 border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-between"
@@ -400,6 +386,17 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
             </div>
           </div>
         </main>
+
+        {/* Guest Booking Dialog */}
+        {event && (
+          <GuestBookingDialog
+            open={showGuestBooking}
+            onOpenChange={setShowGuestBooking}
+            eventId={event.id}
+            eventTitle={event.title}
+            maxQuantity={10}
+          />
+        )}
       </div>
     </div>
   );

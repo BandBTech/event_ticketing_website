@@ -37,7 +37,7 @@ export function Header() {
   };
 
   const navigation = [
-    { name: t('navigation.events'), href: '#events' },
+    { name: t('navigation.events'), href: '/events' },
     { name: t('navigation.categories'), href: '#categories' },
     { name: t('navigation.about'), href: '#about' },
     { name: t('navigation.contact'), href: '#contact' },
@@ -60,13 +60,13 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             {navigation.map((item) => (
-              <a
+              <Link
                 key={item.name}
                 href={item.href}
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -180,14 +180,14 @@ export function Header() {
           <div className="md:hidden border-t border-white/20 py-4">
             <div className="space-y-4">
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className="block text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
               
               <div className="pt-4 border-t border-white/20 space-y-3">

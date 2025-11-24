@@ -146,4 +146,27 @@ export class TicketService {
       t.ticketNumber?.toLowerCase().includes(lowerQuery)
     );
   }
+
+  /**
+   * Purchase tickets as a guest
+   * Sends verification email to the guest
+   */
+  static async guestPurchase(data: {
+    event_id: string;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+    quantity: number;
+    phone?: string;
+    country_code?: string;
+  }): Promise<{ message: string; verification_required: boolean }> {
+    return await api.post<{ message: string; verification_required: boolean }>(
+      '/public/tickets/guest-purchase', 
+      data, 
+      {
+        requiresAuth: false,
+        showErrorToast: false, // Let the component handle error toasts
+      }
+    );
+  }
 }
