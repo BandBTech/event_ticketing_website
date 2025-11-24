@@ -777,7 +777,7 @@ export default function MultiStepRegister() {
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                          className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2"
                         >
                           {showPassword ? (
                             <EyeIcon
@@ -840,7 +840,7 @@ export default function MultiStepRegister() {
                           onClick={() =>
                             setShowConfirmPassword(!showConfirmPassword)
                           }
-                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                          className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2"
                         >
                           {showConfirmPassword ? (
                             <EyeIcon

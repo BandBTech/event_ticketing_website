@@ -236,7 +236,7 @@ function ResetPasswordContent() {
                                 ? "Hide password"
                                 : "Show password"
                             }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
+                            className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
                           >
                             {showNewPassword ? (
                               <EyeIcon
@@ -310,7 +310,7 @@ function ResetPasswordContent() {
                                 ? "Hide password"
                                 : "Show password"
                             }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
+                            className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
                           >
                             {showConfirmPassword ? (
                               <EyeIcon

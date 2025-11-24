@@ -151,7 +151,7 @@ export default function BillingPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 px-1 capitalize font-medium transition-colors ${
+                className={`pb-2 px-1 capitalize font-medium transition-colors cursor-pointer ${
                   activeTab === tab
                     ? "text-primary border-b-2 border-primary"
                     : "text-muted-foreground hover:text-foreground"

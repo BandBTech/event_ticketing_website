@@ -157,7 +157,7 @@ export default function SecuritySettingsPage() {
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
               >
                 {showCurrentPassword ? (
                   <EyeIcon size={18} className="text-gray-600" weight="duotone" />
@@ -194,7 +194,7 @@ export default function SecuritySettingsPage() {
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
               >
                 {showNewPassword ? (
                   <EyeIcon size={18} className="text-gray-600" weight="duotone" />
@@ -232,7 +232,7 @@ export default function SecuritySettingsPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
               >
                 {showConfirmPassword ? (
                   <EyeIcon size={18} className="text-gray-600" weight="duotone" />

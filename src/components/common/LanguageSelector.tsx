@@ -71,7 +71,7 @@ export function LanguageSelector({ className }: LanguageSelectorProps) {
                 key={language.code}
                 onClick={() => handleLanguageSelect(language.code)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left",
+                  "w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer",
                   "hover:bg-white/80 transition-colors duration-200",
                   "text-sm font-medium text-gray-700",
                   locale === language.code && "bg-blue-50/80 text-blue-700"
