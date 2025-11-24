@@ -70,10 +70,9 @@ export default function ForgotPasswordPage() {
         )}&type=password_reset`
       );
     } catch (err) {
-      console.error("Password reset request failed:", err);
 
       const errorMessage = err instanceof AuthError
-        ? (err.message || "Failed to send reset email. Please try again.")
+        ? (err.details || err.message || "Failed to send reset email. Please try again later.")
         : "Failed to send reset email. Please try again later.";
 
       // Show error toast

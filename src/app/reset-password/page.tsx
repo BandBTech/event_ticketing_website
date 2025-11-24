@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createValidationHelpers } from "@/lib/validation";
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 
 // Create validation schema - OTP is no longer needed as it's verified in previous step
 const createResetPasswordSchema = (
@@ -35,8 +36,8 @@ const createResetPasswordSchema = (
         .min(1, v.required("Password"))
         .min(8, v.minLength("Password", 8))
         .max(100, v.maxLength("Password", 100))
-        .regex(/[A-Z]/, v.passwordUppercase())
-        .regex(/[a-z]/, v.passwordLowercase())
+        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
         .regex(/[0-9]/, v.passwordNumber()),
       confirmPassword: z.string(),
     })
@@ -252,6 +253,7 @@ function ResetPasswordContent() {
                             )}
                           </button>
                         </div>
+                        <PasswordRequirements password={form.watch("newPassword")} />
                         {errors.newPassword && (
                           <p
                             className="text-sm text-destructive"

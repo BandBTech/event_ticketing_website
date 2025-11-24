@@ -16,8 +16,8 @@ export interface ValidationHelpers {
   email: (field: string) => string;
   phone: (field: string) => string;
   passwordMatch: () => string;
-  passwordUppercase: () => string;
-  passwordLowercase: () => string;
+  passwordUpperLower: () => string;
+  passwordSpecialChar: () => string;
   passwordNumber: () => string;
 }
 
@@ -114,22 +114,22 @@ export const createValidationHelpers = (
   },
 
   /**
-   * Password uppercase validation
+   * Password uppercase & lowercase validation
    */
-  passwordUppercase: () => {
+  passwordUpperLower: () => {
     return t(
-      'auth.signup.validation.passwordUppercase',
-      'Password must contain at least one uppercase letter'
+      'auth.signup.validation.passwordUpperLower',
+      'Must contain at least one uppercase and one lowercase'
     );
   },
 
   /**
-   * Password lowercase validation
+   * Password special character validation
    */
-  passwordLowercase: () => {
+  passwordSpecialChar: () => {
     return t(
-      'auth.signup.validation.passwordLowercase',
-      'Password must contain at least one lowercase letter'
+      'auth.signup.validation.passwordSpecialChar',
+      'Must contain at least one special character'
     );
   },
 
@@ -139,7 +139,7 @@ export const createValidationHelpers = (
   passwordNumber: () => {
     return t(
       'auth.signup.validation.passwordNumber',
-      'Password must contain at least one number'
+      'Must contain at least one numeric digit'
     );
   },
 });
@@ -160,8 +160,8 @@ export const createValidationHelpers = (
  *     .email(v.email('Email')),
  *   password: z.string()
  *     .min(8, v.minLength('Password', 8))
- *     .regex(/[A-Z]/, v.passwordUppercase())
- *     .regex(/[a-z]/, v.passwordLowercase())
+ *     .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+ *     .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
  *     .regex(/[0-9]/, v.passwordNumber())
  * });
  */

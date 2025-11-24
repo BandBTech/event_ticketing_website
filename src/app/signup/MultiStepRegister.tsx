@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils";
 import { createValidationHelpers } from "@/lib/validation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 
 // Step 1: Basic Info Schema
 const createBasicInfoSchema = (
@@ -81,10 +82,10 @@ const createPasswordSchema = (
         .min(1, v.required("Password"))
         .min(8, v.minLength("Password", 8))
         .max(100, v.maxLength("Password", 100))
-        .regex(/[A-Z]/, v.passwordUppercase())
-        .regex(/[a-z]/, v.passwordLowercase())
+        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
         .regex(/[0-9]/, v.passwordNumber()),
-      confirmPassword: z.string(),
+      confirmPassword: z.string().min(1, v.required("Confirm Password")),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: v.passwordMatch(),
@@ -796,6 +797,7 @@ export default function MultiStepRegister() {
                           {passwordForm.formState.errors.password.message}
                         </p>
                       )}
+                      <PasswordRequirements password={passwordForm.watch("password")} />
                     </div>
 
                     {/* Confirm Password Field */}

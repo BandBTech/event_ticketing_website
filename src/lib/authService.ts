@@ -16,7 +16,7 @@ export class AuthError extends Error {
     message: string,
     public code: string,
     public status?: number,
-    public details?: unknown
+    public details?: string
   ) {
     super(message);
     this.name = 'AuthError';

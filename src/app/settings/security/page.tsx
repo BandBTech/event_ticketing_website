@@ -13,6 +13,7 @@ import { authService, AuthError } from '@/lib/authService';
 import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 import { createValidationHelpers } from '@/lib/validation';
+import { PasswordRequirements } from '@/components/auth/PasswordRequirements';
 
 // Validation schema
 const createChangePasswordSchema = (
@@ -30,8 +31,8 @@ const createChangePasswordSchema = (
         .min(1, v.required('Password'))
         .min(8, v.minLength('Password', 8))
         .max(100, v.maxLength('Password', 100))
-        .regex(/[A-Z]/, v.passwordUppercase())
-        .regex(/[a-z]/, v.passwordLowercase())
+        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
         .regex(/[0-9]/, v.passwordNumber()),
       confirmPassword: z.string().min(1, v.required('Confirm Password')),
     })
@@ -194,6 +195,7 @@ export default function SecuritySettingsPage() {
             {errors.newPassword && (
               <p className="text-xs text-destructive">{errors.newPassword.message}</p>
             )}
+            <PasswordRequirements password={form.watch('newPassword')} />
           </div>
 
           {/* Confirm Password */}

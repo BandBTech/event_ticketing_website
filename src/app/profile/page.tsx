@@ -61,7 +61,7 @@ export default function ProfilePage() {
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
-      phone: user?.phone && user?.countryCode ? `${user.countryCode}${user.phone}` : user?.phone || "",
+      phone: user?.phone,
     },
     mode: "onChange",
   });

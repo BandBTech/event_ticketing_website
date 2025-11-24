@@ -38,8 +38,8 @@ const createLoginSchema = (
       .min(1, v.required("Password"))
       .min(8, v.minLength("Password", 8))
       .max(100, v.maxLength("Password", 100))
-      .regex(/[A-Z]/, v.passwordUppercase())
-      .regex(/[a-z]/, v.passwordLowercase())
+      .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+      .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
       .regex(/[0-9]/, v.passwordNumber()),
     rememberMe: z.boolean(),
   });
