@@ -179,21 +179,20 @@ class AuthService {
     last_name: string;
     phone?: string;
     country_code?: string;
-  }): Promise<{ user: UserProfileResponse; message?: string }> {
+  }): Promise<{ user: UserProfileResponse }> {
     const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/user/register', {
       method: 'POST',
       body: JSON.stringify({
         email: userData.email,
         first_name: userData.first_name,
         last_name: userData.last_name,
-        phone: userData.phone,
+        phone: userData.country_code && userData.phone ? userData.country_code + userData.phone : userData.phone,
         country_code: userData.country_code
       }),
     });
     
     return {
       user: response,
-      message: 'message' in response ? response.message : undefined
     };
   }
 
@@ -257,6 +256,9 @@ class AuthService {
     phone?: string;
     country_code?: string;
   }): Promise<UserProfileResponse> {
+    if (data.country_code && data.phone) {
+      data.phone = data.country_code + data.phone;
+    }
     return await api.put<UserProfileResponse>('/auth/profile', data, {
       requiresAuth: true,
     });

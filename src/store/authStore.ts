@@ -45,7 +45,10 @@ export const useAuthStore = create<AuthStore>()(
             email: profile.email,
             firstName: profile.first_name,
             lastName: profile.last_name,
-            phone: profile.phone,
+            phone: profile?.phone?.startsWith("+")
+              ? profile?.phone
+              : (profile?.country_code && profile?.phone ? profile.country_code + profile.phone : profile?.phone),
+            countryCode: profile.country_code,
             isEmailVerified: profile.is_email_verified,
             organization: profile.organization,
             roles: [], // Profile endpoint doesn't return roles in the API doc
@@ -110,7 +113,10 @@ export const useAuthStore = create<AuthStore>()(
             email: profile.email,
             firstName: profile.first_name,
             lastName: profile.last_name,
-            phone: profile.phone,
+            phone: profile?.phone?.startsWith("+")
+              ? profile?.phone
+              : (profile?.country_code && profile?.phone ? profile.country_code + profile.phone : profile?.phone),
+            countryCode: profile.country_code,
             isEmailVerified: profile.is_email_verified,
             organization: profile.organization,
             roles: [],
