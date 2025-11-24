@@ -76,7 +76,7 @@ export default function SettingsLayout({
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+                        'flex cursor-pointer items-center gap-3 px-4 py-3 rounded-lg transition-colors',
                         'hover:bg-gray-100',
                         isActive && 'bg-primary/10 text-primary font-medium'
                       )}

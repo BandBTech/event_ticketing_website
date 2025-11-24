@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
                 {/* Back Button */}
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                  className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   <ArrowLeftIcon size={16} />
                   {t("auth.forgotPassword.backToLogin", "Back to login")}
@@ -193,7 +193,7 @@ export default function ForgotPasswordPage() {
                         )}{" "}
                         <Link
                           href="/login"
-                          className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                          className="font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
                         >
                           {t("auth.forgotPassword.loginHere", "Login here")}
                         </Link>

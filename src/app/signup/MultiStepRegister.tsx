@@ -892,7 +892,7 @@ export default function MultiStepRegister() {
                         )}{" "}
                         <Link
                           href="/login"
-                          className="font-medium text-blue-600 hover:text-blue-700"
+                          className="cursor-pointer font-medium text-blue-600 hover:text-blue-700"
                         >
                           {t(
                             "auth.signup.loginHere",
@@ -916,14 +916,14 @@ export default function MultiStepRegister() {
                         )}{" "}
                         <Link
                           href="/terms"
-                          className="text-blue-600 hover:text-blue-700 underline"
+                          className="cursor-pointer text-blue-600 hover:text-blue-700 underline"
                         >
                           {t("auth.signup.terms", "terms and conditions")}
                         </Link>{" "}
                         {t("auth.signup.termsAnd", "and")}{" "}
                         <Link
                           href="/privacy"
-                          className="text-blue-600 hover:text-blue-700 underline"
+                          className="cursor-pointer text-blue-600 hover:text-blue-700 underline"
                         >
                           {t("auth.signup.privacy", "privacy policy")}
                         </Link>

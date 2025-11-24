@@ -144,7 +144,7 @@ function ResetPasswordContent() {
               {/* Back Button */}
               <Link
                 href="/forgot-password"
-                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
               >
                 <ArrowLeftIcon size={16} />
                 {t("auth.resetPassword.back", "Back")}
@@ -367,7 +367,7 @@ function ResetPasswordContent() {
                   <div className="text-center">
                     <Link
                       href="/login"
-                      className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                        className="text-sm cursor-pointer font-medium text-blue-600 hover:text-blue-700 transition-colors"
                     >
                       {t("auth.resetPassword.backToLogin", "Back to login")}
                     </Link>
