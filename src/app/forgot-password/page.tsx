@@ -70,13 +70,12 @@ export default function ForgotPasswordPage() {
         )}&type=password_reset`
       );
     } catch (err) {
-
-      const errorMessage = err instanceof AuthError
-        ? (err.details || err.message || "Failed to send reset email. Please try again later.")
-        : "Failed to send reset email. Please try again later.";
-
       // Show error toast
-      toast.error(errorMessage);
+      if (err instanceof AuthError) {
+        toast.error("", err.message || "Failed to send reset email. Please try again later.", err.details);
+      } else {
+        toast.error("", "Failed to send reset email. Please try again later.");
+      }
 
       setIsLoading(false);
     }
