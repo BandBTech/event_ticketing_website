@@ -20,7 +20,7 @@ export default function NotificationsPage() {
     setLoading(true);
     try {
       const data = await NotificationService.getNotifications('user1', filters);
-      setNotifications(data);
+      setNotifications(data || []);
     } catch (error) {
       console.error('Failed to load notifications:', error);
     } finally {

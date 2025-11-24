@@ -33,13 +33,13 @@ export default function TicketsPage() {
       
       if (activeTab === 'upcoming') {
         const response = await TicketService.getUpcomingTickets();
-        ticketData = response.tickets;
+        ticketData = response?.tickets || [];
       } else if (activeTab === 'past') {
         const response = await TicketService.getPastTickets();
-        ticketData = response.tickets;
+        ticketData = response?.tickets || [];
       } else {
         const response = await TicketService.getTickets(filters);
-        ticketData = response.tickets;
+        ticketData = response?.tickets || [];
       }
       
       setTickets(ticketData);

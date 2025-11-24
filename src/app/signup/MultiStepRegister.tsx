@@ -229,7 +229,7 @@ export default function MultiStepRegister() {
 
       toast.success(
         "auth.toast.otpSent",
-        result.message || "Verification code sent to your email"
+        "Verification code sent to your email"
       );
 
       // Start 1-minute resend timer

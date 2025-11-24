@@ -22,7 +22,7 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { createValidationHelpers } from "@/lib/validation";
-import { isValidPhoneNumber } from "react-phone-number-input";
+import { isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
 
 // Validation schema
 const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
@@ -61,7 +61,7 @@ export default function ProfilePage() {
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
-      phone: user?.phone || "",
+      phone: user?.phone && user?.countryCode ? `${user.countryCode}${user.phone}` : user?.phone || "",
     },
     mode: "onChange",
   });
@@ -77,10 +77,18 @@ export default function ProfilePage() {
     setIsLoading(true);
 
     try {
+      // Extract country code from phone number
+      const phoneNumber = parsePhoneNumber(data.phone);
+      const countryCode = phoneNumber?.countryCallingCode
+        ? `+${phoneNumber.countryCallingCode}`
+        : undefined;
+      const phone = phoneNumber?.nationalNumber || data.phone;
+
       await authService.updateProfile({
         first_name: data.firstName,
         last_name: data.lastName,
-        phone: data.phone || undefined,
+        phone: phone,
+        country_code: countryCode,
       });
 
       // Fetch updated profile
@@ -110,7 +118,7 @@ export default function ProfilePage() {
     reset({
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
-      phone: user?.phone || "",
+      phone: user?.phone && user?.countryCode ? `${user.countryCode}${user.phone}` : user?.phone || "",
     });
     setIsEditing(false);
   };

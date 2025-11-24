@@ -89,7 +89,6 @@ export default function ProfileSettingsPage() {
         ? `${user.countryCode}${user.phone}`
         : user.phone || '';
 
-      console.log(fullPhone);
       reset({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
