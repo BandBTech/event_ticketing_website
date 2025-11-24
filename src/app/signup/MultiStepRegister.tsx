@@ -80,11 +80,11 @@ const createPasswordSchema = (
       password: z
         .string()
         .min(1, v.required("Password"))
-        .min(8, v.minLength("Password", 8))
+        .min(8)
         .max(100, v.maxLength("Password", 100))
-        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
-        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
-        .regex(/[0-9]/, v.passwordNumber()),
+        .regex(/(?=.*[a-z])(?=.*[A-Z])/)
+        .regex(/[^A-Za-z0-9]/)
+        .regex(/[0-9]/),
       confirmPassword: z.string().min(1, v.required("Confirm Password")),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -243,7 +243,7 @@ export default function MultiStepRegister() {
         toast.error(
           "",
           error.message || "Registration failed. Please try again.",
-          typeof error.details === "string" ? error.details : undefined
+          error.details
         );
       } else {
         toast.error(
@@ -289,7 +289,8 @@ export default function MultiStepRegister() {
       if (error instanceof AuthError) {
         toast.error(
           "auth.toast.verificationFailed",
-          error.message || "Invalid OTP. Please try again."
+          error.message || "Invalid OTP. Please try again.",
+          error.details
         );
       } else {
         toast.error(
@@ -368,8 +369,9 @@ export default function MultiStepRegister() {
     } catch (error) {
       if (error instanceof AuthError) {
         toast.error(
-          "auth.toast.signupError",
-          error.message || "Failed to set password. Please try again."
+          "",
+          error.message || "Failed to set password. Please try again.",
+          error.details
         );
       } else {
         toast.error(
@@ -431,7 +433,7 @@ export default function MultiStepRegister() {
                     {currentStep === 1
                       ? "Basic Information"
                       : currentStep === 2
-                        ? "Verify Email"
+                        ? "Verify OTP"
                         : "Set Password"}
                   </p>
                 </div>
@@ -704,7 +706,7 @@ export default function MultiStepRegister() {
                         }
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                       >
-                        {isLoading ? "Verifying..." : "Verify Email"}
+                        {isLoading ? "Verifying..." : "Verify OTP"}
                       </Button>
                     </div>
 
@@ -714,7 +716,7 @@ export default function MultiStepRegister() {
                         type="button"
                         onClick={handleResendOTP}
                         disabled={isLoading || resendTimer > 0}
-                        className="text-blue-600 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-blue-600 hover:text-blue-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {resendTimer > 0
                           ? `Resend in ${resendTimer}s`
@@ -792,7 +794,7 @@ export default function MultiStepRegister() {
                           )}
                         </button>
                       </div>
-                      {passwordForm.formState.errors.password && (
+                      {passwordForm.formState.errors.password && passwordForm.formState.errors.password.message !== "Invalid input" && (
                         <p className="text-sm text-destructive">
                           {passwordForm.formState.errors.password.message}
                         </p>
@@ -872,8 +874,8 @@ export default function MultiStepRegister() {
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                       >
                         {isLoading
-                          ? "Creating account..."
-                          : "Complete Registration"}
+                          ? t("auth.signup.creatingAccount", "Creating Account...")
+                          : t("auth.signup.completeRegistration", "Complete Registration")}
                       </Button>
                     </div>
                   </form>

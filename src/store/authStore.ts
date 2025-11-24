@@ -90,7 +90,6 @@ export const useAuthStore = create<AuthStore>()(
           });
           return result;
         } catch (error) {
-          console.error('Logout error:', error);
           set({
             user: null,
             isAuthenticated: false,

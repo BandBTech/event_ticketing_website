@@ -140,7 +140,10 @@
         "firstNameRequired": "名は必須です",
         "firstNameTooLong": "名前が長すぎます",
         "firstNameTooShort": "名は少なくとも 2 文字である必要があります",
-        "lastNameTooShort": "姓は少なくとも 2 文字である必要があります"
+        "lastNameTooShort": "姓は少なくとも 2 文字である必要があります",
+        "passwordSpecialChar": "少なくとも 1 つの特殊文字を含める必要があります",
+        "passwordUpperLower": "少なくとも 1 つの大文字と 1 つの小文字を含める必要があります",
+        "passwordNumber": "パスワードには少なくとも 1 つの数字が含まれている必要があります。"
       },
       "setPassword": "安全なパスワードを作成する"
     },
@@ -148,7 +151,11 @@
       "subtitle": "新しいパスワードを設定してください"
     },
     "verifyOTP": {
-      "otpValidity": "コードは 10 分後に自動的に期限切れになります。"
+      "otpValidity": "コードは 10 分後に自動的に期限切れになります。",
+      "verifyButton": "OTP を確認する"
+    },
+    "toast": {
+      "passwordChangedLogin": "新しいパスワードでログインしてください。"
     }
   },
   "settings": {

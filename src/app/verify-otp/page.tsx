@@ -233,7 +233,7 @@ function VerifyOTPContent() {
                 >
                   {isLoading
                     ? t("auth.verifyOTP.verifying", "Verifying...")
-                    : t("auth.verifyOTP.verifyButton", "Verify Email")}
+                    : t("auth.verifyOTP.verifyButton", "Verify OTP")}
                 </Button>
               </div>
 

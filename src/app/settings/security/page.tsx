@@ -14,6 +14,8 @@ import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 import { createValidationHelpers } from '@/lib/validation';
 import { PasswordRequirements } from '@/components/auth/PasswordRequirements';
+import { useAuthStore } from '@/store/authStore';
+import router from 'next/router';
 
 // Validation schema
 const createChangePasswordSchema = (
@@ -29,11 +31,11 @@ const createChangePasswordSchema = (
       newPassword: z
         .string()
         .min(1, v.required('Password'))
-        .min(8, v.minLength('Password', 8))
+        .min(8)
         .max(100, v.maxLength('Password', 100))
-        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
-        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
-        .regex(/[0-9]/, v.passwordNumber()),
+        .regex(/(?=.*[a-z])(?=.*[A-Z])/)
+        .regex(/[^A-Za-z0-9]/)
+        .regex(/[0-9]/),
       confirmPassword: z.string().min(1, v.required('Confirm Password')),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
@@ -43,6 +45,7 @@ const createChangePasswordSchema = (
 };
 
 export default function SecuritySettingsPage() {
+  const { logout } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +73,7 @@ export default function SecuritySettingsPage() {
     formState: { errors },
   } = form;
 
+
   const onSubmit = async (data: ChangePasswordFormData) => {
     setIsLoading(true);
 
@@ -80,22 +84,29 @@ export default function SecuritySettingsPage() {
         confirm_password: data.confirmPassword,
       });
 
-      toast.success('settings.toast.passwordChanged', 'Password changed successfully!');
-      reset();
+      // Password changed successfully, now logout and redirect
+      toast.success(
+        "auth.toast.passwordChanged",
+        'Password changed successfully',
+        t("auth.toast.passwordChangedLogin")
+      );
+
+      // Use setTimeout to ensure toast is shown before logout
+      setTimeout(async () => {
+        await logout();
+        router.push('/login');
+      }, 500);
+
     } catch (error) {
-      console.error('Password change failed:', error);
-      if (error instanceof AuthError) {
-        const errorDescription = error.details
-          ? (typeof error.details === 'string' ? error.details : JSON.stringify(error.details))
-          : undefined;
-        toast.error('', error.message || 'Failed to change password', errorDescription);
-      } else {
-        toast.error('settings.toast.passwordChangeFailed', 'Failed to change password');
-      }
-    } finally {
       setIsLoading(false);
+      if (error instanceof AuthError) {
+        toast.error('', error.message || 'Failed to change password', error.details);
+      } else {
+        toast.error('auth.toast.passwordChangeFailed', 'Failed to change password');
+      }
     }
   };
+
 
   return (
     <div className="space-y-6">
@@ -192,7 +203,7 @@ export default function SecuritySettingsPage() {
                 )}
               </button>
             </div>
-            {errors.newPassword && (
+            {errors.newPassword && errors.newPassword.message !== "Invalid input" && (
               <p className="text-xs text-destructive">{errors.newPassword.message}</p>
             )}
             <PasswordRequirements password={form.watch('newPassword')} />

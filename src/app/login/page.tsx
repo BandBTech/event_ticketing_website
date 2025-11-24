@@ -107,15 +107,13 @@ export default function LoginPage() {
       // Redirect to homepage
       router.push("/");
     } catch (error) {
-      console.error("Login failed:", error);
-
       // Handle different error types and show toast
       if (error instanceof AuthError) {
         switch (error.code) {
           case "UNAUTHORIZED":
             toast.error(
-              "auth.toast.invalidCredentials",
-              "Invalid email or password"
+              "",
+              error.message || "Invalid email or password"
             );
             break;
           case "NETWORK_ERROR":

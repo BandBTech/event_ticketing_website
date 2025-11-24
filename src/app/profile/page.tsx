@@ -100,11 +100,11 @@ export default function ProfilePage() {
       );
       setIsEditing(false);
     } catch (error) {
-      console.error("Profile update failed:", error);
       if (error instanceof AuthError) {
         toast.error(
           "",
-          error.message || "Failed to update profile"
+          error.message || "Failed to update profile",
+          error.details
         );
       } else {
         toast.error("profile.toast.updateError", "Failed to update profile");

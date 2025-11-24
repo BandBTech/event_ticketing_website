@@ -317,7 +317,6 @@ class AuthService {
     
     return {
       user: response,
-      message: 'message' in response ? response.message : undefined
     };
   }
 

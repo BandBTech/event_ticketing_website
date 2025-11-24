@@ -140,7 +140,10 @@
         "firstNameRequired": "Il nome è obbligatorio",
         "firstNameTooLong": "Il nome è troppo lungo",
         "firstNameTooShort": "Il nome deve contenere almeno 2 caratteri",
-        "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri"
+        "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri",
+        "passwordSpecialChar": "Deve contenere almeno un carattere speciale",
+        "passwordUpperLower": "Deve contenere almeno una lettera maiuscola e una minuscola",
+        "passwordNumber": "La password deve contenere almeno un numero."
       },
       "setPassword": "Crea una password sicura per"
     },
@@ -148,7 +151,11 @@
       "subtitle": "Imposta una nuova password per"
     },
     "verifyOTP": {
-      "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti."
+      "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti.",
+      "verifyButton": "Verificare l'OTP"
+    },
+    "toast": {
+      "passwordChangedLogin": "Effettua il login con la tua nuova password."
     }
   },
   "settings": {

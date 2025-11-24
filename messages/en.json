@@ -210,7 +210,9 @@
         "passwordMismatch": "Passwords do not match.",
         "phoneRequired": "Contact number is required.",
         "firstNameRequired": "First name is required.",
-        "lastNameRequired": "Last name is required."
+        "lastNameRequired": "Last name is required.",
+        "passwordSpecialChar": "Must contain at least one special character",
+        "passwordUpperLower": "Must contain at least one uppercase and one lowercase"
       },
       "errors": {
         "signupFailed": "Registration failed. Please try again."
@@ -273,7 +275,7 @@
       "back": "Back",
       "otp": "Verification Code",
       "otpPlaceholder": "Enter 6-digit code",
-      "verifyButton": "Verify Email",
+      "verifyButton": "Verify OTP",
       "verifying": "Verifying...",
       "didntReceive": "Didn't receive the code?",
       "resend": "Resend",
@@ -300,7 +302,9 @@
       "logoutSuccess": "You have been logged out",
       "invalidCredentials": "Invalid email or password",
       "networkError": "Network error. Please check your connection.",
-      "serverError": "Something went wrong. Please try again."
+      "serverError": "Something went wrong. Please try again.",
+      "passwordChanged": "Password changed successfully!",
+      "passwordChangedLogin": "Please login with your new password."
     }
   },
   "settings": {
