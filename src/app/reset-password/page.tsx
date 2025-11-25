@@ -9,7 +9,7 @@ import {
   EyeIcon,
   KeyIcon,
   EyeClosedIcon,
-  ArrowLeftIcon,
+  // ArrowLeftIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -142,13 +142,13 @@ function ResetPasswordContent() {
           <div className="glass-login-card rounded-2xl p-4 sm:p-6">
             <div className="space-y-6 p-2 sm:p-3">
               {/* Back Button */}
-              <Link
+              {/* <Link
                 href="/forgot-password"
                 className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
               >
                 <ArrowLeftIcon size={16} />
                 {t("auth.resetPassword.back", "Back")}
-              </Link>
+              </Link> */}
 
               {/* Header */}
               <div className="space-y-2">
