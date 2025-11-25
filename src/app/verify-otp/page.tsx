@@ -156,7 +156,9 @@ function VerifyOTPContent() {
               <button
                 onClick={() => {
                   if (otpType === 'password_reset') {
-                    router.push(`/forgot-password?email=${encodeURIComponent(email)}`);
+                    // Save email to sessionStorage for forgot-password page
+                    sessionStorage.setItem('password_reset_email', email);
+                    router.push('/forgot-password');
                   } else {
                     router.push('/signup');
                   }

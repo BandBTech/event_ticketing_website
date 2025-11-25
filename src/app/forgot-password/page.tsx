@@ -14,7 +14,7 @@ import { GuestRoute } from "@/components/auth/GuestRoute";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createValidationHelpers } from "@/lib/validation";
 
 // Create validation schema
@@ -29,7 +29,6 @@ const createForgotPasswordSchema = (
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
@@ -53,19 +52,24 @@ export default function ForgotPasswordPage() {
     setValue,
   } = form;
 
-  // Populate email from URL query parameter if present
+  // Populate email from sessionStorage if user navigated back
   useEffect(() => {
-    const emailParam = searchParams.get('email');
-    if (emailParam) {
-      setValue('email', emailParam);
+    const savedEmail = sessionStorage.getItem('password_reset_email');
+    if (savedEmail) {
+      setValue('email', savedEmail);
+      // Clear it after reading to avoid stale data
+      sessionStorage.removeItem('password_reset_email');
     }
-  }, [searchParams, setValue]);
+  }, [setValue]);
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
 
     try {
       const result = await authService.requestPasswordReset(data.email);
+
+      // Save email to sessionStorage for potential back navigation
+      sessionStorage.setItem('password_reset_email', data.email);
 
       // Show success toast
       toast.success(

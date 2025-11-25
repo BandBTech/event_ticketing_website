@@ -201,7 +201,7 @@ class AuthService {
    * Uses apiClientRequest with returnFullResponse to get message
    */
   async requestPasswordReset(email: string): Promise<{ message?: string }> {
-    const response = await apiClientRequest<AuthApiResponse<any>>(
+    const response = await apiClientRequest<AuthApiResponse<unknown>>(
       '/auth/user/reset-password-request',
       {
         method: 'POST',
