@@ -39,7 +39,7 @@ const createResetPasswordSchema = (
         .regex(/(?=.*[a-z])(?=.*[A-Z])/)
         .regex(/[^A-Za-z0-9]/)
         .regex(/[0-9]/),
-      confirmPassword: z.string(),
+      confirmPassword: z.string().min(1, v.required("Confirm Password")),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
       message: v.passwordMatch(),
