@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,7 +14,7 @@ import { GuestRoute } from "@/components/auth/GuestRoute";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createValidationHelpers } from "@/lib/validation";
 
 // Create validation schema
@@ -29,6 +29,7 @@ const createForgotPasswordSchema = (
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
@@ -49,18 +50,27 @@ export default function ForgotPasswordPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = form;
+
+  // Populate email from URL query parameter if present
+  useEffect(() => {
+    const emailParam = searchParams.get('email');
+    if (emailParam) {
+      setValue('email', emailParam);
+    }
+  }, [searchParams, setValue]);
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
 
     try {
-      await authService.requestPasswordReset(data.email);
+      const result = await authService.requestPasswordReset(data.email);
 
       // Show success toast
       toast.success(
-        "auth.toast.passwordResetSent",
-        "Password reset code sent to your email"
+        "",
+        result.message
       );
 
       // Redirect immediately to OTP verification page

@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { createValidationHelpers } from '@/lib/validation';
 import { PasswordRequirements } from '@/components/auth/PasswordRequirements';
 import { useAuthStore } from '@/store/authStore';
+import { useRouter } from 'next/navigation';
 import router from 'next/router';
 
 // Validation schema
@@ -45,6 +46,7 @@ const createChangePasswordSchema = (
 };
 
 export default function SecuritySettingsPage() {
+  const router = useRouter();
   const { logout } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
