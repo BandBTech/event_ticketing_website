@@ -60,7 +60,23 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       }
     }
   };
-
+const handleGuestTickets = () => {
+if (!event) return;
+  
+  const eventData = {
+    id: eventId,
+    title: event.title,
+    image: event.bannerImageUrl || event.imageUrl,
+    date: event.startDate,
+    venue: event.venue.name,
+    city: event.venue.city,
+    address: event.venue.address,
+    minPrice: Math.min(...event.ticketTypes.map((t) => t.price))
+  };
+  
+  localStorage.setItem('guestPurchase_event', JSON.stringify(eventData));
+  router.push('/guest-purchase');
+};
   const handleJoinWaitlist = () => {
     // TODO: Implement waitlist functionality
     console.log("Join waitlist");
@@ -311,6 +327,12 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
                     >
                       Buy Tickets
+                    </Button>
+                      <Button
+                      onClick={handleGuestTickets}
+                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
+                    >
+                      Buy Tickets as guest
                     </Button>
                     <Button
                       onClick={handleShare}
