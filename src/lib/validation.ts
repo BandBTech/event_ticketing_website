@@ -1,4 +1,4 @@
-import { useTranslation } from '@/hooks/useTranslation';
+
 
 /**
  * Validation helper utility
@@ -95,14 +95,14 @@ export const createValidationHelpers = (
   /**
    * Email specific validation
    */
-  email: (field: string) => {
+  email: () => {
     return t('auth.signup.validation.emailInvalid', 'Please enter a valid email address');
   },
 
   /**
    * Phone specific validation
    */
-  phone: (field: string) => {
+  phone: () => {
     return t('auth.signup.validation.phoneInvalid', 'Please enter a valid phone number');
   },
 

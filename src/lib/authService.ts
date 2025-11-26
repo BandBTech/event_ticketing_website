@@ -100,7 +100,7 @@ class AuthService {
    * Uses automatic token refresh from apiClient
    */
   async getProfile(): Promise<UserProfileResponse> {
-    return await api.get<UserProfileResponse>('/auth/user/profile', {
+    return await api.get<UserProfileResponse>('/auth/profile', {
       requiresAuth: true,
       showErrorToast: false, // Let the component handle error display
     });
@@ -268,7 +268,7 @@ class AuthService {
     if (data.country_code && data.phone) {
       data.phone = data.country_code + data.phone;
     }
-    return await api.put<UserProfileResponse>('/auth/user/profile', data, {
+    return await api.put<UserProfileResponse>('/auth/profile', data, {
       requiresAuth: true,
       showErrorToast: false, // Let the component handle error display
     });
@@ -281,7 +281,7 @@ class AuthService {
     identifier: string;
     otp_type: string;
   }): Promise<{ message: string; success: boolean; expires_in: number }> {
-    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/user/send-otp2', {
+    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/user/send-otp', {
       method: 'POST',
       body: JSON.stringify({
         identifier: data.identifier,
