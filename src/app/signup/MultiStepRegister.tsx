@@ -61,9 +61,7 @@ const createBasicInfoSchema = (
 };
 
 // Step 2: OTP Schema
-const createOTPSchema = (t: (key: string, fallback?: string) => string) => {
-  const v = createValidationHelpers(t);
-
+const createOTPSchema = () => {
   return z.object({
     otp: z.string().length(6, "OTP must be 6 digits"),
   });
@@ -211,7 +209,7 @@ export default function MultiStepRegister() {
       const phone = phoneNumber?.nationalNumber || data.phone;
 
       // Step 1: Register user (sends OTP to email)
-      const result = await authService.register({
+      await authService.register({
         email: data.email,
         first_name: data.firstName,
         last_name: data.lastName,
@@ -257,7 +255,7 @@ export default function MultiStepRegister() {
   };
 
   // Step 2: OTP Verification Form
-  const otpSchema = createOTPSchema(t);
+  const otpSchema = createOTPSchema();
   type OTPData = z.infer<typeof otpSchema>;
 
   const otpForm = useForm<OTPData>({
@@ -321,11 +319,6 @@ export default function MultiStepRegister() {
 
       // Restart 1-minute timer
       setResendTimer(60);
-    } catch (error) {
-      toast.error(
-        "auth.toast.resendFailed",
-        "Failed to resend code. Please try again."
-      );
     } finally {
       setIsLoading(false);
     }

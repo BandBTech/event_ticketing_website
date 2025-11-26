@@ -1,10 +1,10 @@
-import { 
-  LoginRequest, 
-  TokenResponse, 
+import {
+  LoginRequest,
+  TokenResponse,
   UserProfileResponse,
   RefreshTokenRequest,
   AuthApiResponse,
-  AuthApiError 
+  AuthApiError
 } from '@/types/auth';
 import { tokenManager } from './tokenManager';
 import { api, apiRequest as apiClientRequest } from './apiClient';
@@ -29,7 +29,7 @@ async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   const config: RequestInit = {
     ...options,
     headers: {
@@ -58,7 +58,7 @@ async function apiRequest<T>(
     if (error instanceof AuthError) {
       throw error;
     }
-    
+
     if (error instanceof TypeError && error.message.includes('fetch')) {
       throw new AuthError(
         'Network error. Please check your connection.',
@@ -100,8 +100,9 @@ class AuthService {
    * Uses automatic token refresh from apiClient
    */
   async getProfile(): Promise<UserProfileResponse> {
-    return await api.get<UserProfileResponse>('/auth/profile', {
+    return await api.get<UserProfileResponse>('/auth/user/profile', {
       requiresAuth: true,
+      showErrorToast: false, // Let the component handle error display
     });
   }
 
@@ -111,7 +112,7 @@ class AuthService {
    */
   async refreshToken(): Promise<TokenResponse> {
     const refreshToken = tokenManager.getRefreshToken();
-    
+
     if (!refreshToken) {
       throw new AuthError('No refresh token found', 'UNAUTHORIZED', 401);
     }
@@ -137,24 +138,23 @@ class AuthService {
    * Returns message from API response for toast display
    */
   async logout(revokeAll: boolean = false): Promise<{ message?: string }> {
-    try {
-      const response = await api.post<{ message?: string }>(
-        `/auth/logout`, 
-        undefined, 
-        {
-          requiresAuth: true,
-          showErrorToast: false, // Don't show error toast - logout should always succeed locally
-        }
-      );
-      return { message: response?.message };
-    } catch (error) {
-      // Continue with local logout even if API call fails
-      console.error('Logout API call failed:', error);
-      return { message: undefined };
-    } finally {
-      // Always clear tokens locally
-      tokenManager.clearTokens();
-    }
+    const response = await apiClientRequest<AuthApiResponse<unknown>>(
+      '/auth/user/logout',
+      {
+        method: 'POST',
+        body: JSON.stringify({ revoke_all: revokeAll }),
+        requiresAuth: true,
+        returnFullResponse: true, // Get full response including message
+        showErrorToast: false, // Let the component handle error display
+      }
+    );
+
+    // Clear tokens from storage
+    tokenManager.clearTokens();
+
+    return {
+      message: response.message,
+    };
   }
 
   /**
@@ -190,7 +190,7 @@ class AuthService {
         country_code: userData.country_code
       }),
     });
-    
+
     return {
       user: response,
     };
@@ -207,6 +207,7 @@ class AuthService {
         method: 'POST',
         body: JSON.stringify({ email }),
         returnFullResponse: true, // Get full response including message
+        showErrorToast: false, // Let the component handle error display
       }
     );
 
@@ -267,20 +268,20 @@ class AuthService {
     if (data.country_code && data.phone) {
       data.phone = data.country_code + data.phone;
     }
-    return await api.put<UserProfileResponse>('/auth/profile', data, {
+    return await api.put<UserProfileResponse>('/auth/user/profile', data, {
       requiresAuth: true,
+      showErrorToast: false, // Let the component handle error display
     });
   }
 
   /**
    * Send OTP
-   * Updated to include role parameter for new API
    */
   async sendOTP(data: {
     identifier: string;
     otp_type: string;
   }): Promise<{ message: string; success: boolean; expires_in: number }> {
-    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/user/send-otp', {
+    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/user/send-otp2', {
       method: 'POST',
       body: JSON.stringify({
         identifier: data.identifier,
@@ -299,14 +300,14 @@ class AuthService {
     otp_type: string;
     role?: 'user' | 'organizer' | 'admin';
   }): Promise<void> {
-    await apiRequest<void>('/auth/user/verify-otp', {
+    return await apiRequest<void>('/auth/user/verify-otp', {
       method: 'POST',
       body: JSON.stringify({
         identifier: data.identifier,
         otp_code: data.otp_code,
         otp_type: data.otp_type,
         role: data.role || 'user'
-      }),
+      })
     });
   }
 
@@ -322,7 +323,7 @@ class AuthService {
       method: 'POST',
       body: JSON.stringify(data),
     });
-    
+
     return {
       user: response,
     };
