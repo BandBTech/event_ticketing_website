@@ -116,7 +116,6 @@ function ResetPasswordContent() {
       // Redirect to login immediately
       router.push("/login");
     } catch (err) {
-      console.log(typeof err);
       // Show error toast
       if (err instanceof AuthError) {
         console.error("Password reset failed:", err, err.message, err.details);

@@ -138,23 +138,25 @@ class AuthService {
    * Returns message from API response for toast display
    */
   async logout(revokeAll: boolean = false): Promise<{ message?: string }> {
-    const response = await apiClientRequest<AuthApiResponse<unknown>>(
-      '/auth/user/logout',
-      {
-        method: 'POST',
-        body: JSON.stringify({ revoke_all: revokeAll }),
-        requiresAuth: true,
-        returnFullResponse: true, // Get full response including message
-        showErrorToast: false, // Let the component handle error display
-      }
-    );
+    try {
+      const response = await apiClientRequest<AuthApiResponse<unknown>>(
+        '/auth/user/logout',
+        {
+          method: 'POST',
+          body: JSON.stringify({ revoke_all: revokeAll }),
+          requiresAuth: true,
+          returnFullResponse: true, // Get full response including message
+          showErrorToast: false, // Let the component handle error display
+        }
+      );
 
-    // Clear tokens from storage
-    tokenManager.clearTokens();
-
-    return {
-      message: response.message,
-    };
+      return {
+        message: response.message,
+      };
+    } finally {
+      // Clear tokens from storage regardless of API success/failure
+      tokenManager.clearTokens();
+    }
   }
 
   /**

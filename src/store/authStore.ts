@@ -90,6 +90,8 @@ export const useAuthStore = create<AuthStore>()(
           });
           return result;
         } catch {
+          // Ensure tokens are cleared even if the API call fails
+          tokenManager.clearTokens();
           set({
             user: null,
             isAuthenticated: false,
