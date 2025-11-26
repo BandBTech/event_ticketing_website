@@ -9,7 +9,6 @@ import {
   HeartIcon,
   CaretDownIcon,
 } from "@phosphor-icons/react";
-import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -87,7 +86,6 @@ if (!event) return;
       <div className="min-h-screen relative">
         <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
         <div className="relative z-10">
-          <Header />
           <main className="max-w-7xl mx-auto px-4 py-8">
             <Skeleton className="w-full h-96 mb-8" />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -110,7 +108,6 @@ if (!event) return;
       <div className="min-h-screen relative">
         <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
         <div className="relative z-10">
-          <Header />
           <main className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
@@ -153,7 +150,6 @@ if (!event) return;
       </div>
 
       <div className="relative z-10">
-        <Header />
 
         <main className="max-w-7xl mx-auto px-4 py-8">
           {/* Hero Image */}
