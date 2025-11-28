@@ -97,19 +97,19 @@ export default function ForgotPasswordPage() {
 
   return (
     <GuestRoute>
-      <div className="min-h-screen relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
+      <div className="min-h-[calc(100vh-66px)] relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
         <div className="w-full max-w-[480px] relative z-10">
           <div className="relative">
             <div className="glass-login-card rounded-2xl p-4 sm:p-6">
               <div className="space-y-8 p-2 sm:p-3">
                 {/* Back Button */}
-                <Link
+                {/* <Link
                   href="/login"
                   className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   <ArrowLeftIcon size={16} />
                   {t("auth.forgotPassword.backToLogin", "Back to login")}
-                </Link>
+                </Link> */}
 
                 {/* Header */}
                 <div className="space-y-2">

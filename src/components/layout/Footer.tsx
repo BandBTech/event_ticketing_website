@@ -13,8 +13,15 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { usePathname } from 'next/navigation';
 
 export function Footer() {
+  const pathname = usePathname();
+  const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password', '/verify-otp'];
+
+  if (authPaths.some(path => pathname?.startsWith(path))) {
+    return null;
+  }
   const footerLinks = {
     company: [
       { name: 'About Us', href: '#about' },

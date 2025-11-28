@@ -55,7 +55,8 @@ function VerifyOTPContent() {
     }
   }, [resendTimer]);
 
-  const handleVerify = async () => {
+  const handleVerify = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (otp.length < 6) {
       setError(
         t(
@@ -147,7 +148,7 @@ function VerifyOTPContent() {
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
+    <div className="min-h-[calc(100vh-66px)] relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
       <div className="w-full max-w-[410px] relative z-10">
         <div className="relative">
           <div className="glass-login-card rounded-2xl p-4 sm:p-6">
@@ -196,8 +197,8 @@ function VerifyOTPContent() {
                 </div>
               )}
 
-              {/* OTP Input */}
-              <div className="space-y-6">
+              {/* OTP Form */}
+              <form onSubmit={handleVerify} className="space-y-6">
                 <div className="flex justify-center">
                   <InputOTP maxLength={6} value={otp} onChange={setOtp}>
                     <InputOTPGroup>
@@ -231,7 +232,7 @@ function VerifyOTPContent() {
 
                 {/* Verify Button */}
                 <Button
-                  onClick={handleVerify}
+                  type="submit"
                   disabled={isLoading || otp.length < 6}
                   className={cn(
                     "w-full h-12 rounded-lg font-medium transition-all duration-200",
@@ -245,7 +246,7 @@ function VerifyOTPContent() {
                     ? t("auth.verifyOTP.verifying", "Verifying...")
                     : t("auth.verifyOTP.verifyButton", "Verify OTP")}
                 </Button>
-              </div>
+              </form>
 
               {/* Resend OTP */}
               <div className="text-center space-y-2">
@@ -278,7 +279,7 @@ function VerifyOTPContent() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
