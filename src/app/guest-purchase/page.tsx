@@ -19,7 +19,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
 import { format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
-
+import { toast } from "sonner";
+import { StringDecoder } from "string_decoder";
 
 const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
@@ -45,6 +46,17 @@ const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
     quantity: z.number().min(1, v.min("Quantity", 1)),
   });
 };
+
+interface MockGuestData {
+  id: string;
+  token: string;
+}
+
+interface MockResponse{
+  success: boolean,
+  data: MockGuestData;
+  message: string;
+}
 
 interface EventPreviewData {
   id: string;
@@ -117,6 +129,7 @@ function GuestPurchaseContent() {
         }
       } catch (err) {
         console.error("Failed to load data:", err);
+        toast.error("Failed to load event data");
       } finally {
         setIsLoadingEvent(false);
       }
@@ -135,36 +148,85 @@ function GuestPurchaseContent() {
   const onSubmit = async (data: GuestFormData) => {
     setLoading(true);
     setMessage("");
+    const toastId = toast.loading("Processing your purchase...");
     try {
-      const res = await fetch(
-        "https://sandbox.timroticket.com/api/v1/public/tickets/guest-purchase",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            accept: "application/json",
+  //     const res = await fetch(
+  //       "https://sandbox.timroticket.com/api/v1/public/tickets/guest-purchase",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           accept: "application/json",
+  //         },
+  //         body: JSON.stringify(data),
+  //       }
+  //     );
+  //     const responseData = await res.json();
+  //     if (!res.ok){
+  // console.log("Server response:", responseData);
+  //       throw new Error(
+  //         responseData?.message || "Failed to send verification email"
+  //       );
+  //     }
+     const responseData: MockResponse = await new Promise((resolve) => {
+      setTimeout(() => {
+        const mockId = Date.now().toString();
+        const mockToken = Math.random().toString(36).slice(2); 
+        resolve({
+          success: true,
+          data: {
+            id: mockId,
+            token: mockToken,
           },
-          body: JSON.stringify(data),
-        }
-      );
-      const responseData = await res.json();
-      if (!res.ok)
-        throw new Error(
-          responseData?.message || "Failed to send verification email"
-        );
+          message: "Verification email sent successfully! Mock token",
+        });
+      }, 1500);
+    });
 
-      const guestId = responseData?.data?.id || Date.now().toString();
-      localStorage.setItem(`guest_${guestId}`, JSON.stringify(data));
+    if (!responseData.success) {
+      throw new Error(responseData.message || "Failed to send verification email");
+    }
+ 
+ const guestId = responseData.data.id;
+    const token = responseData.data.token;
+      const purchaseData = {
+        event_title: eventData?.title || "Event",
+        event_date: eventData?.date || new Date().toISOString(),
+        event_venue: eventData?.venue || "Venue",
+        quantity: data.quantity,
+        guest_name: `${data.first_name} ${data.last_name}`,
+      };
+      localStorage.setItem(
+        "guest_purchase_success",
+        JSON.stringify(purchaseData)
+      );
+
+    localStorage.setItem(`guest_${guestId}`, JSON.stringify({ ...data, token }));
+
+    localStorage.setItem(`guest_token_${token}`, token);
       localStorage.removeItem("guestPurchase_event");
 
       setMessage("Verification email sent! Please check your inbox.");
+      toast.success(
+        "Verification email sent! Please check your inbox to complete the verification.",
+        {
+          id: toastId,
+          duration: 8000,
+          action: {
+            label: "View Details",
+            onClick: () => {},
+          },
+        }
+      );
       guestForm.reset();
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setMessage(err.message);
-      } else {
-        setMessage("Something went wrong.");
-      }
+      const errorMessage =
+        err instanceof Error ? err.message : "Something went worong.";
+      toast.error(errorMessage, {
+        id: toastId,
+        duration: 5000,
+      });
+      console.error("Purchase error", err);
     } finally {
       setLoading(false);
     }
@@ -264,15 +326,15 @@ function GuestPurchaseContent() {
 
           <div className="glass-login-card rounded-2xl p-8 shadow-lg">
             <div className="space-y-6">
-                   <div className="mb-2">
-              <button
-                onClick={() => router.back()}
-                className="inline-flex cursor-pointer items-center gap-2  text-gray-700 hover:text-blue-600 rounded-lg transition-all duration-200"
-              >
-                <ArrowLeftIcon size={18} />
-                <span className="font-medium">Go Back</span>
-              </button>
-            </div>
+              <div className="mb-2">
+                <button
+                  onClick={() => router.back()}
+                  className="inline-flex cursor-pointer items-center gap-2  text-gray-700 hover:text-blue-600 rounded-lg transition-all duration-200"
+                >
+                  <ArrowLeftIcon size={18} />
+                  <span className="font-medium">Go Back</span>
+                </button>
+              </div>
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   {eventData
@@ -381,7 +443,18 @@ function GuestPurchaseContent() {
                     render={({ field }) => (
                       <PhoneInput
                         value={field.value}
-                        onChange={field.onChange}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          if (value) {
+                            const countryMatch = value.match(/^\+\d{1,4}/);
+                            guestForm.setValue(
+                              "country_code",
+                              countryMatch ? countryMatch[0] : ""
+                            );
+                          } else {
+                            guestForm.setValue("country_code", "");
+                          }
+                        }}
                         defaultCountry={defaultCountry}
                         placeholder={t(
                           "auth.signup.phonePlaceholder",
