@@ -20,7 +20,6 @@ import { createValidationHelpers } from "@/lib/validation";
 import { format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { StringDecoder } from "string_decoder";
 
 const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);

@@ -20,7 +20,6 @@ import { AuthError } from "@/lib/authService";
 import { GuestRoute } from "@/components/auth/GuestRoute";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { tokenManager } from "@/lib/tokenManager";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createValidationHelpers } from "@/lib/validation";
