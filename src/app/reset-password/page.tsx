@@ -130,6 +130,7 @@ function ResetPasswordContent() {
         );
       }
     } finally {
+      sessionStorage.removeItem('password_reset_email');
       setIsLoading(false);
     }
   };
