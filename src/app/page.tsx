@@ -292,7 +292,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+      <section id="home" className="relative py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center space-y-8">
             {/* Hero Content */}
@@ -346,7 +346,7 @@ export default function HomePage() {
 
       {/* Featured Events Section */}
       {featuredEvents && featuredEvents.length > 0 && (
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <section id="events" className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-4 font-poppins">
@@ -397,7 +397,7 @@ export default function HomePage() {
 
       {/* Categories Section */}
       {categories && categories.length > 0 && (
-        <section className="py-8 px-4 sm:px-6 lg:px-8">
+        <section id="categories" className="py-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-wrap justify-center gap-3">
               {categories.map((category) => (

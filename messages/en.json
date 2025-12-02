@@ -84,6 +84,10 @@
       "subtitle": "Join thousands of event organizers who trust our platform to manage their events.",
       "organizeEvent": "Organize Event",
       "learnMore": "Learn More"
+    },
+    "allEvents":{
+      "title": "All Events",
+      "subTitle": "Here you can find all the events."
     }
   },
   "footer": {

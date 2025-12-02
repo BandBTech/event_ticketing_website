@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { MagnifyingGlass } from '@phosphor-icons/react/dist/ssr';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import {  MagnifyingGlassIcon } from '@phosphor-icons/react';
 
 interface EventSearchProps {
   onSearch: (query: string) => void;
@@ -38,9 +38,9 @@ export function EventSearch({
   return (
     <form onSubmit={handleSubmit} className={cn("relative", className)}>
       <div className="relative">
-        <MagnifyingGlass 
+        <MagnifyingGlassIcon 
           size={20} 
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" 
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-slate-400" 
         />
         <Input
           type="text"

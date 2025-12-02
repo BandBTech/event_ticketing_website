@@ -100,7 +100,7 @@ function VerifyGuestContent() {
               </h1>
               <p className="text-gray-600 mb-6">{message}</p>
               <div className="animate-pulse text-sm text-green-600">
-                Redirecting to success page...
+                Redirecting to Payment page...
               </div>
             </>
           )}

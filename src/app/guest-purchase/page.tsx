@@ -208,14 +208,14 @@ function GuestPurchaseContent() {
       setMessage("Verification email sent! Please check your inbox.");
       toast.success(
         "Verification email sent! Please check your inbox to complete the verification.",
-        {
-          id: toastId,
-          duration: 8000,
-          action: {
-            label: "View Details",
-            onClick: () => {},
-          },
-        }
+        // {
+        //   id: toastId,
+        //   duration: 8000,
+        //   action: {
+        //     label: "View Details",
+        //     onClick: () => {},
+        //   },
+        // }
       );
       guestForm.reset();
     } catch (err: unknown) {
