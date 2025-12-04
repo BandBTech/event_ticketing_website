@@ -47,8 +47,22 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   }, [eventId]);
 
   useEffect(() => {
-    const token = localStorage.getItem("auth-storage");
-    setIsLoggedIn(!!token);
+    try {
+      const raw = localStorage.getItem("auth-storage");
+
+      if (!raw) {
+        setIsLoggedIn(false);
+        return;
+      }
+
+      const parsed = JSON.parse(raw);
+      const isAuth = parsed?.state?.isAuthenticated === true;
+
+      setIsLoggedIn(isAuth);
+    } catch (err) {
+      console.error("Failed to parse auth-storage:", err);
+      setIsLoggedIn(false);
+    }
   }, []);
 
   const handleShare = async () => {
