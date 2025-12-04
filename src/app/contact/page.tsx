@@ -3,17 +3,33 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import{toast} from "sonner";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const createContactSchema =(t:(key: string, fallback?:string)=> string) =>
+    z.object({
+      name: z.string().min(1, t('contact.validation.nameRequired')),
+      email: z.string()
+      .min(1, t('contact.validation.emailRequired'))
+      .email(t('contact.validation.emailInvalid')),
+      message: z.string().min(1,t('contact.validation.messageRequired'))
+    });
 
 export default function ContactPage() {
-interface ContactFormData {
-  name: string;
-  email: string;
-  message: string;
-}
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const { locale } = useLanguageStore();
+    const { t } = useTranslation(locale);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<ContactFormData>();
+const contactSchema = createContactSchema(t);
+type ContactFormData = z.infer<typeof contactSchema>;
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    mode: "onBlur",
+  });
 
-  const [selectedCategory, setSelectedCategory] = useState("");
+
 
   const onSubmit:SubmitHandler<ContactFormData> = async (data) => {
    try {
@@ -21,13 +37,13 @@ interface ContactFormData {
       console.log({ ...data, category: selectedCategory });
 
       // Show success toast
-      toast.success("Message sent successfully");
+      toast.success(t('contact.toast.success'));
 
       reset();
       setSelectedCategory("");
     } catch (error) {
       // Show error toast
-      toast.error("Something went wrong ! Please try again later.");
+      toast.error(t('contact.toast.error'));
     }
   };
 
@@ -36,10 +52,11 @@ interface ContactFormData {
       <section className="max-w-4xl mx-auto px-4 py-20">
 
         <h1 className="text-4xl font-bold text-center mb-4 text-primary">
-          Contact Us
+          {t('contact.title')}
         </h1>
         <p className="text-lg text-center opacity-85 mb-14">
-          Let us know how we can support you.
+          
+          {t('contact.subtitle')}
         </p>
 
         <form
@@ -48,11 +65,11 @@ interface ContactFormData {
         >
           {/* Full Name */}
           <div>
-            <label className="block font-medium mb-1">Full Name</label>
+            <label className="block font-medium mb-1">{t('contact.form.fullName')}</label>
             <input
               {...register("name", { required: "Full name is required" })}
               className="w-full px-4 py-3 rounded-lg border focus:outline-none"
-              placeholder="Enter full name"
+              placeholder={t('contact.form.placeholder.fullName')}
             />
             {errors.name && (
               <p className="text-red-500 text-sm mt-1">{String(errors.name.message)}</p>
@@ -61,7 +78,7 @@ interface ContactFormData {
 
           {/* Email */}
           <div>
-            <label className="block font-medium mb-1">Email</label>
+            <label className="block font-medium mb-1">{t('contact.form.email')}</label>
             <input
               {...register("email", {
                 required: "Email is required",
@@ -71,38 +88,39 @@ interface ContactFormData {
                 },
               })}
               className="w-full px-4 py-3 rounded-lg border focus:outline-none"
-              placeholder="example@email.com"
+              placeholder={t('contact.form.placeholder.email')}
             />
             {errors.email && (
+
               <p className="text-red-500 text-sm mt-1">{String(errors.email.message)}</p>
             )}
           </div>
 
           {/* Support Category */}
           <div>
-            <label className="block font-medium mb-1">Support Category</label>
+            <label className="block font-medium mb-1">{t('contact.support.title')}</label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full px-4 py-3 rounded-lg border focus:outline-none"
             >
-              <option value="">Select an issue</option>
-              <option>Ticket Booking Issues </option>
-              <option>Event Publishing </option>
-              <option>Payments & Refunds </option>
-              <option>Technical Support </option>
-              <option>Partner / Business Inquiry </option>
+              <option value="">{t('contact.support.option.selectIssue')}</option>
+              <option>{t('contact.support.option.ticketBooking')} </option>
+              <option>{t('contact.support.option.eventPublishing')} </option>
+              <option>{t('contact.support.option.paymentsRefund')} </option>
+              <option>{t('contact.support.option.technicalSupport')} </option>
+              <option>{t('contact.support.option.partner')} </option>
             </select>
           </div>
 
           {/* Message */}
           <div>
-            <label className="block font-medium mb-1">Message</label>
+            <label className="block font-medium mb-1">{t('contact.message.title')}</label>
             <textarea
               {...register("message", { required: "Message is required" })}
               rows={5}
               className="w-full px-4 py-3 rounded-lg border focus:outline-none"
-              placeholder="Write your message..."
+              placeholder={t('contact.message.textarea')}
             />
             {errors.message && (
               <p className="text-red-500 text-sm mt-1">{String(errors.message.message)}</p>
@@ -113,7 +131,7 @@ interface ContactFormData {
             type="submit"
             className="w-full bg-primary text-white py-3 rounded-lg text-lg font-medium hover:opacity-90 transition"
           >
-            Send Message
+            {t('contact.button.sendMessage')}
           </button>
         </form>
 

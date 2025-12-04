@@ -14,8 +14,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { usePathname } from 'next/navigation';
+import { EnvelopeSimpleIcon, MapPinIcon, PhoneIcon, TicketIcon } from '@phosphor-icons/react';
+import { useLanguageStore } from '@/store/languageStore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export function Footer() {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const pathname = usePathname();
   const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password', '/verify-otp'];
 
@@ -24,22 +29,22 @@ export function Footer() {
   }
   const footerLinks = {
     company: [
-      { name: 'About Us', href: '#about' },
-      { name: 'How It Works', href: '#how-it-works' },
-      { name: 'Careers', href: '#careers' },
-      { name: 'Press', href: '#press' },
+      { name: t('footer.links.company.aboutUs'), href: '/about' },
+      { name: t('footer.links.company.howItWorks'), href: '#how-it-works' },
+      { name: t('footer.links.company.careers'), href: '#careers' },
+      { name: t('footer.links.company.press'), href: '#press' },
     ],
     organizers: [
-      { name: 'Create Event', href: '#create-event' },
-      { name: 'Pricing', href: '#pricing' },
-      { name: 'Event Management', href: '#management' },
-      { name: 'Analytics', href: '#analytics' },
+      { name: t('footer.links.organizers.createEvent'), href: '#create-event' },
+      { name: t('footer.links.organizers.pricing'), href: '#pricing' },
+      { name: t('footer.links.organizers.eventManagement'), href: '#management' },
+      { name: t('footer.links.organizers.analytics'), href: '#analytics' },
     ],
     support: [
-      { name: 'Help Center', href: '#help' },
-      { name: 'Contact Support', href: '#support' },
-      { name: 'Event Guidelines', href: '#guidelines' },
-      { name: 'Refund Policy', href: '#refunds' },
+      { name: t('footer.links.support.helpCenter'), href: '#help' },
+      { name: t('footer.links.support.contactSupport'), href: '#support' },
+      { name: t('footer.links.support.eventGuidelines'), href: '#guidelines' },
+      { name: t('footer.links.support.refundPolicy'), href: '#refunds' },
     ],
     legal: [
       { name: 'Privacy Policy', href: '#privacy' },
@@ -66,7 +71,7 @@ export function Footer() {
             <div className="lg:col-span-4 space-y-6">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/10 border border-blue-600/20">
-                  <Ticket size={24} className="text-blue-600" />
+                  <TicketIcon size={24} className="text-blue-600" />
                   <span className="text-xl font-bold text-gray-900 font-poppins">
                     Timro-Ticket
                   </span>
@@ -74,23 +79,22 @@ export function Footer() {
               </div>
               
               <p className="text-gray-600 leading-relaxed">
-                Nepal&apos;s premier event ticketing platform. Discover amazing events, 
-                connect with your community, and create unforgettable experiences.
+                {t('footer.description')}
               </p>
 
               {/* Contact Info */}
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <EnvelopeSimple size={16} className="text-blue-500" />
-                  <span>info@timroticket.com</span>
+                  <EnvelopeSimpleIcon size={16} className="text-blue-500" />
+                  <span>{t('footer.contact.email')}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Phone size={16} className="text-blue-500" />
-                  <span>+977-1-4567890</span>
+                  <PhoneIcon size={16} className="text-blue-500" />
+                  <span>{t('footer.contact.phone')}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <MapPin size={16} className="text-blue-500" />
-                  <span>Kathmandu, Nepal</span>
+                  <MapPinIcon size={16} className="text-blue-500" />
+                  <span>{t('footer.contact.address')}</span>
                 </div>
               </div>
 
@@ -115,7 +119,7 @@ export function Footer() {
             {/* Links Grid */}
             <div className="lg:col-span-5 grid grid-cols-2 md:grid-cols-3 gap-8">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-4">Company</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.company.title')}</h3>
                 <ul className="space-y-3">
                   {footerLinks.company.map((link) => (
                     <li key={link.name}>
@@ -131,7 +135,7 @@ export function Footer() {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-4">Organizers</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.organizers.title')}</h3>
                 <ul className="space-y-3">
                   {footerLinks.organizers.map((link) => (
                     <li key={link.name}>
@@ -147,7 +151,7 @@ export function Footer() {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.support.title')}</h3>
                 <ul className="space-y-3">
                   {footerLinks.support.map((link) => (
                     <li key={link.name}>
@@ -165,14 +169,14 @@ export function Footer() {
 
             {/* Newsletter Signup */}
             <div className="lg:col-span-3 space-y-4">
-              <h3 className="font-semibold text-gray-900">Stay Updated</h3>
+              <h3 className="font-semibold text-gray-900">{t('newsletter.title')}</h3>
               <p className="text-sm text-gray-600">
-                Get notified about new events and exclusive offers.
+                {t('newsletter.subtitle')}
               </p>
               <div className="flex gap-2">
                 <Input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('newsletter.email.placeholder')}
                   className="glass border text-gray-900 placeholder:text-gray-500 flex-1"
                 />
                 <Button
@@ -190,20 +194,20 @@ export function Footer() {
         <div className="border-t border-white/20 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-gray-600">
-              © 2025 Timro-Ticket. All rights reserved.
+              {t('footer.copyright')}
             </div>
             
             <div className="flex items-center gap-6 text-sm text-gray-600">
               <span>Developed by <a href='https://thebandbtech.com/'>B&B Tech Group.</a></span>
               <div className="flex items-center gap-4">
                 <a href="#privacy" className="hover:text-blue-600 transition-colors">
-                  Privacy
+                  {t('footer.links.legal.privacyPolicy')}
                 </a>
                 <a href="#terms" className="hover:text-blue-600 transition-colors">
-                  Terms
+                  {t('footer.links.legal.termsOfService')}
                 </a>
                 <a href="#cookies" className="hover:text-blue-600 transition-colors">
-                  Cookies
+                  {t('footer.links.legal.cookiePolicy')}
                 </a>
               </div>
             </div>

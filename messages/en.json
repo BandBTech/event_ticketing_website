@@ -85,7 +85,7 @@
       "organizeEvent": "Organize Event",
       "learnMore": "Learn More"
     },
-    "allEvents":{
+    "allEvents": {
       "title": "All Events",
       "subTitle": "Here you can find all the events."
     }
@@ -123,7 +123,7 @@
         "title": "Legal",
         "privacyPolicy": "Privacy Policy",
         "termsOfService": "Terms of Service",
-        "cookiePolicy": "Cookie Policy",
+        "cookiePolicy": "Cookies Policy",
         "security": "Security"
       }
     },
@@ -338,6 +338,86 @@
       "billingDesc": "Manage your payment methods",
       "tickets": "My Tickets",
       "ticketsDesc": "View your event tickets"
+    }
+  },
+  "about": {
+    "title": "About Timro-Ticket",
+    "description": "Events bring people together — and we believe every connection creates a story worth remembering. We make those moments simpler, smoother, and more accessible to everyone in Nepal.",
+    "mission": {
+      "title": "Our Mission",
+      "p1": "We empower organizers with smart tools to manage, promote, and sell events — while giving audiences the easiest way to discover and book exciting experiences happening around them.",
+      "p2": "From concerts to conferences, we support Nepal's growing event culture with seamless digital solutions."
+    },
+    "story": {
+      "title": "Our Story",
+      "p1": "We started with a simple idea: Nepal has countless events happening every day — but discovering them shouldn't be so complicated. There was enthusiasm, creativity, passion… yet a lack of digital connection between organizers and audiences.",
+      "p2": "Today, thousands of people rely on Timro-Ticket to find their next unforgettable experience — and we're just getting started.",
+      "slogan": "“Your next greatest memory starts with a ticket.”"
+    },
+    "cta": {
+      "title": "Ready to Host Your Own Event?",
+      "subtitle": "Whether it's a small gathering or a large festival — we're here to help you create and grow unforgettable experiences.",
+      "becomeOrganizer": " Become an Organizer"
+    },
+    "stats": {
+      "title": "The Platform Trusted Across Nepal",
+      "eventsListed": " Events Listed",
+      "ticketsSold": "Tickets Sold",
+      "citiesCovered": "Cities Covered",
+      "securePayments": "Secure Payments",
+      "count": {
+        "events": "500+",
+        "tickets": "50k+",
+        "cities": "25+",
+        "secure": "100%"
+      }
+    }
+  },
+  "newsletter": {
+    "title": "Stay Updated",
+    "subtitle": "Get notified about new events and exclusive offers.",
+    "email": {
+      "placeholder": "Enter your email"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Let us know how we can support you.",
+    "form": {
+      "fullName": "Full Name",
+      "placeholder": {
+        "fullName": "Enter your full name",
+        "email": "Enter your email"
+      },
+      "email": "Email"
+    },
+    "support": {
+      "title": "Support Category",
+      "option": {
+        "selectIssue": "Select an issue",
+        "ticketBooking": "Ticket Booking Issues",
+        "eventPublishing": "Event Publishing",
+        "paymentsRefund": "Payments & Refunds",
+        "technicalSupport": "Technical Support",
+        "partner": "Partner/Business Inquiry"
+      }
+    },
+    "message": {
+      "title": "Message",
+      "textarea": "Write your message..."
+    },
+    "button": {
+      "sendMessage": "Send Message"
+    },
+    "toast": {
+      "success": "Message sent successfully.",
+      "error": "Something went wrong ! Please try again later."
+    },
+    "validation": {
+      "nameRequired": "Name is required.",
+      "emailRequired": "Email is required.",
+      "messageRequired": "Write a message.",
+      "emailInvalid": "Enter a valid email."
     }
   }
 }

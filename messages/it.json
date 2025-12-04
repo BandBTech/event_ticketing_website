@@ -82,7 +82,7 @@
         "title": "Legale",
         "privacyPolicy": "Politica Privacy",
         "termsOfService": "Termini di Servizio",
-        "cookiePolicy": "Politica Cookie",
+        "cookiePolicy": "Politica sui cookie",
         "security": "Sicurezza"
       }
     },
@@ -183,6 +183,84 @@
       "billing": "Fatturazione",
       "billingDesc": "Gestisci i tuoi metodi di pagamento",
       "ticketsDesc": "Visualizza i biglietti per i tuoi eventi"
+    }
+  },
+  "about": {
+    "title": "A proposito di Timro-Ticket",
+    "description": "Gli eventi uniscono le persone e crediamo che ogni connessione crei una storia che vale la pena ricordare. \nRendiamo questi momenti più semplici, più fluidi e più accessibili a tutti in Nepal.",
+    "mission": {
+      "title": "La nostra missione",
+      "p1": "Forniamo agli organizzatori strumenti intelligenti per gestire, promuovere e vendere eventi, offrendo al tempo stesso al pubblico il modo più semplice per scoprire e prenotare esperienze entusiasmanti che accadono intorno a loro.",
+      "p2": "Dai concerti alle conferenze, supportiamo la crescente cultura degli eventi del Nepal con soluzioni digitali senza soluzione di continuità."
+    },
+    "stats": {
+      "title": "La piattaforma affidabile in tutto il Nepal",
+      "eventsListed": "Eventi elencati",
+      "ticketsSold": "Biglietti venduti",
+      "citiesCovered": "Città coperte",
+      "securePayments": "Pagamenti sicuri",
+      "count": {
+        "events": "500+",
+        "tickets": "50k",
+        "cities": "25+",
+        "secure": "100%"
+      }
+    },
+    "story": {
+      "title": "La nostra storia",
+      "p1": "Abbiamo iniziato con un'idea semplice: in Nepal ogni giorno accadono innumerevoli eventi, ma scoprirli non dovrebbe essere così complicato. \nC’era entusiasmo, creatività, passione… eppure mancava una connessione digitale tra organizzatori e pubblico.",
+      "p2": "Oggi, migliaia di persone si affidano a Timro-Ticket per vivere la loro prossima esperienza indimenticabile - e siamo appena all'inizio.",
+      "slogan": "\"Il tuo prossimo ricordo più bello inizia con un biglietto.\""
+    },
+    "cta": {
+      "title": "Pronto a ospitare il tuo evento?",
+      "subtitle": "Che si tratti di un piccolo raduno o di un grande festival, siamo qui per aiutarti a creare e far crescere esperienze indimenticabili.",
+      "becomeOrganizer": "Diventa un organizzatore"
+    }
+  },
+  "newsletter": {
+    "title": "Rimani aggiornato",
+    "subtitle": "Ricevi notifiche su nuovi eventi e offerte esclusive.",
+    "email": {
+      "placeholder": "Inserisci la tua email"
+    }
+  },
+  "contact": {
+    "title": "Contattaci",
+    "subtitle": "Facci sapere come possiamo supportarti.",
+    "form": {
+      "fullName": "Nome e cognome",
+      "placeholder": {
+        "fullName": "Inserisci il tuo nome completo",
+        "email": "Inserisci la tua email"
+      },
+      "email": "E-mail"
+    },
+    "support": {
+      "title": "Categoria di supporto",
+      "option": {
+        "eventPublishing": "Pubblicazione di eventi",
+        "paymentsRefund": "Pagamenti",
+        "technicalSupport": "Supporto tecnico",
+        "partner": "Richiesta partner/aziendale"
+      }
+    },
+    "message": {
+      "title": "Messaggio",
+      "textarea": "Scrivi il tuo messaggio..."
+    },
+    "button": {
+      "sendMessage": "Invia messaggio"
+    },
+    "toast": {
+      "success": "Messaggio inviato con successo.",
+      "error": "Qualcosa è andato storto! \nPer favore riprova più tardi."
+    },
+    "validation": {
+      "nameRequired": "Il nome è obbligatorio.",
+      "emailRequired": "L'e-mail è obbligatoria.",
+      "emailInvalid": "Inserisci un'e-mail valida.",
+      "messageRequired": "Scrivi un messaggio."
     }
   }
 }
