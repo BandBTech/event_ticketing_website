@@ -121,13 +121,13 @@ export default function TicketsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
           My Tickets
         </h1>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm text-gray-600">
           Manage and view all your event tickets
         </p>
       </div>

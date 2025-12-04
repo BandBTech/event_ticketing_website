@@ -131,13 +131,13 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
           Billing & Payments
         </h1>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm text-gray-600">
           Manage your payment methods and view transaction history
         </p>
       </div>

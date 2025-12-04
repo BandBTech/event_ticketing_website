@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { 
-  IdentificationBadgeIcon, 
+  UserIcon, 
   LockKeyIcon, 
   BellIcon, 
   CreditCardIcon, 
@@ -27,7 +27,7 @@ export default function SettingsLayout({
     {
       href: '/settings/profile',
       label: t('settings.menu.profile', 'Profile'),
-      icon: IdentificationBadgeIcon,
+      icon: UserIcon,
       description: t('settings.menu.profileDesc', 'Manage your personal information'),
     },
     {
@@ -69,7 +69,7 @@ export default function SettingsLayout({
               <nav className="space-y-1">
                 {menuItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = pathname === item.href;
+                  const isActive = pathname === `${item.href}/`;
 
                   return (
                     <Link

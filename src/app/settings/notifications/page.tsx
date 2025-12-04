@@ -96,13 +96,13 @@ export default function NotificationsPage() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
           Notifications
         </h1>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm text-gray-600">
           Stay updated with your tickets, events, and account activity
         </p>
       </div>
