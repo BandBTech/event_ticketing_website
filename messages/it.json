@@ -10,7 +10,16 @@
     "loadMore": "Carica Altri Eventi",
     "noResults": "Nessun evento trovato",
     "tryAgain": "Prova ad aggiustare i criteri di ricerca o controlla più tardi per nuovi eventi.",
-    "cancelButton": "Cancellare"
+    "cancelButton": "Cancellare",
+    "validation": {
+      "min": "{field} deve essere almeno {value}.",
+      "required": "{campo} è obbligatorio.",
+      "invalid": "{campo} non è valido.",
+      "minLength": "{field} deve contenere almeno {length} caratteri.",
+      "pattern": "Il formato {campo} non è valido.",
+      "maxLength": "{field} non può contenere più di {length} caratteri.",
+      "max": "{campo} non può superare {valore}."
+    }
   },
   "navigation": {
     "events": "Eventi",
@@ -47,6 +56,10 @@
       "subtitle": "Unisciti a migliaia di organizzatori di eventi che si fidano della nostra piattaforma per gestire i loro eventi.",
       "organizeEvent": "Organizza Evento",
       "learnMore": "Scopri di Più"
+    },
+    "allEvents": {
+      "title": "Tutti gli eventi",
+      "subTitle": "Qui puoi trovare tutti gli eventi."
     }
   },
   "footer": {
@@ -143,9 +156,13 @@
         "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri",
         "passwordSpecialChar": "Deve contenere almeno un carattere speciale",
         "passwordUpperLower": "Deve contenere almeno una lettera maiuscola e una minuscola",
-        "passwordNumber": "La password deve contenere almeno un numero."
+        "passwordNumber": "La password deve contenere almeno un numero.",
+        "emailInvalid": "Si prega di inserire un indirizzo email valido.",
+        "phoneInvalid": "Inserisci un numero di telefono valido.",
+        "passwordMismatch": "Le password non corrispondono."
       },
-      "setPassword": "Crea una password sicura per"
+      "setPassword": "Crea una password sicura per",
+      "phone": "Numero di contatto"
     },
     "resetPassword": {
       "subtitle": "Imposta una nuova password per"
@@ -242,7 +259,9 @@
         "eventPublishing": "Pubblicazione di eventi",
         "paymentsRefund": "Pagamenti",
         "technicalSupport": "Supporto tecnico",
-        "partner": "Richiesta partner/aziendale"
+        "partner": "Richiesta partner/aziendale",
+        "selectIssue": "Seleziona un problema",
+        "ticketBooking": "Problemi di prenotazione dei biglietti"
       }
     },
     "message": {
@@ -261,6 +280,54 @@
       "emailRequired": "L'e-mail è obbligatoria.",
       "emailInvalid": "Inserisci un'e-mail valida.",
       "messageRequired": "Scrivi un messaggio."
+    }
+  },
+  "guestPurchase": {
+    "token": {
+      "success": "Email di verifica inviata con successo!",
+      "error": "Impossibile inviare l'e-mail di verifica."
+    },
+    "toast": {
+      "success": "Email di verifica inviata! \nControlla la tua casella di posta per completare la verifica."
+    },
+    "eventDetails": {
+      "title": "Dettagli dell'evento"
+    },
+    "goBack": "Torna indietro",
+    "title": {
+      "1": "Completa il tuo acquisto",
+      "2": "Acquisto biglietto ospite"
+    },
+    "subtitle": "Inserisci i tuoi dati per acquistare i biglietti.",
+    "form": {
+      "firstName": "Nome di battesimo",
+      "lastName": "Cognome",
+      "firstNamePlaceholder": "Inserisci il tuo nome.",
+      "lastNamePlaceholder": "Inserisci il tuo cognome.",
+      "emailPlaceholder": "Inserisci il tuo indirizzo email.",
+      "email": "Indirizzo e-mail",
+      "eventId": "ID evento",
+      "quantity": "Quantità",
+      "quantityPlaceholder": "Inserisci il numero di biglietti.",
+      "button": {
+        "processing": "Elaborazione..."
+      }
+    },
+    "button": {
+      "title": "Invia e-mail di verifica",
+      "subtitle": "Riceverai un'e-mail di verifica per completare l'acquisto."
+    },
+    "success": "Email di verifica inviata! \nPer favore controlla la tua casella di posta."
+  },
+  "verifyGuest": {
+    "title": "Verifica la tua email",
+    "subtitle": "Per favore attendi mentre verifichiamo il tuo indirizzo email...",
+    "redirect": "Reindirizzamento alla pagina di pagamento...",
+    "failed": "Verifica non riuscita",
+    "tryAgain": "Riprova",
+    "backEvents": "Torna a Eventi.",
+    "token": {
+      "failed": "Nessun token di verifica fornito."
     }
   }
 }

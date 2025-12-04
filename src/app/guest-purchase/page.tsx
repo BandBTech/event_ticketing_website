@@ -74,6 +74,7 @@ function GuestPurchaseContent() {
   const eventIdFromUrl = searchParams.get("event_id");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
   const [defaultCountry, setDefaultCountry] = useState<Country>("NP");
   const [eventData, setEventData] = useState<EventPreviewData | null>(null);
   const [isLoadingEvent, setIsLoadingEvent] = useState(true);
@@ -147,7 +148,8 @@ function GuestPurchaseContent() {
   const onSubmit = async (data: GuestFormData) => {
     setLoading(true);
     setMessage("");
-    const toastId = toast.loading("Processing your purchase...");
+    setIsSuccess(null);
+   // const toastId = toast.loading("Processing your purchase...");
     try {
   //     const res = await fetch(
   //       "https://sandbox.timroticket.com/api/v1/public/tickets/guest-purchase",
@@ -177,13 +179,13 @@ function GuestPurchaseContent() {
             id: mockId,
             token: mockToken,
           },
-          message: "Verification email sent successfully! Mock token",
+          message:(t('guestPurchase.token.success')),
         });
       }, 1500);
     });
 
     if (!responseData.success) {
-      throw new Error(responseData.message || "Failed to send verification email");
+      throw new Error(responseData.message || (t('guestPurchase.token.error')));
     }
  
  const guestId = responseData.data.id;
@@ -205,9 +207,10 @@ function GuestPurchaseContent() {
     localStorage.setItem(`guest_token_${token}`, token);
       localStorage.removeItem("guestPurchase_event");
 
-      setMessage("Verification email sent! Please check your inbox.");
-      toast.success(
-        "Verification email sent! Please check your inbox to complete the verification.",
+      
+      setMessage(t('guestPurchase.success'));
+       setIsSuccess(true);
+      toast.success((t('guestPurchase.toast.success'))
         // {
         //   id: toastId,
         //   duration: 8000,
@@ -221,8 +224,11 @@ function GuestPurchaseContent() {
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Something went worong.";
-      toast.error(errorMessage, {
-        id: toastId,
+     
+      setMessage(errorMessage);
+      setIsSuccess(false);
+         toast.error(errorMessage, {
+       // id: toastId,
         duration: 5000,
       });
       console.error("Purchase error", err);
@@ -316,7 +322,7 @@ function GuestPurchaseContent() {
             {eventData && (
               <div className="glass-card rounded-2xl p-6 shadow-lg border border-gray-200">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Event Details
+                  {t('guestPurchase.eventDetails.title')}
                 </h3>
                 <div className="space-y-3 text-gray-700"></div>
               </div>
@@ -331,17 +337,18 @@ function GuestPurchaseContent() {
                   className="inline-flex cursor-pointer items-center gap-2  text-gray-700 hover:text-blue-600 rounded-lg transition-all duration-200"
                 >
                   <ArrowLeftIcon size={18} />
-                  <span className="font-medium">Go Back</span>
+                  <span className="font-medium">{t('guestPurchase.goBack')}</span>
                 </button>
               </div>
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   {eventData
-                    ? "Complete Your Purchase"
-                    : "Guest Ticket Purchase"}
+                    ? (t('guestPurchase.title.1'))
+                    : (t('guestPurchase.title.2'))}
                 </h1>
                 <p className="text-gray-600">
-                  Fill in your details to purchase tickets
+                 {t('guestPurchase.subtitle')} 
+            
                 </p>
               </div>
 
@@ -353,7 +360,7 @@ function GuestPurchaseContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      First Name
+                      {t('guestPurchase.form.firstName')}
                     </label>
                     <div className="relative">
                       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
@@ -361,7 +368,7 @@ function GuestPurchaseContent() {
                       </div>
                       <input
                         {...guestForm.register("first_name")}
-                        placeholder="First Name"
+                        placeholder={t('guestPurchase.form.firstNamePlaceholder')}
                         className={cn(
                           "w-full border rounded-lg p-3 pl-10",
                           guestForm.formState.errors.first_name
@@ -379,7 +386,7 @@ function GuestPurchaseContent() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      Last Name
+                       {t('guestPurchase.form.lastName')}
                     </label>
                     <div className="relative">
                       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
@@ -387,7 +394,7 @@ function GuestPurchaseContent() {
                       </div>
                       <input
                         {...guestForm.register("last_name")}
-                        placeholder="Last Name"
+                        placeholder={t('guestPurchase.form.lastNamePlaceholder')}
                         className={cn(
                           "w-full border rounded-lg p-3 pl-10",
                           guestForm.formState.errors.last_name
@@ -407,7 +414,7 @@ function GuestPurchaseContent() {
                 {/* Email */}
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Email Address
+                    {t('guestPurchase.form.email')}
                   </label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
@@ -415,7 +422,7 @@ function GuestPurchaseContent() {
                     </div>
                     <input
                       {...guestForm.register("email")}
-                      placeholder="your.email@example.com"
+                      placeholder={t('guestPurchase.form.emailPlaceholder')}
                       className={cn(
                         "w-full border rounded-lg p-3 pl-10",
                         guestForm.formState.errors.email
@@ -476,11 +483,11 @@ function GuestPurchaseContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      Event ID
+                      {t('guestPurchase.form.eventId')}
                     </label>
                     <input
                       {...guestForm.register("event_id")}
-                      placeholder="Event ID"
+                      placeholder={t('guestPurchase.form.eventId')}
                       readOnly={!!eventData}
                       className={cn(
                         "w-full border rounded-lg p-3",
@@ -499,7 +506,7 @@ function GuestPurchaseContent() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      Quantity
+                      {t('guestPurchase.form.quantity')}
                     </label>
                     <input
                       {...guestForm.register("quantity", {
@@ -507,8 +514,7 @@ function GuestPurchaseContent() {
                       })}
                       type="number"
                       min="1"
-                      max="10"
-                      placeholder="1"
+                      placeholder={t('guestPurchase.form.quantityPlaceholder')}
                       className={cn(
                         "w-full border rounded-lg p-3",
                         guestForm.formState.errors.quantity
@@ -533,10 +539,10 @@ function GuestPurchaseContent() {
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Processing...
+                      {t('guestPurchase.form.button.processing')}
                     </div>
                   ) : (
-                    "Send Verification Email"
+                  t('guestPurchase.button.title')
                   )}
                 </button>
 
@@ -544,7 +550,7 @@ function GuestPurchaseContent() {
                   <div
                     className={cn(
                       "p-4 rounded-lg border text-center",
-                      message.includes("sent")
+                     isSuccess
                         ? "text-green-800 bg-green-50 border-green-200"
                         : "text-red-800 bg-red-50 border-red-200"
                     )}
@@ -557,8 +563,8 @@ function GuestPurchaseContent() {
               {/* Additional Info */}
               <div className="text-center text-sm text-gray-600">
                 <p>
-                  You&apos;ll receive a verification email to complete your
-                  purchase.
+                  {t('guestPurchase.button.subtitle')}
+                 
                 </p>
               </div>
             </div>

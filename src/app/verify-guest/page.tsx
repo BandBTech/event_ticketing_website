@@ -4,6 +4,8 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function VerifyGuestContent() {
   const searchParams = useSearchParams();
@@ -11,12 +13,14 @@ function VerifyGuestContent() {
   const token = searchParams.get("token");
   const [verificationStatus, setVerificationStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
 
   useEffect(() => {
     const verifyToken = async () => {
       if (!token) {
         setVerificationStatus("error");
-        setMessage("No verification token provided");
+        setMessage(t('verifyGuest.token.failed'));
         return;
       }
 
@@ -82,10 +86,11 @@ function VerifyGuestContent() {
                 <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Verifying Your Email
+                {t('verifyGuest.title')}
               </h1>
               <p className="text-gray-600">
-                Please wait while we verify your email address...
+                
+                {t('verifyGuest.subtitle')}
               </p>
             </>
           )}
@@ -96,11 +101,11 @@ function VerifyGuestContent() {
                 <CheckCircle className="h-12 w-12 text-green-600" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Verification Successful!
+              {t('verifyGuest.success')}
               </h1>
               <p className="text-gray-600 mb-6">{message}</p>
               <div className="animate-pulse text-sm text-green-600">
-                Redirecting to Payment page...
+                {t('verifyGuest.redirect')}
               </div>
             </>
           )}
@@ -111,7 +116,7 @@ function VerifyGuestContent() {
                 <XCircle className="h-12 w-12 text-red-600" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Verification Failed
+                {t('verifyGuest.failed')}
               </h1>
               <p className="text-gray-600 mb-6">{message}</p>
               <div className="space-y-3">
@@ -119,13 +124,13 @@ function VerifyGuestContent() {
                   onClick={() => window.location.reload()}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  Try Again
+                  {t('verifyGuest.tryAgain')}
                 </button>
                 <Link
-                  href="/events"
+                  href="/allevents"
                   className="block w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  Back to Events
+                  {t('verifyGuest.backEvents')}
                 </Link>
               </div>
             </>

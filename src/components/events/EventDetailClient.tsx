@@ -29,6 +29,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const [showLocationMap, setShowLocationMap] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -42,9 +43,13 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
         setIsLoading(false);
       }
     };
-
     fetchEvent();
   }, [eventId]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("auth-storage");
+    setIsLoggedIn(!!token);
+  }, []);
 
   const handleShare = async () => {
     if (navigator.share && event) {
@@ -59,23 +64,23 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       }
     }
   };
-const handleGuestTickets = () => {
-if (!event) return;
-  
-  const eventData = {
-    id: eventId,
-    title: event.title,
-    image: event.bannerImageUrl || event.imageUrl,
-    date: event.startDate,
-    venue: event.venue.name,
-    city: event.venue.city,
-    address: event.venue.address,
-    minPrice: Math.min(...event.ticketTypes.map((t) => t.price))
+  const handleGuestTickets = () => {
+    if (!event) return;
+
+    const eventData = {
+      id: eventId,
+      title: event.title,
+      image: event.bannerImageUrl || event.imageUrl,
+      date: event.startDate,
+      venue: event.venue.name,
+      city: event.venue.city,
+      address: event.venue.address,
+      minPrice: Math.min(...event.ticketTypes.map((t) => t.price)),
+    };
+
+    localStorage.setItem("guestPurchase_event", JSON.stringify(eventData));
+    router.push("/guest-purchase");
   };
-  
-  localStorage.setItem('guestPurchase_event', JSON.stringify(eventData));
-  router.push('/guest-purchase');
-};
   const handleJoinWaitlist = () => {
     // TODO: Implement waitlist functionality
     console.log("Join waitlist");
@@ -150,7 +155,6 @@ if (!event) return;
       </div>
 
       <div className="relative z-10">
-
         <main className="max-w-7xl mx-auto px-4 py-8">
           {/* Hero Image */}
           <div className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8 shadow-2xl">
@@ -318,18 +322,32 @@ if (!event) return;
 
                   {/* Action Buttons */}
                   <div className="space-y-3">
-                    <Button
-                      onClick={handleJoinWaitlist}
-                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
-                    >
-                      Buy Tickets
-                    </Button>
+                    {isLoggedIn && (
                       <Button
-                      onClick={handleGuestTickets}
-                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
-                    >
-                      Buy Tickets as guest
-                    </Button>
+                        onClick={handleJoinWaitlist}
+                        className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
+                      >
+                        Buy Tickets
+                      </Button>
+                    )}
+                    {!isLoggedIn && (
+                      <>
+                        <Button
+                          onClick={handleGuestTickets}
+                          className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
+                        >
+                          Buy Tickets as Guest
+                        </Button>
+
+                        <Button
+                          onClick={() => router.push("/login")}
+                          className="w-full h-12 bg-green-600 hover:bg-gray-900 text-white font-medium rounded-lg"
+                        >
+                          Login to Buy Tickets
+                        </Button>
+                      </>
+                    )}
+
                     <Button
                       onClick={handleShare}
                       variant="outline"

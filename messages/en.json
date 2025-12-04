@@ -419,5 +419,54 @@
       "messageRequired": "Write a message.",
       "emailInvalid": "Enter a valid email."
     }
+  },
+  "guestPurchase": {
+    "token": {
+      "success": "Verification email sent successfully!",
+      "error": "Failed to send verification email."
+    },
+    "toast": {
+      "success": "Verification email sent! Please check your inbox to complete the verification."
+    },
+    "eventDetails": {
+      "title": "Event Details"
+    },
+    "goBack": "Go Back",
+    "title": {
+      "1": "Complete Your Purchase",
+      "2": "Guest Ticket Purchase"
+    },
+    "subtitle": "Fill in your details to purchase tickets.",
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "firstNamePlaceholder": "Enter your first name.",
+      "lastNamePlaceholder": "Enter your last name.",
+      "emailPlaceholder": "Enter your email address.",
+      "eventId": "Event ID",
+      "quantity": "Quantity",
+      "quantityPlaceholder": "Enter the number of tickets.",
+      "button": {
+        "processing": "Processing..."
+      }
+    },
+    "button": {
+      "title": "Send Verification Email",
+      "subtitle": " You'll receive a verification email to complete your purchase."
+    },
+    "success": "Verification email sent! Please check your inbox."
+  },
+  "verifyGuest": {
+    "title": "Verifying Your Email",
+    "subtitle": "Please wait while we verify your email address...",
+    "success": "Verification Successful!",
+    "redirect": "Redirecting to Payment page...",
+    "failed": "Verification Failed",
+    "tryAgain": "Try Again",
+    "backEvents": "Back to Events.",
+    "token": {
+      "failed": "No verification token provided."
+    }
   }
 }

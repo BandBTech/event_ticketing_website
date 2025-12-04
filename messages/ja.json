@@ -10,7 +10,16 @@
     "loadMore": "もっと見る",
     "noResults": "イベントが見つかりません",
     "tryAgain": "検索条件を調整するか、後でもう一度確認してください。",
-    "cancelButton": "キャンセル"
+    "cancelButton": "キャンセル",
+    "validation": {
+      "min": "{field} は少なくとも {value} でなければなりません。",
+      "required": "{フィールド}は必須です。",
+      "invalid": "{フィールド} は無効です。",
+      "minLength": "{field} は少なくとも {length} 文字の長さである必要があります。",
+      "pattern": "{フィールド} の形式が無効です。",
+      "maxLength": "{field} は {length} 文字を超えることはできません。",
+      "max": "{field} は {value} を超えることはできません。"
+    }
   },
   "navigation": {
     "events": "イベント",
@@ -47,6 +56,10 @@
       "subtitle": "私たちのプラットフォームを信頼する何千ものイベント主催者に参加しましょう。",
       "organizeEvent": "イベント開催",
       "learnMore": "詳細を見る"
+    },
+    "allEvents": {
+      "title": "すべてのイベント",
+      "subTitle": "ここですべてのイベントを見つけることができます。"
     }
   },
   "footer": {
@@ -143,9 +156,13 @@
         "lastNameTooShort": "姓は少なくとも 2 文字である必要があります",
         "passwordSpecialChar": "少なくとも 1 つの特殊文字を含める必要があります",
         "passwordUpperLower": "少なくとも 1 つの大文字と 1 つの小文字を含める必要があります",
-        "passwordNumber": "パスワードには少なくとも 1 つの数字が含まれている必要があります。"
+        "passwordNumber": "パスワードには少なくとも 1 つの数字が含まれている必要があります。",
+        "emailInvalid": "有効なメールアドレスを入力してください。",
+        "phoneInvalid": "有効な電話番号を入力してください。",
+        "passwordMismatch": "パスワードが一致しません。"
       },
-      "setPassword": "安全なパスワードを作成する"
+      "setPassword": "安全なパスワードを作成する",
+      "phone": "連絡先番号"
     },
     "resetPassword": {
       "subtitle": "新しいパスワードを設定してください"
@@ -243,7 +260,9 @@
         "eventPublishing": "イベントの公開",
         "paymentsRefund": "支払い",
         "technicalSupport": "テクニカルサポート",
-        "partner": "パートナー/ビジネスに関するお問い合わせ"
+        "partner": "パートナー/ビジネスに関するお問い合わせ",
+        "selectIssue": "問題を選択してください",
+        "ticketBooking": "チケット予約の問題"
       }
     },
     "message": {
@@ -262,6 +281,54 @@
       "emailRequired": "電子メールは必須です。",
       "emailInvalid": "有効な電子メールを入力してください。",
       "messageRequired": "メッセージを書きます。"
+    }
+  },
+  "guestPurchase": {
+    "token": {
+      "success": "確認メールが正常に送信されました。",
+      "error": "確認メールの送信に失敗しました。"
+    },
+    "toast": {
+      "success": "確認メールを送信しました!\n受信箱を確認して認証を完了してください。"
+    },
+    "eventDetails": {
+      "title": "イベント詳細"
+    },
+    "goBack": "戻る",
+    "title": {
+      "1": "購入を完了する",
+      "2": "ゲストチケット購入"
+    },
+    "subtitle": "チケットを購入するには、詳細を入力してください。",
+    "form": {
+      "firstName": "ファーストネーム",
+      "lastName": "苗字",
+      "firstNamePlaceholder": "あなたの名を入力してください。",
+      "lastNamePlaceholder": "姓を入力してください。",
+      "emailPlaceholder": "メールアドレスを入力してください。",
+      "email": "電子メールアドレス",
+      "eventId": "イベントID",
+      "quantity": "量",
+      "quantityPlaceholder": "チケットの枚数を入力してください。",
+      "button": {
+        "processing": "処理..."
+      }
+    },
+    "button": {
+      "title": "確認メールを送信する",
+      "subtitle": "購入を完了するための確認メールが届きます。"
+    },
+    "success": "確認メールを送信しました!\n受信箱をご確認ください。"
+  },
+  "verifyGuest": {
+    "title": "メールアドレスを確認する",
+    "subtitle": "メールアドレスを確認するまでお待ちください...",
+    "redirect": "支払いページにリダイレクトしています...",
+    "failed": "検証に失敗しました",
+    "tryAgain": "もう一度やり直してください",
+    "backEvents": "イベントに戻ります。",
+    "token": {
+      "failed": "検証トークンが提供されていません。"
     }
   }
 }
