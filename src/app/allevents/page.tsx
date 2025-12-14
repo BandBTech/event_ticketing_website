@@ -19,7 +19,7 @@ export default function EventsPage() {
 
   const { data: eventsData, isLoading: eventsLoading } = useEvents({
     search: searchQuery,
-    category: selectedCategory,
+    //category: selectedCategory,
     limit: 6,
   });
 

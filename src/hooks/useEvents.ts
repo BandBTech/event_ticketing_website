@@ -1,11 +1,12 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import { QueryParams } from '@/types';
+import { eventService } from '@/services/eventService';
 
 export const useEvents = (params: QueryParams = {}) => {
   return useQuery({
     queryKey: ['events', params],
-    queryFn: () => apiClient.getEvents(params),
+    queryFn: () => eventService.getPublicEvents(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
@@ -13,7 +14,7 @@ export const useEvents = (params: QueryParams = {}) => {
 export const useEvent = (id: string) => {
   return useQuery({
     queryKey: ['event', id],
-    queryFn: () => apiClient.getEvent(id),
+    queryFn: () => eventService.getEventById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -48,3 +49,4 @@ export const useInfiniteEvents = (params: Omit<QueryParams, 'page'> = {}) => {
     staleTime: 5 * 60 * 1000,
   });
 };
+

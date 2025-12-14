@@ -12,35 +12,19 @@ import {
   ArrowLeftIcon,
 } from "@phosphor-icons/react";
 import cn from "clsx";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { Country, isValidPhoneNumber } from "react-phone-number-input";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
 import { format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
-const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
+const createUserSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
 
   return z.object({
-    first_name: z
-      .string()
-      .min(1, v.required("First name"))
-      .min(2, v.minLength("First name", 2))
-      .max(50, v.maxLength("First name", 50)),
-    last_name: z
-      .string()
-      .min(1, v.required("Last name"))
-      .min(2, v.minLength("Last name", 2))
-      .max(50, v.maxLength("Last name", 50)),
     email: z.string().min(1, v.required("Email")).email(v.email("Email")),
-    phone: z
-      .string()
-      .min(1, v.required("Phone"))
-      .refine((val) => isValidPhoneNumber(val), v.phone("Phone")),
-    country_code: z.string().min(1, v.required("Country")),
     event_id: z.string().min(1, v.required("Event ID")),
     quantity: z.number().min(1, v.min("Quantity", 1)).max(10, v.max("Quantity", 10)),
   });
@@ -69,64 +53,46 @@ interface EventPreviewData {
   minPrice?: number;
 }
 
-function GuestPurchaseContent() {
+function UserPurchase() {
   const searchParams = useSearchParams();
   const eventIdFromUrl = searchParams.get("event_id");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
-  const [defaultCountry, setDefaultCountry] = useState<Country>("NP");
   const [eventData, setEventData] = useState<EventPreviewData | null>(null);
   const [isLoadingEvent, setIsLoadingEvent] = useState(true);
   const router = useRouter();
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const guestSchema = createGuestSchema(t);
-  type GuestFormData = z.infer<typeof guestSchema>;
+  const userSchema = createUserSchema(t);
+  type UserFormData = z.infer<typeof userSchema>;
 
-  const guestForm = useForm<GuestFormData>({
-    resolver: zodResolver(guestSchema),
+  const userForm = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
-      first_name: "",
-      last_name: "",
       email: "",
-      phone: "",
-      country_code: "",
       event_id: "",
       quantity: 1,
     },
   });
 
   useEffect(() => {
-    const loadEventDataAndDetectCountry = async () => {
+    const loadEventData = async () => {
       try {
-        const storedEventData = localStorage.getItem("guestPurchase_event");
+        const storedEventData = localStorage.getItem("userPurchase_event");
         if (storedEventData) {
           const parsedData = JSON.parse(storedEventData);
           setEventData(parsedData);
 
           if (parsedData.id) {
-            guestForm.setValue("event_id", parsedData.id);
+            userForm.setValue("event_id", parsedData.id);
           }
         } else if (eventIdFromUrl) {
-          guestForm.setValue("event_id", eventIdFromUrl);
+          userForm.setValue("event_id", eventIdFromUrl);
         }
 
-        const cachedCountry = sessionStorage.getItem("user_country_code");
-        if (cachedCountry) {
-          setDefaultCountry(cachedCountry as Country);
-          return;
-        }
 
-        const res = await fetch("https://ipapi.co/json/");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.country_code) {
-            setDefaultCountry(data.country_code as Country);
-            sessionStorage.setItem("user_country_code", data.country_code);
-          }
-        }
       } catch (err) {
         console.error("Failed to load data:", err);
         toast.error("Failed to load event data");
@@ -135,8 +101,9 @@ function GuestPurchaseContent() {
       }
     };
 
-    loadEventDataAndDetectCountry();
-  }, [eventIdFromUrl, guestForm]);
+    loadEventData();
+  }, [eventIdFromUrl, userForm]);
+
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-NP", {
@@ -145,7 +112,7 @@ function GuestPurchaseContent() {
     }).format(amount);
   };
 
-  const onSubmit = async (data: GuestFormData) => {
+  const onSubmit = async (data: UserFormData) => {
     setLoading(true);
     setMessage("");
     setIsSuccess(null);
@@ -188,27 +155,26 @@ function GuestPurchaseContent() {
         throw new Error(responseData.message || t("guestPurchase.token.error"));
       }
 
-      const guestId = responseData.data.id;
+      const userId = responseData.data.id;
       const token = responseData.data.token;
       const purchaseData = {
         event_title: eventData?.title || "Event",
         event_date: eventData?.date || new Date().toISOString(),
         event_venue: eventData?.venue || "Venue",
         quantity: data.quantity,
-        guest_name: `${data.first_name} ${data.last_name}`,
       };
       localStorage.setItem(
-        "guest_purchase_success",
+        "user_purchase_success",
         JSON.stringify(purchaseData)
       );
 
       localStorage.setItem(
-        `guest_${guestId}`,
+        `user_${userId}`,
         JSON.stringify({ ...data, token })
       );
 
-      localStorage.setItem(`guest_token_${token}`, token);
-      localStorage.removeItem("guestPurchase_event");
+      localStorage.setItem(`userPurchase_token_${token}`, token);
+      localStorage.removeItem("userPurchase_event");
 
       setMessage(t("guestPurchase.success"));
       setIsSuccess(true);
@@ -223,7 +189,7 @@ function GuestPurchaseContent() {
         //   },
         // }
       );
-      guestForm.reset();
+      userForm.reset();
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Something went worong.";
@@ -348,75 +314,16 @@ function GuestPurchaseContent() {
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   {eventData
-                    ? t("guestPurchase.title.1")
-                    : t("guestPurchase.title.2")}
+                    ? t("userPurchase.title.1")
+                    : t("userPurchase.title.2")}
                 </h1>
                 <p className="text-gray-600">{t("guestPurchase.subtitle")}</p>
               </div>
 
               <form
-                onSubmit={guestForm.handleSubmit(onSubmit)}
+                onSubmit={userForm.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
-                {/* Name Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t("guestPurchase.form.firstName")}
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
-                        <UserIcon size={20} />
-                      </div>
-                      <input
-                        {...guestForm.register("first_name")}
-                        placeholder={t(
-                          "guestPurchase.form.firstNamePlaceholder"
-                        )}
-                        className={cn(
-                          "w-full border rounded-lg p-3 pl-10",
-                          guestForm.formState.errors.first_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        )}
-                      />
-                    </div>
-                    {guestForm.formState.errors.first_name && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {guestForm.formState.errors.first_name.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t("guestPurchase.form.lastName")}
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
-                        <UserIcon size={20} />
-                      </div>
-                      <input
-                        {...guestForm.register("last_name")}
-                        placeholder={t(
-                          "guestPurchase.form.lastNamePlaceholder"
-                        )}
-                        className={cn(
-                          "w-full border rounded-lg p-3 pl-10",
-                          guestForm.formState.errors.last_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        )}
-                      />
-                    </div>
-                    {guestForm.formState.errors.last_name && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {guestForm.formState.errors.last_name.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
                 {/* Email */}
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -427,85 +334,44 @@ function GuestPurchaseContent() {
                       <EnvelopeIcon size={20} />
                     </div>
                     <input
-                      {...guestForm.register("email")}
+                      {...userForm.register("email")}
                       placeholder={t("guestPurchase.form.emailPlaceholder")}
                       className={cn(
                         "w-full border rounded-lg p-3 pl-10",
-                        guestForm.formState.errors.email
+                        userForm.formState.errors.email
                           ? "border-red-500"
                           : "border-gray-300"
                       )}
                     />
                   </div>
-                  {guestForm.formState.errors.email && (
+                  {userForm.formState.errors.email && (
                     <p className="text-sm text-red-500 mt-1">
-                      {guestForm.formState.errors.email.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Phone Field */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    {t("auth.signup.phone", "Contact Number")}
-                  </label>
-                  <Controller
-                    name="phone"
-                    control={guestForm.control}
-                    render={({ field }) => (
-                      <PhoneInput
-                        value={field.value}
-                        onChange={(value) => {
-                          field.onChange(value);
-                          if (value) {
-                            const countryMatch = value.match(/^\+\d{1,4}/);
-                            guestForm.setValue(
-                              "country_code",
-                              countryMatch ? countryMatch[0] : ""
-                            );
-                          } else {
-                            guestForm.setValue("country_code", "");
-                          }
-                        }}
-                        defaultCountry={defaultCountry}
-                        placeholder={t(
-                          "auth.signup.phonePlaceholder",
-                          "981-234-5678"
-                        )}
-                        className={cn(
-                          guestForm.formState.errors.phone && "border-red-500"
-                        )}
-                      />
-                    )}
-                  />
-                  {guestForm.formState.errors.phone && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {guestForm.formState.errors.phone.message}
+                      {userForm.formState.errors.email.message}
                     </p>
                   )}
                 </div>
 
                 {/* Event ID & Quantity */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                       {t("guestPurchase.form.eventId")}
                     </label>
                     <input
-                      {...guestForm.register("event_id")}
+                      {...userForm.register("event_id")}
                       placeholder={t("guestPurchase.form.eventId")}
                       readOnly={!!eventData}
                       className={cn(
-                        "w-full border rounded-lg p-3",
-                        guestForm.formState.errors.event_id
+                        "w-full rounded-lg border p-3",
+                        userForm.formState.errors.event_id
                           ? "border-red-500"
                           : "border-gray-300",
                         eventData && "bg-gray-100 cursor-not-allowed"
                       )}
                     />
-                    {guestForm.formState.errors.event_id && (
+                    {userForm.formState.errors.event_id && (
                       <p className="text-sm text-red-500 mt-1">
-                        {guestForm.formState.errors.event_id.message}
+                        {userForm.formState.errors.event_id.message}
                       </p>
                     )}
                   </div>
@@ -514,15 +380,17 @@ function GuestPurchaseContent() {
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                       {t("guestPurchase.form.quantity")}
                     </label>
-                     <div className="flex items-center gap-2">
-                         <button
+
+                    <div className="flex items-center gap-2">
+                  
+                      <button
                         type="button"
                         onClick={() =>
-                          guestForm.setValue(
+                          userForm.setValue(
                             "quantity",
                             Math.max(
                               1,
-                              (guestForm.getValues("quantity") || 1) - 1
+                              (userForm.getValues("quantity") || 1) - 1
                             )
                           )
                         }
@@ -530,28 +398,28 @@ function GuestPurchaseContent() {
                       >
                         –
                       </button>
-                    <input
-                      {...guestForm.register("quantity", {
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                      min="1"
-                      readOnly
-                      className={cn(
-                        "w-full border rounded-lg p-3 text-center bg-gray-100 cursor-default",
-                        guestForm.formState.errors.quantity
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      )}
-                    />
-                            <button
+                      <input
+                        {...userForm.register("quantity", {
+                          valueAsNumber: true,
+                        })}
+                        type="number"
+                        min="1"
+                        readOnly
+                        className={cn(
+                          "w-full border rounded-lg p-3 text-center bg-gray-100 cursor-default",
+                          userForm.formState.errors.quantity
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        )}
+                      />
+                      <button
                         type="button"
                         onClick={() =>
-                          guestForm.setValue(
+                          userForm.setValue(
                             "quantity",
                             Math.max(
                               1,
-                              (guestForm.getValues("quantity") || 1) + 1
+                              (userForm.getValues("quantity") || 1) + 1
                             )
                           )
                         }
@@ -560,12 +428,38 @@ function GuestPurchaseContent() {
                         +
                       </button>
                     </div>
-                    {guestForm.formState.errors.quantity && (
+
+                    {userForm.formState.errors.quantity && (
                       <p className="text-sm text-red-500 mt-1">
-                        {guestForm.formState.errors.quantity.message}
+                        {userForm.formState.errors.quantity.message}
                       </p>
                     )}
                   </div>
+
+                  {/* <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      {t('guestPurchase.form.quantity')}
+                    </label>
+                    <input
+                      {...userForm.register("quantity", {
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                      min="1"
+                      placeholder={t('guestPurchase.form.quantityPlaceholder')}
+                      className={cn(
+                        "w-full border rounded-lg p-3",
+                        userForm.formState.errors.quantity
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      )}
+                    />
+                    {userForm.formState.errors.quantity && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {userForm.formState.errors.quantity.message}
+                      </p>
+                    )}
+                  </div>*/}
                 </div>
 
                 {/* Submit Button */}
@@ -580,7 +474,7 @@ function GuestPurchaseContent() {
                       {t("guestPurchase.form.button.processing")}
                     </div>
                   ) : (
-                    t("guestPurchase.button.title")
+                    t("userPurchase.button.title")
                   )}
                 </button>
 
@@ -597,11 +491,6 @@ function GuestPurchaseContent() {
                   </div>
                 )}
               </form>
-
-              {/* Additional Info */}
-              <div className="text-center text-sm text-gray-600">
-                <p>{t("guestPurchase.button.subtitle")}</p>
-              </div>
             </div>
           </div>
         </div>
@@ -611,7 +500,7 @@ function GuestPurchaseContent() {
 }
 
 // Loading component for Suspense fallback
-function GuestPurchaseLoading() {
+function UserPurchaseLoading() {
   return (
     <div className="min-h-screen relative flex items-center justify-center px-4 py-8 sm:py-20 bg-gray-50">
       <div className="w-full max-w-6xl relative z-10">
@@ -645,8 +534,10 @@ function GuestPurchaseLoading() {
 
 export default function GuestPurchasePage() {
   return (
-    <Suspense fallback={<GuestPurchaseLoading />}>
-      <GuestPurchaseContent />
+    <ProtectedRoute requireAuth={true} redirectTo="/login">
+    <Suspense fallback={<UserPurchaseLoading />}>
+      <UserPurchase />
     </Suspense>
+    </ProtectedRoute>
   );
 }

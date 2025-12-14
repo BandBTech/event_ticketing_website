@@ -27,7 +27,12 @@
     "about": "Chi Siamo",
     "contact": "Contatti",
     "signIn": "Accedi",
-    "organizeEvent": "Organizza Evento"
+    "organizeEvent": "Organizza Evento",
+    "profile": "Il mio profilo",
+    "myTickets": "I miei biglietti",
+    "billing": "Fatturazione",
+    "notifications": "Notifica",
+    "logout": "Esci"
   },
   "hero": {
     "badge": "La Piattaforma Eventi Premier del Nepal",
@@ -169,10 +174,27 @@
     },
     "verifyOTP": {
       "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti.",
-      "verifyButton": "Verificare l'OTP"
+      "verifyButton": "Verificare l'OTP",
+      "back": "Indietro",
+      "title": "Verifica la tua email",
+      "subtitle": "Inserisci il codice di 6 cifre inviato a",
+      "verifying": "Verifica...",
+      "didntReceive": "Non hai ricevuto il codice?",
+      "resend": "Invia nuovamente",
+      "checkSpam": "Controlla la cartella spam se non vedi l'e-mail"
     },
     "toast": {
       "passwordChangedLogin": "Effettua il login con la tua nuova password."
+    },
+    "forgotPassword": {
+      "title": "Ha dimenticato la password",
+      "subtitle": "Inserisci la tua email per ricevere un codice di reimpostazione della password",
+      "email": "Indirizzo e-mail",
+      "emailPlaceholder": "Inserisci il tuo indirizzo email",
+      "sending": "Invio...",
+      "sendResetCode": "Invia codice di ripristino",
+      "rememberPassword": "Ricordi la tua password?",
+      "loginHere": "Accedi qui"
     }
   },
   "settings": {
@@ -199,7 +221,8 @@
       "notificationsDesc": "E-mail e notifiche push",
       "billing": "Fatturazione",
       "billingDesc": "Gestisci i tuoi metodi di pagamento",
-      "ticketsDesc": "Visualizza i biglietti per i tuoi eventi"
+      "ticketsDesc": "Visualizza i biglietti per i tuoi eventi",
+      "tickets": "I miei biglietti"
     }
   },
   "about": {
@@ -329,5 +352,39 @@
     "token": {
       "failed": "Nessun token di verifica fornito."
     }
+  },
+  "userPurchase": {
+    "title": {
+      "1": "Completa il tuo acquisto",
+      "2": "Acquisto biglietto utente"
+    },
+    "button": {
+      "title": "Vai ai pagamenti"
+    }
+  },
+  "eventDetails": {
+    "eventNotFound": "Evento non trovato",
+    "button": {
+      "buyTickets": "Acquista i biglietti",
+      "buyTicketsGuest": "Acquista i biglietti come ospite",
+      "loginToBuy": "Accedi per acquistare i biglietti",
+      "share": "Condividi evento"
+    },
+    "backtoEvents": "Torna a Eventi"
+  },
+  "profile": {
+    "title": "Il mio profilo",
+    "subtitle": "Gestisci le tue informazioni personali",
+    "editButton": "Modifica profilo",
+    "personalInfo": "Informazioni personali",
+    "firstName": "Nome di battesimo",
+    "lastName": "Cognome",
+    "email": "E-mail",
+    "emailNote": "L'e-mail non può essere modificata",
+    "phone": "Numero di telefono",
+    "saving": "Risparmio...",
+    "saveButton": "Salva modifiche",
+    "cancelButton": "Cancellare",
+    "organization": "Organizzazione"
   }
 }

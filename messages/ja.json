@@ -27,7 +27,12 @@
     "about": "会社概要",
     "contact": "お問い合わせ",
     "signIn": "サインイン",
-    "organizeEvent": "イベント開催"
+    "organizeEvent": "イベント開催",
+    "profile": "私のプロフィール",
+    "myTickets": "私のチケット",
+    "billing": "請求する",
+    "notifications": "通知",
+    "logout": "ログアウト"
   },
   "hero": {
     "badge": "ネパール最高のイベントプラットフォーム",
@@ -169,10 +174,27 @@
     },
     "verifyOTP": {
       "otpValidity": "コードは 10 分後に自動的に期限切れになります。",
-      "verifyButton": "OTP を確認する"
+      "verifyButton": "OTP を確認する",
+      "back": "戻る",
+      "title": "メールアドレスを確認してください",
+      "subtitle": "に送信された 6 桁のコードを入力してください",
+      "verifying": "確認中...",
+      "didntReceive": "コードを受け取っていませんか?",
+      "resend": "再送信",
+      "checkSpam": "メールが見つからない場合は迷惑メールフォルダを確認してください"
     },
     "toast": {
       "passwordChangedLogin": "新しいパスワードでログインしてください。"
+    },
+    "forgotPassword": {
+      "title": "パスワードをお忘れですか",
+      "subtitle": "パスワードリセットコードを受け取るにはメールアドレスを入力してください",
+      "email": "電子メールアドレス",
+      "emailPlaceholder": "メールアドレスを入力してください",
+      "sending": "送信中...",
+      "sendResetCode": "リセットコードを送信する",
+      "rememberPassword": "パスワードを覚えていますか?",
+      "loginHere": "ここからログインしてください"
     }
   },
   "settings": {
@@ -200,7 +222,8 @@
       "notificationsDesc": "メール通知とプッシュ通知",
       "billing": "請求する",
       "billingDesc": "支払い方法を管理する",
-      "ticketsDesc": "イベントチケットを表示する"
+      "ticketsDesc": "イベントチケットを表示する",
+      "tickets": "私のチケット"
     }
   },
   "about": {
@@ -330,5 +353,39 @@
     "token": {
       "failed": "検証トークンが提供されていません。"
     }
+  },
+  "userPurchase": {
+    "title": {
+      "1": "購入を完了する",
+      "2": "ユーザーチケット購入"
+    },
+    "button": {
+      "title": "支払いに移動"
+    }
+  },
+  "eventDetails": {
+    "eventNotFound": "イベントが見つかりません",
+    "button": {
+      "buyTickets": "チケットを購入する",
+      "buyTicketsGuest": "ゲストとしてチケットを購入する",
+      "loginToBuy": "ログインしてチケットを購入する",
+      "share": "イベントを共有する"
+    },
+    "backtoEvents": "イベントに戻る"
+  },
+  "profile": {
+    "title": "私のプロフィール",
+    "subtitle": "個人情報の管理",
+    "editButton": "プロフィールの編集",
+    "personalInfo": "個人情報",
+    "firstName": "ファーストネーム",
+    "lastName": "苗字",
+    "email": "電子メール",
+    "emailNote": "メールアドレスは変更できません",
+    "phone": "電話番号",
+    "saving": "保存中...",
+    "saveButton": "変更を保存",
+    "cancelButton": "キャンセル",
+    "organization": "組織"
   }
 }

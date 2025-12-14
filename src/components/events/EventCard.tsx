@@ -18,6 +18,7 @@ interface EventCardProps {
 }
 
 const getStatusColor = (status: string) => {
+
   switch (status) {
     case 'On Sale':
       return 'bg-green-500/75 text-white border-white/50';
@@ -36,9 +37,15 @@ export function EventCard({ event, className }: EventCardProps) {
   const { t } = useTranslation(locale);
   
   const availableTickets = event.ticketTypes.reduce(
-    (total, ticket) => total + (ticket.quantity - ticket.sold),
+    (total, ticket) => {
+      const sold = ticket.sold || 0;
+          const quantity = ticket.quantity || 0;
+          return total + (quantity - sold);
+    },
     0
-  );
+  ); 
+
+
 
   return (
     <Link href={`/events/${event.id}`} className="block">
@@ -111,7 +118,7 @@ export function EventCard({ event, className }: EventCardProps) {
           <div className="flex items-center gap-2.5 text-sm">
             <MapPin size={20} className="text-gray-600 flex-shrink-0" />
             <span className="text-gray-600 text-[13px] leading-[1.54] truncate">
-              {event.venue.city}, {event.venue.country}
+              {event.venue.name}, {event.venue.country}
             </span>
           </div>
         </div>
@@ -128,8 +135,8 @@ export function EventCard({ event, className }: EventCardProps) {
             showGlow={true}
             disabled={availableTickets === 0}
           >
-            {availableTickets > 0 ? t('common.viewDetails') : t('events.soldOut')}
-            {availableTickets > 0 && <ArrowRight size={16} />}
+            {availableTickets === 0 ? t('common.viewDetails') : t('events.soldOut')}
+            {availableTickets === 0 && <ArrowRight size={16} />}
           </FigmaButton>
         </div>
       </CardContent>

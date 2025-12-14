@@ -12,10 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { apiClient } from "@/lib/api";
 import { Event } from "@/types/event";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
+import { eventService } from "@/services/eventService";
 
 interface EventDetailClientProps {
   eventId: string;
@@ -30,12 +32,14 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const [showFAQ, setShowFAQ] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         setIsLoading(true);
-        const eventData = await apiClient.getEvent(eventId);
+        const eventData = await eventService.getEventById(eventId);
         setEvent(eventData);
       } catch (error) {
         console.error("Failed to fetch event:", error);
@@ -46,24 +50,17 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     fetchEvent();
   }, [eventId]);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("auth-storage");
+useEffect(() => {
+  try {
+    const raw = localStorage.getItem("auth-storage");
+    const parsed = raw ? JSON.parse(raw) : null;
 
-      if (!raw) {
-        setIsLoggedIn(false);
-        return;
-      }
+    setIsLoggedIn(parsed?.state?.isAuthenticated === true);
+  } catch {
+    setIsLoggedIn(false);
+  }
+}, []);
 
-      const parsed = JSON.parse(raw);
-      const isAuth = parsed?.state?.isAuthenticated === true;
-
-      setIsLoggedIn(isAuth);
-    } catch (err) {
-      console.error("Failed to parse auth-storage:", err);
-      setIsLoggedIn(false);
-    }
-  }, []);
 
   const handleShare = async () => {
     if (navigator.share && event) {
@@ -95,9 +92,20 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     localStorage.setItem("guestPurchase_event", JSON.stringify(eventData));
     router.push("/guest-purchase");
   };
-  const handleJoinWaitlist = () => {
-    // TODO: Implement waitlist functionality
-    console.log("Join waitlist");
+  const handleUserPurchase = () => {
+if(!event) return;
+    const eventData={
+      id: eventId,
+      title: event.title,
+      image: event.bannerImageUrl || event.imageUrl,
+      date: event.startDate,
+      venue: event.venue.name,
+      city: event.venue.city,
+      address: event.venue.address,
+      minPrice: Math.min(...event.ticketTypes.map((t) => t.price)),
+    };
+      localStorage.setItem("userPurchase_event", JSON.stringify(eventData));
+    router.push("/user-purchase");
   };
 
   if (isLoading) {
@@ -130,9 +138,9 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
           <main className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
-                Event not found
+               {t('eventDetails.eventNotFound')}
               </h1>
-              <Button onClick={() => router.push("/")}>Back to Events</Button>
+              <Button onClick={() => router.push("/allevents")}>{t('eventDetails.backtoEvents')}</Button>
             </div>
           </main>
         </div>
@@ -338,26 +346,26 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   <div className="space-y-3">
                     {isLoggedIn && (
                       <Button
-                        onClick={handleJoinWaitlist}
+                        onClick={handleUserPurchase}
                         className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
                       >
-                        Buy Tickets
+                        {t('eventDetails.button.buyTickets')}
                       </Button>
                     )}
                     {!isLoggedIn && (
                       <>
                         <Button
                           onClick={handleGuestTickets}
-                          className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
+                          className="w-full h-12 bg-blue-600 hover:bg-blue-800 text-white font-medium rounded-lg"
                         >
-                          Buy Tickets as Guest
+                          {t('eventDetails.button.buyTicketsGuest')}
                         </Button>
 
                         <Button
                           onClick={() => router.push("/login")}
-                          className="w-full h-12 bg-green-600 hover:bg-gray-900 text-white font-medium rounded-lg"
+                          className="w-full h-12 bg-green-600 hover:bg-green-800 text-white font-medium rounded-lg"
                         >
-                          Login to Buy Tickets
+                         {t('eventDetails.button.loginToBuy')}
                         </Button>
                       </>
                     )}
@@ -368,7 +376,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       className="w-full h-12 border-2 border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-between"
                     >
                       <span className="font-medium text-gray-900">
-                        Share event
+                        {t('eventDetails.button.share')}
                       </span>
                       <button
                         onClick={(e) => {

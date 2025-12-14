@@ -129,7 +129,59 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
 };
 
 export const eventService = {
-  getPublicEvents: async (params: PublicEventsParams = {}) => {
+//   getPublicEvents: async (params: PublicEventsParams = {}) => {
+//     const queryParams = new URLSearchParams();
+//     if (params.page) queryParams.append('page', params.page.toString());
+//     if (params.limit) queryParams.append('limit', params.limit.toString());
+//     if (params.search) queryParams.append('search', params.search);
+//     if (params.location) queryParams.append('location', params.location);
+//     if (params.start_date) queryParams.append('start_date', params.start_date);
+//     if (params.end_date) queryParams.append('end_date', params.end_date);
+//     if (params.min_price) queryParams.append('min_price', params.min_price.toString());
+//     if (params.max_price) queryParams.append('max_price', params.max_price.toString());
+//     if (params.sort) queryParams.append('sort', params.sort);
+
+//     const response = await api.get<ApiEventsResponse>(`/public/events?${queryParams.toString()}`);
+    
+//     // The API response structure might vary, adjusting based on common patterns
+//     // If response.data is the object containing events, use it.
+//     // If response itself is the object (handled by apiClient), check that.
+//     // apiClient returns data.data or data.
+    
+//     // Based on find_paths.js output, response 200 schema has data object.
+//     // And apiClient returns data.data || data.
+//     // So we likely get { events: [...], pagination: {...} } directly.
+// console.log('Type of response:', typeof response);
+// console.log('Response keys:', Object.keys(response));
+// console.log('Has events?', 'events' in response);
+// console.log('Has data?', 'data' in response);
+// console.log('Full response object:', JSON.stringify(response, null, 2));
+//     const responseData = response as unknown as {
+//        events: ApiEvent[], 
+//        pagination: { 
+//         total: number; 
+//         page: number; 
+//         limit: number; 
+//         total_pages: number; } };
+
+//      console.log('Mapped events:', (responseData.events || []).map(mapEvent));
+//     return {
+//       events: (responseData.events || []).map(mapEvent),
+//       pagination: {
+//         ...responseData.pagination,
+//         totalPages: responseData.pagination.total_pages
+//       }
+//     };
+//   },
+  getPublicEvents: async (params: PublicEventsParams = {}): Promise<{
+    events: Event[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  }> => {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
@@ -141,27 +193,27 @@ export const eventService = {
     if (params.max_price) queryParams.append('max_price', params.max_price.toString());
     if (params.sort) queryParams.append('sort', params.sort);
 
-    const response = await api.get<ApiEventsResponse>(`/public/events?${queryParams.toString()}`);
+    // Make the API call
+    const response = await api.get<{
+      events: ApiEvent[];
+      limit: number;
+      page: number;
+      total: number;
+      total_pages: number;
+    }>(`/public/events?${queryParams.toString()}`);
     
-    // The API response structure might vary, adjusting based on common patterns
-    // If response.data is the object containing events, use it.
-    // If response itself is the object (handled by apiClient), check that.
-    // apiClient returns data.data or data.
-    
-    // Based on find_paths.js output, response 200 schema has data object.
-    // And apiClient returns data.data || data.
-    // So we likely get { events: [...], pagination: {...} } directly.
-    
-    const responseData = response as unknown as { events: ApiEvent[], pagination: { total: number; page: number; limit: number; total_pages: number; } };
-    
+    // Return the transformed data
     return {
-      events: (responseData.events || []).map(mapEvent),
+      events: (response.events || []).map(mapEvent),
       pagination: {
-        ...responseData.pagination,
-        totalPages: responseData.pagination.total_pages
+        total: response.total,
+        page: response.page,
+        limit: response.limit,
+        totalPages: response.total_pages
       }
     };
   },
+
 
   getFeaturedEvents: async (params: FeaturedEventsParams = {}) => {
     const queryParams = new URLSearchParams();
@@ -200,4 +252,18 @@ export const eventService = {
     
     return (responseData.events || []).map(mapEvent);
   },
+
+    getEventById: async (id: string): Promise<Event> => {
+    try {
+      const response = await api.get<ApiEvent>(`/public/events/${id}`);
+      
+      console.log('Event by ID response:', response);
+      return mapEvent(response);
+    } catch (error) {
+      console.error(`Error fetching event with ID ${id}:`, error);
+      throw new Error(`Failed to fetch event: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
 };
+
+

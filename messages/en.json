@@ -30,7 +30,10 @@
     "signIn": "Sign In",
     "organizeEvent": "Organize Event",
     "profile": "My Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "myTickets": "My Tickets",
+    "billing": "Billing",
+    "notifications": "Notification"
   },
   "profile": {
     "title": "My Profile",
@@ -468,5 +471,24 @@
     "token": {
       "failed": "No verification token provided."
     }
+  },
+  "userPurchase": {
+    "title": {
+      "1": "Complete Your Purchase",
+      "2": "User Ticket Purchase"
+    },
+    "button": {
+      "title": "Go to payments"
+    }
+  },
+  "eventDetails": {
+    "eventNotFound": "Event Not Found",
+    "button": {
+      "buyTickets": "Buy Tickets",
+      "buyTicketsGuest": "Buy Tickets as Guest",
+      "loginToBuy": "Login to Buy Tickets",
+      "share": "Share Event"
+    },
+    "backtoEvents": "Back to Events"
   }
 }

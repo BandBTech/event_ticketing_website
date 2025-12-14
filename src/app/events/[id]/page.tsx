@@ -1,17 +1,24 @@
+
 import { EventDetailClient } from "@/components/events/EventDetailClient";
-import { mockEvents } from "@/data/mockEvents";
+import { eventService } from "@/services/eventService";
 
 export async function generateStaticParams() {
-  // Generate paths for all events
-  return mockEvents.map((event) => ({
-    id: event.id,
-  }));
+  try {
+    const response = await eventService.getPublicEvents({ limit: 100 }); 
+    return response.events.map((event) => ({
+      id: event.id,
+    }));
+  } catch (error) {
+    console.error('Error during static generation:', error);
+    return [];
+  }
 }
 
-export default function EventDetailPage({
+export default async function EventDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  return <EventDetailClient eventId={params.id} />;
+  const { id } = await params; 
+  return <EventDetailClient eventId={id} />;
 }
