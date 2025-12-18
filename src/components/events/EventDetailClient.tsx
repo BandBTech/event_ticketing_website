@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { eventService } from "@/services/eventService";
+import DOMPurify from 'dompurify';
 
 interface EventDetailClientProps {
   eventId: string;
@@ -50,17 +51,16 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     fetchEvent();
   }, [eventId]);
 
-useEffect(() => {
-  try {
-    const raw = localStorage.getItem("auth-storage");
-    const parsed = raw ? JSON.parse(raw) : null;
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("auth-storage");
+      const parsed = raw ? JSON.parse(raw) : null;
 
-    setIsLoggedIn(parsed?.state?.isAuthenticated === true);
-  } catch {
-    setIsLoggedIn(false);
-  }
-}, []);
-
+      setIsLoggedIn(parsed?.state?.isAuthenticated === true);
+    } catch {
+      setIsLoggedIn(false);
+    }
+  }, []);
 
   const handleShare = async () => {
     if (navigator.share && event) {
@@ -93,8 +93,8 @@ useEffect(() => {
     router.push("/guest-purchase");
   };
   const handleUserPurchase = () => {
-if(!event) return;
-    const eventData={
+    if (!event) return;
+    const eventData = {
       id: eventId,
       title: event.title,
       image: event.bannerImageUrl || event.imageUrl,
@@ -104,7 +104,7 @@ if(!event) return;
       address: event.venue.address,
       minPrice: Math.min(...event.ticketTypes.map((t) => t.price)),
     };
-      localStorage.setItem("userPurchase_event", JSON.stringify(eventData));
+    localStorage.setItem("userPurchase_event", JSON.stringify(eventData));
     router.push("/user-purchase");
   };
 
@@ -138,9 +138,11 @@ if(!event) return;
           <main className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
-               {t('eventDetails.eventNotFound')}
+                {t("eventDetails.eventNotFound")}
               </h1>
-              <Button onClick={() => router.push("/allevents")}>{t('eventDetails.backtoEvents')}</Button>
+              <Button onClick={() => router.push("/allevents")}>
+                {t("eventDetails.backtoEvents")}
+              </Button>
             </div>
           </main>
         </div>
@@ -197,12 +199,19 @@ if(!event) return;
               {/* Description */}
               <div className="glass-card rounded-2xl p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Description
+                  {t("eventDetails.description.title")}
                 </h2>
                 <div className={cn("text-gray-700 space-y-4")}>
-                  <p className={cn(!isDescriptionExpanded && "line-clamp-4")}>
-                    {event.description}
-                  </p>
+                  <div
+                    className={cn(
+                      "prose prose-sm max-w-none", 
+                      !isDescriptionExpanded && "line-clamp-4"
+                    )}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(event.description),
+                    }}
+                  />
+
                   {event.description.length > 200 && (
                     <button
                       onClick={() =>
@@ -233,7 +242,7 @@ if(!event) return;
                       <p className="text-sm text-gray-600">Event organizer</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  {/* <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -248,7 +257,7 @@ if(!event) return;
                     >
                       Contact
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
                 <p className="text-gray-700 mt-4">
                   {event.venue.name} is a premier venue located at{" "}
@@ -349,7 +358,7 @@ if(!event) return;
                         onClick={handleUserPurchase}
                         className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
                       >
-                        {t('eventDetails.button.buyTickets')}
+                        {t("eventDetails.button.buyTickets")}
                       </Button>
                     )}
                     {!isLoggedIn && (
@@ -358,14 +367,14 @@ if(!event) return;
                           onClick={handleGuestTickets}
                           className="w-full h-12 bg-blue-600 hover:bg-blue-800 text-white font-medium rounded-lg"
                         >
-                          {t('eventDetails.button.buyTicketsGuest')}
+                          {t("eventDetails.button.buyTicketsGuest")}
                         </Button>
 
                         <Button
                           onClick={() => router.push("/login")}
                           className="w-full h-12 bg-green-600 hover:bg-green-800 text-white font-medium rounded-lg"
                         >
-                         {t('eventDetails.button.loginToBuy')}
+                          {t("eventDetails.button.loginToBuy")}
                         </Button>
                       </>
                     )}
@@ -376,7 +385,7 @@ if(!event) return;
                       className="w-full h-12 border-2 border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-between"
                     >
                       <span className="font-medium text-gray-900">
-                        {t('eventDetails.button.share')}
+                        {t("eventDetails.button.share")}
                       </span>
                       <button
                         onClick={(e) => {

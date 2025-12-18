@@ -322,14 +322,14 @@ function GuestPurchaseContent() {
               </div>
             )}
 
-            {eventData && (
+            {/* {eventData && (
               <div className="glass-card rounded-2xl p-6 shadow-lg border border-gray-200">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">
                   {t("guestPurchase.eventDetails.title")}
                 </h3>
                 <div className="space-y-3 text-gray-700"></div>
               </div>
-            )}
+            )} */}
           </div>
 
           <div className="glass-login-card rounded-2xl p-8 shadow-lg">
@@ -359,7 +359,7 @@ function GuestPurchaseContent() {
                 className="space-y-6"
               >
                 {/* Name Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                       {t("guestPurchase.form.firstName")}
@@ -415,7 +415,7 @@ function GuestPurchaseContent() {
                       </p>
                     )}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Email */}
                 <div>
@@ -445,7 +445,7 @@ function GuestPurchaseContent() {
                 </div>
 
                 {/* Phone Field */}
-                <div>
+                {/* <div>
                   <label className="text-sm font-medium text-gray-700 mb-2 block">
                     {t("auth.signup.phone", "Contact Number")}
                   </label>
@@ -484,10 +484,11 @@ function GuestPurchaseContent() {
                     </p>
                   )}
                 </div>
+                
 
                 {/* Event ID & Quantity */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                       {t("guestPurchase.form.eventId")}
                     </label>
@@ -508,7 +509,7 @@ function GuestPurchaseContent() {
                         {guestForm.formState.errors.event_id.message}
                       </p>
                     )}
-                  </div>
+                  </div>  */}
 
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import {  useState } from 'react';
 import { EventSearch } from '@/components/events/EventSearch';
 import { EventGrid } from '@/components/events/EventGrid';
 import { Badge } from '@/components/ui/badge';

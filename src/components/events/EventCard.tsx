@@ -36,15 +36,21 @@ export function EventCard({ event, className }: EventCardProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   
+    console.log('🎫 Event:', event.title);
+  console.log('🎫 Ticket types:', event.ticketTypes);
+  console.log('🎫 First ticket type:', event.ticketTypes[0]);
+
   const availableTickets = event.ticketTypes.reduce(
     (total, ticket) => {
       const sold = ticket.sold || 0;
-          const quantity = ticket.quantity || 0;
-          return total + (quantity - sold);
+      const quantity = ticket.quantity || 0;
+      console.log(`🎫 Ticket ${ticket.name}: quantity=${quantity}, sold=${sold}, available=${quantity - sold}`);
+      return total + (quantity - sold);
     },
     0
   ); 
 
+  console.log('🎫 Total available tickets:', availableTickets);
 
 
   return (
@@ -135,8 +141,8 @@ export function EventCard({ event, className }: EventCardProps) {
             showGlow={true}
             disabled={availableTickets === 0}
           >
-            {availableTickets === 0 ? t('common.viewDetails') : t('events.soldOut')}
-            {availableTickets === 0 && <ArrowRight size={16} />}
+            {availableTickets > 0 ? t('common.viewDetails') : t('events.soldOut')}
+            {availableTickets > 0 && <ArrowRight size={16} />}
           </FigmaButton>
         </div>
       </CardContent>

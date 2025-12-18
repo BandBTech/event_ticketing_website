@@ -353,7 +353,7 @@ function UserPurchase() {
 
                 {/* Event ID & Quantity */}
                 <div className="grid grid-cols-1 grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                       {t("guestPurchase.form.eventId")}
                     </label>
@@ -374,7 +374,7 @@ function UserPurchase() {
                         {userForm.formState.errors.event_id.message}
                       </p>
                     )}
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -436,30 +436,6 @@ function UserPurchase() {
                     )}
                   </div>
 
-                  {/* <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t('guestPurchase.form.quantity')}
-                    </label>
-                    <input
-                      {...userForm.register("quantity", {
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                      min="1"
-                      placeholder={t('guestPurchase.form.quantityPlaceholder')}
-                      className={cn(
-                        "w-full border rounded-lg p-3",
-                        userForm.formState.errors.quantity
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      )}
-                    />
-                    {userForm.formState.errors.quantity && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {userForm.formState.errors.quantity.message}
-                      </p>
-                    )}
-                  </div>*/}
                 </div>
 
                 {/* Submit Button */}
@@ -532,7 +508,7 @@ function UserPurchaseLoading() {
   );
 }
 
-export default function GuestPurchasePage() {
+export default function UserPurchasePage() {
   return (
     <ProtectedRoute requireAuth={true} redirectTo="/login">
     <Suspense fallback={<UserPurchaseLoading />}>

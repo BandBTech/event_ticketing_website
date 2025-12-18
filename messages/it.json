@@ -370,7 +370,10 @@
       "loginToBuy": "Accedi per acquistare i biglietti",
       "share": "Condividi evento"
     },
-    "backtoEvents": "Torna a Eventi"
+    "backtoEvents": "Torna a Eventi",
+    "description": {
+      "title": "Descrizione"
+    }
   },
   "profile": {
     "title": "Il mio profilo",

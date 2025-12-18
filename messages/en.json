@@ -489,6 +489,9 @@
       "loginToBuy": "Login to Buy Tickets",
       "share": "Share Event"
     },
-    "backtoEvents": "Back to Events"
+    "backtoEvents": "Back to Events",
+    "description": {
+      "title": "Description"
+    }
   }
 }

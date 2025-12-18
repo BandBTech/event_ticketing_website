@@ -371,7 +371,10 @@
       "loginToBuy": "ログインしてチケットを購入する",
       "share": "イベントを共有する"
     },
-    "backtoEvents": "イベントに戻る"
+    "backtoEvents": "イベントに戻る",
+    "description": {
+      "title": "説明"
+    }
   },
   "profile": {
     "title": "私のプロフィール",
