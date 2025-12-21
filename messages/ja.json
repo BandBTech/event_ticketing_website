@@ -19,7 +19,14 @@
       "pattern": "{フィールド} の形式が無効です。",
       "maxLength": "{field} は {length} 文字を超えることはできません。",
       "max": "{field} は {value} を超えることはできません。"
-    }
+    },
+    "faq": "よくある質問",
+    "location": "位置",
+    "organizer": "主催者",
+    "place": "場所",
+    "date": "日付",
+    "tags": "タグ",
+    "allEventsLoaded": "すべてのイベントがロードされました"
   },
   "navigation": {
     "events": "イベント",

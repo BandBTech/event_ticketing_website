@@ -5,7 +5,7 @@ import { EventSearch } from '@/components/events/EventSearch';
 import { EventGrid } from '@/components/events/EventGrid';
 import { Badge } from '@/components/ui/badge';
 import { FigmaButton } from '@/components/ui/figma-button';
-import { useEvents, useEventCategories } from '@/hooks/useEvents';
+import { useEvents, useEventCategories, useInfiniteEvents } from '@/hooks/useEvents';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
@@ -17,11 +17,21 @@ export default function EventsPage() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
-  const { data: eventsData, isLoading: eventsLoading } = useEvents({
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteEvents({
     search: searchQuery,
-    //category: selectedCategory,
     limit: 6,
   });
+
+  const allEvents = data?.pages.flatMap(page => page.events) || [];
+  
+
+  const pagination = data?.pages[data.pages.length - 1]?.pagination;
 
   const { data: categories } = useEventCategories();
 
@@ -31,6 +41,11 @@ export default function EventsPage() {
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(selectedCategory === category ? '' : category);
+  };
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
   };
 
   return (
@@ -75,16 +90,44 @@ export default function EventsPage() {
       )}
 
       {/* Event Grid */}
-      <div className="mb-12">
-        <EventGrid events={eventsData?.events || []} isLoading={eventsLoading} />
+    <div className="mb-12">
+        <EventGrid 
+          events={allEvents} 
+          isLoading={isLoading && allEvents.length === 0} 
+        />
       </div>
 
       {/* Load More */}
-      {eventsData && eventsData.pagination.page < eventsData.pagination.totalPages && (
+ {hasNextPage && (
         <div className="text-center">
-          <FigmaButton variant="primary" size="lg" showGlow={true}>
-            {t('common.loadMore')}
+          <FigmaButton 
+            variant="primary" 
+            size="lg" 
+            showGlow={true}
+            onClick={handleLoadMore}
+            disabled={isFetchingNextPage}
+          >
+            {isFetchingNextPage ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                {t('common.loading')}
+              </span>
+            ) : (
+              t('common.loadMore')
+            )}
           </FigmaButton>
+                  {pagination && (
+            <p className="text-gray-600 text-sm mt-3">
+              Showing {allEvents.length} of {pagination.total} events
+            </p>
+          )}
+        </div>
+      )}
+       {!hasNextPage && allEvents.length > 0 && (
+        <div className="text-center">
+          <p className="text-gray-600">
+            {t('common.allEventsLoaded')}
+          </p>
         </div>
       )}
     </div>

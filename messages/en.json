@@ -20,7 +20,14 @@
       "max": "{field} cannot exceed {value}.",
       "pattern": "{field} format is invalid."
     },
-    "cancelButton": "Cancel"
+    "cancelButton": "Cancel",
+    "faq": "FAQ",
+    "location": "Location",
+    "organizer": "Organizer",
+    "place": "Place",
+    "date": "Date",
+    "tags": "Tags",
+    "allEventsLoaded": "All Events Loaded"
   },
   "navigation": {
     "events": "Events",

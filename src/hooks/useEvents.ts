@@ -3,6 +3,8 @@ import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { QueryParams } from '@/types';
 import { eventService } from '@/services/eventService';
 
+
+
 export const useEvents = (params: QueryParams = {}) => {
   return useQuery({
     queryKey: ['events', params],

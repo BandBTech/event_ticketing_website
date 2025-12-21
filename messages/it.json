@@ -19,7 +19,14 @@
       "pattern": "Il formato {campo} non è valido.",
       "maxLength": "{field} non può contenere più di {length} caratteri.",
       "max": "{campo} non può superare {valore}."
-    }
+    },
+    "faq": "Domande frequenti",
+    "location": "Posizione",
+    "organizer": "Organizzatore",
+    "place": "Posto",
+    "date": "Data",
+    "tags": "Tag",
+    "allEventsLoaded": "Tutti gli eventi caricati"
   },
   "navigation": {
     "events": "Eventi",

@@ -81,3 +81,4 @@ export interface EventsResponse {
   events: Event[];
   pagination: PaginationInfo;
 }
+

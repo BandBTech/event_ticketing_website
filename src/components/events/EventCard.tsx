@@ -11,6 +11,7 @@ import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Event } from '@/types';
 import { cn } from '@/lib/utils';
+import { ArrowRightIcon } from '@phosphor-icons/react';
 
 interface EventCardProps {
   event: Event;
@@ -36,21 +37,15 @@ export function EventCard({ event, className }: EventCardProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   
-    console.log('🎫 Event:', event.title);
-  console.log('🎫 Ticket types:', event.ticketTypes);
-  console.log('🎫 First ticket type:', event.ticketTypes[0]);
-
-  const availableTickets = event.ticketTypes.reduce(
-    (total, ticket) => {
-      const sold = ticket.sold || 0;
-      const quantity = ticket.quantity || 0;
-      console.log(`🎫 Ticket ${ticket.name}: quantity=${quantity}, sold=${sold}, available=${quantity - sold}`);
-      return total + (quantity - sold);
-    },
-    0
-  ); 
-
-  console.log('🎫 Total available tickets:', availableTickets);
+  // const availableTickets = event.ticketTypes.reduce(
+  //   (total, ticket) => {
+  //     const sold = ticket.sold || 0;
+  //     const quantity = ticket.quantity || 0;
+  //     console.log(`🎫 Ticket ${ticket.name}: quantity=${quantity}, sold=${sold}, available=${quantity - sold}`);
+  //     return total + (quantity - sold);
+  //   },
+  //   0
+  // ); 
 
 
   return (
@@ -139,10 +134,10 @@ export function EventCard({ event, className }: EventCardProps) {
             variant="glass"
             size="sm"
             showGlow={true}
-            disabled={availableTickets === 0}
+            disabled={false}
           >
-            {availableTickets > 0 ? t('common.viewDetails') : t('events.soldOut')}
-            {availableTickets > 0 && <ArrowRight size={16} />}
+            {t('common.viewDetails')}
+       <ArrowRightIcon size={16} />
           </FigmaButton>
         </div>
       </CardContent>

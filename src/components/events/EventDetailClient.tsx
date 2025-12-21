@@ -228,7 +228,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
               {/* Organizer */}
               <div className="glass-card rounded-2xl p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">
-                  Organizer
+                 {t('common.organizer')}
                 </h2>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
@@ -273,7 +273,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   onClick={() => setShowLocationMap(!showLocationMap)}
                   className="w-full flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors"
                 >
-                  <h2 className="text-xl font-bold text-gray-900">Location</h2>
+                  <h2 className="text-xl font-bold text-gray-900">{t('common.location')}</h2>
                   <CaretDownIcon
                     size={24}
                     className={cn(
@@ -306,7 +306,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   onClick={() => setShowFAQ(!showFAQ)}
                   className="w-full flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors"
                 >
-                  <h2 className="text-xl font-bold text-gray-900">FAQ</h2>
+                  <h2 className="text-xl font-bold text-gray-900">{t('common.faq')}</h2>
                   <CaretDownIcon
                     size={24}
                     className={cn(
@@ -407,7 +407,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
                   {/* Place */}
                   <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-2">Place</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('common.place')}</h3>
                     <p className="text-gray-900 font-medium">
                       {event.venue.name}
                     </p>
@@ -418,7 +418,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
                   {/* Date */}
                   <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-2">Date</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('common.date')}</h3>
                     <div className="flex items-center gap-2 text-gray-900">
                       <CalendarIcon size={20} />
                       <span>{formattedDate}</span>
@@ -449,7 +449,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
                   {/* Tags */}
                   <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">Tags</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">{t('common.tags')}</h3>
                     <div className="flex flex-wrap gap-2">
                       {event.categories.map((category) => (
                         <Badge
