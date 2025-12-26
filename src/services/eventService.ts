@@ -1,5 +1,6 @@
 import { api } from '@/lib/apiClient';
 import { Event, EventStatus, TicketCategory } from '@/types/event';
+import { PathParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
 
 export interface PublicEventsParams {
   page?: number;
@@ -81,6 +82,14 @@ interface ApiEventsResponse {
   page: number;
   total: number;
   total_pages: number;
+}
+interface ApiUpcomingEventsResponse{
+  events: ApiEvent[];
+    current_page: number;
+    limit: number;
+    total_items: number;
+    total_pages: number;
+ 
 }
 
 const mapStatus = (status: string): EventStatus => {
@@ -234,6 +243,32 @@ export const eventService = {
       throw new Error(`Failed to fetch event: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
+
+  getUpcomingEvents: async(params: PublicEventsParams = {}) => {
+    const queryParams = new URLSearchParams();
+    if(params.page) queryParams.append('page', params.page.toString());
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.search) queryParams.append('search', params.search);
+    if (params.location) queryParams.append('location', params.location);
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+    if (params.min_price) queryParams.append('min_price', params.min_price.toString());
+    if (params.max_price) queryParams.append('max_price', params.max_price.toString());
+    if (params.sort) queryParams.append('sort', params.sort);
+
+        const response = await api.get<ApiUpcomingEventsResponse>(`/public/events/upcoming?${queryParams.toString()}`);
+
+        return {
+      events: (response.events || []).map(mapEvent),
+      pagination: {
+        total: response.total_items || 0,
+        page: response.current_page || 1,
+        limit: response.limit || 10,
+        totalPages: response.total_pages || 1,
+      },
+    };
+  }
 };
+
 
 

@@ -71,7 +71,7 @@
     "badge": "Nepal's Premier Event Platform",
     "title": "Discover Amazing Events in Nepal",
     "subtitle": "From electrifying music festivals to inspiring conferences, find and book tickets for the most exciting events happening across Nepal.",
-    "searchPlaceholder": "Search for events, venues, or locations...",
+    "searchPlaceholder": "Search for events...",
     "stats": {
       "events": "Events Listed",
       "tickets": "Tickets Sold",
@@ -87,7 +87,9 @@
       "title": "Upcoming Events",
       "searchResults": "Search Results",
       "eventsFound": "events found",
-      "clearFilters": "Clear Filters"
+      "clearFilters": "Clear Filters",
+      "subtitle": "exciting events coming soon.",
+      "clearSearch": "Clear Search"
     },
     "cta": {
       "title": "Ready to Create Your Event?",
