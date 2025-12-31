@@ -253,7 +253,8 @@
         "tickets": "50k",
         "cities": "25+",
         "secure": "100%"
-      }
+      },
+      "subtitle": "Il nostro impatto in numeri in tutto il Nepal."
     },
     "story": {
       "title": "La nostra storia",
@@ -283,7 +284,8 @@
         "fullName": "Inserisci il tuo nome completo",
         "email": "Inserisci la tua email"
       },
-      "email": "E-mail"
+      "email": "E-mail",
+      "title": "Mandaci un messaggio"
     },
     "support": {
       "title": "Categoria di supporto",
@@ -293,7 +295,8 @@
         "technicalSupport": "Supporto tecnico",
         "partner": "Richiesta partner/aziendale",
         "selectIssue": "Seleziona un problema",
-        "ticketBooking": "Problemi di prenotazione dei biglietti"
+        "ticketBooking": "Problemi di prenotazione dei biglietti",
+        "others": "Altri"
       }
     },
     "message": {
@@ -312,7 +315,10 @@
       "emailRequired": "L'e-mail è obbligatoria.",
       "emailInvalid": "Inserisci un'e-mail valida.",
       "messageRequired": "Scrivi un messaggio."
-    }
+    },
+    "followUs": "Seguici",
+    "letsConnect": "Connettiamoci",
+    "connectDescription": "Contattaci per collaborazioni, supporto o domande generali."
   },
   "guestPurchase": {
     "token": {

@@ -254,7 +254,8 @@
         "tickets": "50k",
         "cities": "25+",
         "secure": "100%"
-      }
+      },
+      "subtitle": "ネパール全土における数字への影響。"
     },
     "story": {
       "title": "私たちのストーリー",
@@ -284,7 +285,8 @@
         "fullName": "フルネームを入力してください",
         "email": "メールアドレスを入力してください"
       },
-      "email": "電子メール"
+      "email": "電子メール",
+      "title": "メッセージを送ってください"
     },
     "support": {
       "title": "サポートカテゴリー",
@@ -294,7 +296,8 @@
         "technicalSupport": "テクニカルサポート",
         "partner": "パートナー/ビジネスに関するお問い合わせ",
         "selectIssue": "問題を選択してください",
-        "ticketBooking": "チケット予約の問題"
+        "ticketBooking": "チケット予約の問題",
+        "others": "その他"
       }
     },
     "message": {
@@ -313,7 +316,10 @@
       "emailRequired": "電子メールは必須です。",
       "emailInvalid": "有効な電子メールを入力してください。",
       "messageRequired": "メッセージを書きます。"
-    }
+    },
+    "followUs": "私たちに従ってください",
+    "letsConnect": "つながろう",
+    "connectDescription": "コラボレーション、サポート、または一般的な問い合わせについてご連絡ください。"
   },
   "guestPurchase": {
     "token": {

@@ -382,7 +382,8 @@
         "tickets": "50k+",
         "cities": "25+",
         "secure": "100%"
-      }
+      },
+      "subtitle": "Our impact in numbers across Nepal."
     }
   },
   "newsletter": {
@@ -401,7 +402,8 @@
         "fullName": "Enter your full name",
         "email": "Enter your email"
       },
-      "email": "Email"
+      "email": "Email",
+      "title": "Send us a message"
     },
     "support": {
       "title": "Support Category",
@@ -411,7 +413,8 @@
         "eventPublishing": "Event Publishing",
         "paymentsRefund": "Payments & Refunds",
         "technicalSupport": "Technical Support",
-        "partner": "Partner/Business Inquiry"
+        "partner": "Partner/Business Inquiry",
+        "others": "Others"
       }
     },
     "message": {
@@ -430,7 +433,10 @@
       "emailRequired": "Email is required.",
       "messageRequired": "Write a message.",
       "emailInvalid": "Enter a valid email."
-    }
+    },
+    "followUs": "Follow us",
+    "letsConnect": "Let's Connect",
+    "connectDescription": "Reach out for collaborations, support, or general inquiries."
   },
   "guestPurchase": {
     "token": {
