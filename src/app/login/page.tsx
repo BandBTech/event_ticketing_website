@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,17 +22,14 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createValidationHelpers } from "@/lib/validation";
+
 
 // Create validation schema with translations
-const createLoginSchema = (
-  t: (key: string, fallback?: string) => string
-) => {
-  const v = createValidationHelpers(t);
+const createLoginSchema = () => {
 
   return z.object({
-    email: z.string().min(1, v.required("Email")).email(v.email("Email")),
-    password: z.string().min(1, v.required("Password")),
+    email: z.string().min(1, "auth.login.validation.emailRequired"),
+    password: z.string().min(1,"auth.login.validation.passwordRequired"),
     rememberMe: z.boolean(),
   });
 };
@@ -46,7 +43,7 @@ export default function LoginPage() {
 
   const [loginError, setLoginError] = useState("");
 
-  const loginSchema = createLoginSchema(t);
+  const loginSchema = useMemo(()=> createLoginSchema(), []);
   type LoginFormData = z.infer<typeof loginSchema>;
 
   const form = useForm<LoginFormData>({
@@ -188,7 +185,7 @@ export default function LoginPage() {
                         className="text-sm text-destructive font-medium"
                         role="alert"
                       >
-                        {errors.email.message}
+                        {t(errors.email.message as string)}
                       </p>
                     )}
                   </div>
@@ -253,7 +250,7 @@ export default function LoginPage() {
                         className="text-sm text-destructive font-medium"
                         role="alert"
                       >
-                        {errors.password.message}
+                        {t(errors.password.message as string)}
                       </p>
                     )}
                   </div>

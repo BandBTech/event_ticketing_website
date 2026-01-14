@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState} from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,7 +11,6 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { createValidationHelpers } from "@/lib/validation";
 import {
   EnvelopeSimpleIcon,
   PhoneIcon,
@@ -21,15 +20,19 @@ import {
   InstagramLogoIcon,
   LinkedinLogoIcon,
 } from "@phosphor-icons/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-
-const createContactSchema = (t: (key: string, fallback?: string) => string) => {
-  const v = createValidationHelpers(t);
-
+const createContactSchema = () => {
   return z.object({
-    name: z.string().min(1, v.required("Name")),
-    email: z.string().min(1, v.required("Email")).email(v.email("Email")),
-    message: z.string().min(1, v.required("Message")),
+    name: z.string().min(1, "contact.validation.nameRequired"),
+    email: z.string().min(1, "contact.validation.emailRequired"),
+    message: z.string().min(1, "contact.validation.messageRequired"),
   });
 };
 
@@ -39,7 +42,7 @@ export default function ContactPage() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
-  const contactSchema = useMemo(() => createContactSchema(t), [t]);
+  const contactSchema = useMemo(() => createContactSchema(), []);
 
   type ContactFormData = z.infer<typeof contactSchema>;
 
@@ -48,7 +51,6 @@ export default function ContactPage() {
     handleSubmit,
     formState: { errors },
     reset,
-   
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     mode: "onBlur",
@@ -63,12 +65,9 @@ export default function ContactPage() {
       reset();
       setSelectedCategory("");
     } catch {
-      toast.error(
-        t("contact.toast.error")
-      );
+      toast.error(t("contact.toast.error"));
     }
   };
-
 
   const socialLinks = [
     { name: "Facebook", icon: FacebookLogoIcon, href: "#facebook" },
@@ -78,7 +77,7 @@ export default function ContactPage() {
   ];
   return (
     <div className="min-h-screen bg-background">
-      <section className="py-15 bg-secondary">
+      {/* <section className="py-15 bg-secondary">
         <div className="container mx-auto px-4 text-center max-w-3xl">
           <h1 className="text-4xl md:text-5xl text-blue-700 font-bold mb-6">
             {t("contact.title")}
@@ -87,7 +86,7 @@ export default function ContactPage() {
             {t("contact.subtitle")}
           </p>
         </div>
-      </section>
+      </section> */}
 
       <section className="py-20">
         <div className="container mx-auto px-4">
@@ -174,7 +173,7 @@ export default function ContactPage() {
                   />
                   {errors.name && (
                     <p className="text-sm text-destructive mt-1">
-                      {errors.name.message}
+                      {t(errors.name.message as string)}
                     </p>
                   )}
                 </div>
@@ -193,7 +192,7 @@ export default function ContactPage() {
                   />
                   {errors.email && (
                     <p className="text-sm text-destructive mt-1">
-                      {errors.email.message}
+                      {t(errors.email.message as string)}
                     </p>
                   )}
                 </div>
@@ -203,30 +202,67 @@ export default function ContactPage() {
                   <label className="text-sm font-medium block mb-2">
                     {t("contact.support.title")}
                   </label>
-                  <select
+                  <Select
                     value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className={cn(
-                      "w-full h-12 rounded-lg border border-border px-4 text-sm",
-                      "cursor-pointer transition-colors",
-                      "focus:outline-none focus:ring-2 focus:ring-primary"
-                    )}
+                    onValueChange={setSelectedCategory}
                   >
-                    <option value="">
-                      {t("contact.support.option.selectIssue")}
-                    </option>
-                    <option>{t("contact.support.option.ticketBooking")}</option>
-                    <option>
-                      {t("contact.support.option.eventPublishing")}
-                    </option>
-                    <option>
-                      {t("contact.support.option.paymentsRefund")}
-                    </option>
-                    <option>
-                      {t("contact.support.option.technicalSupport")}
-                    </option>
-                    <option>{t("contact.support.option.partner")}</option>
-                  </select>
+                    <SelectTrigger
+                      className={cn(
+                        "h-12 w-full rounded-lg",
+                        "border border-border bg-background",
+                        "px-4 text-sm",
+                        "cursor-pointer",
+                        "focus:outline-none focus:ring-2 focus:ring-primary"
+                      )}
+                    >
+                      <SelectValue
+                        placeholder={t("contact.support.option.selectIssue")}
+                      />
+                    </SelectTrigger>
+
+                    <SelectContent
+                      className={cn(
+                        "rounded-lg border border-border",
+                        "bg-background shadow-lg",
+                        "p-1"
+                      )}
+                    >
+                      <SelectItem
+                        value="ticket"
+                        className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
+                      >
+                        {t("contact.support.option.ticketBooking")}
+                      </SelectItem>
+
+                      <SelectItem
+                        value="event"
+                        className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
+                      >
+                        {t("contact.support.option.eventPublishing")}
+                      </SelectItem>
+
+                      <SelectItem
+                        value="payment"
+                        className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
+                      >
+                        {t("contact.support.option.paymentsRefund")}
+                      </SelectItem>
+
+                      <SelectItem
+                        value="tech"
+                        className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
+                      >
+                        {t("contact.support.option.technicalSupport")}
+                      </SelectItem>
+
+                      <SelectItem
+                        value="partner"
+                        className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
+                      >
+                        {t("contact.support.option.partner")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Message */}
@@ -247,7 +283,7 @@ export default function ContactPage() {
                   />
                   {errors.message && (
                     <p className="text-sm text-destructive mt-1">
-                      {errors.message.message}
+                      {t(errors.message.message as string)}
                     </p>
                   )}
                 </div>
