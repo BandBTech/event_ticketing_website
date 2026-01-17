@@ -42,7 +42,10 @@ const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
       .refine((val) => isValidPhoneNumber(val), v.phone("Phone")),
     country_code: z.string().min(1, v.required("Country")),
     event_id: z.string().min(1, v.required("Event ID")),
-    quantity: z.number().min(1, v.min("Quantity", 1)).max(10, v.max("Quantity", 10)),
+    quantity: z
+      .number()
+      .min(1, v.min("Quantity", 1))
+      .max(10, v.max("Quantity", 10)),
   });
 };
 
@@ -57,6 +60,17 @@ interface MockResponse {
   message: string;
 }
 
+// interface EventPreviewData {
+//   id: string;
+//   title: string;
+//   image: string;
+//   date: string;
+//   venue: string;
+//   city?: string;
+//   address?: string;
+//   organizer?: string;
+//   minPrice?: number;
+// }
 interface EventPreviewData {
   id: string;
   title: string;
@@ -65,21 +79,18 @@ interface EventPreviewData {
   venue: string;
   city?: string;
   address?: string;
-  organizer?: string;
-  minPrice?: number;
+  tier: {
+    id: string;
+    name: string;
+    price: number;
+    currency: string;
+  };
 }
 
 function GuestPurchaseContent() {
   const searchParams = useSearchParams();
   const eventIdFromUrl = searchParams.get("event_id");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
-  const [defaultCountry, setDefaultCountry] = useState<Country>("NP");
-  const [eventData, setEventData] = useState<EventPreviewData | null>(null);
-  const [isLoadingEvent, setIsLoadingEvent] = useState(true);
   const router = useRouter();
-
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const guestSchema = createGuestSchema(t);
@@ -97,6 +108,12 @@ function GuestPurchaseContent() {
       quantity: 1,
     },
   });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
+  const [defaultCountry, setDefaultCountry] = useState<Country>("NP");
+  const [eventData, setEventData] = useState<EventPreviewData | null>(null);
+  const [isLoadingEvent, setIsLoadingEvent] = useState(true);
 
   useEffect(() => {
     const loadEventDataAndDetectCountry = async () => {
@@ -138,10 +155,10 @@ function GuestPurchaseContent() {
     loadEventDataAndDetectCountry();
   }, [eventIdFromUrl, guestForm]);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-NP", {
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
-      currency: "NPR",
+      currency: currency,
     }).format(amount);
   };
 
@@ -194,6 +211,9 @@ function GuestPurchaseContent() {
         event_title: eventData?.title || "Event",
         event_date: eventData?.date || new Date().toISOString(),
         event_venue: eventData?.venue || "Venue",
+        tier_name: eventData?.tier.name,
+        tier_price: eventData?.tier.price,
+        tier_currency: eventData?.tier.currency,
         quantity: data.quantity,
         guest_name: `${data.first_name} ${data.last_name}`,
       };
@@ -239,6 +259,8 @@ function GuestPurchaseContent() {
       setLoading(false);
     }
   };
+  const quantity = guestForm.watch("quantity");
+  const totalPrice = eventData ? eventData.tier.price * quantity : 0;
 
   return (
     <div className="min-h-screen relative flex items-center justify-center px-4 py-8 sm:py-20 bg-gray-50">
@@ -264,11 +286,6 @@ function GuestPurchaseContent() {
                     <p className="text-lg opacity-90">
                       {eventData.venue} • {eventData.city}
                     </p>
-                    {eventData.minPrice && (
-                      <p className="text-lg font-semibold mt-2">
-                        From {formatCurrency(eventData.minPrice)}
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -298,7 +315,7 @@ function GuestPurchaseContent() {
                     </div>
                   )}
 
-                  {eventData.organizer && (
+                  {/* {eventData.organizer && (
                     <div className="flex items-center gap-3 text-gray-700">
                       <UserIcon
                         size={20}
@@ -308,7 +325,7 @@ function GuestPurchaseContent() {
                         Organized by {eventData.organizer}
                       </span>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             )}
@@ -443,7 +460,40 @@ function GuestPurchaseContent() {
                     </p>
                   )}
                 </div>
+                {/* Ticket Summary */}
+                {eventData?.tier && (
+                  <div className="mt-3 p-4 rounded-xl bg-blue-50 border border-blue-200 shadow-sm">
+                    {/* Title */}
+                    <p className="text-sm text-blue-700 font-medium mb-3">
+                      Selected Ticket
+                    </p>
 
+                    {/* Content Row */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-lg font-semibold text-gray-900">
+                          {eventData.tier.name}
+                        </span>
+                        <span className="text-sm text-gray-700 mt-1">
+                          Quantity: {quantity}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col items-end">
+                        <span className="text-blue-600 font-medium">
+                          {formatCurrency(
+                            eventData.tier.price,
+                            eventData.tier.currency
+                          )}
+                        </span>
+                        <span className="text-blue-800 font-bold text-lg mt-1">
+                          Total:{" "}
+                          {formatCurrency(totalPrice, eventData.tier.currency)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {/* Phone Field */}
                 {/* <div>
                   <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -484,7 +534,7 @@ function GuestPurchaseContent() {
                     </p>
                   )}
                 </div>
-                
+                */}
 
                 {/* Event ID & Quantity */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -515,8 +565,8 @@ function GuestPurchaseContent() {
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                       {t("guestPurchase.form.quantity")}
                     </label>
-                     <div className="flex items-center gap-2">
-                         <button
+                    <div className="flex items-center gap-2">
+                      <button
                         type="button"
                         onClick={() =>
                           guestForm.setValue(
@@ -531,21 +581,21 @@ function GuestPurchaseContent() {
                       >
                         –
                       </button>
-                    <input
-                      {...guestForm.register("quantity", {
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                      min="1"
-                      readOnly
-                      className={cn(
-                        "w-full border rounded-lg p-3 text-center bg-gray-100 cursor-default",
-                        guestForm.formState.errors.quantity
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      )}
-                    />
-                            <button
+                      <input
+                        {...guestForm.register("quantity", {
+                          valueAsNumber: true,
+                        })}
+                        type="number"
+                        min="1"
+                        readOnly
+                        className={cn(
+                          "w-full border rounded-lg p-3 text-center bg-gray-100 cursor-default",
+                          guestForm.formState.errors.quantity
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        )}
+                      />
+                      <button
                         type="button"
                         onClick={() =>
                           guestForm.setValue(

@@ -15,7 +15,9 @@ export interface Event {
   allowReEntry: boolean;
   createdAt: string;
   updatedAt: string;
+
 }
+
 
 export interface Venue {
   id: string;
@@ -37,6 +39,7 @@ export interface TicketType {
   price: number;
   quantity: number;
   sold: number;
+  currency: string;
   description?: string;
   gstPercentage: number;
   salesStartDate: string;

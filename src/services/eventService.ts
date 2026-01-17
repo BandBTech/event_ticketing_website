@@ -1,5 +1,5 @@
 import { api } from '@/lib/apiClient';
-import { Event, EventStatus, TicketCategory } from '@/types/event';
+import { Event, EventStatus, TicketCategory, TicketType } from '@/types/event';
 import { PathParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
 
 export interface PublicEventsParams {
@@ -34,6 +34,7 @@ interface ApiEventTier {
   tier_name: string;
   price: number;
   available: number;
+  currency: string;
   quantity: number;
   sold: number;
   gst: number;
@@ -117,6 +118,30 @@ const parseCategoryString = (categoryStr: string): string[] => {
     return [];
   }
 };
+
+const mapTicketCategory = (name?: string): TicketCategory => {
+  const normalized = name?.toLowerCase();
+
+  if (normalized?.includes('vvip')) return 'VVIP';
+  if (normalized?.includes('vip')) return 'VIP';
+  if (normalized?.includes('premium')) return 'Premium';
+
+  return 'General';
+};
+
+const mapTier = (tier: ApiEventTier): TicketType => ({
+  id: tier.id,
+  name: mapTicketCategory(tier.tier_name),
+  price: tier.price ?? 0,
+  quantity: tier.available ?? tier.quantity ?? 0,
+  sold: tier.sold ?? 0,
+  currency: tier.currency,
+  gstPercentage: tier.gst ?? 0,
+  salesStartDate: tier.sales_start,
+  salesEndDate: tier.sales_end,
+  isActive: tier.is_active ?? true,
+});
+
 const mapEvent = (apiEvent: ApiEvent): Event => {
   // Parse category string to array
   const categories = parseCategoryString(apiEvent.category);
@@ -147,17 +172,7 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
       name: cat,
       color: 'blue',
     })),
-    ticketTypes: (apiEvent.tiers || []).map(tier => ({
-      id: tier.id,
-      name: (tier.tier_name || 'General') as TicketCategory,
-      price: tier.price || 0,
-      quantity: tier.available || 0,
-      sold: tier.sold || 0,
-      gstPercentage: tier.gst || 0,
-      salesStartDate: tier.sales_start,
-      salesEndDate: tier.sales_end,
-      isActive: tier.is_active ?? true,
-    })),
+    ticketTypes: (apiEvent.tiers || []).map(mapTier),
     status: mapStatus(apiEvent.status),
     organizerId: apiEvent.organizer_id || 'unknown',
     maxTicketsPerOrder: 10,

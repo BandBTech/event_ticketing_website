@@ -12,13 +12,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Event } from "@/types/event";
+import { Event, TicketType } from "@/types/event";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { eventService } from "@/services/eventService";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
+import { TierSection } from "@/components/events/TierSection";
+import { toast } from "@/lib/toast";
+
 
 interface EventDetailClientProps {
   eventId: string;
@@ -35,6 +38,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const [selectedTicketTier, setSelectedTicketTier] = useState<TicketType | null>(null);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -75,9 +79,11 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       }
     }
   };
-  const handleGuestTickets = () => {
-    if (!event) return;
-
+  const handleGuestPurchase = () => {
+ if (!event || !selectedTicketTier) {
+    toast.error("Please select a ticket type");
+    return;
+  }
     const eventData = {
       id: eventId,
       title: event.title,
@@ -86,6 +92,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       venue: event.venue.name,
       city: event.venue.city,
       address: event.venue.address,
+      tier: selectedTicketTier,
       minPrice: Math.min(...event.ticketTypes.map((t) => t.price)),
     };
 
@@ -104,7 +111,10 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       address: event.venue.address,
       minPrice: Math.min(...event.ticketTypes.map((t) => t.price)),
     };
-    localStorage.setItem("userPurchase_event", JSON.stringify(eventData));
+    const tierData = {
+      
+    };
+    localStorage.setItem("userPurchase_event", JSON.stringify({eventData, tierData}));
     router.push("/user-purchase");
   };
 
@@ -149,11 +159,11 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       </div>
     );
   }
-
+const eventCurrency = event.ticketTypes[0]?.currency ?? "NPR";
   const minPrice = Math.min(...event.ticketTypes.map((t) => t.price));
-  const formattedPrice = new Intl.NumberFormat("en-NP", {
+  const formattedPrice = new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: "NPR",
+    currency: eventCurrency,
   }).format(minPrice);
 
   const eventDate = new Date(event.startDate);
@@ -204,7 +214,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                 <div className={cn("text-gray-700 space-y-4")}>
                   <div
                     className={cn(
-                      "prose prose-sm max-w-none", 
+                      "prose prose-sm max-w-none",
                       !isDescriptionExpanded && "line-clamp-4"
                     )}
                     dangerouslySetInnerHTML={{
@@ -228,7 +238,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
               {/* Organizer */}
               <div className="glass-card rounded-2xl p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">
-                 {t('common.organizer')}
+                  {t("common.organizer")}
                 </h2>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
@@ -273,7 +283,9 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   onClick={() => setShowLocationMap(!showLocationMap)}
                   className="w-full flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors"
                 >
-                  <h2 className="text-xl font-bold text-gray-900">{t('common.location')}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {t("common.location")}
+                  </h2>
                   <CaretDownIcon
                     size={24}
                     className={cn(
@@ -306,7 +318,9 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   onClick={() => setShowFAQ(!showFAQ)}
                   className="w-full flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors"
                 >
-                  <h2 className="text-xl font-bold text-gray-900">{t('common.faq')}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {t("common.faq")}
+                  </h2>
                   <CaretDownIcon
                     size={24}
                     className={cn(
@@ -364,7 +378,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                     {!isLoggedIn && (
                       <>
                         <Button
-                          onClick={handleGuestTickets}
+                          onClick={handleGuestPurchase}
                           className="w-full h-12 bg-blue-600 hover:bg-blue-800 text-white font-medium rounded-lg"
                         >
                           {t("eventDetails.button.buyTicketsGuest")}
@@ -387,7 +401,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       <span className="font-medium text-gray-900">
                         {t("eventDetails.button.share")}
                       </span>
-                      <button
+                      <div
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsFavorite(!isFavorite);
@@ -401,13 +415,27 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                             isFavorite ? "text-red-500" : "text-gray-600"
                           )}
                         />
-                      </button>
+                      </div>
                     </Button>
                   </div>
+                  {/* Ticket Tiers */}
+                  <div className="pt-4 border-t border-gray-200">
+                    <h3 className="font-semibold text-gray-900 mb-3">
+                      Available Tickets
+                    </h3>
 
+                    <TierSection
+                      tiers={event.ticketTypes}
+                      onTierSelect={(tier) => {
+                        setSelectedTicketTier(tier);
+                      }}
+                    />
+                  </div>
                   {/* Place */}
                   <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-2">{t('common.place')}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {t("common.place")}
+                    </h3>
                     <p className="text-gray-900 font-medium">
                       {event.venue.name}
                     </p>
@@ -418,7 +446,9 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
                   {/* Date */}
                   <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-2">{t('common.date')}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {t("common.date")}
+                    </h3>
                     <div className="flex items-center gap-2 text-gray-900">
                       <CalendarIcon size={20} />
                       <span>{formattedDate}</span>
@@ -449,7 +479,9 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
                   {/* Tags */}
                   <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">{t('common.tags')}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">
+                      {t("common.tags")}
+                    </h3>
                     <div className="flex flex-wrap gap-2">
                       {event.categories.map((category) => (
                         <Badge
