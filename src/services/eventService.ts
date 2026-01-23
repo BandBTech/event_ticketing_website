@@ -131,15 +131,17 @@ const mapTicketCategory = (name?: string): TicketCategory => {
 
 const mapTier = (tier: ApiEventTier): TicketType => ({
   id: tier.id,
-  name: mapTicketCategory(tier.tier_name),
+  tier_name: mapTicketCategory(tier.tier_name),
   price: tier.price ?? 0,
   quantity: tier.available ?? tier.quantity ?? 0,
   sold: tier.sold ?? 0,
   currency: tier.currency,
   gstPercentage: tier.gst ?? 0,
-  salesStartDate: tier.sales_start,
-  salesEndDate: tier.sales_end,
+  sales_start: tier.sales_start,
+  sales_end: tier.sales_end,
+  available: tier.available,
   isActive: tier.is_active ?? true,
+  
 });
 
 const mapEvent = (apiEvent: ApiEvent): Event => {
@@ -177,8 +179,11 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
     organizerId: apiEvent.organizer_id || 'unknown',
     maxTicketsPerOrder: 10,
     allowReEntry: false,
+    available: apiEvent.available || 0,
     createdAt: apiEvent.created_at,
     updatedAt: apiEvent.updated_at || apiEvent.created_at,
+    sales_status: apiEvent.sales_status || 'active', 
+  is_cancelled: apiEvent.is_cancelled || false,  
   };
 };
 export const eventService = {

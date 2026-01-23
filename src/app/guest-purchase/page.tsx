@@ -10,6 +10,8 @@ import {
   CalendarIcon,
   MapPinIcon,
   ArrowLeftIcon,
+  MinusIcon,
+  PlusIcon,
 } from "@phosphor-icons/react";
 import cn from "clsx";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -20,6 +22,7 @@ import { createValidationHelpers } from "@/lib/validation";
 import { format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
@@ -60,17 +63,6 @@ interface MockResponse {
   message: string;
 }
 
-// interface EventPreviewData {
-//   id: string;
-//   title: string;
-//   image: string;
-//   date: string;
-//   venue: string;
-//   city?: string;
-//   address?: string;
-//   organizer?: string;
-//   minPrice?: number;
-// }
 interface EventPreviewData {
   id: string;
   title: string;
@@ -84,7 +76,9 @@ interface EventPreviewData {
     name: string;
     price: number;
     currency: string;
-  };
+    selectedQuantity: number;
+  }[];
+  totalAmount: number;
 }
 
 function GuestPurchaseContent() {
@@ -159,7 +153,45 @@ function GuestPurchaseContent() {
     return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const updateTierQuantity = (tierId: string, quantity: number) => {
+    if (!eventData) return;
+
+    const updatedTiers = eventData.tier
+      .map((t) => {
+        if (t.id === tierId) {
+          const newQty = Math.max(0, t.selectedQuantity + quantity);
+          return { ...t, selectedQuantity: newQty };
+        }
+        return t;
+      })
+      .filter((t) => t.selectedQuantity > 0);
+
+    const newTotalTickets = updatedTiers.reduce(
+      (acc, t) => acc + t.selectedQuantity,
+      0,
+    );
+    const newTotalAmount = updatedTiers.reduce(
+      (acc, t) => acc + t.price * t.selectedQuantity,
+      0,
+    );
+    const newEventData = {
+      ...eventData,
+      tier: updatedTiers,
+      totalAmount: newTotalAmount,
+    };
+    setEventData(newEventData);
+    guestForm.setValue("quantity", newTotalTickets);
+    localStorage.setItem("guestPurchase_event", JSON.stringify(newEventData));
+
+    if (updatedTiers.length === 0) {
+      toast.info("All tickets removed. Returning to event page.");
+      router.back();
+    }
   };
 
   const onSubmit = async (data: GuestFormData) => {
@@ -211,20 +243,23 @@ function GuestPurchaseContent() {
         event_title: eventData?.title || "Event",
         event_date: eventData?.date || new Date().toISOString(),
         event_venue: eventData?.venue || "Venue",
-        tier_name: eventData?.tier.name,
-        tier_price: eventData?.tier.price,
-        tier_currency: eventData?.tier.currency,
+        tickets: eventData?.tier.map((tier) => ({
+          name: tier.name,
+          price: tier.price,
+          quantity: tier.selectedQuantity,
+          currency: tier.currency,
+        })),
         quantity: data.quantity,
         guest_name: `${data.first_name} ${data.last_name}`,
       };
       localStorage.setItem(
         "guest_purchase_success",
-        JSON.stringify(purchaseData)
+        JSON.stringify(purchaseData),
       );
 
       localStorage.setItem(
         `guest_${guestId}`,
-        JSON.stringify({ ...data, token })
+        JSON.stringify({ ...data, token }),
       );
 
       localStorage.setItem(`guest_token_${token}`, token);
@@ -233,7 +268,7 @@ function GuestPurchaseContent() {
       setMessage(t("guestPurchase.success"));
       setIsSuccess(true);
       toast.success(
-        t("guestPurchase.toast.success")
+        t("guestPurchase.toast.success"),
         // {
         //   id: toastId,
         //   duration: 8000,
@@ -259,371 +294,169 @@ function GuestPurchaseContent() {
       setLoading(false);
     }
   };
-  const quantity = guestForm.watch("quantity");
-  const totalPrice = eventData ? eventData.tier.price * quantity : 0;
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4 py-8 sm:py-20 bg-gray-50">
+ <div className="min-h-screen relative flex items-start sm:items-center justify-center px-4 py-6 sm:py-20 bg-gray-50">
       <div className="w-full max-w-6xl relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
+ <div className="mb-6">
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors group"
+          >
+            <ArrowLeftIcon size={18} className="group-hover:-translate-x-1 transition-transform" />
+            <span className="font-medium">{t("guestPurchase.goBack")}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          
+          {/* Left Column: Event Details */}
+          <div className="space-y-6 order-2 lg:order-1">
             {eventData && (
-              <div className="glass-card rounded-2xl overflow-hidden shadow-lg border border-gray-200">
-                <div className="relative w-full h-64 bg-gray-200">
+              <div className="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
+           <div className="relative w-full h-48 sm:h-64 bg-gray-200">
                   <img
                     src={eventData.image}
                     alt={eventData.title}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "/api/placeholder/400/200";
-                    }}
+                    onError={(e) => { e.currentTarget.src = "/api/placeholder/400/200"; }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <h3 className="font-bold text-2xl mb-2">
+                    <h3 className="font-bold text-xl sm:text-2xl mb-1 line-clamp-2">
                       {eventData.title}
                     </h3>
-                    <p className="text-lg opacity-90">
+                    <p className="text-sm sm:text-lg opacity-90 truncate">
                       {eventData.venue} • {eventData.city}
                     </p>
                   </div>
                 </div>
 
-                <div className="p-6 space-y-4">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <CalendarIcon
-                      size={20}
-                      className="text-blue-600 flex-shrink-0"
-                    />
-                    <span className="text-base">
-                      {format(
-                        new Date(eventData.date),
-                        "EEEE, MMMM dd, yyyy 'at' h:mm a"
-                      )}
+                <div className="p-5 sm:p-6 space-y-4">
+                  <div className="flex items-start gap-3 text-gray-700">
+                    <CalendarIcon size={20} className="text-blue-600 mt-1 flex-shrink-0" />
+                    <span className="text-sm sm:text-base leading-tight">
+                      {format(new Date(eventData.date), "EEEE, MMM dd, yyyy 'at' h:mm a")}
                     </span>
                   </div>
 
                   {eventData.address && (
                     <div className="flex items-start gap-3 text-gray-700">
-                      <MapPinIcon
-                        size={20}
-                        className="text-red-600 mt-0.5 flex-shrink-0"
-                      />
-                      <span className="text-base flex-1">
+                      <MapPinIcon size={20} className="text-red-600 mt-1 flex-shrink-0" />
+                      <span className="text-sm sm:text-base flex-1">
                         {eventData.address}
                       </span>
                     </div>
                   )}
-
-                  {/* {eventData.organizer && (
-                    <div className="flex items-center gap-3 text-gray-700">
-                      <UserIcon
-                        size={20}
-                        className="text-green-600 flex-shrink-0"
-                      />
-                      <span className="text-base">
-                        Organized by {eventData.organizer}
-                      </span>
-                    </div>
-                  )} */}
                 </div>
               </div>
             )}
-
-            {isLoadingEvent && !eventData && (
-              <div className="glass-card rounded-2xl p-6 shadow-lg animate-pulse">
-                <div className="h-64 bg-gray-300 rounded mb-4"></div>
-                <div className="h-6 bg-gray-300 rounded w-3/4 mb-3"></div>
-                <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
-                <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-              </div>
-            )}
-
-            {/* {eventData && (
-              <div className="glass-card rounded-2xl p-6 shadow-lg border border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  {t("guestPurchase.eventDetails.title")}
-                </h3>
-                <div className="space-y-3 text-gray-700"></div>
-              </div>
-            )} */}
           </div>
 
-          <div className="glass-login-card rounded-2xl p-8 shadow-lg">
+          {/* Right Column: Form and Summary */}
+          <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-xl border border-gray-100 order-1 lg:order-2">
             <div className="space-y-6">
-              <div className="mb-2">
-                <button
-                  onClick={() => router.back()}
-                  className="inline-flex cursor-pointer items-center gap-2  text-gray-700 hover:text-blue-600 rounded-lg transition-all duration-200"
-                >
-                  <ArrowLeftIcon size={18} />
-                  <span className="font-medium">
-                    {t("guestPurchase.goBack")}
-                  </span>
-                </button>
-              </div>
-              <div className="text-center">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {eventData
-                    ? t("guestPurchase.title.1")
-                    : t("guestPurchase.title.2")}
+              <div className="text-center lg:text-left">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">
+                  {eventData ? t("guestPurchase.title.1") : t("guestPurchase.title.2")}
                 </h1>
-                <p className="text-gray-600">{t("guestPurchase.subtitle")}</p>
+                <p className="text-sm sm:text-base text-gray-600">{t("guestPurchase.subtitle")}</p>
               </div>
 
-              <form
-                onSubmit={guestForm.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                {/* Name Fields */}
-                {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t("guestPurchase.form.firstName")}
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
-                        <UserIcon size={20} />
-                      </div>
-                      <input
-                        {...guestForm.register("first_name")}
-                        placeholder={t(
-                          "guestPurchase.form.firstNamePlaceholder"
-                        )}
-                        className={cn(
-                          "w-full border rounded-lg p-3 pl-10",
-                          guestForm.formState.errors.first_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        )}
-                      />
-                    </div>
-                    {guestForm.formState.errors.first_name && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {guestForm.formState.errors.first_name.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t("guestPurchase.form.lastName")}
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
-                        <UserIcon size={20} />
-                      </div>
-                      <input
-                        {...guestForm.register("last_name")}
-                        placeholder={t(
-                          "guestPurchase.form.lastNamePlaceholder"
-                        )}
-                        className={cn(
-                          "w-full border rounded-lg p-3 pl-10",
-                          guestForm.formState.errors.last_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        )}
-                      />
-                    </div>
-                    {guestForm.formState.errors.last_name && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {guestForm.formState.errors.last_name.message}
-                      </p>
-                    )}
-                  </div>
-                </div> */}
-
-                {/* Email */}
+              <form onSubmit={guestForm.handleSubmit(onSubmit)} className="space-y-5">
+                {/* Email Field */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
                     {t("guestPurchase.form.email")}
                   </label>
                   <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                       <EnvelopeIcon size={20} />
                     </div>
                     <input
                       {...guestForm.register("email")}
                       placeholder={t("guestPurchase.form.emailPlaceholder")}
                       className={cn(
-                        "w-full border rounded-lg p-3 pl-10",
-                        guestForm.formState.errors.email
-                          ? "border-red-500"
-                          : "border-gray-300"
+                        "w-full border rounded-xl p-3 pl-10 focus:ring-2 focus:ring-blue-500 outline-none transition-all",
+                        guestForm.formState.errors.email ? "border-red-500 bg-red-50" : "border-gray-300"
                       )}
                     />
                   </div>
                   {guestForm.formState.errors.email && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-xs text-red-500 mt-1.5 ml-1">
                       {guestForm.formState.errors.email.message}
                     </p>
                   )}
                 </div>
+
                 {/* Ticket Summary */}
-                {eventData?.tier && (
-                  <div className="mt-3 p-4 rounded-xl bg-blue-50 border border-blue-200 shadow-sm">
-                    {/* Title */}
-                    <p className="text-sm text-blue-700 font-medium mb-3">
-                      Selected Ticket
-                    </p>
+                {eventData?.tier && eventData.tier.length > 0 && (
+                  <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 shadow-sm space-y-4">
+                    <div className="flex justify-between items-center border-b border-blue-100 pb-2">
+                      <p className="text-xs font-bold text-blue-700 uppercase tracking-widest">
+                        Your Order
+                      </p>
+                      <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full font-bold">
+                        {eventData.tier.reduce((acc, t) => acc + t.selectedQuantity, 0)} Items
+                      </span>
+                    </div>
 
-                    {/* Content Row */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="text-lg font-semibold text-gray-900">
-                          {eventData.tier.name}
-                        </span>
-                        <span className="text-sm text-gray-700 mt-1">
-                          Quantity: {quantity}
-                        </span>
-                      </div>
+                    <div className="space-y-4">
+                      {eventData.tier.map((tier) => (
+                        <div key={tier.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-gray-900 text-sm sm:text-base">
+                              {tier.name}
+                            </span>
+                            <span className="text-xs text-gray-500 font-medium">
+                              {formatCurrency(tier.price, tier.currency)} / ticket
+                            </span>
+                          </div>
 
-                      <div className="flex flex-col items-end">
-                        <span className="text-blue-600 font-medium">
-                          {formatCurrency(
-                            eventData.tier.price,
-                            eventData.tier.currency
-                          )}
-                        </span>
-                        <span className="text-blue-800 font-bold text-lg mt-1">
-                          Total:{" "}
-                          {formatCurrency(totalPrice, eventData.tier.currency)}
-                        </span>
-                      </div>
+                          <div className="flex items-center justify-between sm:justify-end gap-4">
+                            
+                            <div className="flex items-center gap-3 bg-white border border-blue-200 rounded-xl p-1 shadow-sm">
+                              <button
+                                type="button"
+                                onClick={() => updateTierQuantity(tier.id, -1)}
+                                className="w-8 h-8 flex items-center justify-center hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"
+                              >
+                                <MinusIcon size={16} weight="bold" />
+                              </button>
+                              <span className="w-6 text-center font-bold text-gray-900 text-sm">
+                                {tier.selectedQuantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => updateTierQuantity(tier.id, 1)}
+                                className="w-8 h-8 flex items-center justify-center hover:bg-green-50 hover:text-green-600 rounded-lg transition-colors"
+                              >
+                                <PlusIcon size={16} weight="bold" />
+                              </button>
+                            </div>
+                            
+                            <div className="text-right font-bold text-blue-900 text-sm sm:text-base min-w-[80px]">
+                              {formatCurrency(tier.price * tier.selectedQuantity, tier.currency)}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-3 flex justify-between items-center border-t border-blue-200">
+                      <span className="font-bold text-gray-900">Grand Total</span>
+                      <span className="text-xl sm:text-2xl font-black text-blue-700">
+                        {formatCurrency(eventData.totalAmount, eventData.tier[0]?.currency || "NPR")}
+                      </span>
                     </div>
                   </div>
                 )}
-                {/* Phone Field */}
-                {/* <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    {t("auth.signup.phone", "Contact Number")}
-                  </label>
-                  <Controller
-                    name="phone"
-                    control={guestForm.control}
-                    render={({ field }) => (
-                      <PhoneInput
-                        value={field.value}
-                        onChange={(value) => {
-                          field.onChange(value);
-                          if (value) {
-                            const countryMatch = value.match(/^\+\d{1,4}/);
-                            guestForm.setValue(
-                              "country_code",
-                              countryMatch ? countryMatch[0] : ""
-                            );
-                          } else {
-                            guestForm.setValue("country_code", "");
-                          }
-                        }}
-                        defaultCountry={defaultCountry}
-                        placeholder={t(
-                          "auth.signup.phonePlaceholder",
-                          "981-234-5678"
-                        )}
-                        className={cn(
-                          guestForm.formState.errors.phone && "border-red-500"
-                        )}
-                      />
-                    )}
-                  />
-                  {guestForm.formState.errors.phone && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {guestForm.formState.errors.phone.message}
-                    </p>
-                  )}
-                </div>
-                */}
-
-                {/* Event ID & Quantity */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t("guestPurchase.form.eventId")}
-                    </label>
-                    <input
-                      {...guestForm.register("event_id")}
-                      placeholder={t("guestPurchase.form.eventId")}
-                      readOnly={!!eventData}
-                      className={cn(
-                        "w-full border rounded-lg p-3",
-                        guestForm.formState.errors.event_id
-                          ? "border-red-500"
-                          : "border-gray-300",
-                        eventData && "bg-gray-100 cursor-not-allowed"
-                      )}
-                    />
-                    {guestForm.formState.errors.event_id && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {guestForm.formState.errors.event_id.message}
-                      </p>
-                    )}
-                  </div>  */}
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t("guestPurchase.form.quantity")}
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          guestForm.setValue(
-                            "quantity",
-                            Math.max(
-                              1,
-                              (guestForm.getValues("quantity") || 1) - 1
-                            )
-                          )
-                        }
-                        className="w-full h-12 flex items-center justify-center border border-gray-300 rounded-full text-xl hover:bg-gray-100"
-                      >
-                        –
-                      </button>
-                      <input
-                        {...guestForm.register("quantity", {
-                          valueAsNumber: true,
-                        })}
-                        type="number"
-                        min="1"
-                        readOnly
-                        className={cn(
-                          "w-full border rounded-lg p-3 text-center bg-gray-100 cursor-default",
-                          guestForm.formState.errors.quantity
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        )}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          guestForm.setValue(
-                            "quantity",
-                            Math.max(
-                              1,
-                              (guestForm.getValues("quantity") || 1) + 1
-                            )
-                          )
-                        }
-                        className="w-full h-12 flex items-center justify-center border border-gray-300 rounded-full text-xl hover:bg-gray-100"
-                      >
-                        +
-                      </button>
-                    </div>
-                    {guestForm.formState.errors.quantity && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {guestForm.formState.errors.quantity.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
 
                 {/* Submit Button */}
-                <button
+                <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-transform duration-200"
+                  className="w-full bg-blue-600 text-white py-4 rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 font-bold text-lg shadow-lg"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">
@@ -633,15 +466,15 @@ function GuestPurchaseContent() {
                   ) : (
                     t("guestPurchase.button.title")
                   )}
-                </button>
-
-                {message && (
+                </Button>
+            
+               {message && (
                   <div
                     className={cn(
                       "p-4 rounded-lg border text-center",
                       isSuccess
                         ? "text-green-800 bg-green-50 border-green-200"
-                        : "text-red-800 bg-red-50 border-red-200"
+                        : "text-red-800 bg-red-50 border-red-200",
                     )}
                   >
                     <p className="font-medium">{message}</p>
@@ -701,3 +534,4 @@ export default function GuestPurchasePage() {
     </Suspense>
   );
 }
+

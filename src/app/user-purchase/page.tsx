@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,6 +10,8 @@ import {
   CalendarIcon,
   MapPinIcon,
   ArrowLeftIcon,
+  MinusIcon,
+  PlusIcon,
 } from "@phosphor-icons/react";
 import cn from "clsx";
 import { useLanguageStore } from "@/store/languageStore";
@@ -19,6 +21,7 @@ import { format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { Button } from "@/components/ui/button";
 
 const createUserSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
@@ -49,8 +52,14 @@ interface EventPreviewData {
   venue: string;
   city?: string;
   address?: string;
-  organizer?: string;
-  minPrice?: number;
+  tier: {
+    id: string;
+    tier_name: string;
+    price: number;
+    currency: string;
+    selectedQuantity: number;
+  }[];
+  totalAmount: number;
 }
 
 function UserPurchase() {
@@ -80,19 +89,45 @@ function UserPurchase() {
   useEffect(() => {
     const loadEventData = async () => {
       try {
+      
         const storedEventData = localStorage.getItem("userPurchase_event");
+    
+        if (!storedEventData) {
+          const pendingPurchase = localStorage.getItem("pending_purchase");
+          if (pendingPurchase) {
+            try {
+              const pendingData = JSON.parse(pendingPurchase);
+              if (pendingData.eventData) {
+                setEventData(pendingData.eventData);
+                userForm.setValue("event_id", pendingData.eventData.id);
+               
+                if (pendingData.totalTickets) {
+                  userForm.setValue("quantity", pendingData.totalTickets);
+                }
+                
+                localStorage.removeItem("pending_purchase");
+                setIsLoadingEvent(false);
+                return;
+              }
+            } catch (err) {
+              console.error("Failed to parse pending purchase:", err);
+            }
+          }
+        }
+      
         if (storedEventData) {
           const parsedData = JSON.parse(storedEventData);
           setEventData(parsedData);
-
           if (parsedData.id) {
             userForm.setValue("event_id", parsedData.id);
+          }
+          
+          if (parsedData.totalTickets) {
+            userForm.setValue("quantity", parsedData.totalTickets);
           }
         } else if (eventIdFromUrl) {
           userForm.setValue("event_id", eventIdFromUrl);
         }
-
-
       } catch (err) {
         console.error("Failed to load data:", err);
         toast.error("Failed to load event data");
@@ -104,38 +139,75 @@ function UserPurchase() {
     loadEventData();
   }, [eventIdFromUrl, userForm]);
 
-
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number, currency: string = "NPR") => {
     return new Intl.NumberFormat("en-NP", {
       style: "currency",
-      currency: "NPR",
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
   };
+
+
+  const updateTierQuantity = (tierId: string, change: number) => {
+    if (!eventData?.tier) return;
+    
+  
+    const updatedTier = eventData.tier.map(tier => {
+      if (tier.id === tierId) {
+        const newQuantity = Math.max(0, tier.selectedQuantity + change);
+        return { ...tier, selectedQuantity: newQuantity };
+      }
+      return tier;
+    }).filter(tier => tier.selectedQuantity > 0);
+       
+    if (updatedTier.length === 0) {
+        toast.info("All tickets removed. Returning to event page.");
+             localStorage.removeItem("userPurchase_event");
+      localStorage.removeItem("pending_purchase");
+        router.back();
+      } 
+
+   
+    const totalTickets = updatedTier.reduce((sum, tier) => sum + tier.selectedQuantity, 0);
+    const totalAmount = updatedTier.reduce((sum, tier) => sum + (tier.price * tier.selectedQuantity), 0);
+    
+    const updatedEventData = {
+      ...eventData,
+      tier: updatedTier,
+      totalTickets,
+      totalAmount
+    };
+    
+    setEventData(updatedEventData);
+    userForm.setValue("quantity", totalTickets);
+    
+
+    localStorage.setItem("userPurchase_event", JSON.stringify(updatedEventData));
+  };
+  
 
   const onSubmit = async (data: UserFormData) => {
     setLoading(true);
     setMessage("");
     setIsSuccess(null);
-    // const toastId = toast.loading("Processing your purchase...");
+    
+
+    if (!eventData?.tier || eventData.tier.length === 0) {
+      toast.error("Please select at least one ticket");
+      setLoading(false);
+      return;
+    }
+
+    const totalTickets = eventData.tier.reduce((sum, tier) => sum + tier.selectedQuantity, 0);
+    if (totalTickets === 0) {
+      toast.error("Please select at least one ticket");
+      setLoading(false);
+      return;
+    }
+    
     try {
-      //     const res = await fetch(
-      //       "https://sandbox.timroticket.com/api/v1/public/tickets/guest-purchase",
-      //       {
-      //         method: "POST",
-      //         headers: {
-      //           "Content-Type": "application/json",
-      //           accept: "application/json",
-      //         },
-      //         body: JSON.stringify(data),
-      //       }
-      //     );
-      //     const responseData = await res.json();
-      //     if (!res.ok){
-      // console.log("Server response:", responseData);
-      //       throw new Error(
-      //         responseData?.message || "Failed to send verification email"
-      //       );
-      //     }
+      // Mock API call (replace with actual API)
       const responseData: MockResponse = await new Promise((resolve) => {
         setTimeout(() => {
           const mockId = Date.now().toString();
@@ -162,7 +234,10 @@ function UserPurchase() {
         event_date: eventData?.date || new Date().toISOString(),
         event_venue: eventData?.venue || "Venue",
         quantity: data.quantity,
+        totalAmount: eventData?.totalAmount,
+        tier: eventData?.tier || []
       };
+      
       localStorage.setItem(
         "user_purchase_success",
         JSON.stringify(purchaseData)
@@ -180,24 +255,15 @@ function UserPurchase() {
       setIsSuccess(true);
       toast.success(
         t("guestPurchase.toast.success")
-        // {
-        //   id: toastId,
-        //   duration: 8000,
-        //   action: {
-        //     label: "View Details",
-        //     onClick: () => {},
-        //   },
-        // }
       );
       userForm.reset();
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : "Something went worong.";
+        err instanceof Error ? err.message : "Something went wrong.";
 
       setMessage(errorMessage);
       setIsSuccess(false);
       toast.error(errorMessage, {
-        // id: toastId,
         duration: 5000,
       });
       console.error("Purchase error", err);
@@ -207,242 +273,177 @@ function UserPurchase() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4 py-8 sm:py-20 bg-gray-50">
+    <div className="min-h-screen relative flex items-start sm:items-center justify-center px-4 py-6 sm:py-20 bg-gray-50">
       <div className="w-full max-w-6xl relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors group"
+          >
+            <ArrowLeftIcon size={18} className="group-hover:-translate-x-1 transition-transform" />
+            <span className="font-medium">{t("guestPurchase.goBack")}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          
+          {/* Left Column: Event Details */}
+          <div className="space-y-6 order-2 lg:order-1">
             {eventData && (
-              <div className="glass-card rounded-2xl overflow-hidden shadow-lg border border-gray-200">
-                <div className="relative w-full h-64 bg-gray-200">
+              <div className="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
+                <div className="relative w-full h-48 sm:h-64 bg-gray-200">
                   <img
                     src={eventData.image}
                     alt={eventData.title}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "/api/placeholder/400/200";
-                    }}
+                    onError={(e) => { e.currentTarget.src = "/api/placeholder/400/200"; }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <h3 className="font-bold text-2xl mb-2">
+                    <h3 className="font-bold text-xl sm:text-2xl mb-1 line-clamp-2">
                       {eventData.title}
                     </h3>
-                    <p className="text-lg opacity-90">
+                    <p className="text-sm sm:text-lg opacity-90 truncate">
                       {eventData.venue} • {eventData.city}
                     </p>
-                    {eventData.minPrice && (
-                      <p className="text-lg font-semibold mt-2">
-                        From {formatCurrency(eventData.minPrice)}
-                      </p>
-                    )}
                   </div>
                 </div>
 
-                <div className="p-6 space-y-4">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <CalendarIcon
-                      size={20}
-                      className="text-blue-600 flex-shrink-0"
-                    />
-                    <span className="text-base">
-                      {format(
-                        new Date(eventData.date),
-                        "EEEE, MMMM dd, yyyy 'at' h:mm a"
-                      )}
+                <div className="p-5 sm:p-6 space-y-4">
+                  <div className="flex items-start gap-3 text-gray-700">
+                    <CalendarIcon size={20} className="text-blue-600 mt-1 flex-shrink-0" />
+                    <span className="text-sm sm:text-base leading-tight">
+                      {format(new Date(eventData.date), "EEEE, MMM dd, yyyy 'at' h:mm a")}
                     </span>
                   </div>
 
                   {eventData.address && (
                     <div className="flex items-start gap-3 text-gray-700">
-                      <MapPinIcon
-                        size={20}
-                        className="text-red-600 mt-0.5 flex-shrink-0"
-                      />
-                      <span className="text-base flex-1">
+                      <MapPinIcon size={20} className="text-red-600 mt-1 flex-shrink-0" />
+                      <span className="text-sm sm:text-base flex-1">
                         {eventData.address}
                       </span>
                     </div>
                   )}
 
-                  {eventData.organizer && (
-                    <div className="flex items-center gap-3 text-gray-700">
-                      <UserIcon
-                        size={20}
-                        className="text-green-600 flex-shrink-0"
-                      />
-                      <span className="text-base">
-                        Organized by {eventData.organizer}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
 
             {isLoadingEvent && !eventData && (
-              <div className="glass-card rounded-2xl p-6 shadow-lg animate-pulse">
-                <div className="h-64 bg-gray-300 rounded mb-4"></div>
+              <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200 animate-pulse">
+                <div className="h-48 sm:h-64 bg-gray-300 rounded mb-4"></div>
                 <div className="h-6 bg-gray-300 rounded w-3/4 mb-3"></div>
                 <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
                 <div className="h-4 bg-gray-300 rounded w-2/3"></div>
               </div>
             )}
-
-            {eventData && (
-              <div className="glass-card rounded-2xl p-6 shadow-lg border border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  {t("guestPurchase.eventDetails.title")}
-                </h3>
-                <div className="space-y-3 text-gray-700"></div>
-              </div>
-            )}
           </div>
 
-          <div className="glass-login-card rounded-2xl p-8 shadow-lg">
+          {/* Right Column: Form and Summary */}
+          <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-xl border border-gray-100 order-1 lg:order-2">
             <div className="space-y-6">
-              <div className="mb-2">
-                <button
-                  onClick={() => router.back()}
-                  className="inline-flex cursor-pointer items-center gap-2  text-gray-700 hover:text-blue-600 rounded-lg transition-all duration-200"
-                >
-                  <ArrowLeftIcon size={18} />
-                  <span className="font-medium">
-                    {t("guestPurchase.goBack")}
-                  </span>
-                </button>
-              </div>
-              <div className="text-center">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {eventData
-                    ? t("userPurchase.title.1")
-                    : t("userPurchase.title.2")}
+              <div className="text-center lg:text-left">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">
+                  {eventData ? t("userPurchase.title.1") : t("userPurchase.title.2")}
                 </h1>
-                <p className="text-gray-600">{t("guestPurchase.subtitle")}</p>
+                <p className="text-sm sm:text-base text-gray-600">{t("guestPurchase.subtitle")}</p>
               </div>
 
-              <form
-                onSubmit={userForm.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                {/* Email */}
+              <form onSubmit={userForm.handleSubmit(onSubmit)} className="space-y-5">
+                {/* Email Field */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
                     {t("guestPurchase.form.email")}
                   </label>
                   <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                       <EnvelopeIcon size={20} />
                     </div>
                     <input
                       {...userForm.register("email")}
                       placeholder={t("guestPurchase.form.emailPlaceholder")}
                       className={cn(
-                        "w-full border rounded-lg p-3 pl-10",
-                        userForm.formState.errors.email
-                          ? "border-red-500"
-                          : "border-gray-300"
+                        "w-full border rounded-xl p-3 pl-10 focus:ring-2 focus:ring-blue-500 outline-none transition-all",
+                        userForm.formState.errors.email ? "border-red-500 bg-red-50" : "border-gray-300"
                       )}
                     />
                   </div>
                   {userForm.formState.errors.email && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-xs text-red-500 mt-1.5 ml-1">
                       {userForm.formState.errors.email.message}
                     </p>
                   )}
                 </div>
-
-                {/* Event ID & Quantity */}
-                <div className="grid grid-cols-1 grid-cols-2 gap-4">
-                  {/* <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t("guestPurchase.form.eventId")}
-                    </label>
-                    <input
-                      {...userForm.register("event_id")}
-                      placeholder={t("guestPurchase.form.eventId")}
-                      readOnly={!!eventData}
-                      className={cn(
-                        "w-full rounded-lg border p-3",
-                        userForm.formState.errors.event_id
-                          ? "border-red-500"
-                          : "border-gray-300",
-                        eventData && "bg-gray-100 cursor-not-allowed"
-                      )}
-                    />
-                    {userForm.formState.errors.event_id && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {userForm.formState.errors.event_id.message}
+                {/* Ticket Summary */}
+                  <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 shadow-sm space-y-4">
+                    <div className="flex justify-between items-center border-b border-blue-100 pb-2">
+                      <p className="text-xs font-bold text-blue-700 uppercase tracking-widest">
+                        Your Order
                       </p>
-                    )}
-                  </div> */}
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      {t("guestPurchase.form.quantity")}
-                    </label>
-
-                    <div className="flex items-center gap-2">
-                  
-                      <button
-                        type="button"
-                        onClick={() =>
-                          userForm.setValue(
-                            "quantity",
-                            Math.max(
-                              1,
-                              (userForm.getValues("quantity") || 1) - 1
-                            )
-                          )
-                        }
-                        className="w-full h-12 flex items-center justify-center border border-gray-300 rounded-full text-xl hover:bg-gray-100"
-                      >
-                        –
-                      </button>
-                      <input
-                        {...userForm.register("quantity", {
-                          valueAsNumber: true,
-                        })}
-                        type="number"
-                        min="1"
-                        readOnly
-                        className={cn(
-                          "w-full border rounded-lg p-3 text-center bg-gray-100 cursor-default",
-                          userForm.formState.errors.quantity
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        )}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          userForm.setValue(
-                            "quantity",
-                            Math.max(
-                              1,
-                              (userForm.getValues("quantity") || 1) + 1
-                            )
-                          )
-                        }
-                        className="w-full h-12 flex items-center justify-center border border-gray-300 rounded-full text-xl hover:bg-gray-100"
-                      >
-                        +
-                      </button>
+                      <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full font-bold">
+                        {eventData?.tier?.reduce((acc, t) => acc + t.selectedQuantity, 0) || 0} Items
+                      </span>
                     </div>
 
-                    {userForm.formState.errors.quantity && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {userForm.formState.errors.quantity.message}
-                      </p>
-                    )}
-                  </div>
+                    <div className="space-y-4">
+                      {eventData?.tier?.map((tier) => (
+                        <div key={tier.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-gray-900 text-sm sm:text-base">
+                              {tier.tier_name}
+                            </span>
+                            <span className="text-xs text-gray-500 font-medium">
+                              {formatCurrency(tier.price, tier.currency)} / ticket
+                            </span>
+                          </div>
 
-                </div>
+                          <div className="flex items-center justify-between sm:justify-end gap-4">
+                            <div className="flex items-center gap-3 bg-white border border-blue-200 rounded-xl p-1 shadow-sm">
+                              <button
+                                type="button"
+                                onClick={() => updateTierQuantity(tier.id, -1)}
+                                className="w-8 h-8 flex items-center justify-center hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"
+                              >
+                                <MinusIcon size={16} weight="bold" />
+                              </button>
+                              <span className="w-6 text-center font-bold text-gray-900 text-sm">
+                                {tier.selectedQuantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => updateTierQuantity(tier.id, 1)}
+                                className="w-8 h-8 flex items-center justify-center hover:bg-green-50 hover:text-green-600 rounded-lg transition-colors"
+                              >
+                                <PlusIcon size={16} weight="bold" />
+                              </button>
+                            </div>
+                            
+                            <div className="text-right font-bold text-blue-900 text-sm sm:text-base min-w-[80px]">
+                              {formatCurrency(tier.price * tier.selectedQuantity, tier.currency)}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-3 flex justify-between items-center border-t border-blue-200">
+                      <span className="font-bold text-gray-900">Grand Total</span>
+                      <span className="text-xl sm:text-2xl font-black text-blue-700">
+                        {formatCurrency(eventData?.totalAmount || 0, eventData?.tier?.[0]?.currency || "NPR")}
+                      </span>
+                    </div>
+                  </div>
+               
 
                 {/* Submit Button */}
-                <button
+                <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-transform duration-200"
+                  className={cn(
+                    "w-full py-4 rounded-xl active:scale-[0.98] transition-all font-bold text-lg shadow-lg"
+                  )}
                 >
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">
@@ -452,8 +453,8 @@ function UserPurchase() {
                   ) : (
                     t("userPurchase.button.title")
                   )}
-                </button>
-
+                </Button>
+            
                 {message && (
                   <div
                     className={cn(
@@ -467,6 +468,7 @@ function UserPurchase() {
                   </div>
                 )}
               </form>
+
             </div>
           </div>
         </div>
@@ -478,28 +480,28 @@ function UserPurchase() {
 // Loading component for Suspense fallback
 function UserPurchaseLoading() {
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4 py-8 sm:py-20 bg-gray-50">
+    <div className="min-h-screen relative flex items-start sm:items-center justify-center px-4 py-6 sm:py-20 bg-gray-50">
       <div className="w-full max-w-6xl relative z-10">
         <div className="mb-6">
           <div className="h-4 bg-gray-300 rounded w-24 animate-pulse"></div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div className="glass-card rounded-2xl p-6 shadow-lg animate-pulse">
-              <div className="h-64 bg-gray-300 rounded mb-4"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <div className="space-y-6 order-2 lg:order-1">
+            <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200 animate-pulse">
+              <div className="h-48 sm:h-64 bg-gray-300 rounded mb-4"></div>
               <div className="h-6 bg-gray-300 rounded w-3/4 mb-3"></div>
               <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
               <div className="h-4 bg-gray-300 rounded w-2/3"></div>
             </div>
           </div>
-          <div className="glass-login-card rounded-2xl p-8 shadow-lg animate-pulse">
-            <div className="h-8 bg-gray-300 rounded w-3/4 mx-auto mb-4"></div>
-            <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mb-8"></div>
+          <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 animate-pulse order-1 lg:order-2">
+            <div className="h-8 bg-gray-300 rounded w-3/4 mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/2 mb-8"></div>
             <div className="space-y-4">
-              <div className="h-12 bg-gray-300 rounded"></div>
-              <div className="h-12 bg-gray-300 rounded"></div>
-              <div className="h-12 bg-gray-300 rounded"></div>
-              <div className="h-12 bg-gray-300 rounded"></div>
+              <div className="h-12 bg-gray-300 rounded-xl"></div>
+              <div className="h-12 bg-gray-300 rounded-xl"></div>
+              <div className="h-12 bg-gray-300 rounded-xl"></div>
+              <div className="h-12 bg-gray-300 rounded-xl"></div>
             </div>
           </div>
         </div>
@@ -511,9 +513,9 @@ function UserPurchaseLoading() {
 export default function UserPurchasePage() {
   return (
     <ProtectedRoute requireAuth={true} redirectTo="/login">
-    <Suspense fallback={<UserPurchaseLoading />}>
-      <UserPurchase />
-    </Suspense>
+      <Suspense fallback={<UserPurchaseLoading />}>
+        <UserPurchase />
+      </Suspense>
     </ProtectedRoute>
   );
 }

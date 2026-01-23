@@ -8,6 +8,8 @@ import {
   MapPinIcon,
   HeartIcon,
   CaretDownIcon,
+  MinusIcon,
+  PlusIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,11 +24,13 @@ import DOMPurify from "dompurify";
 import { TierSection } from "@/components/events/TierSection";
 import { toast } from "@/lib/toast";
 
-
 interface EventDetailClientProps {
   eventId: string;
 }
 
+interface SelectedTier extends TicketType {
+  selectedQuantity: number;
+}
 export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const router = useRouter();
   const [event, setEvent] = useState<Event | null>(null);
@@ -38,7 +42,10 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const [selectedTicketTier, setSelectedTicketTier] = useState<TicketType | null>(null);
+  const [selectedTiers, setSelectedTiers] = useState<
+    Record<string, SelectedTier>
+  >({});
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -55,6 +62,23 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     fetchEvent();
   }, [eventId]);
 
+  const updateTierQuantity = (tier: TicketType, quantityChange: number) => {
+    setSelectedTiers((prev) => {
+      const newQuantity =
+        (prev[tier.id]?.selectedQuantity || 0) + quantityChange;
+
+      if (newQuantity <= 0) {
+        const { [tier.id]: _, ...remainingTiers } = prev;
+        return remainingTiers;
+      }
+
+      return {
+        ...prev,
+        [tier.id]: { ...tier, selectedQuantity: newQuantity },
+      };
+    });
+  };
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem("auth-storage");
@@ -65,6 +89,24 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       setIsLoggedIn(false);
     }
   }, []);
+
+  const cartItems = Object.values(selectedTiers);
+  const totalAmount = cartItems.reduce(
+    (acc, item) => acc + item.price * item.selectedQuantity,
+    0,
+  );
+  const totalTickets = cartItems.reduce(
+    (acc, item) => acc + item.selectedQuantity,
+    0,
+  );
+  const eventCurrency = event?.ticketTypes[0]?.currency ?? "NPR";
+
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: currency,
+    }).format(amount);
+  };
 
   const handleShare = async () => {
     if (navigator.share && event) {
@@ -80,42 +122,55 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     }
   };
   const handleGuestPurchase = () => {
- if (!event || !selectedTicketTier) {
-    toast.error("Please select a ticket type");
-    return;
-  }
+    if (cartItems.length === 0) {
+      toast.error("Please select at least one ticket.");
+      return;
+    }
     const eventData = {
       id: eventId,
-      title: event.title,
-      image: event.bannerImageUrl || event.imageUrl,
-      date: event.startDate,
-      venue: event.venue.name,
-      city: event.venue.city,
-      address: event.venue.address,
-      tier: selectedTicketTier,
-      minPrice: Math.min(...event.ticketTypes.map((t) => t.price)),
+      title: event?.title,
+      image: event?.bannerImageUrl || event?.imageUrl,
+      date: event?.startDate,
+      venue: event?.venue.name,
+      city: event?.venue.city,
+      address: event?.venue.address,
+      tier: cartItems,
+      totalAmount: totalAmount,
+      totalTickets: totalTickets,
     };
 
-    localStorage.setItem("guestPurchase_event", JSON.stringify(eventData));
-    router.push("/guest-purchase");
+    if (!isLoggedIn) {
+      localStorage.setItem("guestPurchase_event", JSON.stringify(eventData));
+      router.push("/guest-purchase");
+    } else {
+      localStorage.setItem("userPurchase_event", JSON.stringify(eventData));
+      router.push("/user-purchase");
+    }
   };
-  const handleUserPurchase = () => {
-    if (!event) return;
-    const eventData = {
-      id: eventId,
-      title: event.title,
-      image: event.bannerImageUrl || event.imageUrl,
-      date: event.startDate,
-      venue: event.venue.name,
-      city: event.venue.city,
-      address: event.venue.address,
-      minPrice: Math.min(...event.ticketTypes.map((t) => t.price)),
-    };
-    const tierData = {
-      
-    };
-    localStorage.setItem("userPurchase_event", JSON.stringify({eventData, tierData}));
-    router.push("/user-purchase");
+
+  const handleLoginRedirect = () => {
+    if (cartItems.length > 0) {
+      const cartState = {
+        eventId,
+        selectedTiers,
+        totalAmount,
+        totalTickets,
+        eventData: {
+          id: eventId,
+          title: event?.title,
+          image: event?.bannerImageUrl || event?.imageUrl,
+          date: event?.startDate,
+          venue: event?.venue.name,
+          city: event?.venue.city,
+          address: event?.venue.address,
+          minPrice: minPrice,
+        },
+      };
+      localStorage.setItem("pending_purchase", JSON.stringify(cartState));
+    }
+
+    const returnUrl = encodeURIComponent(`/event/${eventId}`);
+    router.push(`/login?returnUrl=${returnUrl}`);
   };
 
   if (isLoading) {
@@ -159,13 +214,8 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       </div>
     );
   }
-const eventCurrency = event.ticketTypes[0]?.currency ?? "NPR";
-  const minPrice = Math.min(...event.ticketTypes.map((t) => t.price));
-  const formattedPrice = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: eventCurrency,
-  }).format(minPrice);
 
+  const minPrice = Math.min(...event.ticketTypes.map((t) => t.price));
   const eventDate = new Date(event.startDate);
   const formattedDate = format(eventDate, "dd MMM yyyy 'at' HH:mm");
 
@@ -215,7 +265,7 @@ const eventCurrency = event.ticketTypes[0]?.currency ?? "NPR";
                   <div
                     className={cn(
                       "prose prose-sm max-w-none",
-                      !isDescriptionExpanded && "line-clamp-4"
+                      !isDescriptionExpanded && "line-clamp-4",
                     )}
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(event.description),
@@ -290,7 +340,7 @@ const eventCurrency = event.ticketTypes[0]?.currency ?? "NPR";
                     size={24}
                     className={cn(
                       "text-gray-600 transition-transform",
-                      showLocationMap && "rotate-180"
+                      showLocationMap && "rotate-180",
                     )}
                   />
                 </button>
@@ -325,7 +375,7 @@ const eventCurrency = event.ticketTypes[0]?.currency ?? "NPR";
                     size={24}
                     className={cn(
                       "text-gray-600 transition-transform",
-                      showFAQ && "rotate-180"
+                      showFAQ && "rotate-180",
                     )}
                   />
                 </button>
@@ -358,78 +408,107 @@ const eventCurrency = event.ticketTypes[0]?.currency ?? "NPR";
               <div className="glass-card rounded-2xl p-6 sticky top-24">
                 <div className="space-y-4">
                   {/* Price */}
-                  <div>
+                  {/* <div>
                     <p className="text-sm text-gray-600 mb-1">From</p>
                     <p className="text-2xl font-bold text-gray-900">
                       {formattedPrice}
                     </p>
-                  </div>
+                  </div> */}
 
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
-                    {isLoggedIn && (
-                      <Button
-                        onClick={handleUserPurchase}
-                        className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
-                      >
-                        {t("eventDetails.button.buyTickets")}
-                      </Button>
-                    )}
-                    {!isLoggedIn && (
-                      <>
-                        <Button
-                          onClick={handleGuestPurchase}
-                          className="w-full h-12 bg-blue-600 hover:bg-blue-800 text-white font-medium rounded-lg"
-                        >
-                          {t("eventDetails.button.buyTicketsGuest")}
-                        </Button>
-
-                        <Button
-                          onClick={() => router.push("/login")}
-                          className="w-full h-12 bg-green-600 hover:bg-green-800 text-white font-medium rounded-lg"
-                        >
-                          {t("eventDetails.button.loginToBuy")}
-                        </Button>
-                      </>
-                    )}
-
-                    <Button
-                      onClick={handleShare}
-                      variant="outline"
-                      className="w-full h-12 border-2 border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-between"
-                    >
-                      <span className="font-medium text-gray-900">
-                        {t("eventDetails.button.share")}
-                      </span>
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsFavorite(!isFavorite);
-                        }}
-                      >
-                        <HeartIcon
-                          size={24}
-                          weight={isFavorite ? "fill" : "regular"}
-                          className={cn(
-                            "transition-colors",
-                            isFavorite ? "text-red-500" : "text-gray-600"
-                          )}
-                        />
-                      </div>
-                    </Button>
-                  </div>
                   {/* Ticket Tiers */}
-                  <div className="pt-4 border-t border-gray-200">
+                  <div className="pt-4">
                     <h3 className="font-semibold text-gray-900 mb-3">
-                      Available Tickets
+                      Choose Your Tickets
                     </h3>
 
                     <TierSection
                       tiers={event.ticketTypes}
-                      onTierSelect={(tier) => {
-                        setSelectedTicketTier(tier);
-                      }}
+                      selectedTiersMap={selectedTiers}
+                      onAdd={(tier) => updateTierQuantity(tier, 1)}
+                      onRemove={(tier) => updateTierQuantity(tier, -1)}
+                      isCancelled={event.is_cancelled}
+                      salesStatus={event.sales_status}
                     />
+                  </div>
+                  {/* Summary Card */}
+                  {cartItems.length > 0 && (
+                    <div className="mt-6 p-4 rounded-xl bg-blue-50 border border-blue-100 space-y-3">
+                      <h4 className="text-sm font-bold text-blue-900 border-b border-blue-200 pb-2">
+                        Order Summary
+                      </h4>
+                      {cartItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex justify-between text-sm"
+                        >
+                          <span className="text-gray-700">
+                            {item.selectedQuantity}x {item.tier_name}
+                          </span>
+                          <span className="font-medium">
+                            {formatCurrency(
+                              item.price * item.selectedQuantity,
+                              eventCurrency,
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                      <div className="pt-2 border-t border-blue-200 flex justify-between items-center">
+                        <span className="font-bold text-gray-900">
+                          Total ({totalTickets} tickets)
+                        </span>
+                        <span className="text-xl font-black text-blue-700">
+                          {formatCurrency(totalAmount, eventCurrency)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {/* Action Buttons */}
+                  <div className="pt-4 border-t border-gray-200">
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handleGuestPurchase}
+                        className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
+                      >
+                        {
+                          isLoggedIn
+                            ? t("eventDetails.button.buyTickets") // "Buy Tickets" for logged-in users
+                            : t("eventDetails.button.buyTicketsGuest") // "Buy as Guest" for non-logged-in
+                        }
+                      </Button>
+                      {!isLoggedIn && (
+                        <Button
+                          onClick={handleLoginRedirect}
+                          className="w-full h-12 bg-green-600 hover:bg-green-800 text-white font-medium rounded-lg"
+                        >
+                          {t("eventDetails.button.loginToBuy")}
+                        </Button>
+                      )}
+
+                      <Button
+                        onClick={handleShare}
+                        variant="outline"
+                        className="w-full h-12 border-2 border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-between"
+                      >
+                        <span className="font-medium text-gray-900">
+                          {t("eventDetails.button.share")}
+                        </span>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsFavorite(!isFavorite);
+                          }}
+                        >
+                          <HeartIcon
+                            size={24}
+                            weight={isFavorite ? "fill" : "regular"}
+                            className={cn(
+                              "transition-colors",
+                              isFavorite ? "text-red-500" : "text-gray-600",
+                            )}
+                          />
+                        </div>
+                      </Button>
+                    </div>
                   </div>
                   {/* Place */}
                   <div className="pt-4 border-t border-gray-200">

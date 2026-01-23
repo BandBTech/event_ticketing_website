@@ -507,6 +507,12 @@
     "backtoEvents": "Back to Events",
     "description": {
       "title": "Description"
+    },
+    "ticketStatus": {
+      "soldOut": "SoldOut",
+      "salesEnded": "Sales Ended",
+      "comingSoon": "Coming Soon",
+      "unavailable": "Unavailable"
     }
   }
 }

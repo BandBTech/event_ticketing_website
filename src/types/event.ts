@@ -15,6 +15,9 @@ export interface Event {
   allowReEntry: boolean;
   createdAt: string;
   updatedAt: string;
+  sales_status: string;
+  is_cancelled: boolean;
+  available: number;
 
 }
 
@@ -35,16 +38,17 @@ export interface Venue {
 
 export interface TicketType {
   id: string;
-  name: TicketCategory;
+  tier_name: TicketCategory;
   price: number;
   quantity: number;
   sold: number;
   currency: string;
   description?: string;
   gstPercentage: number;
-  salesStartDate: string;
-  salesEndDate: string;
+  sales_start: string;
+  sales_end: string;
   isActive: boolean;
+  available: number;
 }
 
 export interface EventCategory {
