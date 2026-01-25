@@ -73,7 +73,7 @@ interface EventPreviewData {
   address?: string;
   tier: {
     id: string;
-    name: string;
+    tier_name: string;
     price: number;
     currency: string;
     selectedQuantity: number;
@@ -244,7 +244,7 @@ function GuestPurchaseContent() {
         event_date: eventData?.date || new Date().toISOString(),
         event_venue: eventData?.venue || "Venue",
         tickets: eventData?.tier.map((tier) => ({
-          name: tier.name,
+          name: tier.tier_name,
           price: tier.price,
           quantity: tier.selectedQuantity,
           currency: tier.currency,
@@ -406,7 +406,7 @@ function GuestPurchaseContent() {
                         <div key={tier.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                           <div className="flex flex-col">
                             <span className="font-bold text-gray-900 text-sm sm:text-base">
-                              {tier.name}
+                              {tier.tier_name}
                             </span>
                             <span className="text-xs text-gray-500 font-medium">
                               {formatCurrency(tier.price, tier.currency)} / ticket

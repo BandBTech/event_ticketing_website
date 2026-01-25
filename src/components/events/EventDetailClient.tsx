@@ -42,9 +42,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const [selectedTiers, setSelectedTiers] = useState<
-    Record<string, SelectedTier>
-  >({});
+  const [selectedTier, setSelectedTier] = useState<SelectedTier | null>(null);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -62,20 +60,10 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     fetchEvent();
   }, [eventId]);
 
-  const updateTierQuantity = (tier: TicketType, quantityChange: number) => {
-    setSelectedTiers((prev) => {
-      const newQuantity =
-        (prev[tier.id]?.selectedQuantity || 0) + quantityChange;
-
-      if (newQuantity <= 0) {
-        const { [tier.id]: _, ...remainingTiers } = prev;
-        return remainingTiers;
-      }
-
-      return {
-        ...prev,
-        [tier.id]: { ...tier, selectedQuantity: newQuantity },
-      };
+  const updateTierQuantity = (tier: TicketType) => {
+    setSelectedTier((prev) => {
+      if (prev?.id === tier.id) return null;
+      return { ...tier, selectedQuantity: 1 };
     });
   };
 
@@ -90,15 +78,9 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     }
   }, []);
 
-  const cartItems = Object.values(selectedTiers);
-  const totalAmount = cartItems.reduce(
-    (acc, item) => acc + item.price * item.selectedQuantity,
-    0,
-  );
-  const totalTickets = cartItems.reduce(
-    (acc, item) => acc + item.selectedQuantity,
-    0,
-  );
+  const cartItems = selectedTier ? [selectedTier] : [];
+  const totalAmount = selectedTier ? selectedTier.price : 0;
+  const totalTickets = selectedTier ? 1 : 0;
   const eventCurrency = event?.ticketTypes[0]?.currency ?? "NPR";
 
   const formatCurrency = (amount: number, currency: string) => {
@@ -152,7 +134,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     if (cartItems.length > 0) {
       const cartState = {
         eventId,
-        selectedTiers,
+        selectedTier,
         totalAmount,
         totalTickets,
         eventData: {
@@ -423,45 +405,17 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
                     <TierSection
                       tiers={event.ticketTypes}
-                      selectedTiersMap={selectedTiers}
-                      onAdd={(tier) => updateTierQuantity(tier, 1)}
-                      onRemove={(tier) => updateTierQuantity(tier, -1)}
+                      
+                      selectedTiersMap={
+                        selectedTier ? { [selectedTier.id]: selectedTier } : {}
+                      }
+                      onAdd={(tier) => updateTierQuantity(tier)}
+                      onRemove={(tier) => updateTierQuantity(tier)} 
                       isCancelled={event.is_cancelled}
                       salesStatus={event.sales_status}
                     />
                   </div>
-                  {/* Summary Card */}
-                  {cartItems.length > 0 && (
-                    <div className="mt-6 p-4 rounded-xl bg-blue-50 border border-blue-100 space-y-3">
-                      <h4 className="text-sm font-bold text-blue-900 border-b border-blue-200 pb-2">
-                        Order Summary
-                      </h4>
-                      {cartItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex justify-between text-sm"
-                        >
-                          <span className="text-gray-700">
-                            {item.selectedQuantity}x {item.tier_name}
-                          </span>
-                          <span className="font-medium">
-                            {formatCurrency(
-                              item.price * item.selectedQuantity,
-                              eventCurrency,
-                            )}
-                          </span>
-                        </div>
-                      ))}
-                      <div className="pt-2 border-t border-blue-200 flex justify-between items-center">
-                        <span className="font-bold text-gray-900">
-                          Total ({totalTickets} tickets)
-                        </span>
-                        <span className="text-xl font-black text-blue-700">
-                          {formatCurrency(totalAmount, eventCurrency)}
-                        </span>
-                      </div>
-                    </div>
-                  )}
+
                   {/* Action Buttons */}
                   <div className="pt-4 border-t border-gray-200">
                     <div className="space-y-3">
