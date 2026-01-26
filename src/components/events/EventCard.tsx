@@ -49,7 +49,7 @@ export function EventCard({ event, className }: EventCardProps) {
 
 
   return (
-    <Link href={`/events/${event.id}`} className="block">
+    <Link href={`/events/detail?id=${event.id}`} className="block">
       <Card className={cn(
         "group overflow-hidden bg-white/60 backdrop-blur-[20px]",
         "border border-white/10 border-gradient-to-r from-white/0 via-white/100 to-white/100",

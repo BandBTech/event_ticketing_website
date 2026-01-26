@@ -8,29 +8,22 @@ import {
   MapPinIcon,
   HeartIcon,
   CaretDownIcon,
-  MinusIcon,
-  PlusIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Event, TicketType } from "@/types/event";
+import { Event } from "@/types/event";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { eventService } from "@/services/eventService";
 import DOMPurify from "dompurify";
-import { TierSection } from "@/components/events/TierSection";
-import { toast } from "@/lib/toast";
 
 interface EventDetailClientProps {
   eventId: string;
 }
 
-interface SelectedTier extends TicketType {
-  selectedQuantity: number;
-}
 export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const router = useRouter();
   const [event, setEvent] = useState<Event | null>(null);
@@ -39,13 +32,8 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const [showLocationMap, setShowLocationMap] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const [selectedTiers, setSelectedTiers] = useState<
-    Record<string, SelectedTier>
-  >({});
-  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -62,52 +50,6 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     fetchEvent();
   }, [eventId]);
 
-  const updateTierQuantity = (tier: TicketType, quantityChange: number) => {
-    setSelectedTiers((prev) => {
-      const newQuantity =
-        (prev[tier.id]?.selectedQuantity || 0) + quantityChange;
-
-      if (newQuantity <= 0) {
-        const { [tier.id]: _, ...remainingTiers } = prev;
-        return remainingTiers;
-      }
-
-      return {
-        ...prev,
-        [tier.id]: { ...tier, selectedQuantity: newQuantity },
-      };
-    });
-  };
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("auth-storage");
-      const parsed = raw ? JSON.parse(raw) : null;
-
-      setIsLoggedIn(parsed?.state?.isAuthenticated === true);
-    } catch {
-      setIsLoggedIn(false);
-    }
-  }, []);
-
-  const cartItems = Object.values(selectedTiers);
-  const totalAmount = cartItems.reduce(
-    (acc, item) => acc + item.price * item.selectedQuantity,
-    0,
-  );
-  const totalTickets = cartItems.reduce(
-    (acc, item) => acc + item.selectedQuantity,
-    0,
-  );
-  const eventCurrency = event?.ticketTypes[0]?.currency ?? "NPR";
-
-  const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: currency,
-    }).format(amount);
-  };
-
   const handleShare = async () => {
     if (navigator.share && event) {
       try {
@@ -121,56 +63,9 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       }
     }
   };
-  const handleGuestPurchase = () => {
-    if (cartItems.length === 0) {
-      toast.error("Please select at least one ticket.");
-      return;
-    }
-    const eventData = {
-      id: eventId,
-      title: event?.title,
-      image: event?.bannerImageUrl || event?.imageUrl,
-      date: event?.startDate,
-      venue: event?.venue.name,
-      city: event?.venue.city,
-      address: event?.venue.address,
-      tier: cartItems,
-      totalAmount: totalAmount,
-      totalTickets: totalTickets,
-    };
 
-    if (!isLoggedIn) {
-      localStorage.setItem("guestPurchase_event", JSON.stringify(eventData));
-      router.push("/guest-purchase");
-    } else {
-      localStorage.setItem("userPurchase_event", JSON.stringify(eventData));
-      router.push("/user-purchase");
-    }
-  };
-
-  const handleLoginRedirect = () => {
-    if (cartItems.length > 0) {
-      const cartState = {
-        eventId,
-        selectedTiers,
-        totalAmount,
-        totalTickets,
-        eventData: {
-          id: eventId,
-          title: event?.title,
-          image: event?.bannerImageUrl || event?.imageUrl,
-          date: event?.startDate,
-          venue: event?.venue.name,
-          city: event?.venue.city,
-          address: event?.venue.address,
-          minPrice: minPrice,
-        },
-      };
-      localStorage.setItem("pending_purchase", JSON.stringify(cartState));
-    }
-
-    const returnUrl = encodeURIComponent(`/event/${eventId}`);
-    router.push(`/login?returnUrl=${returnUrl}`);
+  const handleFindTickets = () => {
+    router.push(`/guest-purchase?event_id=${eventId}`);
   };
 
   if (isLoading) {
@@ -215,7 +110,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     );
   }
 
-  const minPrice = Math.min(...event.ticketTypes.map((t) => t.price));
+  // const minPrice = Math.min(...event.ticketTypes.map((t) => t.price));
   const eventDate = new Date(event.startDate);
   const formattedDate = format(eventDate, "dd MMM yyyy 'at' HH:mm");
 
@@ -302,22 +197,6 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       <p className="text-sm text-gray-600">Event organizer</p>
                     </div>
                   </div>
-                  {/* <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                    >
-                      Follow
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                    >
-                      Contact
-                    </Button>
-                  </div> */}
                 </div>
                 <p className="text-gray-700 mt-4">
                   {event.venue.name} is a premier venue located at{" "}
@@ -404,85 +283,18 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Price & Actions */}
+              {/* Actions */}
               <div className="glass-card rounded-2xl p-6 sticky top-24">
                 <div className="space-y-4">
-                  {/* Price */}
-                  {/* <div>
-                    <p className="text-sm text-gray-600 mb-1">From</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {formattedPrice}
-                    </p>
-                  </div> */}
-
-                  {/* Ticket Tiers */}
-                  <div className="pt-4">
-                    <h3 className="font-semibold text-gray-900 mb-3">
-                      Choose Your Tickets
-                    </h3>
-
-                    <TierSection
-                      tiers={event.ticketTypes}
-                      selectedTiersMap={selectedTiers}
-                      onAdd={(tier) => updateTierQuantity(tier, 1)}
-                      onRemove={(tier) => updateTierQuantity(tier, -1)}
-                      isCancelled={event.is_cancelled}
-                      salesStatus={event.sales_status}
-                    />
-                  </div>
-                  {/* Summary Card */}
-                  {cartItems.length > 0 && (
-                    <div className="mt-6 p-4 rounded-xl bg-blue-50 border border-blue-100 space-y-3">
-                      <h4 className="text-sm font-bold text-blue-900 border-b border-blue-200 pb-2">
-                        Order Summary
-                      </h4>
-                      {cartItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex justify-between text-sm"
-                        >
-                          <span className="text-gray-700">
-                            {item.selectedQuantity}x {item.tier_name}
-                          </span>
-                          <span className="font-medium">
-                            {formatCurrency(
-                              item.price * item.selectedQuantity,
-                              eventCurrency,
-                            )}
-                          </span>
-                        </div>
-                      ))}
-                      <div className="pt-2 border-t border-blue-200 flex justify-between items-center">
-                        <span className="font-bold text-gray-900">
-                          Total ({totalTickets} tickets)
-                        </span>
-                        <span className="text-xl font-black text-blue-700">
-                          {formatCurrency(totalAmount, eventCurrency)}
-                        </span>
-                      </div>
-                    </div>
-                  )}
                   {/* Action Buttons */}
                   <div className="pt-4 border-t border-gray-200">
                     <div className="space-y-3">
                       <Button
-                        onClick={handleGuestPurchase}
+                        onClick={handleFindTickets}
                         className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
                       >
-                        {
-                          isLoggedIn
-                            ? t("eventDetails.button.buyTickets") // "Buy Tickets" for logged-in users
-                            : t("eventDetails.button.buyTicketsGuest") // "Buy as Guest" for non-logged-in
-                        }
+                        {t("eventDetails.button.findTickets", "Find Tickets")}
                       </Button>
-                      {!isLoggedIn && (
-                        <Button
-                          onClick={handleLoginRedirect}
-                          className="w-full h-12 bg-green-600 hover:bg-green-800 text-white font-medium rounded-lg"
-                        >
-                          {t("eventDetails.button.loginToBuy")}
-                        </Button>
-                      )}
 
                       <Button
                         onClick={handleShare}
@@ -533,28 +345,6 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       <span>{formattedDate}</span>
                     </div>
                   </div>
-
-                  {/* Participants */}
-                  {/* <div className="pt-4 border-t border-gray-200">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-semibold text-gray-900">
-                        Participants
-                      </h3>
-                      <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                        See more →
-                      </button>
-                    </div>
-                    <div className="flex -space-x-2">
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                        <div
-                          key={i}
-                          className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold"
-                        >
-                          {i}
-                        </div>
-                      ))}
-                    </div>
-                  </div> */}
 
                   {/* Tags */}
                   <div className="pt-4 border-t border-gray-200">
