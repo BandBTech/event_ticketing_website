@@ -28,14 +28,29 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { isValidPhoneNumber } from "react-phone-number-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { useEventById } from "@/hooks/useEvents";
+import { useAuthStore } from "@/store/authStore";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { isValidPhoneNumber as isValidPhone } from "react-phone-number-input";
+import { ChevronRightIcon } from "lucide-react";
 
 const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
 
   return z.object({
+    tier_id: z.string().min(1, t("ticketPurchase.selectTierError", "Please select a ticket type")),
+    quantity: z.number().min(1).max(10),
     first_name: z
       .string()
       .min(1, v.required("First name"))
@@ -49,12 +64,9 @@ const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
     email: z.string().min(1, v.required("Email")).email(v.email("Email")),
     phone: z
       .string()
-      .min(1, v.required("Phone"))
-      .refine((val) => isValidPhoneNumber(val), v.phone("Phone")),
-    country_code: z.string().min(1, v.required("Country")),
-    // These are handled by state but kept in schema for completeness if needed
-    // tier_id: z.string().min(1),
-    // quantity: z.number().min(1),
+      .optional()
+      .refine((val) => !val || isValidPhone(val), v.phone("Phone")),
+    country_code: z.string().optional(),
   });
 };
 
@@ -87,21 +99,15 @@ function GuestPurchaseContent() {
 
   const [step, setStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
-  const [eventData, setEventData] = useState<EventPreviewData | null>(null);
-  const [isLoadingEvent, setIsLoadingEvent] = useState(true);
 
-  // Selection State
-  const [selectedTierId, setSelectedTierId] = useState<string>("");
-  const [quantity, setQuantity] = useState<number>(1);
-  const [promoCode, setPromoCode] = useState("");
-
-  // Auth State
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { data: eventData, isLoading: isLoadingEvent } = useEventById(eventIdFromUrl || "");
 
   // Form for Guest Details
   const guestForm = useForm<GuestFormData>({
     resolver: zodResolver(guestSchema),
     defaultValues: {
+      tier_id: "",
+      quantity: 1,
       first_name: "",
       last_name: "",
       email: "",
@@ -110,52 +116,11 @@ function GuestPurchaseContent() {
     },
   });
 
-  useEffect(() => {
-    // Check Auth
-    try {
-      const raw = localStorage.getItem("auth-storage");
-      const parsed = raw ? JSON.parse(raw) : null;
-      setIsLoggedIn(parsed?.state?.isAuthenticated === true);
-    } catch {
-      setIsLoggedIn(false);
-    }
+  const selectedTierId = guestForm.watch("tier_id");
+  const quantity = guestForm.watch("quantity");
+  const [promoCode, setPromoCode] = useState("");
 
-    const loadEventData = async () => {
-      try {
-        if (eventIdFromUrl) {
-          const event = await eventService.getEventById(eventIdFromUrl);
-          const previewData: EventPreviewData = {
-            id: event.id,
-            title: event.title,
-            image: event.imageUrl,
-            date: event.startDate,
-            venue: event.venue.name,
-            city: event.venue.city,
-            address: event.venue.address,
-            tier: event.ticketTypes.map((t) => ({
-              id: t.id,
-              name: t.tier_name,
-              price: t.price,
-              currency: t.currency,
-              description: t.description
-            })),
-          };
-          setEventData(previewData);
-
-          if (previewData.tier.length > 0) {
-            setSelectedTierId(previewData.tier[0].id);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching event details:", error);
-        toast.error("Failed to load event details");
-      } finally {
-        setIsLoadingEvent(false);
-      }
-    };
-
-    loadEventData();
-  }, [eventIdFromUrl]);
+  const { isAuthenticated } = useAuthStore();
 
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat(locale, {
@@ -165,8 +130,8 @@ function GuestPurchaseContent() {
       maximumFractionDigits: 0,
     }).format(amount);
   };
-
-  const selectedTier = eventData?.tier.find((t) => t.id === selectedTierId);
+  // const selectedTier = eventData?.tier.find((t) => t.id === selectedTierId);
+  const selectedTier = eventData?.ticketTypes.find((t) => t.id === selectedTierId);
   const totalAmount = selectedTier ? selectedTier.price * quantity : 0;
 
   const handleContinue = async () => {
@@ -179,17 +144,17 @@ function GuestPurchaseContent() {
       window.scrollTo(0, 0);
     } else {
       // Step 2: Submit
-      if (isLoggedIn) {
-      // If logged in, we might just submit directly or show a confirmation
-      // For this demo, let's assume we proceed to purchase with "user defaults" (mocked)
-      // or actually we need user data if not available.
-      // For simplicity, if logged in, we'll assume we have the user data or the backend handles it.
-      // But the requirement says "send... default need to send... guest-purchase api".
-      // Actually for logged in users, we usually use a different API.
-      // IF the requirement is "if logged in go to payement page",
-      // but current scope is guest purchase refactor.
-      // Let's assume for this task we are focusing on the GUEST flow primarily,
-      // but if logged in we redirect to user purchase or handle similarly.
+      if (isAuthenticated) {
+        // If logged in, we might just submit directly or show a confirmation
+        // For this demo, let's assume we proceed to purchase with "user defaults" (mocked)
+        // or actually we need user data if not available.
+        // For simplicity, if logged in, we'll assume we have the user data or the backend handles it.
+        // But the requirement says "send... default need to send... guest-purchase api".
+        // Actually for logged in users, we usually use a different API.
+        // IF the requirement is "if logged in go to payement page",
+        // but current scope is guest purchase refactor.
+        // Let's assume for this task we are focusing on the GUEST flow primarily,
+        // but if logged in we redirect to user purchase or handle similarly.
 
         // Per requirement: "On continue click if user is logged in directly go to payment page"
         // Since we don't have a full user checkout implemented here, I will simulate 
@@ -211,11 +176,6 @@ function GuestPurchaseContent() {
     try {
       if (!eventData || !selectedTier) return;
 
-      // If logged in, we might need to fetch user profile to fill this or use a different endpoint.
-      // But adhering to the specific request: "payment is not integrated so by default need to send... guest-purchase api"
-      // If logged in, we probably shouldn't call GUEST api, but for now let's assume we do
-      // or we just mock the success for logged in users.
-
       // Let's use the form data provided.
       const payload: GuestPurchasePayload = {
         first_name: data.first_name || "Guest",
@@ -224,8 +184,8 @@ function GuestPurchaseContent() {
         phone: data.phone || "9800000000",
         country_code: data.country_code || "NP",
         event_id: eventData.id,
-        tier_id: selectedTier.id,
-        quantity: quantity,
+        tier_id: data.tier_id || selectedTier.id,
+        quantity: data.quantity || quantity,
         payment_gateway: "cash",
       };
 
@@ -235,7 +195,7 @@ function GuestPurchaseContent() {
         toast.success("Order placed successfully!");
         // Redirect to success or ticket view
         // For now, just reset or show success state
-        router.push("/guest-purchase/success?token=" + res.data.token);
+        router.push("/ticket-purchase/success?token=" + res.data.token);
       } else {
         toast.error(res.message || "Purchase failed");
       }
@@ -267,18 +227,18 @@ function GuestPurchaseContent() {
           <button
             onClick={() => {
               if (step === 2) setStep(1);
-              else router.back();
+              else router.push(`/events/detail/?id=${eventIdFromUrl}`);
             }}
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowLeftIcon className="w-5 h-5 mr-2" />
-            {step === 1 ? "Back to Event" : "Back to Selection"}
+            {step === 1 ? t('ticketPurchase.backToEvent', 'Back to Event') : t('ticketPurchase.backToSelection', 'Back to Selection')}
           </button>
           <div className="hidden sm:block">
             <div className="flex items-center space-x-2 text-sm">
-              <span className={cn("font-medium", step >= 1 ? "text-blue-600" : "text-gray-400")}>1. Select Tickets</span>
-              <span className="text-gray-300">/</span>
-              <span className={cn("font-medium", step >= 2 ? "text-blue-600" : "text-gray-400")}>2. {isLoggedIn ? 'Payment' : 'Details & Payment'}</span>
+              <span className={cn("font-medium", step >= 1 ? "text-blue-600" : "text-gray-400")}>{t('ticketPurchase.selectTickets', 'Select Tickets')}</span>
+              <span className="text-gray-300"><ChevronRightIcon className="w-5 h-5" /></span>
+              <span className={cn("font-medium", step >= 2 ? "text-blue-600" : "text-gray-400")}>{isAuthenticated ? t('ticketPurchase.payment', 'Payment') : t('ticketPurchase.detailsAndPayment', 'Details & Payment')}</span>
             </div>
           </div>
         </div>
@@ -292,8 +252,8 @@ function GuestPurchaseContent() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                    <TicketIcon className="w-6 h-6 mr-2 text-blue-600" />
-                    Select Tickets
+                    <TicketIcon weight="duotone" className="w-6 h-6 mr-2 text-blue-600" />
+                    {t("ticketPurchase.selectTickets", "Select Tickets")}
                   </h2>
                 </div>
 
@@ -301,39 +261,39 @@ function GuestPurchaseContent() {
                   <RadioGroup
                     value={selectedTierId}
                     onValueChange={(val) => {
-                      setSelectedTierId(val);
-                      setQuantity(1); // Reset quantity when tier changes
+                      guestForm.setValue("tier_id", val);
+                      guestForm.setValue("quantity", 1);
                     }}
                     className="space-y-3"
                   >
-                    {eventData.tier.map((tier) => (
+                    {eventData.ticketTypes.map((ticketType) => (
                       <div
-                        key={tier.id}
+                        key={ticketType.id}
                         className={cn(
                           "relative flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer hover:border-blue-100 hover:bg-blue-50/30",
-                          selectedTierId === tier.id
+                          selectedTierId === ticketType.id
                             ? "border-blue-600 bg-blue-50/50"
                             : "border-gray-100 bg-white"
                         )}
                         onClick={() => {
-                          setSelectedTierId(tier.id);
-                          setQuantity(1);
+                          guestForm.setValue("tier_id", ticketType.id);
+                          guestForm.setValue("quantity", 1);
                         }}
                       >
                         <div className="flex items-start gap-3">
-                          <RadioGroupItem value={tier.id} id={tier.id} className="mt-1" />
+                          <RadioGroupItem value={ticketType.id} id={ticketType.id} className="mt-1" />
                           <div>
-                            <Label htmlFor={tier.id} className="font-bold text-gray-900 text-lg cursor-pointer">
-                              {tier.name}
+                            <Label htmlFor={ticketType.id} className="font-bold text-gray-900 text-lg cursor-pointer">
+                              {ticketType.tier_name}
                             </Label>
-                            {tier.description && (
-                              <p className="text-sm text-gray-500 mt-1 pr-4">{tier.description}</p>
+                            {ticketType.description && (
+                              <p className="text-sm text-gray-500 mt-1 pr-4">{ticketType.description}</p>
                             )}
                           </div>
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-lg text-blue-600">
-                            {formatCurrency(tier.price, tier.currency)}
+                            {formatCurrency(ticketType.price, ticketType.currency)}
                           </p>
                         </div>
                       </div>
@@ -346,14 +306,14 @@ function GuestPurchaseContent() {
                       <Label className="block text-sm font-medium text-gray-700 mb-3">Quantity</Label>
                       <div className="flex items-center gap-4">
                         <button
-                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          onClick={() => guestForm.setValue("quantity", Math.max(1, quantity - 1))}
                           className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors"
                         >
                           <MinusIcon size={18} />
                         </button>
                         <span className="text-xl font-bold text-gray-900 w-12 text-center">{quantity}</span>
                         <button
-                          onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                          onClick={() => guestForm.setValue("quantity", Math.min(10, quantity + 1))}
                           className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors"
                         >
                           <PlusIcon size={18} />
@@ -369,7 +329,7 @@ function GuestPurchaseContent() {
             {step === 2 && (
               <div className="space-y-6">
                 {/* Login Prompt if not logged in */}
-                {!isLoggedIn && (
+                {!isAuthenticated && (
                   <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
@@ -380,7 +340,7 @@ function GuestPurchaseContent() {
                         <p className="text-xs text-blue-700">Log in to skip entering your details.</p>
                       </div>
                     </div>
-                    <Link href={`/login?returnUrl=/guest-purchase?event_id=${eventIdFromUrl}`}>
+                    <Link href={`/login?returnUrl=/ticket-purchase?event_id=${eventIdFromUrl}`}>
                       <Button variant="outline" className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50">
                         Log In
                       </Button>
@@ -388,61 +348,75 @@ function GuestPurchaseContent() {
                   </div>
                 )}
 
-                {!isLoggedIn ? (
+                {!isAuthenticated ? (
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
                       <TicketIcon className="w-6 h-6 mr-2 text-blue-600" />
                       Ticket Delivery Information
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>First Name</Label>
-                        <input
-                          {...guestForm.register("first_name")}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                          placeholder="John"
+                    <Form {...guestForm}>
+                      <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                          control={guestForm.control}
+                          name="first_name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>First Name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="John" {...field} className="h-11" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                        {guestForm.formState.errors.first_name && (
-                          <p className="text-sm text-red-500">{guestForm.formState.errors.first_name.message}</p>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Last Name</Label>
-                        <input
-                          {...guestForm.register("last_name")}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                          placeholder="Doe"
+                        <FormField
+                          control={guestForm.control}
+                          name="last_name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Last Name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Doe" {...field} className="h-11" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                        {guestForm.formState.errors.last_name && (
-                          <p className="text-sm text-red-500">{guestForm.formState.errors.last_name.message}</p>
-                        )}
-                      </div>
-                      <div className="space-y-2 sm:col-span-2">
-                        <Label>Email Address</Label>
-                        <div className="relative">
-                          <EnvelopeIcon className="absolute left-3 top-3 text-gray-400" size={18} />
-                          <input
-                            {...guestForm.register("email")}
-                            className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                            placeholder="john@example.com"
-                          />
-                        </div>
-                        {guestForm.formState.errors.email && (
-                          <p className="text-sm text-red-500">{guestForm.formState.errors.email.message}</p>
-                        )}
-                      </div>
-                      <div className="space-y-2 sm:col-span-2">
-                        <Label>Phone Number</Label>
-                        <input
-                          {...guestForm.register("phone")}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                          placeholder="+977 9800000000"
+                        <FormField
+                          control={guestForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem className="sm:col-span-2">
+                              <FormLabel>Email Address</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <EnvelopeIcon className="absolute left-3 top-3.5 text-gray-400 z-10" size={18} />
+                                  <Input placeholder="john@example.com" {...field} className="pl-10 h-11" />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                        {guestForm.formState.errors.phone && (
-                          <p className="text-sm text-red-500">{guestForm.formState.errors.phone.message}</p>
-                        )}
-                      </div>
-                    </div>
+                        <FormField
+                          control={guestForm.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem className="sm:col-span-2">
+                              <FormLabel>Phone Number</FormLabel>
+                              <FormControl>
+                                <PhoneInput
+                                  placeholder="9800000000"
+                                  {...field}
+                                  defaultCountry="NP"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </form>
+                    </Form>
                   </div>
                 ) : (
                   <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
@@ -453,7 +427,7 @@ function GuestPurchaseContent() {
                     <p className="text-green-700 mt-1">
                       Proceeding with your account details.
                     </p>
-                    </div>
+                  </div>
                 )}
 
                 {/* Default Payment Method Display */}
@@ -488,17 +462,17 @@ function GuestPurchaseContent() {
               {/* Event Mini Header */}
               <div className="p-4 bg-gray-50 border-b border-gray-100 flex gap-4">
                 <div className="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0 relative">
-                  <img src={eventData.image} alt={eventData.title} className="w-full h-full object-cover" />
+                  <img src={eventData.imageUrl} alt={eventData.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-gray-900 text-sm line-clamp-2">{eventData.title}</h3>
                   <div className="flex items-center text-xs text-gray-500 mt-1">
                     <CalendarIcon size={14} className="mr-1" />
-                    {format(new Date(eventData.date), "MMM dd, yyyy")}
+                    {format(new Date(eventData.startDate), "MMM dd, yyyy")}
                   </div>
                   <div className="flex items-center text-xs text-gray-500 mt-0.5">
                     <MapPinIcon size={14} className="mr-1" />
-                    {eventData.venue}
+                    {`${eventData.venue?.name}, ${eventData.venue?.address}`}
                   </div>
                 </div>
               </div>
@@ -509,7 +483,7 @@ function GuestPurchaseContent() {
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Ticket Type</span>
-                      <span className="font-medium text-gray-900 text-right">{selectedTier ? selectedTier.name : "-"}</span>
+                      <span className="font-medium text-gray-900 text-right">{selectedTier ? selectedTier.tier_name : "-"}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Quantity</span>
@@ -562,7 +536,7 @@ function GuestPurchaseContent() {
                     ) : step === 1 ? (
                       "Continue"
                     ) : (
-                      isLoggedIn ? "Confirm Purchase" : "Place Order"
+                      isAuthenticated ? "Confirm Purchase" : "Place Order"
                     )}
                   </Button>
                   <p className="text-xs text-center text-gray-400 mt-3">

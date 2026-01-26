@@ -383,12 +383,16 @@
       "buyTickets": "Acquista i biglietti",
       "buyTicketsGuest": "Acquista i biglietti come ospite",
       "loginToBuy": "Accedi per acquistare i biglietti",
-      "share": "Condividi evento"
+      "share": "Condividi evento",
+      "findTickets": "Trova i biglietti"
     },
     "backtoEvents": "Torna a Eventi",
     "description": {
-      "title": "Descrizione"
-    }
+      "title": "Descrizione",
+      "readLess": "Leggi meno",
+      "readMore": "Per saperne di più"
+    },
+    "noEventId": "Nessun ID evento fornito nell'URL."
   },
   "profile": {
     "title": "Il mio profilo",
@@ -404,5 +408,13 @@
     "saveButton": "Salva modifiche",
     "cancelButton": "Cancellare",
     "organization": "Organizzazione"
+  },
+  "ticketPurchase": {
+    "selectTickets": "Seleziona Biglietti",
+    "backToEvent": "Torna all'evento",
+    "backToSelection": "Torniamo alla selezione",
+    "payment": "Pagamento",
+    "detailsAndPayment": "Dettagli",
+    "selectTierError": "Seleziona un tipo di biglietto"
   }
 }

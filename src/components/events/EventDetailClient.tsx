@@ -12,13 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Event } from "@/types/event";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { eventService } from "@/services/eventService";
 import DOMPurify from "dompurify";
+import { useEventById } from "@/hooks/useEvents";
 
 interface EventDetailClientProps {
   eventId: string;
@@ -26,8 +25,6 @@ interface EventDetailClientProps {
 
 export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const router = useRouter();
-  const [event, setEvent] = useState<Event | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showLocationMap, setShowLocationMap] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
@@ -35,20 +32,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        setIsLoading(true);
-        const eventData = await eventService.getEventById(eventId);
-        setEvent(eventData);
-      } catch (error) {
-        console.error("Failed to fetch event:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEvent();
-  }, [eventId]);
+  const { data: event, isLoading } = useEventById(eventId);
 
   const handleShare = async () => {
     if (navigator.share && event) {
@@ -65,7 +49,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
   };
 
   const handleFindTickets = () => {
-    router.push(`/guest-purchase?event_id=${eventId}`);
+    router.push(`/ticket-purchase?event_id=${eventId}`);
   };
 
   if (isLoading) {
@@ -98,10 +82,10 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
           <main className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
-                {t("eventDetails.eventNotFound")}
+                {t("eventDetails.eventNotFound", "Event Not Found")}
               </h1>
               <Button onClick={() => router.push("/allevents")}>
-                {t("eventDetails.backtoEvents")}
+                {t("eventDetails.backtoEvents", "Back to Events")}
               </Button>
             </div>
           </main>
@@ -174,7 +158,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       }
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm"
                     >
-                      {isDescriptionExpanded ? "Read less" : "Read more"}
+                      {isDescriptionExpanded ? t("eventDetails.description.readLess", "Read Less") : t("eventDetails.description.readMore", "Read More")}
                     </button>
                   )}
                 </div>

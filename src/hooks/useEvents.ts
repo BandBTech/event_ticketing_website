@@ -2,6 +2,7 @@ import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 
 import { QueryParams } from '@/types';
 import { eventService } from '@/services/eventService';
+import { queryKeys } from '@/lib/queryKeys';
 
 
 
@@ -10,16 +11,16 @@ export const useEvents = (params: QueryParams = {}) => {
     queryKey: ['events', params],
     queryFn: () => eventService.getPublicEvents(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    
+
   });
 };
 
-export const useEvent = (id: string) => {
+export const useEventById = (id: string) => {
   return useQuery({
-    queryKey: ['event', id],
+    queryKey: queryKeys.events.byId(id),
     queryFn: () => eventService.getEventById(id),
     enabled: !!id,
-    staleTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 0
   });
 };
 
@@ -42,7 +43,7 @@ export const useEventCategories = () => {
 export const useInfiniteEvents = (params: Omit<QueryParams, 'page'> = {}) => {
   return useInfiniteQuery({
     queryKey: ['infinite-events', params],
-    queryFn: ({ pageParam = 1 }) => 
+    queryFn: ({ pageParam = 1 }) =>
       eventService.getPublicEvents({ ...params, page: pageParam }),
     getNextPageParam: (lastPage) => {
       const { page, totalPages } = lastPage.pagination;

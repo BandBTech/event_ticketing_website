@@ -502,17 +502,29 @@
       "buyTickets": "Buy Tickets",
       "buyTicketsGuest": "Buy Tickets as Guest",
       "loginToBuy": "Login to Buy Tickets",
-      "share": "Share Event"
+      "share": "Share Event",
+      "findTickets": "Find Tickets"
     },
     "backtoEvents": "Back to Events",
     "description": {
-      "title": "Description"
+      "title": "Description",
+      "readLess": "Read Less",
+      "readMore": "Read More"
     },
     "ticketStatus": {
       "soldOut": "SoldOut",
       "salesEnded": "Sales Ended",
       "comingSoon": "Coming Soon",
       "unavailable": "Unavailable"
-    }
+    },
+    "noEventId": "No event ID provided in the URL."
+  },
+  "ticketPurchase": {
+    "selectTickets": "Select Tickets",
+    "backToEvent": "Back to Event",
+    "backToSelection": "Back to Selection",
+    "payment": "Payment",
+    "detailsAndPayment": "Details & Payment",
+    "selectTierError": "Please select a ticket type"
   }
 }

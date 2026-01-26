@@ -384,12 +384,16 @@
       "buyTickets": "チケットを購入する",
       "buyTicketsGuest": "ゲストとしてチケットを購入する",
       "loginToBuy": "ログインしてチケットを購入する",
-      "share": "イベントを共有する"
+      "share": "イベントを共有する",
+      "findTickets": "チケットを探す"
     },
     "backtoEvents": "イベントに戻る",
     "description": {
-      "title": "説明"
-    }
+      "title": "説明",
+      "readLess": "もっと読む",
+      "readMore": "続きを読む"
+    },
+    "noEventId": "URL にイベント ID が指定されていません。"
   },
   "profile": {
     "title": "私のプロフィール",
@@ -405,5 +409,13 @@
     "saveButton": "変更を保存",
     "cancelButton": "キャンセル",
     "organization": "組織"
+  },
+  "ticketPurchase": {
+    "selectTickets": "チケットを選択",
+    "backToEvent": "イベントに戻る",
+    "backToSelection": "選択項目に戻る",
+    "payment": "支払い",
+    "detailsAndPayment": "詳細",
+    "selectTierError": "チケットの種類を選択してください"
   }
 }
