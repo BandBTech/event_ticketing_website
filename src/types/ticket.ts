@@ -1,3 +1,38 @@
+import { z } from 'zod';
+
+export const TicketStatusSchema = z.enum(['active', 'used', 'cancelled', 'expired', 'transferred', 'valid']);
+
+export const ViewTicketResponseSchema = z.object({
+  id: z.string(),
+  ticket_number: z.string(),
+  status: TicketStatusSchema,
+  qr_code_url: z.string().optional(),
+  event: z.object({
+    id: z.string(),
+    title: z.string(),
+    startDate: z.string(),
+    endDate: z.string().optional(),
+    imageUrl: z.string().optional(),
+    venue: z.object({
+      name: z.string(),
+      address: z.string(),
+      city: z.string().optional(),
+    }).optional(),
+  }),
+  tier: z.object({
+    name: z.string(),
+    price: z.number(),
+    currency: z.string(),
+  }).optional(),
+  guest: z.object({
+    first_name: z.string(),
+    last_name: z.string(),
+    email: z.string(),
+  }).optional(),
+});
+
+export type ViewTicketDetails = z.infer<typeof ViewTicketResponseSchema>;
+
 export interface Ticket {
   id: string;
   userId: string;

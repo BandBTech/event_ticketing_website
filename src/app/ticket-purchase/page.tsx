@@ -224,16 +224,17 @@ function GuestPurchaseContent() {
       <div className="max-w-6xl mx-auto">
         {/* Header / Back Button */}
         <div className="mb-8 flex items-center justify-between">
-          <button
+          <Button
             onClick={() => {
               if (step === 2) setStep(1);
               else router.push(`/events/detail/?id=${eventIdFromUrl}`);
             }}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            variant="ghost"
+            className="hover:bg-white! hover:shadow-sm transition-shadow"
           >
-            <ArrowLeftIcon className="w-5 h-5 mr-2" />
+            <ArrowLeftIcon className="w-5 h-5 mr-1" />
             {step === 1 ? t('ticketPurchase.backToEvent', 'Back to Event') : t('ticketPurchase.backToSelection', 'Back to Selection')}
-          </button>
+          </Button>
           <div className="hidden sm:block">
             <div className="flex items-center space-x-2 text-sm">
               <span className={cn("font-medium", step >= 1 ? "text-blue-600" : "text-gray-400")}>{t('ticketPurchase.selectTickets', 'Select Tickets')}</span>

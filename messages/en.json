@@ -524,7 +524,26 @@
     "backToEvent": "Back to Event",
     "backToSelection": "Back to Selection",
     "payment": "Payment",
-    "detailsAndPayment": "Details & Payment",
-    "selectTierError": "Please select a ticket type"
+    "detailsAndPayment": "Details & Payment"
+  },
+  "ticketView": {
+    "title": "Digital Ticket",
+    "verifiedPurchase": "Verified Purchase",
+    "dateTime": "Date & Time",
+    "venue": "Venue",
+    "ticketType": "Ticket Type",
+    "passHolder": "Pass Holder",
+    "ticketId": "Ticket ID",
+    "scanAtEntrance": "Scan at Entrance",
+    "printTicket": "Print Ticket",
+    "backHome": "Back to Home",
+    "invalidAccess": "Invalid Access",
+    "noTokenFound": "No valid ticket token found. Please check your link or contact support.",
+    "serviceProvider": "Service Provider",
+    "instructions": {
+      "present": "Present this code on arrival for scanning.",
+      "noShare": "Do not share this ticket with others."
+    },
+    "loadingTicket": "Loading Ticket..."
   }
 }

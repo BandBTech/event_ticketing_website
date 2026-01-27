@@ -13,4 +13,8 @@ export const queryKeys = {
   events: {
     byId: (id: string) => ['event', id],
   },
-}
+  tickets: {
+    view: (token: string) => ['tickets', 'view', token],
+    validate: (token: string) => ['tickets', 'validate', token],
+  },
+};

@@ -416,5 +416,25 @@
     "payment": "Pagamento",
     "detailsAndPayment": "Dettagli",
     "selectTierError": "Seleziona un tipo di biglietto"
+  },
+  "ticketView": {
+    "title": "Biglietto Digitale",
+    "verifiedPurchase": "Acquisto Verificato",
+    "dateTime": "Data e Ora",
+    "venue": "Luogo",
+    "ticketType": "Tipo di Biglietto",
+    "passHolder": "Titolare del Pass",
+    "ticketId": "ID Biglietto",
+    "scanAtEntrance": "Scansiona all'ingresso",
+    "printTicket": "Stampa Biglietto",
+    "backHome": "Torna alla Home",
+    "invalidAccess": "Accesso non valido",
+    "noTokenFound": "Nessun token biglietto valido trovato. Controlla il link o contatta il supporto.",
+    "serviceProvider": "Fornitore di Servizi",
+    "instructions": {
+      "present": "Presenta questo codice all'arrivo per la scansione.",
+      "noShare": "Non condividere questo biglietto con altri."
+    },
+    "loadingTicket": "Caricamento biglietto..."
   }
 }

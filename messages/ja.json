@@ -417,5 +417,25 @@
     "payment": "支払い",
     "detailsAndPayment": "詳細",
     "selectTierError": "チケットの種類を選択してください"
+  },
+  "ticketView": {
+    "title": "デジタルチケット",
+    "verifiedPurchase": "購入確認済み",
+    "dateTime": "日時",
+    "venue": "会場",
+    "ticketType": "チケットの種類",
+    "passHolder": "パス所有者",
+    "ticketId": "チケットID",
+    "scanAtEntrance": "入り口でスキャン",
+    "printTicket": "チケットを印刷",
+    "backHome": "ホームに戻る",
+    "invalidAccess": "無効なアクセス",
+    "noTokenFound": "有効なチケットトークンが見つかりません。リンクを確認するかサポートにお問い合わせください。",
+    "serviceProvider": "サービスプロバイダー",
+    "instructions": {
+      "present": "到着時にこのコードを提示してスキャンしてください。",
+      "noShare": "このチケットを他の人と共有しないでください。"
+    },
+    "loadingTicket": "チケットを読み込み中..."
   }
 }
