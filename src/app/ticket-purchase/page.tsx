@@ -44,6 +44,7 @@ import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { isValidPhoneNumber as isValidPhone } from "react-phone-number-input";
 import { ChevronRightIcon } from "lucide-react";
+import { LoginModal } from "@/components/auth/LoginModal";
 
 const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
@@ -119,6 +120,7 @@ function GuestPurchaseContent() {
   const selectedTierId = guestForm.watch("tier_id");
   const quantity = guestForm.watch("quantity");
   const [promoCode, setPromoCode] = useState("");
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const { isAuthenticated } = useAuthStore();
 
@@ -341,11 +343,13 @@ function GuestPurchaseContent() {
                         <p className="text-xs text-blue-700">Log in to skip entering your details.</p>
                       </div>
                     </div>
-                    <Link href={`/login?returnUrl=/ticket-purchase?event_id=${eventIdFromUrl}`}>
-                      <Button variant="outline" className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50">
-                        Log In
-                      </Button>
-                    </Link>
+                    <Button
+                      variant="outline"
+                      className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
+                      onClick={() => setIsLoginModalOpen(true)}
+                    >
+                      Log In
+                    </Button>
                   </div>
                 )}
 
@@ -420,14 +424,16 @@ function GuestPurchaseContent() {
                     </Form>
                   </div>
                 ) : (
-                  <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600">
+                    <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center gap-4">
+                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-600">
                       <UserIcon size={32} weight="duotone" />
                     </div>
-                    <h3 className="text-lg font-bold text-green-900">Logged In</h3>
-                    <p className="text-green-700 mt-1">
-                      Proceeding with your account details.
-                    </p>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-green-900">Logged In</h3>
+                        <p className="text-green-700 mt-1">
+                          Please proceed to checkout.
+                        </p>
+                      </div>
                   </div>
                 )}
 
@@ -549,6 +555,12 @@ function GuestPurchaseContent() {
           </div>
         </div>
       </div>
+      {/* Login Modal */}
+      <LoginModal
+        open={isLoginModalOpen}
+        onOpenChange={setIsLoginModalOpen}
+        onSuccess={() => setIsLoginModalOpen(false)}
+      />
     </div>
   );
 }

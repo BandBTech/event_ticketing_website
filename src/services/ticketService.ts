@@ -1,5 +1,5 @@
 import { api } from "@/lib/apiClient";
-import { ViewTicketResponseSchema, type ViewTicketDetails } from "@/types/ticket";
+import { type ViewTicketDetails, type ApiTicketResponse } from "@/types/ticket";
 
 export interface GuestPurchasePayload {
   first_name: string;
@@ -54,6 +54,43 @@ export const ticketService = {
 
     // VALIDATION GATEWAY: Enforce schema here
     if (!ticketData) throw new Error("No ticket data found");
-    return ViewTicketResponseSchema.parse(ticketData);
+
+    // Direct cast without Zod validation
+    const rawTicket = ticketData as ApiTicketResponse;
+
+    // Then map to frontend model (transforming snake_case to camelCase)
+    return mapTicketView(rawTicket);
   },
+};
+
+// Mapper to transform API response (snake_case) to Frontend model (camelCase)
+const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
+  return {
+    orderId: apiResponse.order_id,
+    event: {
+      id: apiResponse.event.id,
+      title: apiResponse.event.title,
+      imageUrl: apiResponse.event.banner_image,
+      venueName: apiResponse.event.venue_name,
+      address: apiResponse.event.address,
+      startDate: apiResponse.event.start_date,
+      timezone: apiResponse.event.timezone,
+      organizer: apiResponse.event.organizer,
+    },
+    tickets: apiResponse.tickets.map((t) => ({
+      ticketId: t.ticket_id,
+      ticketNumber: t.ticket_number,
+      tierName: t.tier_name,
+      price: t.price,
+      qrData: t.qr_data,
+      checkedIn: t.checked_in,
+    })),
+    totalAmount: apiResponse.total_amount,
+    currency: apiResponse.currency,
+    purchaseDate: apiResponse.purchase_date,
+    company: apiResponse.company ? {
+      name: apiResponse.company.name,
+      logoUrl: apiResponse.company.logo_url,
+    } : undefined,
+  };
 };

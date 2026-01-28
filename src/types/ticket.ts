@@ -1,37 +1,79 @@
-import { z } from 'zod';
+export type TicketStatus = 'active' | 'used' | 'cancelled' | 'expired' | 'transferred' | 'valid';
 
-export const TicketStatusSchema = z.enum(['active', 'used', 'cancelled', 'expired', 'transferred', 'valid']);
+// API Response Types (snake_case) - matches actual /public/tickets/view response
+export interface ApiTicketItem {
+  ticket_id: string;
+  ticket_number: string;
+  tier_name: string;
+  price: number;
+  qr_data: string; // base64 encoded QR data
+  checked_in: boolean;
+}
 
-export const ViewTicketResponseSchema = z.object({
-  id: z.string(),
-  ticket_number: z.string(),
-  status: TicketStatusSchema,
-  qr_code_url: z.string().optional(),
-  event: z.object({
-    id: z.string(),
-    title: z.string(),
-    startDate: z.string(),
-    endDate: z.string().optional(),
-    imageUrl: z.string().optional(),
-    venue: z.object({
-      name: z.string(),
-      address: z.string(),
-      city: z.string().optional(),
-    }).optional(),
-  }),
-  tier: z.object({
-    name: z.string(),
-    price: z.number(),
-    currency: z.string(),
-  }).optional(),
-  guest: z.object({
-    first_name: z.string(),
-    last_name: z.string(),
-    email: z.string(),
-  }).optional(),
-});
+export interface ApiTicketResponse {
+  order_id: string;
+  event: {
+    id: string;
+    title: string;
+    banner_image?: string;
+    venue_name: string;
+    address: string;
+    start_date: string;
+    timezone?: string;
+    organizer?: {
+      id: string;
+      name: string;
+      logo?: string;
+    };
+  };
+  tickets: ApiTicketItem[];
+  total_amount: number;
+  currency: string;
+  purchase_date: string;
+  is_guest_purchase?: boolean;
+  company?: {
+    id: string;
+    name: string;
+    logo_url?: string;
+    email?: string;
+  };
+}
 
-export type ViewTicketDetails = z.infer<typeof ViewTicketResponseSchema>;
+// Frontend Model Types (camelCase) - used by Components
+export interface TicketItem {
+  ticketId: string;
+  ticketNumber: string;
+  tierName: string;
+  price: number;
+  qrData: string;
+  checkedIn: boolean;
+}
+
+export interface ViewTicketDetails {
+  orderId: string;
+  event: {
+    id: string;
+    title: string;
+    imageUrl?: string;
+    venueName: string;
+    address: string;
+    startDate: string;
+    timezone?: string;
+    organizer?: {
+      id: string;
+      name: string;
+      logo?: string;
+    };
+  };
+  tickets: TicketItem[];
+  totalAmount: number;
+  currency: string;
+  purchaseDate: string;
+  company?: {
+    name: string;
+    logoUrl?: string;
+  };
+}
 
 export interface Ticket {
   id: string;

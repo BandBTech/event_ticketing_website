@@ -62,7 +62,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-white/80 backdrop-blur-[25px] border-t border-white/30">
+    <footer className="bg-white/80 backdrop-blur-[25px] border-t border-white/30 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
         <div className="py-16">

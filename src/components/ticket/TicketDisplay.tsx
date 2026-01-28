@@ -1,225 +1,218 @@
 "use client";
 
-import { useRef } from "react";
 import { format } from "date-fns";
-import {
-  Calendar,
-  MapPin,
-  Printer,
-  Ticket as TicketIcon,
-  CheckCircle,
-  Download,
-  ShareNetwork,
-  Info
-} from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import type { ViewTicketDetails } from "@/types/ticket";
-import { useTranslations } from "next-intl";
+import { QRCodeSVG } from "qrcode.react";
+import type { ViewTicketDetails, TicketItem } from "@/types/ticket";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface TicketDisplayProps {
-  ticket: ViewTicketDetails;
+  order: ViewTicketDetails;
   onPrint?: () => void;
   isLoading?: boolean;
 }
 
-export function TicketDisplay({ ticket, onPrint, isLoading }: TicketDisplayProps) {
+// Single Ticket Card Component
+function SingleTicketCard({
+  ticket,
+  event,
+  currency,
+  company,
+  index,
+  total
+}: {
+  ticket: TicketItem;
+  event: ViewTicketDetails['event'];
+  currency: string;
+  company?: ViewTicketDetails['company'];
+  index: number;
+  total: number;
+}) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const qrCodeUrl = ticket.qr_code_url || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(ticket.ticket_number)}`;
 
+  return (
+    <div className="bg-white max-w-2xl mx-auto rounded-lg shadow-xl overflow-hidden border border-neutral-200 print:shadow-none print:border-neutral-300 print:break-inside-avoid print:overflow-visible print:mb-8">
+      {/* Event Banner */}
+      <div className="relative h-48 sm:h-56 bg-gradient-to-br from-red-600 to-red-800 overflow-hidden">
+        {event.imageUrl ? (
+          <img
+            src={event.imageUrl}
+            alt={event.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
+            <h2 className="text-3xl font-black text-white text-center px-4">
+              {event.title}
+            </h2>
+          </div>
+        )}
+      </div>
+
+      {/* Event Pass Header */}
+      <div className="py-4 px-4 text-center">
+        <div className="flex items-center justify-center gap-4">
+          <div className="flex-1 h-px bg-neutral-300" />
+          <h3 className="text-2xl font-bold text-neutral-900 tracking-wide">
+            Event Pass
+          </h3>
+          <div className="flex-1 h-px bg-neutral-300" />
+        </div>
+      </div>
+
+      {/* Welcome Message */}
+      <div className="px-4 pb-4 text-center">
+        <p className="text-neutral-600 text-sm leading-relaxed">
+          Dear Sir/Ma&apos;am,
+        </p>
+        <p className="text-neutral-600 text-sm leading-relaxed mt-1">
+          We are pleased to invite you to the event. Please show this QR at the entrance to verify the pass.
+        </p>
+      </div>
+
+      {/* QR Code Section */}
+      <div className="py-4 flex flex-col items-center">
+        <div className="bg-white p-4 border-2 border-neutral-200 rounded-lg">
+          <QRCodeSVG
+            value={ticket.qrData}
+            size={180}
+            level="M"
+            includeMargin={false}
+            minVersion={1}
+          />
+        </div>
+        {/* Ticket Number */}
+        <p className="mt-4 font-mono text-lg font-bold text-neutral-800 tracking-tight">
+          {ticket.ticketNumber}
+        </p>
+      </div>
+
+      {/* Tier & Event Info */}
+      <div className="py-6 px-6 text-center border-t border-neutral-100">
+        <p className="text-3xl font-black text-neutral-900 mb-3">
+          {ticket.tierName}
+        </p>
+        <p className="text-neutral-600 text-sm">
+          Venue: {event.venueName}, {event.address}
+        </p>
+        <p className="text-neutral-600 text-sm mt-1">
+          Date: {format(new Date(event.startDate), "do MMMM, yyyy")}
+        </p>
+        <p className="text-neutral-500 text-xs mt-1">
+          {format(new Date(event.startDate), "h:mm a")}
+        </p>
+      </div>
+
+      {/* Organizer Info */}
+      {event.organizer && (
+        <div className="py-4 px-6 text-center border-t border-neutral-100 bg-neutral-50">
+          <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
+            Organized by
+          </p>
+          {event.organizer.logo ? (
+            <img
+              src={event.organizer.logo}
+              alt={event.organizer.name}
+              className="h-8 mx-auto object-contain"
+            />
+          ) : event.organizer.name ? (
+            <p className="text-lg font-bold text-neutral-700">
+              {event.organizer.name}
+            </p>
+          ) : null}
+        </div>
+      )}
+
+      {/* Footer with Branding */}
+      <div className="bg-neutral-800 text-white py-6 px-6 text-center">
+        {/* Company Logo/Name */}
+        {company?.logoUrl ? (
+          <img
+            src={company.logoUrl}
+            alt={company.name}
+            className="h-10 mx-auto mb-4 object-contain"
+          />
+        ) : (
+          <p className="text-xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
+            {company?.name || "TIMRO TICKET"}
+          </p>
+        )}
+
+        {/* Price */}
+        <p className="text-sm text-neutral-300 mb-2">
+          {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(ticket.price)}
+        </p>
+
+        {/* Validity Notice */}
+        <p className="text-xs text-amber-400 font-medium mt-4">
+          Validity: This Pass is valid for a single individual only.
+        </p>
+      </div>
+
+      {/* Ticket Counter for multiple tickets */}
+      {total > 1 && (
+        <div className="bg-neutral-900 text-white text-center py-2 text-xs font-bold">
+          Ticket {index + 1} of {total}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function TicketDisplay({ order, onPrint, isLoading }: TicketDisplayProps) {
   if (isLoading) {
     return (
-      <div className="w-full max-w-2xl mx-auto bg-white rounded-[2.5rem] shadow-2xl animate-pulse aspect-[3/4]" />
+      <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-xl animate-pulse aspect-[3/5]" />
     );
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Printable Area */}
-      <div
-        className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-neutral-100 print:shadow-none print:border-neutral-200 relative group"
-      >
-        {/* Top Section: Event Hero */}
-        <div className="relative h-72 sm:h-80 bg-neutral-900 overflow-hidden">
-          {ticket.event.imageUrl ? (
-            <img
-              src={ticket.event.imageUrl}
-              alt={ticket.event.title}
-              className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-900" />
-          )}
+    <div className="w-full max-w-md mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 print:max-w-none print:w-full print:space-y-0">
+      {/* Render each ticket */}
+      {order.tickets.map((ticket, index) => (
+        <SingleTicketCard
+          key={ticket.ticketId}
+          ticket={ticket}
+          event={order.event}
+          currency={order.currency}
+          company={order.company}
+          index={index}
+          total={order.tickets.length}
+        />
+      ))}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-8 sm:p-10 flex flex-col justify-end">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-black uppercase tracking-widest">
-                {t("ticketView.title")}
-              </span>
-              <span className="flex items-center gap-1.5 text-green-400 text-xs font-bold bg-green-500/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-green-500/20">
-                <CheckCircle weight="fill" size={14} />
-                {t("ticketView.verifiedPurchase")}
-              </span>
-            </div>
-            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-none drop-shadow-2xl">
-              {ticket.event.title}
-            </h1>
-          </div>
+      {/* Order Summary */}
+      {order.tickets.length > 1 && (
+        <div className="bg-neutral-100 rounded-lg p-4 text-center print:hidden">
+          <p className="text-sm text-neutral-600">
+            <span className="font-bold">{order.tickets.length}</span> tickets •
+            <span className="font-bold ml-1">
+              {new Intl.NumberFormat('en-US', { style: 'currency', currency: order.currency }).format(order.totalAmount)}
+            </span> total
+          </p>
         </div>
+      )}
 
-        <div className="p-8 sm:p-12 space-y-12">
-          {/* Main Info Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            {/* Details Column */}
-            <div className="space-y-10">
-              <div className="space-y-8">
-                <div className="flex gap-4 items-start translate-x-0">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-50/50 flex items-center justify-center text-blue-600 shrink-0 border border-blue-100">
-                    <Calendar weight="duotone" size={28} />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t("ticketView.dateTime")}</p>
-                    <p className="text-xl font-black text-neutral-900 leading-tight">
-                      {format(new Date(ticket.event.startDate), "EEEE, MMM dd, yyyy")}
-                    </p>
-                    <p className="text-neutral-500 font-bold bg-neutral-100 self-start px-2 py-0.5 rounded text-sm">
-                      {format(new Date(ticket.event.startDate), "h:mm a")}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 items-start">
-                  <div className="w-14 h-14 rounded-2xl bg-emerald-50/50 flex items-center justify-center text-emerald-600 shrink-0 border border-emerald-100">
-                    <MapPin weight="duotone" size={28} />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t("ticketView.venue")}</p>
-                    <p className="text-xl font-black text-neutral-900 leading-tight">
-                      {ticket.event.venue?.name || "TBA"}
-                    </p>
-                    <p className="text-neutral-500 font-bold text-sm">
-                      {ticket.event.venue?.address || ""}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 items-start">
-                  <div className="w-14 h-14 rounded-2xl bg-purple-50/50 flex items-center justify-center text-purple-600 shrink-0 border border-purple-100">
-                    <TicketIcon weight="duotone" size={28} />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t("ticketView.ticketType")}</p>
-                    <p className="text-xl font-black text-neutral-900 leading-tight">
-                      {ticket.tier?.name || "General Admission"}
-                    </p>
-                    <p className="text-purple-600 font-black text-sm">
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: ticket.tier?.currency || 'USD' }).format(ticket.tier?.price || 0)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Pass Holder Info */}
-              <div className="pt-8 border-t border-neutral-100">
-                <div className="bg-neutral-50 rounded-3xl p-6 border border-neutral-100 relative overflow-hidden">
-                  <div className="relative z-10">
-                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-2">{t("ticketView.passHolder")}</p>
-                    <p className="text-2xl font-black text-neutral-900 tracking-tight">
-                      {ticket.guest?.first_name} {ticket.guest?.last_name}
-                    </p>
-                    <p className="text-sm text-neutral-500 font-bold mt-1 opacity-70">
-                      {ticket.guest?.email}
-                    </p>
-                  </div>
-                  <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Info weight="fill" size={60} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* QR Code Column */}
-            <div className="flex flex-col items-center justify-center space-y-8">
-              <div className="relative group/qr p-6 bg-white border-4 border-dashed border-neutral-100 rounded-[3rem] transition-all duration-500 hover:border-blue-200 hover:scale-[1.02] active:scale-95">
-                <div className="bg-white p-4 rounded-[2.5rem] shadow-inner">
-                  <img
-                    src={qrCodeUrl}
-                    alt="Ticket QR Code"
-                    className="w-48 h-48 sm:w-60 sm:h-60 mix-blend-multiply"
-                  />
-                </div>
-                {/* QR HUD */}
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-neutral-900 text-white px-5 py-2 rounded-full border border-white/20 shadow-xl">
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t("ticketView.scanAtEntrance")}</span>
-                </div>
-              </div>
-
-              <div className="text-center space-y-2">
-                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t("ticketView.ticketId")}</p>
-                <p className="font-mono text-xl font-black tracking-tighter bg-blue-50 text-blue-800 px-6 py-2.5 rounded-2xl border border-blue-100 shadow-sm">
-                  {ticket.ticket_number}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Section: Notes / Branding */}
-          <div className="pt-12 border-t border-neutral-100">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-              <div className="flex gap-6">
-                <div className="flex items-center gap-3 text-sm font-bold text-neutral-500">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  {t("ticketView.instructions.present")}
-                </div>
-                <div className="flex items-center gap-3 text-sm font-bold text-neutral-500">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  {t("ticketView.instructions.noShare")}
-                </div>
-              </div>
-
-              <div className="text-center md:text-right">
-                <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest mb-1">{t("ticketView.serviceProvider")}</p>
-                <p className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                  TIMRO TICKET
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Dynamic Perforation Pattern */}
-        <div className="absolute bottom-[28%] left-0 -translate-x-1/2 flex flex-col gap-2 print:hidden">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="w-4 h-4 rounded-full bg-neutral-50 border border-neutral-100 shadow-inner" />
-          ))}
-        </div>
-        <div className="absolute bottom-[28%] right-0 translate-x-1/2 flex flex-col gap-2 print:hidden">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="w-4 h-4 rounded-full bg-neutral-50 border border-neutral-100 shadow-inner" />
-          ))}
-        </div>
-      </div>
-
-      {/* Global CSS for Print */}
       <style jsx global>{`
         @media print {
-          body {
-            background-color: white !important;
-            margin: 0;
-            padding: 0;
-          }
           @page {
-            margin: 0;
+            margin: 0.5cm;
             size: auto;
           }
           .print\\:hidden {
             display: none !important;
           }
-          button {
-            display: none !important;
+          /* Ensure no scaling issues */
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          body, html {
+            background: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
           }
         }
       `}</style>

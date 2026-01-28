@@ -36,7 +36,7 @@ export default function RootLayout({
       >
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
           {/* Background Pattern */}
-          <div className="fixed inset-0 opacity-30">
+          <div className="fixed inset-0 opacity-30 print:hidden">
             <div
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
               style={{
@@ -46,7 +46,7 @@ export default function RootLayout({
           </div>
 
           {/* Gradient Orbs */}
-          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="fixed inset-0 overflow-hidden pointer-events-none print:hidden">
             <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob" />
             <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000" />
             <div className="absolute top-40 left-40 w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000" />

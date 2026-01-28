@@ -131,7 +131,7 @@ const mapTicketCategory = (name?: string): TicketCategory => {
 
 const mapTier = (tier: ApiEventTier): TicketType => ({
   id: tier.id,
-  tier_name: mapTicketCategory(tier.tier_name),
+  tier_name: tier.tier_name,
   price: tier.price ?? 0,
   quantity: tier.available ?? tier.quantity ?? 0,
   sold: tier.sold ?? 0,
@@ -255,8 +255,7 @@ export const eventService = {
     getEventById: async (id: string): Promise<Event> => {
     try {
       const response = await api.get<ApiEvent>(`/public/events/${id}`);
-      
-      console.log('Event by ID response:', response);
+
       return mapEvent(response);
     } catch (error) {
       console.error(`Error fetching event with ID ${id}:`, error);

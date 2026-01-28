@@ -38,7 +38,7 @@ export interface Venue {
 
 export interface TicketType {
   id: string;
-  tier_name: TicketCategory;
+  tier_name: string;
   price: number;
   quantity: number;
   sold: number;
