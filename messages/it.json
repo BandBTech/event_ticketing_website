@@ -461,7 +461,7 @@
     "date": "Data",
     "time": "Tempo",
     "organizedBy": "Organizzato da",
-    "validityNotice": "Validità: questo Pass è valido solo per un singolo individuo.",
+    "validityNotice": "Validità: questo biglietto è valido solo per una persona.",
     "ticketCounter": "Biglietto {index} di {total}",
     "total": "Totale"
   },

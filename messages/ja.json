@@ -463,7 +463,7 @@
     "date": "日付",
     "time": "時間",
     "organizedBy": "主催",
-    "validityNotice": "有効性: このパスは 1 人の個人に対してのみ有効です。",
+    "validityNotice": "有効期限：このチケットは1名様のみ有効です。",
     "ticketCounter": "チケット {index } / {total}",
     "total": "合計"
   },

@@ -571,8 +571,8 @@
     "date": "Date",
     "time": "Time",
     "organizedBy": "Organized by",
-    "validityNotice": "Validity: This Pass is valid for a single individual only.",
-    "ticketCounter": "Ticket {index } of {total}",
+    "validityNotice": "Validity: This ticket is valid for a single individual only.",
+    "ticketCounter": "Ticket {index} of {total}",
     "total": "Total"
   },
   "ticket": {
