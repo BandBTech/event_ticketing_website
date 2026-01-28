@@ -119,22 +119,27 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
       <div className="relative z-10">
         <main className="max-w-7xl mx-auto px-4 py-8">
-          {/* Hero Image */}
-          <div className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8 shadow-2xl">
-            <Image
-              src={event.bannerImageUrl || event.imageUrl}
-              alt={event.title}
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          </div>
 
           {/* Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
+
+            <h2 className="text-3xl font-semibold text-gray-900 lg:col-span-2 -mb-2 mt-6">
+              {event.title}
+            </h2>
             <div className="lg:col-span-2 space-y-6">
+
+              {/* Hero Image */}
+              <div className="relative w-full aspect-16/10 rounded-2xl overflow-hidden mb-8 shadow-2xl">
+                <Image
+                  src={event.bannerImageUrl || event.imageUrl}
+                  alt={event.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              </div>
               {/* Description */}
               <div className="glass-card rounded-2xl p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -271,8 +276,23 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
               <div className="glass-card rounded-2xl p-6 sticky top-24">
                 <div className="space-y-4">
                   {/* Action Buttons */}
-                  <div className="pt-4 border-t border-gray-200">
+                  <div className="pt-4">
                     <div className="space-y-3">
+                      {event.ticketTypes.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-sm text-gray-500 font-medium">
+                            {t("events.startingFrom", "Tickets starting from")}
+                          </p>
+                          <p className="text-2xl font-bold text-blue-600">
+                            {new Intl.NumberFormat("en-NP", {
+                              style: "currency",
+                              currency: event.ticketTypes[0].currency,
+                              minimumFractionDigits: 0,
+                            }).format(Math.min(...event.ticketTypes.map((t) => t.price)))}
+                          </p>
+                        </div>
+                      )}
+
                       <Button
                         onClick={handleFindTickets}
                         className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
@@ -345,6 +365,31 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                           {category.name}
                         </Badge>
                       ))}
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-gray-200">
+                    <h3 className="font-semibold text-gray-900 mb-3">
+                      {t("common.acceptedPaymentMethods", "Accepted Payment Methods")}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      <Image
+                        src="/images/stripe.svg"
+                        alt="Stripe"
+                        width={50}
+                        height={50}
+                      />
+                      <Image
+                        src="/images/visa.svg"
+                        alt="Visa"
+                        width={50}
+                        height={50}
+                      />
+                      <Image
+                        src="/images/mastercard.svg"
+                        alt="Mastercard"
+                        width={50}
+                        height={50}
+                      />
                     </div>
                   </div>
                 </div>

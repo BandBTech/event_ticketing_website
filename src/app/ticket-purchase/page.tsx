@@ -42,6 +42,7 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { isValidPhoneNumber as isValidPhone } from "react-phone-number-input";
 import { ChevronRightIcon } from "lucide-react";
 import { LoginModal } from "@/components/auth/LoginModal";
+import { Separator } from "@/components/ui/separator-extended";
 
 const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
@@ -176,16 +177,14 @@ function GuestPurchaseContent() {
 
       if (res.success) {
         toast.success("Order placed successfully!");
-        // Redirect to success or ticket view
-        // For now, just reset or show success state
-        router.push("/ticket-purchase/success?token=" + res.data.token);
-      } else {
-        toast.error(res.message || "Purchase failed");
+        const query = new URLSearchParams();
+        query.append("eventId", eventData.id);
+        query.append("tierId", selectedTier.id);
+        query.append("quantity", quantity.toString());
+        query.append("paymentGateway", payload.payment_gateway);
+        router.push(`/ticket-purchase/success?${query.toString()}`);
       }
 
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Something went wrong";
-      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -221,9 +220,9 @@ function GuestPurchaseContent() {
           </Button>
           <div className="hidden sm:block">
             <div className="flex items-center space-x-2 text-sm">
-              <span className={cn("font-medium", step >= 1 ? "text-blue-600" : "text-gray-400")}>{t('ticketPurchase.selectTickets', 'Select Tickets')}</span>
+              <span className={cn("font-medium", step >= 1 ? "text-primary" : "text-gray-400")}>{t('ticketPurchase.selectTickets', 'Select Tickets')}</span>
               <span className="text-gray-300"><ChevronRightIcon className="w-5 h-5" /></span>
-              <span className={cn("font-medium", step >= 2 ? "text-blue-600" : "text-gray-400")}>{isAuthenticated ? t('ticketPurchase.payment', 'Payment') : t('ticketPurchase.detailsAndPayment', 'Details & Payment')}</span>
+              <span className={cn("font-medium", step >= 2 ? "text-primary" : "text-gray-400")}>{isAuthenticated ? t('ticketPurchase.payment', 'Payment') : t('ticketPurchase.detailsAndPayment', 'Details & Payment')}</span>
             </div>
           </div>
         </div>
@@ -234,10 +233,10 @@ function GuestPurchaseContent() {
 
             {/* Step 1: Ticket Selection */}
             {step === 1 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="glass-card-lower rounded-2xl overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                    <TicketIcon weight="duotone" className="w-6 h-6 mr-2 text-blue-600" />
+                    <TicketIcon weight="duotone" className="w-6 h-6 mr-2 text-primary" />
                     {t("ticketPurchase.selectTickets", "Select Tickets")}
                   </h2>
                 </div>
@@ -257,7 +256,7 @@ function GuestPurchaseContent() {
                         className={cn(
                           "relative flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer hover:border-blue-100 hover:bg-blue-50/30",
                           selectedTierId === ticketType.id
-                            ? "border-blue-600 bg-blue-50/50"
+                            ? "border-primary bg-blue-50/50 text-primary"
                             : "border-gray-100 bg-white"
                         )}
                         onClick={() => {
@@ -266,7 +265,7 @@ function GuestPurchaseContent() {
                         }}
                       >
                         <div className="flex items-start gap-3">
-                          <RadioGroupItem value={ticketType.id} id={ticketType.id} className="mt-1" />
+                          <RadioGroupItem className="mt-1 size-5" value={ticketType.id} id={ticketType.id} />
                           <div>
                             <Label htmlFor={ticketType.id} className="font-bold text-gray-900 text-lg cursor-pointer">
                               {ticketType.tier_name}
@@ -277,7 +276,7 @@ function GuestPurchaseContent() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-lg text-blue-600">
+                          <p className="font-bold text-lg text-primary">
                             {formatCurrency(ticketType.price, ticketType.currency)}
                           </p>
                         </div>
@@ -290,19 +289,25 @@ function GuestPurchaseContent() {
                     <div className="mt-6 pt-6 border-t border-gray-100 animate-in fade-in slide-in-from-top-2">
                       <Label className="block text-sm font-medium text-gray-700 mb-3">Quantity</Label>
                       <div className="flex items-center gap-4">
-                        <button
+                        <Button
+                          variant="outline"
+                          size="icon"
                           onClick={() => guestForm.setValue("quantity", Math.max(1, quantity - 1))}
-                          className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors"
+                          disabled={quantity <= 1}
+                          className="w-12 h-12 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                         >
-                          <MinusIcon size={18} />
-                        </button>
-                        <span className="text-xl font-bold text-gray-900 w-12 text-center">{quantity}</span>
-                        <button
+                          <MinusIcon size={20} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
+                        </Button>
+                        <span className="text-2xl font-bold text-primary w-12 text-center">{quantity}</span>
+                        <Button
                           onClick={() => guestForm.setValue("quantity", Math.min(10, quantity + 1))}
-                          className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors"
+                          variant="outline"
+                          size="icon"
+                          disabled={quantity >= 5}
+                          className="w-12 h-12 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                         >
-                          <PlusIcon size={18} />
-                        </button>
+                          <PlusIcon size={20} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -313,33 +318,11 @@ function GuestPurchaseContent() {
             {/* Step 2: Guest Details / Payment */}
             {step === 2 && (
               <div className="space-y-6">
-                {/* Login Prompt if not logged in */}
-                {!isAuthenticated && (
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                        <UserIcon size={20} weight="bold" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-blue-900">Already have an account?</p>
-                        <p className="text-xs text-blue-700">Log in to skip entering your details.</p>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
-                      onClick={() => setIsLoginModalOpen(true)}
-                    >
-                      Log In
-                    </Button>
-                  </div>
-                )}
-
                 {!isAuthenticated ? (
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                  <div className="glass-card-lower rounded-2xl p-6">
                     <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                      <TicketIcon className="w-6 h-6 mr-2 text-blue-600" />
-                      Ticket Delivery Information
+                      <TicketIcon className="w-6 h-6 mr-2 text-primary" />
+                      {t('ticketPurchase.ticketDeliveryInformation', 'Ticket Delivery Information')}
                     </h2>
                     <Form {...guestForm}>
                       <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -348,7 +331,7 @@ function GuestPurchaseContent() {
                           name="first_name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>First Name</FormLabel>
+                              <FormLabel>{t('auth.signup.firstName', 'First Name')}</FormLabel>
                               <FormControl>
                                 <Input placeholder="John" {...field} className="h-11" />
                               </FormControl>
@@ -361,7 +344,7 @@ function GuestPurchaseContent() {
                           name="last_name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Last Name</FormLabel>
+                              <FormLabel>{t('auth.signup.lastName', 'Last Name')}</FormLabel>
                               <FormControl>
                                 <Input placeholder="Doe" {...field} className="h-11" />
                               </FormControl>
@@ -374,7 +357,7 @@ function GuestPurchaseContent() {
                           name="email"
                           render={({ field }) => (
                             <FormItem className="sm:col-span-2">
-                              <FormLabel>Email Address</FormLabel>
+                              <FormLabel>{t('auth.signup.email', 'Email Address')}</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <EnvelopeIcon className="absolute left-3 top-3.5 text-gray-400 z-10" size={18} />
@@ -390,10 +373,10 @@ function GuestPurchaseContent() {
                           name="phone"
                           render={({ field }) => (
                             <FormItem className="sm:col-span-2">
-                              <FormLabel>Phone Number</FormLabel>
+                              <FormLabel>{t('auth.signup.phone', 'Phone Number')}</FormLabel>
                               <FormControl>
                                 <PhoneInput
-                                  placeholder="9800000000"
+                                  placeholder={t('auth.signup.phonePlaceholder', 'Enter your phone number')}
                                   {...field}
                                   defaultCountry="NP"
                                 />
@@ -404,6 +387,36 @@ function GuestPurchaseContent() {
                         />
                       </form>
                     </Form>
+
+                    {/* Login Prompt if not logged in */}
+                    {!isAuthenticated && (
+                      <>
+                        <div className="my-6 w-full flex items-center justify-center gap-2 overflow-hidden">
+                          <Separator variant="dashed" className="flex-grow" />
+                          <span className="text-sm text-muted-foreground">OR</span>
+                          <Separator variant="dashed" className="flex-grow" />
+                        </div>
+                        <div className="bg-blue-50 mt-6 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                              <UserIcon size={20} weight="bold" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-blue-900">{t('auth.signup.haveAccount', 'Already have an account?')}</p>
+                              <p className="text-xs text-blue-700">{t('auth.signup.loginToSkip', 'Log in to skip entering your details.')}</p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
+                            onClick={() => setIsLoginModalOpen(true)}
+                          >
+                            {t('auth.login.loginButton', 'Log In')}
+                          </Button>
+                        </div>
+                      </>
+                    )}
+
                   </div>
                 ) : (
                     <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center gap-4">
@@ -411,19 +424,21 @@ function GuestPurchaseContent() {
                       <UserIcon size={32} weight="duotone" />
                     </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-green-900">Logged In</h3>
+                        <h3 className="text-lg font-bold text-green-900">{t('ticketPurchase.loggedIn', 'Logged In')}</h3>
                         <p className="text-green-700 mt-1">
-                          Please proceed to checkout.
+                          {t('ticketPurchase.loggedInInfo', 'Please proceed to checkout.')}
                         </p>
                       </div>
                   </div>
                 )}
 
+
+
                 {/* Default Payment Method Display */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                   <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <MoneyIcon className="w-6 h-6 mr-2 text-green-600" />
-                    Payment Method
+                    {t('ticketPurchase.paymentMethod', 'Payment Method')}
                   </h2>
                   <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -431,11 +446,10 @@ function GuestPurchaseContent() {
                         <MoneyIcon size={24} weight="duotone" />
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900">Cash Payment</p>
-                        <p className="text-sm text-gray-500">Pay at the venue</p>
+                        <p className="font-bold text-gray-900">{t('ticketPurchase.cashPayment', 'Cash Payment')}</p>
                       </div>
                     </div>
-                    <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center border-2 border-blue-600">
+                    <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-primary">
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                     </div>
                   </div>
@@ -468,18 +482,18 @@ function GuestPurchaseContent() {
 
               <div className="p-6 space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900 mb-3">Order Summary</h4>
+                  <h4 className="text-sm font-bold text-gray-900 mb-3">{t('ticketPurchase.orderSummary', 'Order Summary')}</h4>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Ticket Type</span>
+                      <span className="text-gray-600">{t('ticketPurchase.ticketType', 'Ticket Type')}</span>
                       <span className="font-medium text-gray-900 text-right">{selectedTier ? selectedTier.tier_name : "-"}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Quantity</span>
+                      <span className="text-gray-600">{t('ticketPurchase.quantity', 'Quantity')}</span>
                       <span className="font-medium text-gray-900">{quantity}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Price per ticket</span>
+                      <span className="text-gray-600">{t('ticketPurchase.pricePerTicket', 'Price/ticket')}</span>
                       <span className="font-medium text-gray-900">
                         {selectedTier ? formatCurrency(selectedTier.price, selectedTier.currency) : "-"}
                       </span>
@@ -490,8 +504,8 @@ function GuestPurchaseContent() {
                 {/* Promo Code */}
                 <div>
                   <div className="flex items-center mb-2">
-                    <TagIcon size={16} className="text-blue-600 mr-2" />
-                    <span className="text-sm font-bold text-gray-900">Promo Code</span>
+                    <TagIcon size={16} className="text-primary mr-2" />
+                    <span className="text-sm font-bold text-gray-900">{t('ticketPurchase.discountCode', 'Discount Code')}</span>
                   </div>
                   <div className="flex gap-2">
                     <input
@@ -500,14 +514,14 @@ function GuestPurchaseContent() {
                       placeholder="Enter code"
                       className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
                     />
-                    <Button variant="outline" size="sm" className="text-xs">Apply</Button>
+                    <Button variant="outline" className="text-sm">{t('common.apply', 'Apply')}</Button>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-gray-100">
                   <div className="flex justify-between items-center mb-4">
                     <span className="font-bold text-gray-900">Total</span>
-                    <span className="font-black text-2xl text-blue-600">
+                    <span className="font-black text-2xl text-primary">
                       {selectedTier ? formatCurrency(totalAmount, selectedTier.currency) : "-"}
                     </span>
                   </div>
@@ -520,16 +534,16 @@ function GuestPurchaseContent() {
                     {loading ? (
                       <span className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded-full border-2 border-white/50 border-t-white animate-spin" />
-                        Processing...
+                        {t("common.processing", "Processing...")}
                       </span>
                     ) : step === 1 ? (
-                      "Continue"
+                        t("common.continue", "Continue")
                     ) : (
-                      isAuthenticated ? "Confirm Purchase" : "Place Order"
+                          t("ticketPurchase.proceedToCheckout", "Proceed to Checkout")
                     )}
                   </Button>
                   <p className="text-xs text-center text-gray-400 mt-3">
-                    {step === 2 ? "By placing order you agree to our terms." : "No payment required yet."}
+                    {step === 2 && "By placing order you agree to our terms."}
                   </p>
                 </div>
               </div>

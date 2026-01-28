@@ -26,7 +26,12 @@
     "place": "Posto",
     "date": "Data",
     "tags": "Tag",
-    "allEventsLoaded": "Tutti gli eventi caricati"
+    "allEventsLoaded": "Tutti gli eventi caricati",
+    "acceptedPaymentMethods": "Metodi di pagamento accettati",
+    "processing": "Elaborazione...",
+    "continue": "Continuare",
+    "apply": "Fare domanda a",
+    "returnHome": "Ritorno a casa"
   },
   "navigation": {
     "events": "Eventi",
@@ -158,7 +163,8 @@
         "loginFailed": "Accesso fallito. Riprova."
       },
       "showPassword": "Mostra password",
-      "hidePassword": "Nascondi password"
+      "hidePassword": "Nascondi password",
+      "modalDescription": "Accedi al tuo account per continuare con l'acquisto."
     },
     "signup": {
       "phonePlaceholder": "Inserisci un numero di contatto valido",
@@ -176,7 +182,8 @@
         "passwordMismatch": "Le password non corrispondono."
       },
       "setPassword": "Crea una password sicura per",
-      "phone": "Numero di contatto"
+      "phone": "Numero di contatto",
+      "loginToSkip": "Accedi per evitare di inserire i tuoi dati."
     },
     "resetPassword": {
       "subtitle": "Imposta una nuova password per"
@@ -415,7 +422,22 @@
     "backToSelection": "Torniamo alla selezione",
     "payment": "Pagamento",
     "detailsAndPayment": "Dettagli",
-    "selectTierError": "Seleziona un tipo di biglietto"
+    "selectTierError": "Seleziona un tipo di biglietto",
+    "ticketDeliveryInformation": "Informazioni sulla consegna dei biglietti",
+    "loggedIn": "Effettuato l'accesso",
+    "loggedInInfo": "Si prega di procedere al pagamento.",
+    "paymentMethod": "Metodo di pagamento",
+    "cashPayment": "Pagamento in contanti",
+    "discountCode": "Codice promozionale",
+    "proceedToCheckout": "Procedere al checkout",
+    "orderSummary": "Riepilogo dell'ordine",
+    "ticketType": "Tipo di biglietto",
+    "quantity": "Quantità",
+    "pricePerTicket": "Prezzo/biglietto",
+    "viewTicket": "Visualizza biglietto",
+    "successTitle": "Acquisto riuscito!",
+    "successMessage": "I tuoi biglietti sono stati prenotati con successo. \nTi è stata inviata un'e-mail di conferma.",
+    "ticket": "biglietto(i)"
   },
   "ticketView": {
     "title": "Biglietto Digitale",
@@ -447,5 +469,10 @@
     "eventTicket": "Biglietto per eventi",
     "welcomeMessage": "Gentile signore/signora,",
     "welcomeMessage2": "Siamo lieti di invitarvi all'evento. \nSi prega di mostrare questo QR all'ingresso per verificare questo biglietto."
+  },
+  "billing": {
+    "title": "Fatturazione",
+    "description": "Gestisci i tuoi metodi di pagamento e visualizza la cronologia delle transazioni",
+    "paymentMethods": "Metodi di pagamento"
   }
 }

@@ -27,7 +27,12 @@
     "place": "Place",
     "date": "Date",
     "tags": "Tags",
-    "allEventsLoaded": "All Events Loaded"
+    "allEventsLoaded": "All Events Loaded",
+    "acceptedPaymentMethods": "Accepted Payment Methods",
+    "processing": "Processing...",
+    "continue": "Continue",
+    "apply": "Apply",
+    "returnHome": "Return to Home"
   },
   "navigation": {
     "events": "Events",
@@ -149,6 +154,7 @@
   },
   "events": {
     "from": "From",
+    "startingFrom": "Tickets starting from",
     "ticketsLeft": "tickets left",
     "soldOut": "Sold out",
     "priceTBA": "Price TBA"
@@ -185,7 +191,8 @@
         "loginFailed": "Login failed. Please try again."
       },
       "showPassword": "Show password",
-      "hidePassword": "Hide password"
+      "hidePassword": "Hide password",
+      "modalDescription": "Sign in to your account to continue with your purchase."
     },
     "signup": {
       "title": "Register",
@@ -235,7 +242,8 @@
       },
       "showPassword": "Show password",
       "hidePassword": "Hide password",
-      "setPassword": "Create a secure password for"
+      "setPassword": "Create a secure password for",
+      "loginToSkip": "Log in to skip entering your details."
     },
     "forgotPassword": {
       "title": "Forgot Password",
@@ -524,7 +532,22 @@
     "backToEvent": "Back to Event",
     "backToSelection": "Back to Selection",
     "payment": "Payment",
-    "detailsAndPayment": "Details & Payment"
+    "detailsAndPayment": "Details & Payment",
+    "ticketDeliveryInformation": "Ticket Delivery Information",
+    "loggedIn": "Logged In",
+    "loggedInInfo": "Please proceed to checkout.",
+    "paymentMethod": "Payment Method",
+    "cashPayment": "Cash Payment",
+    "discountCode": "Promo Code",
+    "proceedToCheckout": "Proceed to Checkout",
+    "orderSummary": "Order Summary",
+    "ticketType": "Ticket Type",
+    "quantity": "Quantity",
+    "pricePerTicket": "Price/ticket",
+    "viewTicket": "View Ticket",
+    "successTitle": "Purchase Successful!",
+    "successMessage": "Your tickets have been booked successfully. A confirmation email has been sent to you.",
+    "ticket": "ticket(s)"
   },
   "ticketView": {
     "title": "Digital Ticket",
@@ -556,5 +579,10 @@
     "eventTicket": "Event Ticket",
     "welcomeMessage": "Dear Sir/Ma'am,",
     "welcomeMessage2": "We are pleased to invite you to the event. Please show this QR at the entrance to verify this ticket."
+  },
+  "billing": {
+    "title": "Billing & Payments",
+    "description": "Manage your payment methods and view transaction history",
+    "paymentMethods": "Payment Methods"
   }
 }

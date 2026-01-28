@@ -34,8 +34,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BillingService } from "@/lib/billingService";
 import { PaymentMethod, Transaction, Invoice } from "@/types/billing";
 import { format } from "date-fns";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function BillingPage() {
+  const { locale } = useLanguageStore()
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<
     "methods" | "transactions" | "invoices"
   >("methods");
@@ -134,10 +138,10 @@ export default function BillingPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-          Billing & Payments
+          {t('billing.title', 'Billing & Payments')}
         </h1>
         <p className="text-sm text-gray-600">
-          Manage your payment methods and view transaction history
+          {t('billing.description', 'Manage your payment methods and view transaction history')}
         </p>
       </div>
 
@@ -173,7 +177,7 @@ export default function BillingPage() {
               {activeTab === "methods" && (
                 <div>
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Payment Methods</h2>
+                      <h2 className="text-xl font-semibold">{t('billing.paymentMethods', 'Payment Methods')}</h2>
                     {/* <Button onClick={() => setShowAddPaymentDialog(true)}>
                       <Plus className="h-4 w-4 mr-2" />
                       Add Method

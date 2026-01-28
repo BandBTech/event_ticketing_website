@@ -26,7 +26,12 @@
     "place": "場所",
     "date": "日付",
     "tags": "タグ",
-    "allEventsLoaded": "すべてのイベントがロードされました"
+    "allEventsLoaded": "すべてのイベントがロードされました",
+    "acceptedPaymentMethods": "ご利用いただけるお支払い方法",
+    "processing": "処理...",
+    "continue": "続く",
+    "apply": "適用する",
+    "returnHome": "ホームに戻る"
   },
   "navigation": {
     "events": "イベント",
@@ -123,6 +128,7 @@
   },
   "events": {
     "from": "から",
+    "startingFrom": "チケット料金は次から",
     "ticketsLeft": "枚残り",
     "soldOut": "売り切れ",
     "priceTBA": "価格未定"
@@ -158,7 +164,8 @@
         "loginFailed": "ログインに失敗しました。もう一度お試しください。"
       },
       "showPassword": "パスワードを表示",
-      "hidePassword": "パスワードを非表示"
+      "hidePassword": "パスワードを非表示",
+      "modalDescription": "購入を続行するには、アカウントにサインインしてください。"
     },
     "signup": {
       "phonePlaceholder": "有効な連絡先番号を入力してください",
@@ -176,7 +183,8 @@
         "passwordMismatch": "パスワードが一致しません。"
       },
       "setPassword": "安全なパスワードを作成する",
-      "phone": "連絡先番号"
+      "phone": "連絡先番号",
+      "loginToSkip": "詳細の入力をスキップするにはログインしてください。"
     },
     "resetPassword": {
       "subtitle": "新しいパスワードを設定してください"
@@ -416,7 +424,22 @@
     "backToSelection": "選択項目に戻る",
     "payment": "支払い",
     "detailsAndPayment": "詳細",
-    "selectTierError": "チケットの種類を選択してください"
+    "selectTierError": "チケットの種類を選択してください",
+    "ticketDeliveryInformation": "チケット配信のご案内",
+    "loggedIn": "ログイン済み",
+    "loggedInInfo": "チェックアウトに進んでください。",
+    "paymentMethod": "支払方法",
+    "cashPayment": "現金支払い",
+    "discountCode": "プロモーションコード",
+    "proceedToCheckout": "チェックアウトに進む",
+    "orderSummary": "注文概要",
+    "ticketType": "チケットの種類",
+    "quantity": "量",
+    "pricePerTicket": "料金/チケット",
+    "viewTicket": "チケットを見る",
+    "successTitle": "購入成功しました！",
+    "successMessage": "チケットは正常に予約されました。\n確認メールが送信されました。",
+    "ticket": "チケット）"
   },
   "ticketView": {
     "title": "デジタルチケット",
@@ -448,5 +471,10 @@
     "eventTicket": "イベントチケット",
     "welcomeMessage": "親愛なる閣下、",
     "welcomeMessage2": "ぜひイベントにご招待いたします。\nこのチケットを確認するには、入口でこのQRを提示してください。"
+  },
+  "billing": {
+    "title": "請求する",
+    "description": "支払い方法を管理し、取引履歴を表示します",
+    "paymentMethods": "お支払い方法"
   }
 }
