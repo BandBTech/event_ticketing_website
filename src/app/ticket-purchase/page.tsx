@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,6 @@ import {
 } from "@phosphor-icons/react";
 import cn from "clsx";
 import { ticketService, GuestPurchasePayload } from "@/services/ticketService";
-import { eventService } from "@/services/eventService";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
@@ -28,8 +27,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
 import { useEventById } from "@/hooks/useEvents";
 import { useAuthStore } from "@/store/authStore";
 import {
@@ -73,22 +70,6 @@ const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
 
 type GuestFormData = z.infer<ReturnType<typeof createGuestSchema>>;
 
-interface EventPreviewData {
-  id: string;
-  title: string;
-  image: string;
-  date: string;
-  venue: string;
-  city?: string;
-  address?: string;
-  tier: {
-    id: string;
-    name: string;
-    price: number;
-    currency: string;
-    description?: string;
-  }[];
-}
 
 function GuestPurchaseContent() {
   const searchParams = useSearchParams();
@@ -202,8 +183,9 @@ function GuestPurchaseContent() {
         toast.error(res.message || "Purchase failed");
       }
 
-    } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Something went wrong";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

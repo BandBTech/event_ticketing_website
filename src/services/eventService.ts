@@ -1,6 +1,5 @@
 import { api } from '@/lib/apiClient';
-import { Event, EventStatus, TicketCategory, TicketType } from '@/types/event';
-import { PathParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
+import { Event, EventStatus, TicketType } from '@/types/event';
 
 export interface PublicEventsParams {
   page?: number;
@@ -117,16 +116,6 @@ const parseCategoryString = (categoryStr: string): string[] => {
   } catch {
     return [];
   }
-};
-
-const mapTicketCategory = (name?: string): TicketCategory => {
-  const normalized = name?.toLowerCase();
-
-  if (normalized?.includes('vvip')) return 'VVIP';
-  if (normalized?.includes('vip')) return 'VIP';
-  if (normalized?.includes('premium')) return 'Premium';
-
-  return 'General';
 };
 
 const mapTier = (tier: ApiEventTier): TicketType => ({

@@ -3,7 +3,7 @@
 import { FigmaButton } from "@/components/ui/figma-button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
-import { UsersIcon, ChartBarIcon, TicketIcon, ShieldCheckIcon, MapPinIcon } from "@phosphor-icons/react";
+import { UsersIcon, TicketIcon, ShieldCheckIcon, MapPinIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 
 export default function AboutPage() {

@@ -5,7 +5,7 @@ import { EventSearch } from '@/components/events/EventSearch';
 import { EventGrid } from '@/components/events/EventGrid';
 import { Badge } from '@/components/ui/badge';
 import { FigmaButton } from '@/components/ui/figma-button';
-import { useEvents, useEventCategories, useInfiniteEvents } from '@/hooks/useEvents';
+import { useEventCategories, useInfiniteEvents } from '@/hooks/useEvents';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';

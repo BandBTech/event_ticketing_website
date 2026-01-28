@@ -5,7 +5,6 @@ import {
   CreditCard,
   DollarSign,
   Download,
-  Plus,
   Trash2,
   TrendingDown,
   Receipt,

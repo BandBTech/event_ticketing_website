@@ -436,6 +436,17 @@
       "present": "到着時にこのコードを提示してスキャンしてください。",
       "noShare": "このチケットを他の人と共有しないでください。"
     },
-    "loadingTicket": "チケットを読み込み中..."
+    "loadingTicket": "チケットを読み込み中...",
+    "date": "日付",
+    "time": "時間",
+    "organizedBy": "主催",
+    "validityNotice": "有効性: このパスは 1 人の個人に対してのみ有効です。",
+    "ticketCounter": "チケット {index } / {total}",
+    "total": "合計"
+  },
+  "ticket": {
+    "eventTicket": "イベントチケット",
+    "welcomeMessage": "親愛なる閣下、",
+    "welcomeMessage2": "ぜひイベントにご招待いたします。\nこのチケットを確認するには、入口でこのQRを提示してください。"
   }
 }

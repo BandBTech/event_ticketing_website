@@ -34,7 +34,7 @@ export const ticketService = {
 
   validateToken: async (token: string) => {
     // Note: API doc says GET /public/tickets/validate-token?token=...
-    const response = await api.get<{ valid: boolean; data?: any }>(
+    const response = await api.get<{ valid: boolean; data?: unknown }>(
       `/public/tickets/validate-token?token=${token}`,
       {
         showErrorToast: true,
@@ -46,11 +46,11 @@ export const ticketService = {
   // Updated to use the public view endpoint which only needs the token
   viewTicket: async (token: string): Promise<ViewTicketDetails> => {
     // API client unwraps responses. So 'response' here IS the data object from the server response
-    const response = await api.get<any>(`/public/tickets/view?token=${token}`);
+    const response = await api.get<unknown>(`/public/tickets/view?token=${token}`);
 
     // If response is the data object, we parse it directly. 
     // If it's wrapped in { data: ... }, we try to access .data
-    const ticketData = response.data || response;
+    const ticketData = (response as { data?: unknown })?.data || response;
 
     // VALIDATION GATEWAY: Enforce schema here
     if (!ticketData) throw new Error("No ticket data found");

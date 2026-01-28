@@ -544,6 +544,17 @@
       "present": "Present this code on arrival for scanning.",
       "noShare": "Do not share this ticket with others."
     },
-    "loadingTicket": "Loading Ticket..."
+    "loadingTicket": "Loading Ticket...",
+    "date": "Date",
+    "time": "Time",
+    "organizedBy": "Organized by",
+    "validityNotice": "Validity: This Pass is valid for a single individual only.",
+    "ticketCounter": "Ticket {index } of {total}",
+    "total": "Total"
+  },
+  "ticket": {
+    "eventTicket": "Event Ticket",
+    "welcomeMessage": "Dear Sir/Ma'am,",
+    "welcomeMessage2": "We are pleased to invite you to the event. Please show this QR at the entrance to verify this ticket."
   }
 }

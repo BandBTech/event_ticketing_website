@@ -1,5 +1,4 @@
 import { Event, EventCategory, EventStatus } from '@/types';
-import { useDebugValue } from 'react';
 
 export const eventCategories: EventCategory[] = [
   { id: '1', name: 'Music', color: '#FF6B6B', icon: 'music-notes' },

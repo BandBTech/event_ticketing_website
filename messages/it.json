@@ -435,6 +435,17 @@
       "present": "Presenta questo codice all'arrivo per la scansione.",
       "noShare": "Non condividere questo biglietto con altri."
     },
-    "loadingTicket": "Caricamento biglietto..."
+    "loadingTicket": "Caricamento biglietto...",
+    "date": "Data",
+    "time": "Tempo",
+    "organizedBy": "Organizzato da",
+    "validityNotice": "Validità: questo Pass è valido solo per un singolo individuo.",
+    "ticketCounter": "Biglietto {index} di {total}",
+    "total": "Totale"
+  },
+  "ticket": {
+    "eventTicket": "Biglietto per eventi",
+    "welcomeMessage": "Gentile signore/signora,",
+    "welcomeMessage2": "Siamo lieti di invitarvi all'evento. \nSi prega di mostrare questo QR all'ingresso per verificare questo biglietto."
   }
 }

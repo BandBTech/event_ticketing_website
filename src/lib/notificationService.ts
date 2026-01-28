@@ -73,7 +73,7 @@ export class NotificationService {
   }
   
   // Get notification preferences
-  static async getPreferences(userId: string): Promise<NotificationPreferences> {
+  static async getPreferences(_userId: string): Promise<NotificationPreferences> {
     await delay(300);
     // Return default preferences (in real app, would fetch from API)
     return {

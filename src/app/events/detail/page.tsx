@@ -11,11 +11,11 @@ import { Suspense } from "react";
 function EventDetailContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
+  const router = useRouter();
 
   if (!id) {
-    const { locale } = useLanguageStore();
-    const { t } = useTranslation(locale);
-    const router = useRouter();
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center space-y-4">

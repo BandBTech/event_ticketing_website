@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { CalendarDots, MapPin, ArrowRight } from '@phosphor-icons/react/dist/ssr';
+import { CalendarDots, MapPin } from '@phosphor-icons/react/dist/ssr';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FigmaButton } from '@/components/ui/figma-button';

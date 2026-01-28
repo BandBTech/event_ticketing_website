@@ -1,20 +1,9 @@
 'use client';
 
-import { 
-  Ticket, 
-  EnvelopeSimple, 
-  Phone, 
-  MapPin, 
-  FacebookLogo, 
-  TwitterLogo, 
-  InstagramLogo, 
-  LinkedinLogo,
-  ArrowRight
-} from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { usePathname } from 'next/navigation';
-import { EnvelopeSimpleIcon, MapPinIcon, PhoneIcon, TicketIcon } from '@phosphor-icons/react';
+import { ArrowRightIcon, EnvelopeSimpleIcon, FacebookLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, MapPinIcon, PhoneIcon, TicketIcon, TwitterLogoIcon } from '@phosphor-icons/react';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -55,10 +44,10 @@ export function Footer() {
   };
 
   const socialLinks = [
-    { name: 'Facebook', icon: FacebookLogo, href: '#facebook' },
-    { name: 'Twitter', icon: TwitterLogo, href: '#twitter' },
-    { name: 'Instagram', icon: InstagramLogo, href: '#instagram' },
-    { name: 'LinkedIn', icon: LinkedinLogo, href: '#linkedin' },
+    { name: 'Facebook', icon: FacebookLogoIcon, href: '#facebook' },
+    { name: 'Twitter', icon: TwitterLogoIcon, href: '#twitter' },
+    { name: 'Instagram', icon: InstagramLogoIcon, href: '#instagram' },
+    { name: 'LinkedIn', icon: LinkedinLogoIcon, href: '#linkedin' },
   ];
 
   return (
@@ -183,7 +172,7 @@ export function Footer() {
                   size="sm"
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-md px-3"
                 >
-                  <ArrowRight size={16} />
+                  <ArrowRightIcon size={16} />
                 </Button>
               </div>
             </div>

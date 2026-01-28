@@ -55,7 +55,7 @@ function SingleTicketCard({
         <div className="flex items-center justify-center gap-4">
           <div className="flex-1 h-px bg-neutral-300" />
           <h3 className="text-2xl font-bold text-neutral-900 tracking-wide">
-            Event Pass
+            {t('ticket.eventTicket', 'Event Ticket')}
           </h3>
           <div className="flex-1 h-px bg-neutral-300" />
         </div>
@@ -64,10 +64,10 @@ function SingleTicketCard({
       {/* Welcome Message */}
       <div className="px-4 pb-4 text-center">
         <p className="text-neutral-600 text-sm leading-relaxed">
-          Dear Sir/Ma&apos;am,
+          {t('ticket.welcomeMessage', 'Dear Sir/Ma&apos;am,')}
         </p>
         <p className="text-neutral-600 text-sm leading-relaxed mt-1">
-          We are pleased to invite you to the event. Please show this QR at the entrance to verify the pass.
+          {t('ticket.welcomeMessage2', 'We are pleased to invite you to the event. Please show this QR at the entrance to verify this ticket.')}
         </p>
       </div>
 
@@ -94,13 +94,13 @@ function SingleTicketCard({
           {ticket.tierName}
         </p>
         <p className="text-neutral-600 text-sm">
-          Venue: {event.venueName}, {event.address}
+          {t("ticketView.venue", "Venue")}: {event.venueName}, {event.address}
         </p>
         <p className="text-neutral-600 text-sm mt-1">
-          Date: {format(new Date(event.startDate), "do MMMM, yyyy")}
+          {t("ticketView.date", "Date")}: {format(new Date(event.startDate), "do MMMM, yyyy")}
         </p>
         <p className="text-neutral-500 text-xs mt-1">
-          {format(new Date(event.startDate), "h:mm a")}
+          {t("ticketView.time", "Time")}: {format(new Date(event.startDate), "h:mm a")}
         </p>
       </div>
 
@@ -108,7 +108,7 @@ function SingleTicketCard({
       {event.organizer && (
         <div className="py-4 px-6 text-center border-t border-neutral-100 bg-neutral-50">
           <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
-            Organized by
+            {t("ticketView.organizedBy", "Organized by")}
           </p>
           {event.organizer.logo ? (
             <img
@@ -146,14 +146,14 @@ function SingleTicketCard({
 
         {/* Validity Notice */}
         <p className="text-xs text-amber-400 font-medium mt-4">
-          Validity: This Pass is valid for a single individual only.
+          {t("ticketView.validityNotice", "Validity: This Pass is valid for a single individual only.")}
         </p>
       </div>
 
       {/* Ticket Counter for multiple tickets */}
       {total > 1 && (
         <div className="bg-neutral-900 text-white text-center py-2 text-xs font-bold">
-          Ticket {index + 1} of {total}
+          {t("ticketView.ticketCounter", "Ticket {index} of {total}", { index: index + 1, total })}
         </div>
       )}
     </div>
@@ -161,6 +161,8 @@ function SingleTicketCard({
 }
 
 export function TicketDisplay({ order, onPrint, isLoading }: TicketDisplayProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   if (isLoading) {
     return (
       <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-xl animate-pulse aspect-[3/5]" />
@@ -189,7 +191,7 @@ export function TicketDisplay({ order, onPrint, isLoading }: TicketDisplayProps)
             <span className="font-bold">{order.tickets.length}</span> tickets •
             <span className="font-bold ml-1">
               {new Intl.NumberFormat('en-US', { style: 'currency', currency: order.currency }).format(order.totalAmount)}
-            </span> total
+            </span> {t("ticketView.total", "Total")}
           </p>
         </div>
       )}
