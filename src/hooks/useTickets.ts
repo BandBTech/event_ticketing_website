@@ -1,15 +1,24 @@
 import { useMutation } from '@tanstack/react-query';
-import { ticketService, GuestPurchasePayload, UserPurchasePayload } from '@/services/ticketService';
+import { ticketService, GuestPurchasePayload, UserPurchasePayload, GuestPurchaseResponse, UserPurchaseResponse } from '@/services/ticketService';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/toast';
+
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
 
 export const useGuestPurchaseMutation = () => {
   const router = useRouter();
   return useMutation({
     mutationFn: (data: GuestPurchasePayload) => ticketService.guestPurchase(data),
-    onSuccess: (res: any, variables) => {
+    onSuccess: (res: GuestPurchaseResponse, variables) => {
       // res is now the full response because of returnFullResponse: true in ticketService
-      if (res.success || res.status === 'success' || (res.data && !res.error)) {
+      if (res.success) {
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
@@ -27,7 +36,7 @@ export const useGuestPurchaseMutation = () => {
         toast.message(res.message || "Purchase failed", 'error');
       }
     },
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       toast.message(error.response?.data?.message || error.message || "Failed to purchase tickets", 'error');
     },
   });
@@ -37,16 +46,16 @@ export const useUserPurchaseMutation = () => {
   const router = useRouter();
   return useMutation({
     mutationFn: (data: UserPurchasePayload) => ticketService.userPurchase(data),
-    onSuccess: (res: any, variables) => {
+    onSuccess: (res: UserPurchaseResponse, variables) => {
       // res is now the full response because of returnFullResponse: true in ticketService
-      if (res.success || res.status === 'success' || (res.data && !res.error)) {
+      if (res.success) {
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
         query.append("quantity", variables.quantity.toString());
 
         // Pass token if available in the response data
-        const token = res.data?.token || res.data?.order_id;
+        const token = res.data?.order_id;
         if (token) {
           query.append("token", token);
         }
@@ -56,7 +65,7 @@ export const useUserPurchaseMutation = () => {
         toast.message(res.message || "Purchase failed", 'error');
       }
     },
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       toast.message(error.response?.data?.message || error.message || "Failed to purchase tickets", 'error');
     },
   });
