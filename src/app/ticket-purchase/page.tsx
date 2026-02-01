@@ -12,12 +12,10 @@ import {
   ArrowLeftIcon,
   MinusIcon,
   PlusIcon,
-  MoneyIcon,
   TicketIcon,
-  TagIcon,
 } from "@phosphor-icons/react";
 import cn from "clsx";
-import { ticketService, GuestPurchasePayload } from "@/services/ticketService";
+import { ticketService, GuestPurchasePayload, UserPurchasePayload } from "@/services/ticketService";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
@@ -38,34 +36,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { isValidPhoneNumber as isValidPhone } from "react-phone-number-input";
 import { ChevronRightIcon } from "lucide-react";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { Separator } from "@/components/ui/separator-extended";
+import { useGuestPurchaseMutation, useUserPurchaseMutation } from "@/hooks/useTickets";
 
 const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
 
   return z.object({
-    tier_id: z.string().min(1, t("ticketPurchase.selectTierError", "Please select a ticket type")),
+    tier_id: z.string().min(1, t("ticketPurchase.selectTierError", "Please select a ticket type.")),
     quantity: z.number().min(1).max(10),
-    first_name: z
-      .string()
-      .min(1, v.required("First name"))
-      .min(2, v.minLength("First name", 2))
-      .max(50, v.maxLength("First name", 50)),
-    last_name: z
-      .string()
-      .min(1, v.required("Last name"))
-      .min(2, v.minLength("Last name", 2))
-      .max(50, v.maxLength("Last name", 50)),
     email: z.string().min(1, v.required("Email")).email(v.email("Email")),
-    phone: z
-      .string()
-      .optional()
-      .refine((val) => !val || isValidPhone(val), v.phone("Phone")),
-    country_code: z.string().optional(),
   });
 };
 
@@ -81,9 +63,12 @@ function GuestPurchaseContent() {
   const guestSchema = createGuestSchema(t);
 
   const [step, setStep] = useState<1 | 2>(1);
-  const [loading, setLoading] = useState(false);
 
   const { data: eventData, isLoading: isLoadingEvent } = useEventById(eventIdFromUrl || "");
+  const guestPurchaseMutation = useGuestPurchaseMutation();
+  const userPurchaseMutation = useUserPurchaseMutation();
+
+  const isPending = guestPurchaseMutation.isPending || userPurchaseMutation.isPending;
 
   // Form for Guest Details
   const guestForm = useForm<GuestFormData>({
@@ -91,11 +76,7 @@ function GuestPurchaseContent() {
     defaultValues: {
       tier_id: "",
       quantity: 1,
-      first_name: "",
-      last_name: "",
       email: "",
-      phone: "",
-      country_code: "NP", // Default to Nepal for now, or detect
     },
   });
 
@@ -119,74 +100,43 @@ function GuestPurchaseContent() {
   const totalAmount = selectedTier ? selectedTier.price * quantity : 0;
 
   const handleContinue = async () => {
+    if (!eventData || !selectedTier) return;
+
     if (step === 1) {
       if (!selectedTierId) {
         toast.error("Please select a ticket type");
         return;
       }
-      setStep(2);
-      window.scrollTo(0, 0);
-    } else {
-      // Step 2: Submit
+
       if (isAuthenticated) {
-        // If logged in, we might just submit directly or show a confirmation
-        // For this demo, let's assume we proceed to purchase with "user defaults" (mocked)
-        // or actually we need user data if not available.
-        // For simplicity, if logged in, we'll assume we have the user data or the backend handles it.
-        // But the requirement says "send... default need to send... guest-purchase api".
-        // Actually for logged in users, we usually use a different API.
-        // IF the requirement is "if logged in go to payement page",
-        // but current scope is guest purchase refactor.
-        // Let's assume for this task we are focusing on the GUEST flow primarily,
-        // but if logged in we redirect to user purchase or handle similarly.
-
-        // Per requirement: "On continue click if user is logged in directly go to payment page"
-        // Since we don't have a full user checkout implemented here, I will simulate 
-        // submitting as guest but arguably we should use the user endpoint.
-        // However, the prompt says "guest-purchase api". 
-        // Let's just create a toast for logged in flow for now or use guest purchase with filled data?
-        // Actually, let's fill the form with dummy data if logged in or skip validation?
-        // The prompt says "if user is logged in directly go to payment page". 
-        // We are on the payment page (Step 2 concept).
-        handleSubmitPurchase({});
+        // Logged-in user purchase - Skip Step 2 and submit directly
+        const userPayload: UserPurchasePayload = {
+          event_id: eventData.id,
+          tier_id: selectedTier.id,
+          quantity: quantity,
+          payment_gateway: "cash",
+        };
+        userPurchaseMutation.mutate(userPayload);
       } else {
-        guestForm.handleSubmit(handleSubmitPurchase)();
+        setStep(2);
+        window.scrollTo(0, 0);
       }
-    }
-  };
-
-  const handleSubmitPurchase = async (data: Partial<GuestFormData>) => {
-    setLoading(true);
-    try {
-      if (!eventData || !selectedTier) return;
-
-      // Let's use the form data provided.
-      const payload: GuestPurchasePayload = {
-        first_name: data.first_name || "Guest",
-        last_name: data.last_name || "User",
-        email: data.email || "guest@example.com",
-        phone: data.phone || "9800000000",
-        country_code: data.country_code || "NP",
-        event_id: eventData.id,
-        tier_id: data.tier_id || selectedTier.id,
-        quantity: data.quantity || quantity,
-        payment_gateway: "cash",
-      };
-
-      const res = await ticketService.guestPurchase(payload);
-
-      if (res.success) {
-        toast.success("Order placed successfully!");
-        const query = new URLSearchParams();
-        query.append("eventId", eventData.id);
-        query.append("tierId", selectedTier.id);
-        query.append("quantity", quantity.toString());
-        query.append("paymentGateway", payload.payment_gateway);
-        router.push(`/ticket-purchase/success?${query.toString()}`);
-      }
-
-    } finally {
-      setLoading(false);
+    } else {
+      // Step 2: Guest Submit
+      guestForm.handleSubmit((data) => {
+        const guestPayload: GuestPurchasePayload = {
+          first_name: "",
+          last_name: "",
+          email: data.email || "",
+          phone: "",
+          country_code: "",
+          event_id: eventData.id,
+          tier_id: selectedTier.id,
+          quantity: quantity,
+          payment_gateway: "cash",
+        };
+        guestPurchaseMutation.mutate(guestPayload);
+      })();
     }
   };
 
@@ -246,7 +196,6 @@ function GuestPurchaseContent() {
                     value={selectedTierId}
                     onValueChange={(val) => {
                       guestForm.setValue("tier_id", val);
-                      guestForm.setValue("quantity", 1);
                     }}
                     className="space-y-3"
                   >
@@ -261,7 +210,6 @@ function GuestPurchaseContent() {
                         )}
                         onClick={() => {
                           guestForm.setValue("tier_id", ticketType.id);
-                          guestForm.setValue("quantity", 1);
                         }}
                       >
                         <div className="flex items-start gap-3">
@@ -287,28 +235,45 @@ function GuestPurchaseContent() {
                   {/* Quantity Selector (Only shows if a tier is selected) */}
                   {selectedTier && (
                     <div className="mt-6 pt-6 border-t border-gray-100 animate-in fade-in slide-in-from-top-2">
-                      <Label className="block text-sm font-medium text-gray-700 mb-3">Quantity</Label>
+                      <Label className="block text-sm font-medium text-gray-700 mb-3">{t('ticketPurchase.quantity', 'Quantity')}</Label>
                       <div className="flex items-center gap-4">
                         <Button
                           variant="outline"
                           size="icon"
                           onClick={() => guestForm.setValue("quantity", Math.max(1, quantity - 1))}
-                          disabled={quantity <= 1}
-                          className="w-12 h-12 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
+                          disabled={quantity <= 1 || isPending}
+                          className="size-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                         >
                           <MinusIcon size={20} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
                         </Button>
                         <span className="text-2xl font-bold text-primary w-12 text-center">{quantity}</span>
                         <Button
-                          onClick={() => guestForm.setValue("quantity", Math.min(10, quantity + 1))}
+                          onClick={() => guestForm.setValue("quantity", Math.min(isAuthenticated ? 10 : 5, quantity + 1))}
                           variant="outline"
                           size="icon"
-                          disabled={quantity >= 5}
-                          className="w-12 h-12 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
+                          disabled={quantity >= (isAuthenticated ? 10 : 5) || isPending}
+                          className="size-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                         >
                           <PlusIcon size={20} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
                         </Button>
                       </div>
+                      {/* Info bar for guests at max quantity */}
+                      {!isAuthenticated && quantity >= 5 && (
+                        <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-center gap-2">
+                          <UserIcon size={18} className="text-blue-600 flex-shrink-0" />
+                          <p className="text-sm text-blue-700">
+                            {t('ticketPurchase.loginForMoreTickets', 'Please login to buy up to 10 tickets at once')}
+                          </p>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="ml-auto text-blue-700 font-semibold p-0 h-auto"
+                            onClick={() => setIsLoginModalOpen(true)}
+                          >
+                            {t('auth.login.loginButton', 'Log In')}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -325,38 +290,12 @@ function GuestPurchaseContent() {
                       {t('ticketPurchase.ticketDeliveryInformation', 'Ticket Delivery Information')}
                     </h2>
                     <Form {...guestForm}>
-                      <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FormField
-                          control={guestForm.control}
-                          name="first_name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t('auth.signup.firstName', 'First Name')}</FormLabel>
-                              <FormControl>
-                                <Input placeholder="John" {...field} className="h-11" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={guestForm.control}
-                          name="last_name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t('auth.signup.lastName', 'Last Name')}</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Doe" {...field} className="h-11" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                      <form className="space-y-4">
                         <FormField
                           control={guestForm.control}
                           name="email"
                           render={({ field }) => (
-                            <FormItem className="sm:col-span-2">
+                            <FormItem>
                               <FormLabel>{t('auth.signup.email', 'Email Address')}</FormLabel>
                               <FormControl>
                                 <div className="relative">
@@ -364,23 +303,9 @@ function GuestPurchaseContent() {
                                   <Input placeholder="john@example.com" {...field} className="pl-10 h-11" />
                                 </div>
                               </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={guestForm.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem className="sm:col-span-2">
-                              <FormLabel>{t('auth.signup.phone', 'Phone Number')}</FormLabel>
-                              <FormControl>
-                                <PhoneInput
-                                  placeholder={t('auth.signup.phonePlaceholder', 'Enter your phone number')}
-                                  {...field}
-                                  defaultCountry="NP"
-                                />
-                              </FormControl>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {t('ticketPurchase.emailDeliveryNote', 'Your ticket will be sent to this email address')}
+                              </p>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -434,7 +359,8 @@ function GuestPurchaseContent() {
 
 
 
-                {/* Default Payment Method Display */}
+                {/* Payment Method - Currently Cash (Stripe commented for future) */}
+                {/*
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                   <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <MoneyIcon className="w-6 h-6 mr-2 text-green-600" />
@@ -454,6 +380,7 @@ function GuestPurchaseContent() {
                     </div>
                   </div>
                 </div>
+                */}
 
               </div>
             )}
@@ -501,7 +428,7 @@ function GuestPurchaseContent() {
                   </div>
                 </div>
 
-                {/* Promo Code */}
+                {/* Promo Code - Commented out for future implementation
                 <div>
                   <div className="flex items-center mb-2">
                     <TagIcon size={16} className="text-primary mr-2" />
@@ -517,6 +444,7 @@ function GuestPurchaseContent() {
                     <Button variant="outline" className="text-sm">{t('common.apply', 'Apply')}</Button>
                   </div>
                 </div>
+                */}
 
                 <div className="pt-4 border-t border-gray-100">
                   <div className="flex justify-between items-center mb-4">
@@ -529,9 +457,9 @@ function GuestPurchaseContent() {
                   <Button
                     onClick={handleContinue}
                     className="w-full h-12 text-lg font-bold shadow-lg shadow-blue-200"
-                    disabled={loading || !selectedTier}
+                    disabled={isPending || !selectedTier}
                   >
-                    {loading ? (
+                    {isPending ? (
                       <span className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded-full border-2 border-white/50 border-t-white animate-spin" />
                         {t("common.processing", "Processing...")}

@@ -23,11 +23,46 @@ export interface GuestPurchaseResponse {
   };
 }
 
+// For logged-in user ticket purchase
+export interface UserPurchasePayload {
+  event_id: string;
+  tier_id: string;
+  quantity: number;
+  payment_gateway: string;
+}
+
+export interface UserPurchaseResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    order_id: string;
+    tickets: Array<{
+      ticket_id: string;
+      ticket_number: string;
+    }>;
+  };
+}
+
 export const ticketService = {
   guestPurchase: async (data: GuestPurchasePayload) => {
     const response = await api.post<GuestPurchaseResponse>(
       "/public/tickets/guest-purchase",
-      data
+      data,
+      {
+        returnFullResponse: true,
+      }
+    );
+    return response;
+  },
+
+  userPurchase: async (data: UserPurchasePayload) => {
+    const response = await api.post<UserPurchaseResponse>(
+      "/user/tickets/purchase",
+      data,
+      {
+        requiresAuth: true,
+        returnFullResponse: true,
+      }
     );
     return response;
   },

@@ -96,21 +96,21 @@ export const createValidationHelpers = (
    * Email specific validation
    */
   email: () => {
-    return t('auth.signup.validation.emailInvalid', 'Please enter a valid email address');
+    return t('auth.signup.validation.emailInvalid', 'Please enter a valid email address.');
   },
 
   /**
    * Phone specific validation
    */
   phone: () => {
-    return t('auth.signup.validation.phoneInvalid', 'Please enter a valid phone number');
+    return t('auth.signup.validation.phoneInvalid', 'Please enter a valid phone number.');
   },
 
   /**
    * Password match validation
    */
   passwordMatch: () => {
-    return t('auth.signup.validation.passwordMismatch', 'Passwords do not match');
+    return t('auth.signup.validation.passwordMismatch', 'Passwords do not match.');
   },
 
   /**
@@ -119,7 +119,7 @@ export const createValidationHelpers = (
   passwordUpperLower: () => {
     return t(
       'auth.signup.validation.passwordUpperLower',
-      'Must contain at least one uppercase and one lowercase'
+      'Must contain at least one uppercase and one lowercase.'
     );
   },
 
@@ -129,7 +129,7 @@ export const createValidationHelpers = (
   passwordSpecialChar: () => {
     return t(
       'auth.signup.validation.passwordSpecialChar',
-      'Must contain at least one special character'
+      'Must contain at least one special character.'
     );
   },
 
@@ -139,7 +139,7 @@ export const createValidationHelpers = (
   passwordNumber: () => {
     return t(
       'auth.signup.validation.passwordNumber',
-      'Must contain at least one numeric digit'
+      'Must contain at least one numeric digit.'
     );
   },
 });

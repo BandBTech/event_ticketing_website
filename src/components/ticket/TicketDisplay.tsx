@@ -1,19 +1,44 @@
 "use client";
 
 import { format } from "date-fns";
+import React from "react";
 import { QRCodeSVG } from "qrcode.react";
 import type { ViewTicketDetails, TicketItem } from "@/types/ticket";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Calendar, MapPin, Clock, Ticket, User } from "lucide-react";
+import { Calendar, MapPin, Ticket, User, Building2 } from "lucide-react";
 
 interface TicketDisplayProps {
   order: ViewTicketDetails;
   onPrint?: () => void;
+  onDownload?: () => void;
   isLoading?: boolean;
 }
 
-// Single Ticket Card Component
+function ClientQRCode({ value }: { value: string }) {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="w-[100px] h-[100px] bg-gray-100 rounded animate-pulse" />;
+  }
+
+  return (
+    <QRCodeSVG
+      value={value}
+      size={100}
+      level="M"
+      includeMargin={false}
+      minVersion={1}
+      fgColor="#0f172a"
+    />
+  );
+}
+
+// Single Ticket Card Component - Compact White Design
 function SingleTicketCard({
   ticket,
   event,
@@ -32,194 +57,156 @@ function SingleTicketCard({
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
+  // Combined date and time format
+  const dateTimeString = format(new Date(event.startDate), "EEE, MMM d, yyyy • h:mm a");
+
   return (
-    <div className="relative max-w-md mx-auto print:break-inside-avoid print:mb-8">
-      {/* Main Ticket Container */}
-      <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl overflow-hidden shadow-2xl shadow-slate-900/50 print:shadow-none">
+    <div className="relative print:break-inside-avoid print:mb-4">
+      {/* Main Ticket Container - White Background */}
+      <div className="relative max-w-xl mx-auto bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 print:shadow-none print:border">
 
-        {/* Decorative Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, white 1px, transparent 1px)`,
-            backgroundSize: '24px 24px'
-          }} />
-        </div>
-
-        {/* Top Section - Event Banner */}
+        {/* Top Section - Event Banner (Compact) */}
         <div className="relative">
           {event.imageUrl ? (
-            <div className="relative h-52 overflow-hidden">
+            <div className="relative w-full aspect-16/9 overflow-hidden">
               <img
                 src={event.imageUrl}
                 alt={event.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4">
-                <h2 className="text-2xl font-bold text-white drop-shadow-lg line-clamp-2">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3">
+                <h2 className="text-lg font-bold text-white drop-shadow-lg line-clamp-1">
                   {event.title}
                 </h2>
               </div>
             </div>
           ) : (
-            <div className="h-40 bg-primary flex items-center justify-center p-6">
-              <h2 className="text-2xl font-bold text-primary-foreground text-center">
+              <div className="h-24 bg-primary flex items-center justify-center p-4">
+                <h2 className="text-lg font-bold text-primary-foreground text-center line-clamp-1">
                 {event.title}
               </h2>
             </div>
           )}
 
           {/* Ticket Badge */}
-          <div className="absolute top-4 right-4 bg-primary shadow-lg shadow-primary/30 rounded-full px-4 py-2 border-2 border-white/30">
-            <div className="flex items-center gap-2">
-              <Ticket className="w-4 h-4 text-primary-foreground" />
-              <span className="text-sm font-bold text-primary-foreground uppercase tracking-wide">{ticket.tierName}</span>
+          <div className="absolute top-2 right-2 bg-primary shadow-md rounded-full px-3 py-1">
+            <div className="flex items-center gap-1.5">
+              <Ticket className="w-3 h-3 text-primary-foreground" />
+              <span className="text-xs font-bold text-primary-foreground uppercase tracking-wide">{ticket.tierName}</span>
             </div>
           </div>
         </div>
 
         {/* Perforated Divider */}
-        <div className="relative flex items-center justify-between px-0 py-3">
-          <div className="w-6 h-10 bg-white rounded-r-full -ml-3" />
-          <div className="flex-1 border-t-2 border-dashed border-white/20 mx-2" />
-          <div className="w-6 h-10 bg-white rounded-l-full -mr-3" />
+        <div className="relative flex items-center justify-between px-0 py-2">
+          <div className="w-4 h-8 bg-gray-100 rounded-r-full -ml-2" />
+          <div className="flex-1 border-t-2 border-dashed border-gray-300 mx-2" />
+          <div className="w-4 h-8 bg-gray-100 rounded-l-full -mr-2" />
         </div>
 
-        {/* QR Code Section */}
-        <div className="relative px-6 pb-6">
-          <div className="flex flex-col items-center">
-            {/* QR Container with glow effect */}
-            <div className="relative group">
-              <div className="absolute -inset-2 bg-primary rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300 print:hidden" />
-              <div className="relative bg-white p-4 rounded-xl shadow-inner">
-                <QRCodeSVG
-                  value={ticket.qrData}
-                  size={160}
-                  level="M"
-                  includeMargin={false}
-                  minVersion={1}
-                  fgColor="#0f172a"
-                />
+        {/* Content Section */}
+        <div className="pb-3">
+          {/* QR Code + Details Side by Side */}
+          <div className="flex flex-col items-center gap-4">
+            {/* QR Code - Smaller */}
+            <div className="flex-shrink-0 px-4">
+              <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm min-h-[116px] min-w-[116px] flex items-center justify-center">
+                <ClientQRCode value={ticket.qrData} />
               </div>
-            </div>
-
-            {/* Ticket Number */}
-            <div className="mt-4 bg-white/5 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/10">
-              <p className="font-mono text-sm font-bold text-white/90 tracking-wider">
+              <p className="font-mono text-[10px] text-gray-500 text-center mt-2 tracking-wider bg-gray-100 py-1 px-2 rounded-md border border-gray-20 ">
                 {ticket.ticketNumber}
               </p>
             </div>
-          </div>
-        </div>
 
-        {/* Event Details Grid */}
-        <div className="px-6 pb-6">
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10 space-y-3">
-            {/* Date Row */}
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-white/10 rounded-lg">
-                <Calendar className="w-4 h-4 text-white/60" />
+            {/* Event Details - Compact */}
+            <div className="flex-1 space-y-3 bg-gray-500/5 p-4 border-y border-gray-200 w-full">
+              {/* Combined Date & Time Row */}
+              <div className="flex items-center gap-3 text-gray-700">
+                <Calendar className="size-9 text-primary bg-primary/10 p-2.5 rounded-md" />
+                <div className="flex-1">
+                  <p className="text-[10px] text-black/50 font-medium uppercase tracking-wider">
+                    {t("ticketView.dateTime", "Date & Time")}
+                  </p>
+                  <div className="flex gap-2">
+                    <p className="text-sm font-semibold">
+                      {dateTimeString}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="text-xs text-white/50 font-medium uppercase tracking-wider">
-                  {t("ticketView.date", "Date")}
-                </p>
-                <p className="text-sm text-white font-semibold">
-                  {format(new Date(event.startDate), "EEEE, MMMM do, yyyy")}
-                </p>
-              </div>
-            </div>
 
-            {/* Time Row */}
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-white/10 rounded-lg">
-                <Clock className="w-4 h-4 text-white/60" />
-              </div>
-              <div className="flex-1">
-                <p className="text-xs text-white/50 font-medium uppercase tracking-wider">
-                  {t("ticketView.time", "Time")}
-                </p>
-                <p className="text-sm text-white font-semibold">
-                  {format(new Date(event.startDate), "h:mm a")}
-                </p>
-              </div>
-            </div>
-
-            {/* Venue Row */}
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-white/10 rounded-lg">
-                <MapPin className="w-4 h-4 text-white/60" />
-              </div>
-              <div className="flex-1">
-                <p className="text-xs text-white/50 font-medium uppercase tracking-wider">
-                  {t("ticketView.venue", "Venue")}
-                </p>
-                <p className="text-sm text-white font-semibold">
-                  {event.venueName}
-                </p>
-                <p className="text-xs text-white/60 mt-0.5">
-                  {event.address}
-                </p>
+              {/* Venue Row */}
+              <div className="flex items-start gap-3 text-gray-700">
+                <MapPin className="size-9 text-primary bg-primary/10 p-2.5 rounded-md" />
+                <div className="flex-1">
+                  <p className="text-[10px] text-black/50 font-medium uppercase tracking-wider">
+                    {t("ticketView.venue", "Venue")}
+                  </p>
+                  <div className="flex gap-2">
+                    <p className="text-sm font-semibold">
+                      {event.venueName},
+                    </p>
+                    <p className="text-sm text-black/60">
+                      {event.address}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Organizer Section */}
-        {event.organizer && (
-          <div className="px-6 pb-6">
-            <div className="flex flex-col items-center gap-2 py-4 border-t border-white/10">
-              <span className="text-xs text-white/40 uppercase tracking-wider">
-                {t("ticketView.organizedBy", "Organized by")}
-              </span>
-              {event.organizer.logo ? (
-                <img
-                  src={event.organizer.logo}
-                  alt={event.organizer.name}
-                  className="h-10 max-w-[150px] object-contain"
-                />
-              ) : (
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-white/60" />
-                  <span className="text-sm text-white/80 font-semibold">
+          {/* Organizer & Supported By Section - Compact Row */}
+          <div className="pt-3 px-4 flex justify-around gap-4">
+            {/* Organizer */}
+            {event.organizer && (
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider">
+                  {t("ticketView.organizedBy", "Organized by")}:
+                </span>
+                <div className="flex items-center gap-1.5">
+                  {event.organizer.logo && (
+                    <img
+                      src={event.organizer.logo}
+                      alt={event.organizer.name}
+                      className="h-6 max-w-[32px] object-contain"
+                    />
+                  )}
+                  <span className="text-xs text-gray-600 font-medium line-clamp-1">
                     {event.organizer.name}
                   </span>
                 </div>
-              )}
-              {event.organizer.logo && (
-                <span className="text-xs text-white/60 font-medium">
-                  {event.organizer.name}
+              </div>
+            )}
+
+            {/* Supported By (Company) */}
+            {company && (
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider">
+                  {t("ticketView.supportedBy", "Supported by")}:
                 </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="bg-primary px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-primary-foreground/70 uppercase tracking-wider">
-                {t("ticketView.price", "Price")}
-              </p>
-              <p className="text-xl font-bold text-primary-foreground">
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(ticket.price)}
-              </p>
-            </div>
-
-            {total > 1 && (
-              <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5">
-                <p className="text-xs font-bold text-primary-foreground">
-                  {index + 1} / {total}
-                </p>
+                <div className="flex items-center gap-1.5">
+                  {company.logoUrl ? (
+                    <img
+                      src={company.logoUrl}
+                      alt={company.name}
+                      className="h-6 max-w-[32px] object-contain"
+                    />
+                  ) : (
+                    <Building2 className="w-3 h-3 text-gray-400" />
+                  )}
+                  <span className="text-xs text-gray-600 font-medium line-clamp-1">
+                    {company.name}
+                  </span>
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Ticket Validity Note */}
-        <div className="bg-slate-950 px-6 py-3 text-center">
-          <p className="text-xs text-amber-400/80 font-medium">
+        {/* Validity Notice - Slim Footer */}
+        <div className="bg-gray-50 px-4 py-2 text-center border-t border-gray-100">
+          <p className="text-[10px] text-gray-500">
             ✨ {t("ticketView.validityNotice", "Valid for single entry only")}
           </p>
         </div>
@@ -228,70 +215,57 @@ function SingleTicketCard({
   );
 }
 
-export function TicketDisplay({ order, onPrint, isLoading }: TicketDisplayProps) {
+export function TicketDisplay({ order, onPrint, onDownload, isLoading }: TicketDisplayProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-md mx-auto">
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl animate-pulse">
-          <div className="h-52 bg-slate-700/50 rounded-t-3xl" />
-          <div className="p-6 space-y-4">
-            <div className="h-40 w-40 bg-slate-700/50 rounded-xl mx-auto" />
-            <div className="h-4 w-32 bg-slate-700/50 rounded mx-auto" />
-            <div className="space-y-3">
-              <div className="h-12 bg-slate-700/50 rounded-lg" />
-              <div className="h-12 bg-slate-700/50 rounded-lg" />
-              <div className="h-12 bg-slate-700/50 rounded-lg" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-white rounded-2xl animate-pulse border border-gray-200">
+            <div className="h-32 bg-gray-200 rounded-t-2xl" />
+            <div className="p-4 space-y-3">
+              <div className="flex gap-4">
+                <div className="w-20 h-20 bg-gray-200 rounded-lg" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-3/4 bg-gray-200 rounded" />
+                  <div className="h-4 w-1/2 bg-gray-200 rounded" />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="h-16 bg-slate-700/50 rounded-b-3xl" />
-        </div>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 print:max-w-none print:w-full print:space-y-0">
-      {/* Render each ticket */}
-      {order.tickets.map((ticket, index) => (
-        <SingleTicketCard
-          key={ticket.ticketId}
-          ticket={ticket}
-          event={order.event}
-          currency={order.currency}
-          company={order.company}
-          index={index}
-          total={order.tickets.length}
-        />
-      ))}
-
-      {/* Order Summary */}
-      {order.tickets.length > 1 && (
-        <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-5 text-center border border-slate-700/50 shadow-lg print:hidden">
-          <p className="text-sm text-slate-300">
-            <span className="text-white font-bold text-lg">{order.tickets.length}</span>
-            <span className="text-slate-400 mx-2">tickets</span>
-            <span className="text-slate-600">•</span>
-            <span className="text-white font-bold text-lg ml-2">
-              {new Intl.NumberFormat('en-US', { style: 'currency', currency: order.currency }).format(order.totalAmount)}
-            </span>
-            <span className="text-slate-400 ml-1">{t("ticketView.total", "Total")}</span>
-          </p>
-        </div>
-      )}
+    <div id="ticket-container" className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 print:space-y-0">
+      {/* 3-Column Grid on Desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 print:grid-cols-2 print:gap-4">
+        {order.tickets.map((ticket, index) => (
+          <SingleTicketCard
+            key={ticket.ticketId}
+            ticket={ticket}
+            event={order.event}
+            currency={order.currency}
+            company={order.company}
+            index={index}
+            total={order.tickets.length}
+          />
+        ))}
+      </div>
 
       <style jsx global>{`
         @media print {
           @page {
-            margin: 0.5cm;
+            margin: 1cm;
             size: auto;
           }
           .print\\:hidden {
             display: none !important;
           }
-          /* Ensure no scaling issues */
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;

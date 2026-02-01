@@ -11,6 +11,7 @@ import { eventService } from "@/services/eventService";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
+import { formatDate } from "@/lib/utils";
 
 function TicketSuccessContent() {
   const searchParams = useSearchParams();
@@ -22,6 +23,7 @@ function TicketSuccessContent() {
   const eventId = searchParams.get("eventId");
   const quantity = searchParams.get("quantity");
   const token = searchParams.get("token");
+  const email = searchParams.get("email");
 
   const { data: ticket, isLoading, error } = useQuery({
     queryKey: queryKeys.events.byId(eventId!),
@@ -59,20 +61,37 @@ function TicketSuccessContent() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           {t('ticketPurchase.successTitle', 'Purchase Successful!')}
         </h1>
-        <p className="text-gray-600 mb-8 text-lg">
-          {t('ticketPurchase.successMessage', 'Your tickets have been booked successfully. A confirmation email has been sent to you.')}
-        </p>
+
+        {email ? (
+          <p className="text-gray-600 mb-6 text-lg">
+            {t('ticketPurchase.ticketSentTo', 'Your ticket has been sent to')}{' '}
+            <span className="font-bold text-gray-900">{email}</span>
+          </p>
+        ) : (
+          <p className="text-gray-600 mb-6 text-lg">
+            {t('ticketPurchase.successMessage', 'Your tickets have been booked successfully. A confirmation email has been sent to you.')}
+          </p>
+        )}
+
+        {isAuthenticated && (
+          <p className="text-sm text-gray-500 mb-6">
+            {t('ticketPurchase.checkMyTickets', 'You can also view your tickets from "My Tickets" page.')}
+          </p>
+        )}
 
         {ticket && (
           <div className="bg-gray-50 rounded-xl p-4 mb-6 flex items-center gap-4 text-left">
             <img
               src={ticket.imageUrl}
               alt={ticket.title}
-              className="w-16 h-16 rounded-lg object-cover"
+              className="aspect-16/10 h-16 rounded-lg object-cover"
             />
             <div>
               <h3 className="font-bold text-gray-900 line-clamp-1">{ticket.title}</h3>
               <p className="text-sm text-gray-500">{ticket.venue?.name}</p>
+              <p className="text-sm text-gray-500">
+                {formatDate(ticket.startDate, "EEEE, MMM d, yyyy h:mm a")}
+              </p>
             </div>
           </div>
         )}
@@ -86,15 +105,15 @@ function TicketSuccessContent() {
         )}
 
         <div className="space-y-3">
-          {isAuthenticated && (
+          {/* {isAuthenticated && (
             <Button
-              onClick={() => router.push(`/tickets/view/${token}`)}
+              onClick={() => router.push(`/tickets/view?token=${token}`)}
               className="w-full h-12 text-lg font-bold shadow-lg shadow-blue-200 group"
             >
               <TicketIcon size={20} className="mr-2" />
               {t('ticketPurchase.viewTicket', 'View Ticket')}
             </Button>
-          )}
+          )} */}
 
           <Button
             variant="outline"
