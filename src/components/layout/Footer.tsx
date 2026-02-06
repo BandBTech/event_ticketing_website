@@ -20,8 +20,8 @@ export function Footer() {
     company: [
       { name: t('footer.links.company.aboutUs'), href: '/about' },
       { name: t('footer.links.company.howItWorks'), href: '#how-it-works' },
-      { name: t('footer.links.company.careers'), href: '#careers' },
-      { name: t('footer.links.company.press'), href: '#press' },
+      // { name: t('footer.links.company.careers'), href: '#careers' },
+      // { name: t('footer.links.company.press'), href: '#press' },
     ],
     organizers: [
       { name: t('footer.links.organizers.createEvent'), href: '#create-event' },
@@ -54,7 +54,7 @@ export function Footer() {
     <footer className="bg-white/80 backdrop-blur-[25px] border-t border-white/30 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="py-16">
+        <div className="py-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Company Info */}
             <div className="lg:col-span-4 space-y-6">
@@ -180,10 +180,10 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/20 py-6">
+        <div className="border-t border-white/20 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-gray-600">
-              {t('footer.copyright')}
+            © {new Date().getFullYear()} {t('footer.copyright')}
             </div>
             
             <div className="flex items-center gap-6 text-sm text-gray-600">

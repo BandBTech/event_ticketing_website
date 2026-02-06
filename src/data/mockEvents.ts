@@ -48,7 +48,7 @@ export const mockEvents: Event[] = [
       },
 
     ],
-    status: 'On Sale' as EventStatus,
+    status: 'Completed' as EventStatus,
     sales_status: 'active',
     organizerId: 'org1',
     maxTicketsPerOrder: 10,

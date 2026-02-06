@@ -68,21 +68,20 @@ interface ApiEvent {
 }
 
 interface ApiEventsResponse {
-  // data: {
-  //   events: ApiEvent[];
-  //   pagination: {
-  //     total: number;
-  //     page: number;
-  //     limit: number;
-  //     total_pages: number;
-  //   };
-  // };
-  events: ApiEvent[];
-  limit: number;
-  page: number;
-  total: number;
-  total_pages: number;
-}
+  success: boolean;
+  message: string;
+ 
+    events: ApiEvent[];
+    pagination: {
+      has_next: boolean;
+      has_prev: boolean;
+      limit: number;
+      page: number;
+      total: number;
+      total_pages: number;
+    };
+  };
+
 interface ApiUpcomingEventsResponse{
   events: ApiEvent[];
     current_page: number;
@@ -95,8 +94,7 @@ interface ApiUpcomingEventsResponse{
 const mapStatus = (status: string): EventStatus => {
   const statusMap: Record<string, EventStatus> = {
     'draft': 'Draft',
-    'published': 'Published',
-    'approved': 'On Sale', // Assuming approved means on sale for public
+    'completed': 'Completed',
     'on_sale': 'On Sale',
     'sale_on_hold': 'Sale on Hold',
     'sold_out': 'Sold Out',
@@ -104,7 +102,7 @@ const mapStatus = (status: string): EventStatus => {
     'cancelled': 'Cancelled',
     'held': 'Sale on Hold'
   };
-  return statusMap[status.toLowerCase()] || 'Published';
+  return statusMap[status.toLowerCase()];
 };
 
 const parseCategoryString = (categoryStr: string): string[] => {
@@ -191,13 +189,13 @@ export const eventService = {
     
     const response = await api.get<ApiEventsResponse>(`/public/events?${queryParams.toString()}`);
 
-    return {
+  return {
   events: (response.events || []).map(mapEvent),
       pagination: {
-        total: response.total,
-        page: response.page,
-        limit: response.limit,
-        totalPages: response.total_pages,
+        total: response.pagination.total,
+        page: response.pagination.page,
+        limit: response.pagination.limit,
+        totalPages: response.pagination.total_pages,
     },
     };
   },

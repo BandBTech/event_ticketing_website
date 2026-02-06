@@ -75,7 +75,7 @@ export function EventGrid({ events, isLoading, className }: EventGridProps) {
 
   return (
     <div className={cn(
-      "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+      "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch",
       className
     )}>
       {events.map((event) => (

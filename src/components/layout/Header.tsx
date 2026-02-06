@@ -38,7 +38,7 @@ export function Header() {
 
   const navigation = [
     { name: t('navigation.events'), href: '/allevents' },
-    { name: t('navigation.categories'), href: '#categories' },
+    // { name: t('navigation.categories'), href: '#categories' },
     { name: t('navigation.about'), href: '/about' },
     { name: t('navigation.contact'), href: '/contact' },
   ];

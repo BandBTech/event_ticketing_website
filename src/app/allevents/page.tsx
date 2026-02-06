@@ -25,6 +25,7 @@ export default function EventsPage() {
     fetchNextPage,
   } = useInfiniteEvents({
     search: searchQuery,
+    category: selectedCategory,
     limit: 6,
   });
 
@@ -123,13 +124,13 @@ export default function EventsPage() {
           )}
         </div>
       )}
-       {!hasNextPage && allEvents.length > 0 && (
+       {/* {!hasNextPage && allEvents.length > 0 && (
         <div className="text-center">
           <p className="text-gray-600">
             {t('common.allEventsLoaded')}
           </p>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
