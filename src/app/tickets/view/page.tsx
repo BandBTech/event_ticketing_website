@@ -13,6 +13,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { ticketService } from "@/services/ticketService";
 import { Loader2 } from "lucide-react";
+import { jsPDF } from "jspdf";
+import { toPng } from "html-to-image";
+import { DownloadSimple } from "@phosphor-icons/react";
 
 function TicketVerification() {
   const searchParams = useSearchParams();
@@ -60,12 +63,45 @@ function TicketVerification() {
     window.print();
   };
 
+  const handleDownload = async () => {
+    const element = document.getElementById("ticket-container");
+    if (!element) return;
+
+    try {
+      // Use html-to-image (better support for modern CSS) + jsPDF
+      const dataUrl = await toPng(element, {
+        cacheBust: true,
+        backgroundColor: "white",
+        pixelRatio: 2 // Higher quality
+      });
+
+      // A4 dimensions in mm
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const imgWidth = 210; // A4 width
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+      pdf.addImage(dataUrl, "PNG", 0, 0, imgWidth, imgHeight);
+      pdf.save(`tickets-${token}.pdf`);
+
+      toast.success("Ticket exported successfully!");
+    } catch (err) {
+      console.error("Failed to generate PDF:", err);
+      toast.error("Failed to generate PDF. Please try printing explicitly.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50/50 py-12 px-4 sm:px-6 lg:px-8 print:p-0 print:bg-white print:overflow-visible print:block relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-400/5 blur-[120px] rounded-full -z-10 print:hidden" />
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-6xl mx-auto">
 
         {/* Actions - Hidden on Print */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4 print:hidden">
@@ -82,6 +118,13 @@ function TicketVerification() {
             >
               <Ticket weight="bold" size={18} />
               {t("ticketView.printTicket")}
+            </Button>
+            <Button
+              onClick={handleDownload}
+              className="bg-primary hover:bg-primary/90 text-white font-bold h-11 px-6 rounded-xl flex items-center gap-2.5 shadow-xl shadow-primary/20 transition-all active:scale-95"
+            >
+              <DownloadSimple weight="bold" size={18} />
+              {t("ticketView.downloadTicket", "Download")}
             </Button>
           </div>
         </div>

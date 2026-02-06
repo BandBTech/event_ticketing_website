@@ -180,11 +180,11 @@
       "signUpHere": "Sign up here.",
       "demoCredentials": "Demo: Use attendee@example.com / password123",
       "validation": {
-        "emailRequired": "Email is required",
-        "emailInvalid": "Please enter a valid email address",
-        "passwordRequired": "Password is required",
-        "passwordTooShort": "Password must be at least 6 characters long",
-        "passwordTooLong": "Password is too long"
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address.",
+        "passwordRequired": "Password is required.",
+        "passwordTooShort": "Password must be at least 6 characters long.",
+        "passwordTooLong": "Password is too long."
       },
       "errors": {
         "invalidCredentials": "Invalid email or password",
@@ -234,8 +234,8 @@
         "phoneRequired": "Contact number is required.",
         "firstNameRequired": "First name is required.",
         "lastNameRequired": "Last name is required.",
-        "passwordSpecialChar": "Must contain at least one special character",
-        "passwordUpperLower": "Must contain at least one uppercase and one lowercase"
+        "passwordSpecialChar": "Must contain at least one special character.",
+        "passwordUpperLower": "Must contain at least one uppercase and one lowercase."
       },
       "errors": {
         "signupFailed": "Registration failed. Please try again."
@@ -528,6 +528,7 @@
     "noEventId": "No event ID provided in the URL."
   },
   "ticketPurchase": {
+    "selectTierError": "Please select a ticket type.",
     "selectTickets": "Select Tickets",
     "backToEvent": "Back to Event",
     "backToSelection": "Back to Selection",
@@ -536,6 +537,8 @@
     "ticketDeliveryInformation": "Ticket Delivery Information",
     "loggedIn": "Logged In",
     "loggedInInfo": "Please proceed to checkout.",
+    "loginForMoreTickets": "Please login to buy up to 10 tickets at once",
+    "emailDeliveryNote": "Your ticket will be sent to this email address",
     "paymentMethod": "Payment Method",
     "cashPayment": "Cash Payment",
     "discountCode": "Promo Code",
@@ -547,6 +550,8 @@
     "viewTicket": "View Ticket",
     "successTitle": "Purchase Successful!",
     "successMessage": "Your tickets have been booked successfully. A confirmation email has been sent to you.",
+    "ticketSentTo": "Your ticket has been sent to",
+    "checkMyTickets": "You can also view your tickets from \"My Tickets\" page.",
     "ticket": "ticket(s)"
   },
   "ticketView": {
@@ -559,6 +564,7 @@
     "ticketId": "Ticket ID",
     "scanAtEntrance": "Scan at Entrance",
     "printTicket": "Print Ticket",
+    "downloadTicket": "Download Ticket",
     "backHome": "Back to Home",
     "invalidAccess": "Invalid Access",
     "noTokenFound": "No valid ticket token found. Please check your link or contact support.",
@@ -571,6 +577,7 @@
     "date": "Date",
     "time": "Time",
     "organizedBy": "Organized by",
+    "supportedBy": "Supported by",
     "validityNotice": "Validity: This ticket is valid for a single individual only.",
     "ticketCounter": "Ticket {index} of {total}",
     "total": "Total"
