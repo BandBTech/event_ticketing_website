@@ -17,15 +17,14 @@ export const useGuestPurchaseMutation = () => {
   return useMutation({
     mutationFn: (data: GuestPurchasePayload) => ticketService.guestPurchase(data),
     onSuccess: (res: GuestPurchaseResponse, variables) => {
-      // res is now the full response because of returnFullResponse: true in ticketService
       if (res.success) {
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
-        query.append("quantity", variables.quantity.toString());
+        const totalQuantity = variables.tiers.reduce((sum, t) => sum + t.quantity, 0);
+        query.append("quantity", totalQuantity.toString());
         query.append("email", variables.email);
 
-        // Pass token if available in the response data
         const token = res.data?.token || res.data?.id;
         if (token) {
           query.append("token", token);
@@ -47,14 +46,13 @@ export const useUserPurchaseMutation = () => {
   return useMutation({
     mutationFn: (data: UserPurchasePayload) => ticketService.userPurchase(data),
     onSuccess: (res: UserPurchaseResponse, variables) => {
-      // res is now the full response because of returnFullResponse: true in ticketService
       if (res.success) {
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
-        query.append("quantity", variables.quantity.toString());
+        const totalQuantity = variables.tiers.reduce((sum, t) => sum + t.quantity, 0);
+        query.append("quantity", totalQuantity.toString());
 
-        // Pass token if available in the response data
         const token = res.data?.order_id;
         if (token) {
           query.append("token", token);

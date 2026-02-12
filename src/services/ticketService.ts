@@ -1,6 +1,10 @@
 import { api } from "@/lib/apiClient";
 import { type ViewTicketDetails, type ApiTicketResponse } from "@/types/ticket";
 
+export interface PurchaseTierPayload {
+  quantity: number;
+  tier_id: string;
+}
 export interface GuestPurchasePayload {
   first_name: string;
   last_name: string;
@@ -8,9 +12,8 @@ export interface GuestPurchasePayload {
   phone: string;
   country_code: string;
   event_id: string;
-  tier_id: string;
-  quantity: number;
   payment_gateway: string;
+  tiers: PurchaseTierPayload[];
 }
 
 export interface GuestPurchaseResponse {
@@ -26,8 +29,7 @@ export interface GuestPurchaseResponse {
 // For logged-in user ticket purchase
 export interface UserPurchasePayload {
   event_id: string;
-  tier_id: string;
-  quantity: number;
+  tiers: PurchaseTierPayload[];
   payment_gateway: string;
 }
 

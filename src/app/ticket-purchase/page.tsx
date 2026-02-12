@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,7 @@ import {
   TicketIcon,
 } from "@phosphor-icons/react";
 import cn from "clsx";
-import { ticketService, GuestPurchasePayload, UserPurchasePayload } from "@/services/ticketService";
+import { GuestPurchasePayload, UserPurchasePayload } from "@/services/ticketService";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
@@ -23,7 +23,6 @@ import { format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useEventById } from "@/hooks/useEvents";
 import { useAuthStore } from "@/store/authStore";
@@ -41,12 +40,14 @@ import { LoginModal } from "@/components/auth/LoginModal";
 import { Separator } from "@/components/ui/separator-extended";
 import { useGuestPurchaseMutation, useUserPurchaseMutation } from "@/hooks/useTickets";
 
+// Max total tickets allowed
+const GUEST_MAX_QUANTITY = 6;
+const USER_MAX_QUANTITY = 10;
+
 const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
   const v = createValidationHelpers(t);
 
   return z.object({
-    tier_id: z.string().min(1, t("ticketPurchase.selectTierError", "Please select a ticket type.")),
-    quantity: z.number().min(1).max(10),
     email: z.string().min(1, v.required("Email")).email(v.email("Email")),
   });
 };
@@ -70,22 +71,22 @@ function GuestPurchaseContent() {
 
   const isPending = guestPurchaseMutation.isPending || userPurchaseMutation.isPending;
 
-  // Form for Guest Details
+  // Per-tier quantity state: { [tier_id]: quantity }
+  const [tierQuantities, setTierQuantities] = useState<Record<string, number>>({});
+
+  // Form for Guest Details (email only)
   const guestForm = useForm<GuestFormData>({
     resolver: zodResolver(guestSchema),
     defaultValues: {
-      tier_id: "",
-      quantity: 1,
       email: "",
     },
   });
 
-  const selectedTierId = guestForm.watch("tier_id");
-  const quantity = guestForm.watch("quantity");
-  const [promoCode, setPromoCode] = useState("");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const { isAuthenticated } = useAuthStore();
+
+  const maxQuantity = isAuthenticated ? USER_MAX_QUANTITY : GUEST_MAX_QUANTITY;
 
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat(locale, {
@@ -95,26 +96,74 @@ function GuestPurchaseContent() {
       maximumFractionDigits: 0,
     }).format(amount);
   };
-  // const selectedTier = eventData?.tier.find((t) => t.id === selectedTierId);
-  const selectedTier = eventData?.ticketTypes.find((t) => t.id === selectedTierId);
-  const totalAmount = selectedTier ? selectedTier.price * quantity : 0;
 
-  const handleContinue = async () => {
-    if (!eventData || !selectedTier) return;
+  // Compute total quantity across all tiers
+  const totalQuantity = useMemo(() => {
+    return Object.values(tierQuantities).reduce((sum, qty) => sum + qty, 0);
+  }, [tierQuantities]);
 
-    if (step === 1) {
-      if (!selectedTierId) {
-        toast.error("Please select a ticket type");
-        return;
+  // Compute selected tiers (those with quantity > 0) for order summary and payload
+  const selectedTiers = useMemo(() => {
+    if (!eventData) return [];
+    return eventData.ticketTypes
+      .filter((tt) => (tierQuantities[tt.id] || 0) > 0)
+      .map((tt) => ({
+        ...tt,
+        selectedQty: tierQuantities[tt.id] || 0,
+        subtotal: tt.price * (tierQuantities[tt.id] || 0),
+      }));
+  }, [eventData, tierQuantities]);
+
+  // Compute grand total
+  const totalAmount = useMemo(() => {
+    return selectedTiers.reduce((sum, st) => sum + st.subtotal, 0);
+  }, [selectedTiers]);
+
+  // Get a default currency from the first ticket type
+  const defaultCurrency = eventData?.ticketTypes?.[0]?.currency || "USD";
+
+  const handleTierQuantityChange = (tierId: string, delta: number) => {
+    setTierQuantities((prev) => {
+      const current = prev[tierId] || 0;
+      const newQty = Math.max(0, current + delta);
+
+      // Check total limit
+      const otherTotal = Object.entries(prev)
+        .filter(([id]) => id !== tierId)
+        .reduce((sum, [, qty]) => sum + qty, 0);
+
+      if (otherTotal + newQty > maxQuantity) {
+        toast.error(
+          t("ticketPurchase.maxQuantityReached", `Maximum ${maxQuantity} tickets allowed in total`)
+        );
+        return prev;
       }
 
+      return { ...prev, [tierId]: newQty };
+    });
+  };
+
+  const handleContinue = async () => {
+    if (!eventData) return;
+
+    if (totalQuantity === 0) {
+      toast.error(t("ticketPurchase.selectAtLeastOne", "Please select at least one ticket"));
+      return;
+    }
+
+    // Build tiers array for the API
+    const tiersPayload = selectedTiers.map((st) => ({
+      tier_id: st.id,
+      quantity: st.selectedQty,
+    }));
+
+    if (step === 1) {
       if (isAuthenticated) {
         // Logged-in user purchase - Skip Step 2 and submit directly
         const userPayload: UserPurchasePayload = {
           event_id: eventData.id,
-          tier_id: selectedTier.id,
-          quantity: quantity,
           payment_gateway: "cash",
+          tiers: tiersPayload,
         };
         userPurchaseMutation.mutate(userPayload);
       } else {
@@ -131,9 +180,8 @@ function GuestPurchaseContent() {
           phone: "",
           country_code: "",
           event_id: eventData.id,
-          tier_id: selectedTier.id,
-          quantity: quantity,
           payment_gateway: "cash",
+          tiers: tiersPayload,
         };
         guestPurchaseMutation.mutate(guestPayload);
       })();
@@ -181,99 +229,125 @@ function GuestPurchaseContent() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
 
-            {/* Step 1: Ticket Selection */}
+            {/* Step 1: Multi-Tier Ticket Selection */}
             {step === 1 && (
               <div className="glass-card-lower rounded-2xl overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                    <TicketIcon weight="duotone" className="w-6 h-6 mr-2 text-primary" />
-                    {t("ticketPurchase.selectTickets", "Select Tickets")}
-                  </h2>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                      <TicketIcon weight="duotone" className="w-6 h-6 mr-2 text-primary" />
+                      {t("ticketPurchase.selectTickets", "Select Tickets")}
+                    </h2>
+                    {/* Total quantity indicator */}
+                    <div className="flex items-center gap-2">
+                      <span className={cn(
+                        "text-sm font-bold px-3 py-1 rounded-full transition-colors",
+                        totalQuantity > 0
+                          ? totalQuantity >= maxQuantity
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-primary/10 text-primary"
+                          : "bg-gray-100 text-gray-400"
+                      )}>
+                        {totalQuantity} / {maxQuantity}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {t("ticketPurchase.multiTierHint", `Select quantities for each ticket type (max ${maxQuantity} total)`)}
+                  </p>
                 </div>
 
-                <div className="p-6 space-y-6">
-                  <RadioGroup
-                    value={selectedTierId}
-                    onValueChange={(val) => {
-                      guestForm.setValue("tier_id", val);
-                    }}
-                    className="space-y-3"
-                  >
-                    {eventData.ticketTypes.map((ticketType) => (
+                <div className="p-6 space-y-4">
+                  {eventData.ticketTypes.map((ticketType) => {
+                    const qty = tierQuantities[ticketType.id] || 0;
+                    const isAtMaxTotal = totalQuantity >= maxQuantity;
+
+                    return (
                       <div
                         key={ticketType.id}
                         className={cn(
-                          "relative flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer hover:border-blue-100 hover:bg-blue-50/30",
-                          selectedTierId === ticketType.id
-                            ? "border-primary bg-blue-50/50 text-primary"
-                            : "border-gray-100 bg-white"
+                          "relative flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border-2 transition-all",
+                          qty > 0
+                            ? "border-primary bg-blue-50/50"
+                            : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30"
                         )}
-                        onClick={() => {
-                          guestForm.setValue("tier_id", ticketType.id);
-                        }}
                       >
-                        <div className="flex items-start gap-3">
-                          <RadioGroupItem className="mt-1 size-5" value={ticketType.id} id={ticketType.id} />
-                          <div>
-                            <Label htmlFor={ticketType.id} className="font-bold text-gray-900 text-lg cursor-pointer">
+                        {/* Tier Info */}
+                        <div className="flex-1 min-w-0 mb-3 sm:mb-0">
+                          <div className="flex items-center gap-2">
+                            <Label className="font-bold text-gray-900 text-lg">
                               {ticketType.tier_name}
                             </Label>
-                            {ticketType.description && (
-                              <p className="text-sm text-gray-500 mt-1 pr-4">{ticketType.description}</p>
+                            {qty > 0 && (
+                              <span className="text-xs font-bold bg-primary text-white px-2 py-0.5 rounded-full">
+                                {qty}×
+                              </span>
                             )}
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-lg text-primary">
+                          {ticketType.description && (
+                            <p className="text-sm text-gray-500 mt-1 pr-4">{ticketType.description}</p>
+                          )}
+                          <p className="font-bold text-lg text-primary mt-1">
                             {formatCurrency(ticketType.price, ticketType.currency)}
                           </p>
                         </div>
-                      </div>
-                    ))}
-                  </RadioGroup>
 
-                  {/* Quantity Selector (Only shows if a tier is selected) */}
-                  {selectedTier && (
-                    <div className="mt-6 pt-6 border-t border-gray-100 animate-in fade-in slide-in-from-top-2">
-                      <Label className="block text-sm font-medium text-gray-700 mb-3">{t('ticketPurchase.quantity', 'Quantity')}</Label>
-                      <div className="flex items-center gap-4">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => guestForm.setValue("quantity", Math.max(1, quantity - 1))}
-                          disabled={quantity <= 1 || isPending}
-                          className="size-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
-                        >
-                          <MinusIcon size={20} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
-                        </Button>
-                        <span className="text-2xl font-bold text-primary w-12 text-center">{quantity}</span>
-                        <Button
-                          onClick={() => guestForm.setValue("quantity", Math.min(isAuthenticated ? 10 : 5, quantity + 1))}
-                          variant="outline"
-                          size="icon"
-                          disabled={quantity >= (isAuthenticated ? 10 : 5) || isPending}
-                          className="size-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
-                        >
-                          <PlusIcon size={20} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
-                        </Button>
-                      </div>
-                      {/* Info bar for guests at max quantity */}
-                      {!isAuthenticated && quantity >= 5 && (
-                        <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-center gap-2">
-                          <UserIcon size={18} className="text-blue-600 flex-shrink-0" />
-                          <p className="text-sm text-blue-700">
-                            {t('ticketPurchase.loginForMoreTickets', 'Please login to buy up to 10 tickets at once')}
-                          </p>
+                        {/* Quantity Controls */}
+                        <div className="flex items-center gap-3 flex-shrink-0">
                           <Button
-                            variant="link"
-                            size="sm"
-                            className="ml-auto text-blue-700 font-semibold p-0 h-auto"
-                            onClick={() => setIsLoginModalOpen(true)}
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleTierQuantityChange(ticketType.id, -1)}
+                            disabled={qty <= 0 || isPending}
+                            className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                           >
-                            {t('auth.login.loginButton', 'Log In')}
+                            <MinusIcon size={18} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
+                          </Button>
+                          <span className={cn(
+                            "text-xl font-bold w-8 text-center transition-colors",
+                            qty > 0 ? "text-primary" : "text-gray-300"
+                          )}>
+                            {qty}
+                          </span>
+                          <Button
+                            onClick={() => handleTierQuantityChange(ticketType.id, 1)}
+                            variant="outline"
+                            size="icon"
+                            disabled={isAtMaxTotal || isPending}
+                            className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
+                          >
+                            <PlusIcon size={18} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
                           </Button>
                         </div>
-                      )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Info bar for guests at max quantity */}
+                  {!isAuthenticated && totalQuantity >= GUEST_MAX_QUANTITY && (
+                    <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+                      <UserIcon size={18} className="text-blue-600 flex-shrink-0" />
+                      <p className="text-sm text-blue-700">
+                        {t('ticketPurchase.loginForMoreTickets', `Please login to buy up to ${USER_MAX_QUANTITY} tickets at once`)}
+                      </p>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="ml-auto text-blue-700 font-semibold p-0 h-auto"
+                        onClick={() => setIsLoginModalOpen(true)}
+                      >
+                        {t('auth.login.loginButton', 'Log In')}
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Info bar for logged-in users at max quantity */}
+                  {isAuthenticated && totalQuantity >= USER_MAX_QUANTITY && (
+                    <div className="mt-4 bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+                      <TicketIcon size={18} className="text-amber-600 flex-shrink-0" />
+                      <p className="text-sm text-amber-700">
+                        {t('ticketPurchase.maxReached', `Maximum of ${USER_MAX_QUANTITY} tickets reached`)}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -356,32 +430,6 @@ function GuestPurchaseContent() {
                       </div>
                   </div>
                 )}
-
-
-
-                {/* Payment Method - Currently Cash (Stripe commented for future) */}
-                {/*
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <MoneyIcon className="w-6 h-6 mr-2 text-green-600" />
-                    {t('ticketPurchase.paymentMethod', 'Payment Method')}
-                  </h2>
-                  <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-green-600">
-                        <MoneyIcon size={24} weight="duotone" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-gray-900">{t('ticketPurchase.cashPayment', 'Cash Payment')}</p>
-                      </div>
-                    </div>
-                    <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-primary">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
-                */}
-
               </div>
             )}
           </div>
@@ -410,54 +458,48 @@ function GuestPurchaseContent() {
               <div className="p-6 space-y-6">
                 <div>
                   <h4 className="text-sm font-bold text-gray-900 mb-3">{t('ticketPurchase.orderSummary', 'Order Summary')}</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">{t('ticketPurchase.ticketType', 'Ticket Type')}</span>
-                      <span className="font-medium text-gray-900 text-right">{selectedTier ? selectedTier.tier_name : "-"}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">{t('ticketPurchase.quantity', 'Quantity')}</span>
-                      <span className="font-medium text-gray-900">{quantity}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">{t('ticketPurchase.pricePerTicket', 'Price/ticket')}</span>
-                      <span className="font-medium text-gray-900">
-                        {selectedTier ? formatCurrency(selectedTier.price, selectedTier.currency) : "-"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Promo Code - Commented out for future implementation
-                <div>
-                  <div className="flex items-center mb-2">
-                    <TagIcon size={16} className="text-primary mr-2" />
-                    <span className="text-sm font-bold text-gray-900">{t('ticketPurchase.discountCode', 'Discount Code')}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                      placeholder="Enter code"
-                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
-                    />
-                    <Button variant="outline" className="text-sm">{t('common.apply', 'Apply')}</Button>
-                  </div>
+                  {selectedTiers.length === 0 ? (
+                    <div className="text-sm text-gray-400 text-center py-4 border border-dashed border-gray-200 rounded-xl">
+                      {t('ticketPurchase.noTicketsSelected', 'No tickets selected')}
+                    </div>
+                  ) : (
+                      <div className="space-y-3">
+                        {selectedTiers.map((st) => (
+                          <div key={st.id} className="flex justify-between items-start text-sm">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-gray-900 truncate">{st.tier_name}</p>
+                              <p className="text-xs text-gray-500">
+                                {st.selectedQty} × {formatCurrency(st.price, st.currency)}
+                              </p>
+                            </div>
+                          <span className="font-bold text-gray-900 ml-3">
+                            {formatCurrency(st.subtotal, st.currency)}
+                          </span>
+                        </div>
+                      ))}
+                        <div className="border-t border-gray-100 pt-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">{t('ticketPurchase.totalTickets', 'Total Tickets')}</span>
+                            <span className="font-medium text-gray-900">{totalQuantity}</span>
+                          </div>
+                        </div>
+                      </div>
+                  )}
                 </div>
-                */}
 
                 <div className="pt-4 border-t border-gray-100">
                   <div className="flex justify-between items-center mb-4">
                     <span className="font-bold text-gray-900">Total</span>
                     <span className="font-black text-2xl text-primary">
-                      {selectedTier ? formatCurrency(totalAmount, selectedTier.currency) : "-"}
+                      {totalAmount > 0 ? formatCurrency(totalAmount, defaultCurrency) : "-"}
                     </span>
                   </div>
 
                   <Button
                     onClick={handleContinue}
                     className="w-full h-12 text-lg font-bold shadow-lg shadow-blue-200"
-                    disabled={isPending || !selectedTier}
+                    disabled={isPending || totalQuantity === 0}
                   >
                     {isPending ? (
                       <span className="flex items-center gap-2">
@@ -496,4 +538,3 @@ export default function GuestPurchasePage() {
     </Suspense>
   );
 }
-
