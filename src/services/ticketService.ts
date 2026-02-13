@@ -1,5 +1,11 @@
 import { api } from "@/lib/apiClient";
-import { type ViewTicketDetails, type ApiTicketResponse } from "@/types/ticket";
+import {
+  type ViewTicketDetails,
+  type ApiTicketResponse,
+  UserTicketsApiResponse,
+  ApiSingleTicketResponse,
+  ApiUserTicket,
+} from "@/types/ticket";
 
 export interface PurchaseTierPayload {
   quantity: number;
@@ -52,7 +58,7 @@ export const ticketService = {
       data,
       {
         returnFullResponse: true,
-      }
+      },
     );
     return response;
   },
@@ -64,7 +70,7 @@ export const ticketService = {
       {
         requiresAuth: true,
         returnFullResponse: true,
-      }
+      },
     );
     return response;
   },
@@ -75,7 +81,7 @@ export const ticketService = {
       `/public/tickets/validate-token?token=${token}`,
       {
         showErrorToast: true,
-      }
+      },
     );
     return response;
   },
@@ -83,9 +89,11 @@ export const ticketService = {
   // Updated to use the public view endpoint which only needs the token
   viewTicket: async (token: string): Promise<ViewTicketDetails> => {
     // API client unwraps responses. So 'response' here IS the data object from the server response
-    const response = await api.get<unknown>(`/public/tickets/view?token=${token}`);
+    const response = await api.get<unknown>(
+      `/public/tickets/view?token=${token}`,
+    );
 
-    // If response is the data object, we parse it directly. 
+    // If response is the data object, we parse it directly.
     // If it's wrapped in { data: ... }, we try to access .data
     const ticketData = (response as { data?: unknown })?.data || response;
 
@@ -97,6 +105,74 @@ export const ticketService = {
 
     // Then map to frontend model (transforming snake_case to camelCase)
     return mapTicketView(rawTicket);
+  },
+
+  getUserTickets: async (): Promise<ViewTicketDetails[]> => {
+    const response = await api.get<UserTicketsApiResponse>("/user/tickets", {
+      requiresAuth: true,
+    });
+
+    const rawTickets = response?.tickets || [];
+    const detailedTicketsPromises = rawTickets.map(async (t: ApiUserTicket) => {
+      const detailResponse = await api.get(`/user/tickets/${t.id}`, {
+        requiresAuth: true,
+      });
+
+      if (
+        detailResponse &&
+        typeof detailResponse === "object" &&
+        "data" in detailResponse
+      ) {
+        return (detailResponse as ApiSingleTicketResponse).data;
+      }
+      return detailResponse as ApiUserTicket;
+    });
+
+    const detailedTickets = await Promise.all(detailedTicketsPromises);
+
+    return detailedTickets.map((t: ApiUserTicket) => ({
+      orderId: t.id,
+      event: {
+        id: t.event.id,
+        title: t.event.title,
+        imageUrl: t.event.banner_image,
+        venueName: t.event.venue_name,
+        address: t.event.address,
+        startDate: t.event.start_date,
+        timezone: t.event.timezone,
+        organizer: {
+          id: t.event.organizer_id,
+          name: "Organizer",
+          logo: undefined,
+        },
+      },
+      tickets: [
+        {
+          ticketId: t.id,
+          ticketNumber: t.ticket_number,
+          tierName: t.tier?.tier_name,
+          price: t.total_amount,
+          qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,
+          checkedIn: t.status === "used",
+        },
+      ],
+      totalAmount: t.total_amount,
+      currency: "NPR",
+      purchaseDate: t.purchase_date,
+    }));
+  },
+
+  getUserTicketById: async (ticketId: string) => {
+    const response = await api.get<UserTicketsApiResponse>(
+      `/user/tickets/${ticketId}`,
+      {
+        requiresAuth: true,
+      },
+    );
+
+    // Extract the data object from the response
+    const ticketData = (response as { data?: ApiUserTicket })?.data || response;
+    return ticketData;
   },
 };
 
@@ -125,9 +201,11 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
     totalAmount: apiResponse.total_amount,
     currency: apiResponse.currency,
     purchaseDate: apiResponse.purchase_date,
-    company: apiResponse.company ? {
-      name: apiResponse.company.name,
-      logoUrl: apiResponse.company.logo_url,
-    } : undefined,
+    company: apiResponse.company
+      ? {
+          name: apiResponse.company.name,
+          logoUrl: apiResponse.company.logo_url,
+        }
+      : undefined,
   };
 };

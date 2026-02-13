@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { ticketService, GuestPurchasePayload, UserPurchasePayload, GuestPurchaseResponse, UserPurchaseResponse } from '@/services/ticketService';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/toast';
@@ -68,3 +68,10 @@ export const useUserPurchaseMutation = () => {
     },
   });
 };
+
+export const useUserTickets = () => {
+  return useQuery({
+    queryKey: ['tickets', 'user-purchases'],
+    queryFn: ()=> ticketService.getUserTickets(),
+  })
+}

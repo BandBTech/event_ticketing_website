@@ -126,3 +126,56 @@ export interface TicketStats {
   past: number;
   totalSpent: number;
 }
+
+export interface ApiUserTicket {
+  id: string;
+  ticket_number: string;
+  total_amount: number;
+  payment_gateway: string;
+  status: 'active' | 'used' | 'cancelled' | 'expired';
+  purchase_date: string;
+  transaction_id: string;
+  event: {
+    id: string;
+    title: string;
+    banner_image: string;
+    venue_name: string;
+    address: string;
+    start_date: string;
+    timezone: string;
+    organizer_id: string;
+  };
+  tier: {
+    id: string;
+    tier_name: string;
+  };
+  tier_id: string; 
+}
+
+export interface UserTicketsApiResponse {
+  tickets: ApiUserTicket[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+  };
+}
+
+export interface ApiSingleTicketResponse {
+  success: boolean;
+  message: string;
+  data: ApiUserTicket;
+  timestamp: string;
+  request_id?: string;
+}
+
+export interface ApiTierResponse {
+  success: boolean;
+  message: string;
+  data: ApiTicketItem[];
+  timestamp: string;
+  request_id?: string;
+}
+
+
+
