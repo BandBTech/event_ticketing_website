@@ -354,10 +354,11 @@
       "securityDesc": "Password and authentication",
       "notifications": "Notifications",
       "notificationsDesc": "Email and push notifications",
-      "billing": "Billing",
+      "billing": "Transactions",
       "billingDesc": "Manage your payment methods",
       "tickets": "My Tickets",
-      "ticketsDesc": "View your event tickets"
+      "ticketsDesc": "View your event tickets",
+      "transactions": "Transactions"
     }
   },
   "about": {

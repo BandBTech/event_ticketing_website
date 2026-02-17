@@ -10,7 +10,7 @@ export interface Event {
   categories: EventCategory[];
   ticketTypes: TicketType[];
   status: EventStatus;
-  organizerId: string;
+  organizer: Organizer;
   maxTicketsPerOrder: number;
   allowReEntry: boolean;
   createdAt: string;
@@ -21,6 +21,11 @@ export interface Event {
 
 }
 
+export interface Organizer{
+ id: string;
+ business_name: string;
+ business_logo: string; 
+}
 
 export interface Venue {
   id: string;

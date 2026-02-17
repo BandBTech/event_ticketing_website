@@ -42,7 +42,7 @@ export default function BillingPage() {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<
     "methods" | "transactions" | "invoices"
-  >("methods");
+  >("transactions");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -150,7 +150,7 @@ export default function BillingPage() {
         <div className="space-y-6">
           {/* Tabs */}
           <div className="flex gap-4 mb-6 border-b">
-            {(["methods", "transactions", "invoices"] as const).map((tab) => (
+            {([ "transactions" /*, "invoices", "methods" */] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -160,7 +160,7 @@ export default function BillingPage() {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {tab === "methods" ? "Payment Methods" : tab}
+                {tab === "transactions" ? "transactions" : tab}
               </button>
             ))}
           </div>
@@ -174,14 +174,14 @@ export default function BillingPage() {
           ) : (
             <>
               {/* Payment Methods Tab */}
-              {activeTab === "methods" && (
+              {/* {activeTab === "methods" && (
                 <div>
                   <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-semibold">{t('billing.paymentMethods', 'Payment Methods')}</h2>
                     {/* <Button onClick={() => setShowAddPaymentDialog(true)}>
                       <Plus className="h-4 w-4 mr-2" />
                       Add Method
-                    </Button> */}
+                    </Button> 
                   </div>
 
                   <div className="grid gap-4">
@@ -236,7 +236,7 @@ export default function BillingPage() {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Transactions Tab */}
               {activeTab === "transactions" && (

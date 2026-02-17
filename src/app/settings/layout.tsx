@@ -44,7 +44,7 @@ export default function SettingsLayout({
     },
     {
       href: '/settings/billing',
-      label: t('settings.menu.billing', 'Billing'),
+      label: t('settings.menu.transactions', 'Billing'),
       icon: CreditCardIcon,
       description: t('settings.menu.billingDesc', 'Manage your payment methods'),
     },

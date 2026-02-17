@@ -50,7 +50,11 @@ export const mockEvents: Event[] = [
     ],
     status: 'Completed' as EventStatus,
     sales_status: 'active',
-    organizerId: 'org1',
+    organizer:{
+      id: 'Org1',
+      business_name: 'OrgName',
+      business_logo: 'OrgLogo',
+    } ,
     maxTicketsPerOrder: 10,
     allowReEntry: true,
     createdAt: '2024-12-01T00:00:00Z',

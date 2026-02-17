@@ -238,7 +238,8 @@
       "billing": "Fatturazione",
       "billingDesc": "Gestisci i tuoi metodi di pagamento",
       "ticketsDesc": "Visualizza i biglietti per i tuoi eventi",
-      "tickets": "I miei biglietti"
+      "tickets": "I miei biglietti",
+      "transactions": "Transazioni"
     }
   },
   "about": {

@@ -42,6 +42,12 @@ interface ApiEventTier {
   is_active: boolean;
 }
 
+interface ApiOrganizer{
+  id: string;
+  business_name: string;
+  business_logo_url: string;
+}
+
 interface ApiEvent {
  id: string;
   title: string;
@@ -54,7 +60,7 @@ interface ApiEvent {
   end_date: string;
   category: string;
   status: string;
-  organizer_id?: string;
+  organizer: ApiOrganizer;
   capacity: number;
   created_at: string;
   updated_at?: string;
@@ -70,7 +76,7 @@ interface ApiEvent {
 interface ApiEventsResponse {
   success: boolean;
   message: string;
- 
+
     events: ApiEvent[];
     pagination: {
       has_next: boolean;
@@ -163,7 +169,15 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
     })),
     ticketTypes: (apiEvent.tiers || []).map(mapTier),
     status: mapStatus(apiEvent.status),
-    organizerId: apiEvent.organizer_id || 'unknown',
+    organizer: apiEvent.organizer? {
+      id: apiEvent.organizer.id,
+      business_name: apiEvent.organizer.business_name,
+      business_logo: apiEvent.organizer.business_logo_url,
+    }:{
+      id: 'default',
+      business_name: 'Organizer',
+      business_logo: '',
+    },
     maxTicketsPerOrder: 10,
     allowReEntry: false,
     available: apiEvent.available || 0,
@@ -188,7 +202,7 @@ export const eventService = {
     if (params.sort) queryParams.append('sort', params.sort);
     
     const response = await api.get<ApiEventsResponse>(`/public/events?${queryParams.toString()}`);
-
+   
   return {
   events: (response.events || []).map(mapEvent),
       pagination: {

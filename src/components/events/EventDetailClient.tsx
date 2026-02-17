@@ -119,7 +119,6 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
       <div className="relative z-10">
         <main className="max-w-7xl mx-auto px-4 py-8">
-
           {/* Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
@@ -128,7 +127,6 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
               {event.title}
             </h2>
             <div className="lg:col-span-2 space-y-6">
-
               {/* Hero Image */}
               <div className="relative w-full aspect-16/10 rounded-2xl overflow-hidden mb-8 shadow-2xl">
                 <Image
@@ -163,7 +161,9 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                       }
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm"
                     >
-                      {isDescriptionExpanded ? t("eventDetails.description.readLess", "Read Less") : t("eventDetails.description.readMore", "Read More")}
+                      {isDescriptionExpanded
+                        ? t("eventDetails.description.readLess", "Read Less")
+                        : t("eventDetails.description.readMore", "Read More")}
                     </button>
                   )}
                 </div>
@@ -177,11 +177,21 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-                      {event.title.charAt(0)}
+                      {event.organizer.business_logo ? (
+                        <img
+                          src={event.organizer.business_logo}
+                          alt={event.organizer.business_logo}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white text-2xl font-bold">
+                          {event.title.charAt(0)}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
-                        Event Organizer
+                        {event.organizer.business_name}
                       </h3>
                       <p className="text-sm text-gray-600">Event organizer</p>
                     </div>
@@ -288,7 +298,11 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                               style: "currency",
                               currency: event.ticketTypes[0].currency,
                               minimumFractionDigits: 0,
-                            }).format(Math.min(...event.ticketTypes.map((t) => t.price)))}
+                            }).format(
+                              Math.min(
+                                ...event.ticketTypes.map((t) => t.price),
+                              ),
+                            )}
                           </p>
                         </div>
                       )}
@@ -369,7 +383,10 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   </div>
                   <div className="pt-4 border-t border-gray-200">
                     <h3 className="font-semibold text-gray-900 mb-3">
-                      {t("common.acceptedPaymentMethods", "Accepted Payment Methods")}
+                      {t(
+                        "common.acceptedPaymentMethods",
+                        "Accepted Payment Methods",
+                      )}
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       <Image

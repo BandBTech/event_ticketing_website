@@ -240,7 +240,8 @@
       "billing": "請求する",
       "billingDesc": "支払い方法を管理する",
       "ticketsDesc": "イベントチケットを表示する",
-      "tickets": "私のチケット"
+      "tickets": "私のチケット",
+      "transactions": "トランザクション"
     }
   },
   "about": {
