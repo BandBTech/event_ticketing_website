@@ -166,7 +166,7 @@ export function EventCard({ event, className }: EventCardProps) {
                 getEventStatusStyles(event.status),
               )}
             >
-              {event.status?.replace("_", " ") || "DRAFT"}
+              {event.status?.replace("_", " ")}
             </div>
           </div>
 

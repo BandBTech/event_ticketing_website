@@ -42,14 +42,14 @@ interface ApiEventTier {
   is_active: boolean;
 }
 
-interface ApiOrganizer{
+interface ApiOrganizer {
   id: string;
   business_name: string;
   business_logo_url: string;
 }
 
 interface ApiEvent {
- id: string;
+  id: string;
   title: string;
   description: string;
   banner_image: string;
@@ -77,24 +77,24 @@ interface ApiEventsResponse {
   success: boolean;
   message: string;
 
-    events: ApiEvent[];
-    pagination: {
-      has_next: boolean;
-      has_prev: boolean;
-      limit: number;
-      page: number;
-      total: number;
-      total_pages: number;
-    };
-  };
-
-interface ApiUpcomingEventsResponse{
   events: ApiEvent[];
-    current_page: number;
+  pagination: {
+    has_next: boolean;
+    has_prev: boolean;
     limit: number;
-    total_items: number;
+    page: number;
+    total: number;
     total_pages: number;
- 
+  };
+};
+
+interface ApiUpcomingEventsResponse {
+  events: ApiEvent[];
+  current_page: number;
+  limit: number;
+  total_items: number;
+  total_pages: number;
+
 }
 
 const mapStatus = (status: string): EventStatus => {
@@ -106,14 +106,15 @@ const mapStatus = (status: string): EventStatus => {
     'sold_out': 'Sold Out',
     'closed': 'Closed',
     'cancelled': 'Cancelled',
-    'held': 'Sale on Hold'
+    'held': 'Sale on Hold',
+    'approved': 'Approved',
   };
   return statusMap[status.toLowerCase()];
 };
 
 const parseCategoryString = (categoryStr: string): string[] => {
   if (!categoryStr) return [];
-  
+
   try {
     const cleanStr = categoryStr.replace(/[{}"]/g, '');
     return cleanStr.split(',').filter(cat => cat.trim() !== '').map(cat => cat.trim());
@@ -134,17 +135,17 @@ const mapTier = (tier: ApiEventTier): TicketType => ({
   sales_end: tier.sales_end,
   available: tier.available,
   isActive: tier.is_active ?? true,
-  
+
 });
 
 const mapEvent = (apiEvent: ApiEvent): Event => {
   // Parse category string to array
   const categories = parseCategoryString(apiEvent.category);
-  
+
   // Use address if location is empty
   const location = apiEvent.location || apiEvent.address || 'Unknown Location';
   const city = location.split(',')[0]?.trim() || 'Unknown City';
-  
+
   return {
     id: apiEvent.id,
     title: apiEvent.title,
@@ -169,11 +170,11 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
     })),
     ticketTypes: (apiEvent.tiers || []).map(mapTier),
     status: mapStatus(apiEvent.status),
-    organizer: apiEvent.organizer? {
+    organizer: apiEvent.organizer ? {
       id: apiEvent.organizer.id,
       business_name: apiEvent.organizer.business_name,
       business_logo: apiEvent.organizer.business_logo_url,
-    }:{
+    } : {
       id: 'default',
       business_name: 'Organizer',
       business_logo: '',
@@ -183,8 +184,8 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
     available: apiEvent.available || 0,
     createdAt: apiEvent.created_at,
     updatedAt: apiEvent.updated_at || apiEvent.created_at,
-    sales_status: apiEvent.sales_status || 'active', 
-  is_cancelled: apiEvent.is_cancelled || false,  
+    sales_status: apiEvent.sales_status || 'active',
+    is_cancelled: apiEvent.is_cancelled || false,
   };
 };
 export const eventService = {
@@ -200,17 +201,16 @@ export const eventService = {
     if (params.min_price) queryParams.append('min_price', params.min_price.toString());
     if (params.max_price) queryParams.append('max_price', params.max_price.toString());
     if (params.sort) queryParams.append('sort', params.sort);
-    
+
     const response = await api.get<ApiEventsResponse>(`/public/events?${queryParams.toString()}`);
-   
-  return {
-  events: (response.events || []).map(mapEvent),
+    return {
+      events: (response.events || []).map(mapEvent),
       pagination: {
         total: response.pagination.total,
         page: response.pagination.page,
         limit: response.pagination.limit,
         totalPages: response.pagination.total_pages,
-    },
+      },
     };
   },
 
@@ -220,9 +220,9 @@ export const eventService = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
 
     const response = await api.get<ApiEventsResponse>(`/public/events/featured?${queryParams.toString()}`);
-    
+
     const responseData = response as unknown as { events: ApiEvent[] };
-    
+
     return (responseData.events || []).map(mapEvent);
   },
 
@@ -231,9 +231,9 @@ export const eventService = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
 
     const response = await api.get<{ categories: ApiCategory[] }>(`/public/categories?${queryParams.toString()}`);
-    
+
     const responseData = response as unknown as { categories: ApiCategory[] };
-    
+
     return (responseData.categories || []).map(cat => ({
       id: cat.id,
       name: cat.name,
@@ -247,13 +247,13 @@ export const eventService = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
 
     const response = await api.get<{ events: ApiEvent[] }>(`/public/categories/${category}?${queryParams.toString()}`);
-    
+
     const responseData = response as unknown as { events: ApiEvent[] };
-    
+
     return (responseData.events || []).map(mapEvent);
   },
 
-    getEventById: async (id: string): Promise<Event> => {
+  getEventById: async (id: string): Promise<Event> => {
     try {
       const response = await api.get<ApiEvent>(`/public/events/${id}`);
 
@@ -264,9 +264,9 @@ export const eventService = {
     }
   },
 
-  getUpcomingEvents: async(params: PublicEventsParams = {}) => {
+  getUpcomingEvents: async (params: PublicEventsParams = {}) => {
     const queryParams = new URLSearchParams();
-    if(params.page) queryParams.append('page', params.page.toString());
+    if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.search) queryParams.append('search', params.search);
     if (params.location) queryParams.append('location', params.location);
@@ -276,9 +276,9 @@ export const eventService = {
     if (params.max_price) queryParams.append('max_price', params.max_price.toString());
     if (params.sort) queryParams.append('sort', params.sort);
 
-        const response = await api.get<ApiUpcomingEventsResponse>(`/public/events/upcoming?${queryParams.toString()}`);
+    const response = await api.get<ApiUpcomingEventsResponse>(`/public/events/upcoming?${queryParams.toString()}`);
 
-        return {
+    return {
       events: (response.events || []).map(mapEvent),
       pagination: {
         total: response.total_items || 0,
