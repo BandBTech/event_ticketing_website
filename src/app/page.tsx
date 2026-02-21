@@ -298,8 +298,6 @@ export default function HomePage() {
     });
   const upcomingEventsArray = upcomingEvents?.events || [];
   const upcomingPagination = upcomingEvents?.pagination;
-  console.log("Number of upcoming events:", upcomingEventsArray.length);
-  console.log("First 3 events:", upcomingEventsArray.slice(0, 3));
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -353,10 +351,12 @@ export default function HomePage() {
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex flex-col sm:flex-row items-baseline gap-4">
                       <h1 className="text-3xl font-bold text-gray-900 text-left">
-                        {t("sections.upcomingEvents.searchResults")} {" "}
-                     </h1>
-                       <span className="text-sm">{eventsData?.pagination.total || 0} {t("sections.upcomingEvents.eventsFound")}</span>
-                     
+                        {t("sections.upcomingEvents.searchResults")}{" "}
+                      </h1>
+                      <span className="text-sm">
+                        {eventsData?.pagination.total || 0}{" "}
+                        {t("sections.upcomingEvents.eventsFound")}
+                      </span>
                     </div>
 
                     {(searchQuery || selectedCategory) && (
@@ -488,7 +488,7 @@ export default function HomePage() {
                     "px-4 py-2 cursor-pointer transition-all duration-300",
                     "glass border text-gray-700 hover:bg-white/90",
                     selectedCategory === category.name &&
-                      "bg-primary/20 border-blue-400/50 text-primary"
+                      "bg-primary/20 border-blue-400/50 text-primary",
                   )}
                   onClick={() => handleCategorySelect(category.name)}
                 >
