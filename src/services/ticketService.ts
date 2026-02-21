@@ -5,6 +5,10 @@ import {
   UserTicketsApiResponse,
   ApiSingleTicketResponse,
   ApiUserTicket,
+  TicketItem,
+  EventTicketsApiResponse,
+  TransactionDetailApiResponse,
+  ViewTicketDetail,
 } from "@/types/ticket";
 
 export interface PurchaseTierPayload {
@@ -113,25 +117,28 @@ export const ticketService = {
     });
 
     const rawTickets = response?.tickets || [];
-    const detailedTicketsPromises = rawTickets.map(async (t: ApiUserTicket) => {
-      const detailResponse = await api.get(`/user/tickets/${t.id}`, {
-        requiresAuth: true,
-      });
+    // const detailedTicketsPromises = rawTickets.map(async (t: ApiUserTicket) => {
+    //   const detailResponse = await api.get(`/user/tickets/${t.id}`, {
+    //     requiresAuth: true,
+    //   });
 
-      if (
-        detailResponse &&
-        typeof detailResponse === "object" &&
-        "data" in detailResponse
-      ) {
-        return (detailResponse as ApiSingleTicketResponse).data;
-      }
-      return detailResponse as ApiUserTicket;
-    });
+    //   if (
+    //     detailResponse &&
+    //     typeof detailResponse === "object" &&
+    //     "data" in detailResponse
+    //   ) {
+    //     return (detailResponse as ApiSingleTicketResponse).data;
+    //   }
+    //   return detailResponse as ApiUserTicket;
+    // });
 
-    const detailedTickets = await Promise.all(detailedTicketsPromises);
+    // const detailedTickets = await Promise.all(detailedTicketsPromises);
 
-    return detailedTickets.map((t: ApiUserTicket) => ({
+    return rawTickets.map((t: ApiUserTicket) => ({
       orderId: t.id,
+      ticketCount: t.ticket_count,
+      transactionStatus: t.transaction_status,
+      purchaseDate: t.created_at,
       event: {
         id: t.event.id,
         title: t.event.title,
@@ -139,6 +146,7 @@ export const ticketService = {
         venueName: t.event.venue_name,
         address: t.event.address,
         startDate: t.event.start_date,
+        endDate: t.event.end_date,
         timezone: t.event.timezone,
         organizer: {
           id: t.event.organizer_id,
@@ -146,11 +154,16 @@ export const ticketService = {
           logo: undefined,
         },
       },
+
       tickets: [
         {
           ticketId: t.id,
           ticketNumber: t.ticket_number,
-          tierName: t.tier?.tier_name,
+          //tierName: t.tier?.tier_name,
+          tierName: {
+            id: t.tierName.id,
+            name: t.tierName.name,
+          },
           price: t.total_amount,
           qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,
           checkedIn: t.status === "used",
@@ -158,7 +171,6 @@ export const ticketService = {
       ],
       totalAmount: t.total_amount,
       currency: "NPR",
-      purchaseDate: t.purchase_date,
     }));
   },
 
@@ -173,6 +185,61 @@ export const ticketService = {
     // Extract the data object from the response
     const ticketData = (response as { data?: ApiUserTicket })?.data || response;
     return ticketData;
+  },
+
+  getEventTickets: async (eventId: string): Promise<TicketItem[]> => {
+    const response = await api.get<EventTicketsApiResponse>(
+      `/user/events/${eventId}/tickets`,
+      { requiresAuth: true },
+    );
+
+    // Map ApiTicketItem -> TicketItem
+    return response.data.tickets.map((t) => ({
+      ticketId: t.ticket_id,
+      ticketNumber: t.ticket_number,
+      tierName: { id: t.tier.id, name: t.tier.name },
+      price: t.price,
+      qrData: t.qr_data,
+      checkedIn: t.checked_in,
+    }));
+  },
+
+  getTransactionById: async (
+    id: string,
+  ): Promise<ViewTicketDetail> => {
+    const response = await api.get<TransactionDetailApiResponse>(
+      `/user/tickets/${id}`,
+      { requiresAuth: true },
+    );
+
+    const d = response?.data ?? response;
+
+    return {
+      orderId: d.id,
+      ticketCount: d.tickets.length,
+      transactionStatus: d.transaction_status,
+      purchaseDate: d.created_at,
+      event: {
+        id: d.event.id,
+        title: d.event.title,
+        imageUrl: d.event.banner_image,
+        venueName: d.event.venue_name,
+        address: d.event.address,
+        startDate: d.event.start_date,
+        endDate: d.event.end_date,
+      },
+      tickets: d.tickets.map((t) => ({
+        ticketId: t.id,
+        ticketNumber: t.ticket_number,
+        tierName: { 
+        id: t.tier.id, 
+        name: t.tier.name 
+      },
+        qrData: t.qr_data,
+        checkedIn: false,
+        
+      })),
+    };
   },
 };
 
@@ -189,15 +256,22 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
       startDate: apiResponse.event.start_date,
       timezone: apiResponse.event.timezone,
       organizer: apiResponse.event.organizer,
+      endDate: apiResponse.event.end_date,
     },
     tickets: apiResponse.tickets.map((t) => ({
       ticketId: t.ticket_id,
       ticketNumber: t.ticket_number,
-      tierName: t.tier_name,
+      //tierName: t.tier_name,
+      tierName: {
+        id: t.tier.id,
+        name: t.tier.name,
+      },
       price: t.price,
       qrData: t.qr_data,
       checkedIn: t.checked_in,
     })),
+    ticketCount: apiResponse.ticket_count,
+    transactionStatus: apiResponse.transaction_status,
     totalAmount: apiResponse.total_amount,
     currency: apiResponse.currency,
     purchaseDate: apiResponse.purchase_date,

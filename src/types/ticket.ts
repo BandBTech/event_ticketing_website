@@ -4,7 +4,11 @@ export type TicketStatus = 'active' | 'used' | 'cancelled' | 'expired' | 'transf
 export interface ApiTicketItem {
   ticket_id: string;
   ticket_number: string;
-  tier_name: string;
+  //tier_name: string;
+  tier:{
+    id: string;
+    name: string;
+  };
   price: number;
   qr_data: string; // base64 encoded QR data
   checked_in: boolean;
@@ -20,12 +24,16 @@ export interface ApiTicketResponse {
     address: string;
     start_date: string;
     timezone?: string;
+    end_date: string;
+   
     organizer?: {
       id: string;
       name: string;
       logo?: string;
     };
   };
+  ticket_count: number;
+  transaction_status: string;
   tickets: ApiTicketItem[];
   total_amount: number;
   currency: string;
@@ -43,7 +51,10 @@ export interface ApiTicketResponse {
 export interface TicketItem {
   ticketId: string;
   ticketNumber: string;
-  tierName: string;
+  tierName:{
+    id: string;
+    name: string;
+  };
   price: number;
   qrData: string;
   checkedIn: boolean;
@@ -51,6 +62,8 @@ export interface TicketItem {
 
 export interface ViewTicketDetails {
   orderId: string;
+  ticketCount: number;
+  transactionStatus: string;
   event: {
     id: string;
     title: string;
@@ -58,6 +71,7 @@ export interface ViewTicketDetails {
     venueName: string;
     address: string;
     startDate: string;
+    endDate: string;
     timezone?: string;
     organizer?: {
       id: string;
@@ -73,6 +87,7 @@ export interface ViewTicketDetails {
     name: string;
     logoUrl?: string;
   };
+  
 }
 
 export interface Ticket {
@@ -130,11 +145,12 @@ export interface TicketStats {
 export interface ApiUserTicket {
   id: string;
   ticket_number: string;
+  ticket_count: number;
   total_amount: number;
   payment_gateway: string;
   status: 'active' | 'used' | 'cancelled' | 'expired';
-  purchase_date: string;
-  transaction_id: string;
+  created_at: string;
+  transaction_status: string;
   event: {
     id: string;
     title: string;
@@ -142,14 +158,16 @@ export interface ApiUserTicket {
     venue_name: string;
     address: string;
     start_date: string;
+    end_date: string;
     timezone: string;
     organizer_id: string;
-  };
-  tier: {
+  }; 
+  tickets: TicketItem[];
+    tierName:{
     id: string;
-    tier_name: string;
+    name: string;
   };
-  tier_id: string; 
+  
 }
 
 export interface UserTicketsApiResponse {
@@ -177,5 +195,88 @@ export interface ApiTierResponse {
   request_id?: string;
 }
 
+export interface PaginatedUserTickets {
+  tickets: ViewTicketDetails[];
+  pagination: {
+    has_next: boolean;
+    has_prev: boolean;
+    limit: number;
+    page: number;
+    total: number;
+    total_pages: number;
+  };
+}
 
+export interface EventTicketsApiResponse {
+  success: boolean;
+  data: {
+    tickets: ApiTicketItem[]; // The snake_case items from your JSON
+    pagination: {
+    has_next: boolean;
+    has_prev: boolean;
+    limit: number;
+    page: number;
+    total: number;
+    total_pages: number;
+  };
+  };
+}
 
+export interface ApiTransaction {
+  id: string;
+  event: {
+    id: string;
+    title: string;
+    banner_image: string;
+    venue_name: string;
+    address: string;
+    start_date: string;
+    end_date: string;
+    status: string;
+    timezone?: string;
+  };
+  tickets: Array<{
+    id: string;
+    ticket_number: string;
+    tier: {
+      id: string;
+      name: string;
+    };
+    qr_data: string;
+    
+  }>;
+  transaction_status: string;
+  created_at: string;
+  updated_at: string;
+}
+export interface TransactionDetailApiResponse {
+  success: boolean;
+  message: string;
+  data: ApiTransaction;
+  timestamp: string;
+}
+
+export interface ViewTicketDetail {
+  orderId: string;
+  ticketCount: number;
+  transactionStatus: string;
+  purchaseDate: string;
+  event: {
+    id: string;
+    title: string;
+    imageUrl: string;
+    venueName: string;
+    address: string;
+    startDate: string;
+    endDate: string;
+  };
+  tickets: TicketItems[];
+}
+
+export interface TicketItems {
+  ticketId: string;
+  ticketNumber: string;
+  tierName: { id: string; name: string };
+  qrData: string;
+  checkedIn: boolean;
+}

@@ -74,4 +74,26 @@ export const useUserTickets = () => {
     queryKey: ['tickets', 'user-purchases'],
     queryFn: ()=> ticketService.getUserTickets(),
   })
-}
+};
+
+export const useEventTickets = (eventId: string | null) => { 
+  return useQuery({
+    queryKey: ['event-tickets', eventId],
+    queryFn: () => {
+      if (!eventId) throw new Error("Event ID is required");
+      return ticketService.getEventTickets(eventId);
+    },
+    enabled: !!eventId, 
+  });
+};
+
+export const useTransactionDetails = (transactionId?: string) => {
+  return useQuery({
+    queryKey: ["transaction", transactionId],
+    queryFn: () => {
+      if (!transactionId) throw new Error("No transaction ID provided");
+      return ticketService.getTransactionById(transactionId);
+    },
+    enabled: !!transactionId,
+  });
+};
