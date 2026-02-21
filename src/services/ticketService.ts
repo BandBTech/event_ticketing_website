@@ -161,8 +161,8 @@ export const ticketService = {
           ticketNumber: t.ticket_number,
           //tierName: t.tier?.tier_name,
           tierName: {
-            id: t.tierName.id,
-            name: t.tierName.name,
+            id: t.tierName?.id,
+            name: t.tierName?.name,
           },
           price: t.total_amount,
           qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,

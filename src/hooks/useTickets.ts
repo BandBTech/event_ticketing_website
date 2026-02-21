@@ -91,7 +91,7 @@ export const useTransactionDetails = (transactionId?: string) => {
   return useQuery({
     queryKey: ["transaction", transactionId],
     queryFn: () => {
-      if (!transactionId) throw new Error("No transaction ID provided");
+      if (!transactionId) return null;
       return ticketService.getTransactionById(transactionId);
     },
     enabled: !!transactionId,

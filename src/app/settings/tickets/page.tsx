@@ -172,6 +172,12 @@ export default function TicketsPage() {
     console.log("selectedOrderId:", selectedOrderId);
     console.log("detailTickets:", detailTickets);
   }, [selectedOrderId, detailTickets]);
+
+  useEffect(() => {
+  if (error) console.error("User Tickets Error:", error);
+  if (isDetailError) console.error("Detail Tickets Error:", isDetailError);
+}, [error, isDetailError]);
+
   if (error) {
     return (
       <div className="space-y-4">
