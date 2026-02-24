@@ -4,11 +4,11 @@ export type TicketStatus = 'active' | 'used' | 'cancelled' | 'expired' | 'transf
 export interface ApiTicketItem {
   ticket_id: string;
   ticket_number: string;
-  //tier_name: string;
-  tier:{
-    id: string;
-    name: string;
-  };
+  tier_name: string;
+  // tier:{
+  //   id: string;
+  //   name: string;
+  // };
   price: number;
   qr_data: string; // base64 encoded QR data
   checked_in: boolean;
@@ -25,11 +25,13 @@ export interface ApiTicketResponse {
     start_date: string;
     timezone?: string;
     end_date: string;
-   
+
     organizer?: {
       id: string;
-      name: string;
-      logo?: string;
+      // name: string;
+      // logo?: string;
+      business_logo_url?: string;
+      business_name?: string;
     };
   };
   ticket_count: number;
@@ -51,10 +53,11 @@ export interface ApiTicketResponse {
 export interface TicketItem {
   ticketId: string;
   ticketNumber: string;
-  tierName:{
-    id: string;
-    name: string;
-  };
+  tierName: string;
+  // tierName:{
+  //   id: string;
+  //   name: string;
+  // };
   price: number;
   qrData: string;
   checkedIn: boolean;
@@ -75,8 +78,10 @@ export interface ViewTicketDetails {
     timezone?: string;
     organizer?: {
       id: string;
-      name: string;
-      logo?: string;
+      // name: string;
+      // logo?: string;
+      business_logo_url?: string;
+      business_name?: string;
     };
   };
   tickets: TicketItem[];
@@ -87,7 +92,7 @@ export interface ViewTicketDetails {
     name: string;
     logoUrl?: string;
   };
-  
+
 }
 
 export interface Ticket {
@@ -161,13 +166,9 @@ export interface ApiUserTicket {
     end_date: string;
     timezone: string;
     organizer_id: string;
-  }; 
-  tickets: TicketItem[];
-    tierName:{
-    id: string;
-    name: string;
   };
-  
+  tickets: TicketItem[];
+  tier_name: string;
 }
 
 export interface UserTicketsApiResponse {
@@ -212,13 +213,13 @@ export interface EventTicketsApiResponse {
   data: {
     tickets: ApiTicketItem[]; // The snake_case items from your JSON
     pagination: {
-    has_next: boolean;
-    has_prev: boolean;
-    limit: number;
-    page: number;
-    total: number;
-    total_pages: number;
-  };
+      has_next: boolean;
+      has_prev: boolean;
+      limit: number;
+      page: number;
+      total: number;
+      total_pages: number;
+    };
   };
 }
 
@@ -243,7 +244,7 @@ export interface ApiTransaction {
       name: string;
     };
     qr_data: string;
-    
+
   }>;
   transaction_status: string;
   created_at: string;

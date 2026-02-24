@@ -64,7 +64,6 @@ function SingleTicketCard({
     <div className="relative print:break-inside-avoid print:mb-4">
       {/* Main Ticket Container - White Background */}
       <div className="relative max-w-xl mx-auto bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 print:shadow-none print:border">
-
         {/* Top Section - Event Banner (Compact) */}
         <div className="relative">
           {event.imageUrl ? (
@@ -82,8 +81,8 @@ function SingleTicketCard({
               </div>
             </div>
           ) : (
-              <div className="h-24 bg-primary flex items-center justify-center p-4">
-                <h2 className="text-lg font-bold text-primary-foreground text-center line-clamp-1">
+            <div className="h-24 bg-primary flex items-center justify-center p-4">
+              <h2 className="text-lg font-bold text-primary-foreground text-center line-clamp-1">
                 {event.title}
               </h2>
             </div>
@@ -93,7 +92,9 @@ function SingleTicketCard({
           <div className="absolute top-2 right-2 bg-primary shadow-md rounded-full px-3 py-1">
             <div className="flex items-center gap-1.5">
               <Ticket className="w-3 h-3 text-primary-foreground" />
-              <span className="text-xs font-bold text-primary-foreground uppercase tracking-wide">{ticket.tierName.name}</span>
+              <span className="text-xs font-bold text-primary-foreground uppercase tracking-wide">
+                {ticket.tierName}
+              </span>
             </div>
           </div>
         </div>
@@ -129,9 +130,7 @@ function SingleTicketCard({
                     {t("ticketView.dateTime", "Date & Time")}
                   </p>
                   <div className="flex gap-2">
-                    <p className="text-sm font-semibold">
-                      {dateTimeString}
-                    </p>
+                    <p className="text-sm font-semibold">{dateTimeString}</p>
                   </div>
                 </div>
               </div>
@@ -144,12 +143,8 @@ function SingleTicketCard({
                     {t("ticketView.venue", "Venue")}
                   </p>
                   <div className="flex gap-2">
-                    <p className="text-sm font-semibold">
-                      {event.venueName},
-                    </p>
-                    <p className="text-sm text-black/60">
-                      {event.address}
-                    </p>
+                    <p className="text-sm font-semibold">{event.venueName},</p>
+                    <p className="text-sm text-black/60">{event.address}</p>
                   </div>
                 </div>
               </div>
@@ -160,20 +155,20 @@ function SingleTicketCard({
           <div className="pt-3 px-4 flex justify-around gap-4">
             {/* Organizer */}
             {event.organizer && (
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-start gap-1">
                 <span className="text-[10px] text-gray-400 uppercase tracking-wider">
                   {t("ticketView.organizedBy", "Organized by")}:
                 </span>
                 <div className="flex items-center gap-1.5">
-                  {event.organizer.logo && (
+                  {event.organizer.business_logo_url && (
                     <img
-                      src={event.organizer.logo}
-                      alt={event.organizer.name}
+                      src={event.organizer.business_logo_url}
+                      alt={event.organizer.business_name}
                       className="h-6 max-w-[32px] object-contain"
                     />
                   )}
                   <span className="text-xs text-gray-600 font-medium line-clamp-1">
-                    {event.organizer.name}
+                    {event.organizer.business_name}
                   </span>
                 </div>
               </div>
@@ -181,7 +176,7 @@ function SingleTicketCard({
 
             {/* Supported By (Company) */}
             {company && (
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-start gap-1">
                 <span className="text-[10px] text-gray-400 uppercase tracking-wider">
                   {t("ticketView.supportedBy", "Supported by")}:
                 </span>
