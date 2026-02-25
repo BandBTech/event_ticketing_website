@@ -6,12 +6,15 @@ import { usePathname } from 'next/navigation';
 import { ArrowRightIcon, EnvelopeSimpleIcon, FacebookLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, MapPinIcon, PhoneIcon, TicketIcon, TwitterLogoIcon } from '@phosphor-icons/react';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useCompanyInfo } from '@/hooks/useCompany';
 
 export function Footer() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const pathname = usePathname();
   const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password', '/verify-otp'];
+
+  const {data: company, isLoading} = useCompanyInfo();
 
   if (authPaths.some(path => pathname?.startsWith(path))) {
     return null;
@@ -44,10 +47,10 @@ export function Footer() {
   };
 
   const socialLinks = [
-    { name: 'Facebook', icon: FacebookLogoIcon, href: '#facebook' },
-    { name: 'Twitter', icon: TwitterLogoIcon, href: '#twitter' },
-    { name: 'Instagram', icon: InstagramLogoIcon, href: '#instagram' },
-    { name: 'LinkedIn', icon: LinkedinLogoIcon, href: '#linkedin' },
+    { name: 'Facebook', icon: FacebookLogoIcon, href: company?.facebook_url},
+    { name: 'Twitter', icon: TwitterLogoIcon, href: company?.twitter_url },
+    { name: 'Instagram', icon: InstagramLogoIcon, href: company?.instagram_url},
+    { name: 'LinkedIn', icon: LinkedinLogoIcon, href: company?.linkedin_url},
   ];
 
   return (
@@ -62,28 +65,36 @@ export function Footer() {
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/10 border border-blue-600/20">
                   <TicketIcon size={24} className="text-blue-600" />
                   <span className="text-xl font-bold text-gray-900 font-poppins">
-                    Timro-Ticket
+                    {company?.name}
                   </span>
                 </div>
               </div>
               
               <p className="text-gray-600 leading-relaxed">
-                {t('footer.description')}
+                {/* {t('footer.description')} */}{company?.description}
               </p>
 
               {/* Contact Info */}
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                   <EnvelopeSimpleIcon size={16} className="text-blue-500" />
-                  <span>{t('footer.contact.email')}</span>
+                  <span>{company?.email}
+                    {/* {t('footer.contact.email')} */}
+                    </span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                   <PhoneIcon size={16} className="text-blue-500" />
-                  <span>{t('footer.contact.phone')}</span>
+                  <span>
+                    {company?.phone}
+                    {/* {t('footer.contact.phone')} */}
+                    </span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                   <MapPinIcon size={16} className="text-blue-500" />
-                  <span>{t('footer.contact.address')}</span>
+                  <span>
+                    {company?.address}
+                    {/* {t('footer.contact.address')} */}
+                    </span>
                 </div>
               </div>
 
