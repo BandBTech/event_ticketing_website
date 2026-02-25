@@ -553,7 +553,12 @@
     "successMessage": "Your tickets have been booked successfully. A confirmation email has been sent to you.",
     "ticketSentTo": "Your ticket has been sent to",
     "checkMyTickets": "You can also view your tickets from \"My Tickets\" page.",
-    "ticket": "ticket(s)"
+    "ticket": "ticket(s)",
+    "selectPaymentGateway": "Please select a payment method",
+    "selectAtLeastOne": "Please select at least one ticket",
+    "selectPaymentMethod": "Select Payment Method",
+    "choosePaymentGateway": "Choose your preferred payment method",
+    "noGatewaysAvailable": "No payment methods available"
   },
   "ticketView": {
     "title": "Digital Ticket",
