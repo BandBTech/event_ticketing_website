@@ -438,7 +438,12 @@
     "viewTicket": "Visualizza biglietto",
     "successTitle": "Acquisto riuscito!",
     "successMessage": "I tuoi biglietti sono stati prenotati con successo. \nTi è stata inviata un'e-mail di conferma.",
-    "ticket": "biglietto(i)"
+    "ticket": "biglietto(i)",
+    "selectPaymentGateway": "Seleziona un metodo di pagamento",
+    "selectAtLeastOne": "Seleziona almeno un biglietto",
+    "selectPaymentMethod": "Seleziona il metodo di pagamento",
+    "choosePaymentGateway": "Scegli il tuo metodo di pagamento preferito",
+    "noGatewaysAvailable": "Nessun metodo di pagamento disponibile"
   },
   "ticketView": {
     "title": "Biglietto Digitale",

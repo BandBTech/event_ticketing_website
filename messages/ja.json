@@ -440,7 +440,12 @@
     "viewTicket": "チケットを見る",
     "successTitle": "購入成功しました！",
     "successMessage": "チケットは正常に予約されました。\n確認メールが送信されました。",
-    "ticket": "チケット）"
+    "ticket": "チケット）",
+    "selectPaymentGateway": "お支払い方法を選択してください",
+    "selectAtLeastOne": "少なくとも 1 枚のチケットを選択してください",
+    "selectPaymentMethod": "支払い方法を選択してください",
+    "choosePaymentGateway": "ご希望の支払い方法を選択してください",
+    "noGatewaysAvailable": "利用できる支払い方法がありません"
   },
   "ticketView": {
     "title": "デジタルチケット",

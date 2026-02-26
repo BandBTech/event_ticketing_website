@@ -3,12 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import {
-  CalendarIcon,
-  MapPinIcon,
-  HeartIcon,
-  CaretDownIcon,
-} from "@phosphor-icons/react";
+import { CalendarIcon, HeartIcon, CaretDownIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -222,22 +217,38 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                     )}
                   />
                 </button>
-                {showLocationMap && (
-                  <div className="px-6 pb-6">
-                    <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <MapPinIcon size={48} className="text-gray-400" />
-                      <span className="ml-2 text-gray-600">
-                        Map placeholder
-                      </span>
-                    </div>
-                    <div className="mt-4">
-                      <p className="text-gray-700">
-                        {event.venue.address}, {event.venue.city},{" "}
-                        {event.venue.country}
-                      </p>
-                    </div>
-                  </div>
-                )}
+                {showLocationMap &&
+                  (() => {
+                    const isCoord = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
+                      event.venue.address.trim(),
+                    );
+                    const mapQuery = isCoord
+                      ? event.venue.address.trim()
+                      : `${event.venue.name}, ${event.venue.address}, ${event.venue.city}`;
+
+                    return (
+                      <div className="px-6 pb-6">
+                        <div className="w-full h-64 rounded-lg overflow-hidden">
+                          <iframe
+                            title={`${event.venue.name} location`}
+                            src={`https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=15&output=embed`}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                          />
+                        </div>
+                        <div className="mt-4">
+                          <p className="text-gray-700">
+                            {event.venue.address}, {event.venue.city},{" "}
+                            {event.venue.country}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })()}
               </div>
 
               {/* FAQ */}

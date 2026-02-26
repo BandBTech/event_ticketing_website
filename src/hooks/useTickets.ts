@@ -34,10 +34,7 @@ export const useGuestPurchaseMutation = () => {
       } else {
         toast.message(res.message || "Purchase failed", 'error');
       }
-    },
-    onError: (error: ApiError) => {
-      toast.message(error.response?.data?.message || error.message || "Failed to purchase tickets", 'error');
-    },
+    }
   });
 };
 
@@ -62,10 +59,7 @@ export const useUserPurchaseMutation = () => {
       } else {
         toast.message(res.message || "Purchase failed", 'error');
       }
-    },
-    onError: (error: ApiError) => {
-      toast.message(error.response?.data?.message || error.message || "Failed to purchase tickets", 'error');
-    },
+    }
   });
 };
 

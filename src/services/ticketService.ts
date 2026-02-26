@@ -169,11 +169,7 @@ export const ticketService = {
         {
           ticketId: t.id,
           ticketNumber: t.ticket_number,
-          //tierName: t.tier?.tier_name,
-          tierName: {
-            id: t.tierName?.id,
-            name: t.tierName?.name,
-          },
+          tierName: t.tier_name,
           price: t.total_amount,
           qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,
           checkedIn: t.status === "used",
@@ -211,7 +207,7 @@ export const ticketService = {
     return response.data.tickets.map((t) => ({
       ticketId: t.ticket_id,
       ticketNumber: t.ticket_number,
-      tierName: { id: t.tier.id, name: t.tier.name },
+      tierName: t.tier_name,
       price: t.price,
       qrData: t.qr_data,
       checkedIn: t.checked_in,
@@ -245,13 +241,12 @@ export const ticketService = {
       tickets: d.tickets.map((t) => ({
         ticketId: t.id,
         ticketNumber: t.ticket_number,
-        tierName: { 
-        id: t.tier.id, 
-        name: t.tier.name 
-      },
+        tierName: {
+          id: t.tier.id,
+          name: t.tier.name,
+        },
         qrData: t.qr_data,
         checkedIn: false,
-        
       })),
     };
   },
@@ -275,11 +270,11 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
     tickets: apiResponse.tickets.map((t) => ({
       ticketId: t.ticket_id,
       ticketNumber: t.ticket_number,
-      //tierName: t.tier_name,
-      tierName: {
-        id: t.tier.id,
-        name: t.tier.name,
-      },
+      tierName: t.tier_name,
+      // tierName: {
+      //   id: t.tier.id,
+      //   name: t.tier.name,
+      // },
       price: t.price,
       qrData: t.qr_data,
       checkedIn: t.checked_in,
@@ -291,9 +286,9 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
     purchaseDate: apiResponse.purchase_date,
     company: apiResponse.company
       ? {
-          name: apiResponse.company.name,
-          logoUrl: apiResponse.company.logo_url,
-        }
+        name: apiResponse.company.name,
+        logoUrl: apiResponse.company.logo_url,
+      }
       : undefined,
   };
 };

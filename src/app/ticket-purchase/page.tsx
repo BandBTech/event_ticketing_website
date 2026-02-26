@@ -19,6 +19,8 @@ import { GuestPurchasePayload, UserPurchasePayload } from "@/services/ticketServ
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
+import { useGateways } from "@/hooks/usePayments";
+import type { GatewayInfo } from "@/types/payment";
 import { format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -39,6 +41,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { Separator } from "@/components/ui/separator-extended";
 import { useGuestPurchaseMutation, useUserPurchaseMutation } from "@/hooks/useTickets";
+import { CreditCardIcon } from "lucide-react";
 
 // Max total tickets allowed
 const GUEST_MAX_QUANTITY = 6;
@@ -65,14 +68,22 @@ function GuestPurchaseContent() {
 
   const [step, setStep] = useState<1 | 2>(1);
 
-  const { data: eventData, isLoading: isLoadingEvent } = useEventById(eventIdFromUrl || "");
+  const { data: eventData, isLoading: isLoadingEvent } = useEventById(
+    eventIdFromUrl || "",
+  );
   const guestPurchaseMutation = useGuestPurchaseMutation();
   const userPurchaseMutation = useUserPurchaseMutation();
 
-  const isPending = guestPurchaseMutation.isPending || userPurchaseMutation.isPending;
+  const isPending =
+    guestPurchaseMutation.isPending || userPurchaseMutation.isPending;
 
   // Per-tier quantity state: { [tier_id]: quantity }
-  const [tierQuantities, setTierQuantities] = useState<Record<string, number>>({});
+  const [tierQuantities, setTierQuantities] = useState<Record<string, number>>(
+    {},
+  );
+
+  // Payment gateway state
+  const [selectedGateway, setSelectedGateway] = useState<string>("");
 
   // Form for Guest Details (email only)
   const guestForm = useForm<GuestFormData>({
@@ -85,6 +96,12 @@ function GuestPurchaseContent() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const { isAuthenticated } = useAuthStore();
+
+  // Fetch payment gateways based on the event's currency
+  const { data: gateways, isLoading: isLoadingGateways } = useGateways();
+  // const { data: gateways, isLoading: isLoadingGateways } = useGateways({
+  //   currency: eventData?.ticketTypes?.[0]?.currency,
+  // });
 
   const maxQuantity = isAuthenticated ? USER_MAX_QUANTITY : GUEST_MAX_QUANTITY;
 
@@ -134,7 +151,10 @@ function GuestPurchaseContent() {
 
       if (otherTotal + newQty > maxQuantity) {
         toast.error(
-          t("ticketPurchase.maxQuantityReached", `Maximum ${maxQuantity} tickets allowed in total`)
+          t(
+            "ticketPurchase.maxQuantityReached",
+            `Maximum ${maxQuantity} tickets allowed in total`,
+          ),
         );
         return prev;
       }
@@ -147,7 +167,12 @@ function GuestPurchaseContent() {
     if (!eventData) return;
 
     if (totalQuantity === 0) {
-      toast.error(t("ticketPurchase.selectAtLeastOne", "Please select at least one ticket"));
+      toast.error(
+        t(
+          "ticketPurchase.selectAtLeastOne",
+          "Please select at least one ticket",
+        ),
+      );
       return;
     }
 
@@ -159,32 +184,49 @@ function GuestPurchaseContent() {
 
     if (step === 1) {
       if (isAuthenticated) {
-        // Logged-in user purchase - Skip Step 2 and submit directly
-        const userPayload: UserPurchasePayload = {
-          event_id: eventData.id,
-          payment_gateway: "cash",
-          tiers: tiersPayload,
-        };
-        userPurchaseMutation.mutate(userPayload);
+        // Logged-in user: go to Step 2 to select payment gateway
+        setStep(2);
+        window.scrollTo(0, 0);
       } else {
         setStep(2);
         window.scrollTo(0, 0);
       }
     } else {
-      // Step 2: Guest Submit
-      guestForm.handleSubmit((data) => {
-        const guestPayload: GuestPurchasePayload = {
-          first_name: "",
-          last_name: "",
-          email: data.email || "",
-          phone: "",
-          country_code: "",
+      // Step 2: Submit with selected gateway
+      if (!selectedGateway) {
+        toast.error(
+          t(
+            "ticketPurchase.selectPaymentGateway",
+            "Please select a payment method",
+          ),
+        );
+        return;
+      }
+
+      if (isAuthenticated) {
+        // Logged-in user purchase
+        const userPayload: UserPurchasePayload = {
           event_id: eventData.id,
-          payment_gateway: "cash",
+          payment_gateway: selectedGateway,
           tiers: tiersPayload,
         };
-        guestPurchaseMutation.mutate(guestPayload);
-      })();
+        userPurchaseMutation.mutate(userPayload);
+      } else {
+        // Guest purchase
+        guestForm.handleSubmit((data) => {
+          const guestPayload: GuestPurchasePayload = {
+            first_name: "",
+            last_name: "",
+            email: data.email || "",
+            phone: "",
+            country_code: "",
+            event_id: eventData.id,
+            payment_gateway: selectedGateway,
+            tiers: tiersPayload,
+          };
+          guestPurchaseMutation.mutate(guestPayload);
+        })();
+      }
     }
   };
 
@@ -214,13 +256,33 @@ function GuestPurchaseContent() {
             className="hover:bg-white! hover:shadow-sm transition-shadow"
           >
             <ArrowLeftIcon className="w-5 h-5 mr-1" />
-            {step === 1 ? t('ticketPurchase.backToEvent', 'Back to Event') : t('ticketPurchase.backToSelection', 'Back to Selection')}
+            {step === 1
+              ? t("ticketPurchase.backToEvent", "Back to Event")
+              : t("ticketPurchase.backToSelection", "Back to Selection")}
           </Button>
           <div className="hidden sm:block">
             <div className="flex items-center space-x-2 text-sm">
-              <span className={cn("font-medium", step >= 1 ? "text-primary" : "text-gray-400")}>{t('ticketPurchase.selectTickets', 'Select Tickets')}</span>
-              <span className="text-gray-300"><ChevronRightIcon className="w-5 h-5" /></span>
-              <span className={cn("font-medium", step >= 2 ? "text-primary" : "text-gray-400")}>{isAuthenticated ? t('ticketPurchase.payment', 'Payment') : t('ticketPurchase.detailsAndPayment', 'Details & Payment')}</span>
+              <span
+                className={cn(
+                  "font-medium",
+                  step >= 1 ? "text-primary" : "text-gray-400",
+                )}
+              >
+                {t("ticketPurchase.selectTickets", "Select Tickets")}
+              </span>
+              <span className="text-gray-300">
+                <ChevronRightIcon className="w-5 h-5" />
+              </span>
+              <span
+                className={cn(
+                  "font-medium",
+                  step >= 2 ? "text-primary" : "text-gray-400",
+                )}
+              >
+                {isAuthenticated
+                  ? t("ticketPurchase.payment", "Payment")
+                  : t("ticketPurchase.detailsAndPayment", "Details & Payment")}
+              </span>
             </div>
           </div>
         </div>
@@ -228,32 +290,39 @@ function GuestPurchaseContent() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-
             {/* Step 1: Multi-Tier Ticket Selection */}
             {step === 1 && (
               <div className="glass-card-lower rounded-2xl overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                      <TicketIcon weight="duotone" className="w-6 h-6 mr-2 text-primary" />
+                      <TicketIcon
+                        weight="duotone"
+                        className="w-6 h-6 mr-2 text-primary"
+                      />
                       {t("ticketPurchase.selectTickets", "Select Tickets")}
                     </h2>
                     {/* Total quantity indicator */}
                     <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "text-sm font-bold px-3 py-1 rounded-full transition-colors",
-                        totalQuantity > 0
-                          ? totalQuantity >= maxQuantity
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-primary/10 text-primary"
-                          : "bg-gray-100 text-gray-400"
-                      )}>
+                      <span
+                        className={cn(
+                          "text-sm font-bold px-3 py-1 rounded-full transition-colors",
+                          totalQuantity > 0
+                            ? totalQuantity >= maxQuantity
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-primary/10 text-primary"
+                            : "bg-gray-100 text-gray-400",
+                        )}
+                      >
                         {totalQuantity} / {maxQuantity}
                       </span>
                     </div>
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
-                    {t("ticketPurchase.multiTierHint", `Select quantities for each ticket type (max ${maxQuantity} total)`)}
+                    {t(
+                      "ticketPurchase.multiTierHint",
+                      `Select quantities for each ticket type (max ${maxQuantity} total)`,
+                    )}
                   </p>
                 </div>
 
@@ -269,7 +338,7 @@ function GuestPurchaseContent() {
                           "relative flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border-2 transition-all",
                           qty > 0
                             ? "border-primary bg-blue-50/50"
-                            : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30"
+                            : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30",
                         )}
                       >
                         {/* Tier Info */}
@@ -285,10 +354,15 @@ function GuestPurchaseContent() {
                             )}
                           </div>
                           {ticketType.description && (
-                            <p className="text-sm text-gray-500 mt-1 pr-4">{ticketType.description}</p>
+                            <p className="text-sm text-gray-500 mt-1 pr-4">
+                              {ticketType.description}
+                            </p>
                           )}
                           <p className="font-bold text-lg text-primary mt-1">
-                            {formatCurrency(ticketType.price, ticketType.currency)}
+                            {formatCurrency(
+                              ticketType.price,
+                              ticketType.currency,
+                            )}
                           </p>
                         </div>
 
@@ -297,26 +371,38 @@ function GuestPurchaseContent() {
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => handleTierQuantityChange(ticketType.id, -1)}
+                            onClick={() =>
+                              handleTierQuantityChange(ticketType.id, -1)
+                            }
                             disabled={qty <= 0 || isPending}
                             className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                           >
-                            <MinusIcon size={18} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
+                            <MinusIcon
+                              size={18}
+                              className="group-hover:text-primary group-hover:scale-110 transition-transform"
+                            />
                           </Button>
-                          <span className={cn(
-                            "text-xl font-bold w-8 text-center transition-colors",
-                            qty > 0 ? "text-primary" : "text-gray-300"
-                          )}>
+                          <span
+                            className={cn(
+                              "text-xl font-bold w-8 text-center transition-colors",
+                              qty > 0 ? "text-primary" : "text-gray-300",
+                            )}
+                          >
                             {qty}
                           </span>
                           <Button
-                            onClick={() => handleTierQuantityChange(ticketType.id, 1)}
+                            onClick={() =>
+                              handleTierQuantityChange(ticketType.id, 1)
+                            }
                             variant="outline"
                             size="icon"
                             disabled={isAtMaxTotal || isPending}
                             className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                           >
-                            <PlusIcon size={18} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
+                            <PlusIcon
+                              size={18}
+                              className="group-hover:text-primary group-hover:scale-110 transition-transform"
+                            />
                           </Button>
                         </div>
                       </div>
@@ -326,9 +412,15 @@ function GuestPurchaseContent() {
                   {/* Info bar for guests at max quantity */}
                   {!isAuthenticated && totalQuantity >= GUEST_MAX_QUANTITY && (
                     <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
-                      <UserIcon size={18} className="text-blue-600 flex-shrink-0" />
+                      <UserIcon
+                        size={18}
+                        className="text-blue-600 flex-shrink-0"
+                      />
                       <p className="text-sm text-blue-700">
-                        {t('ticketPurchase.loginForMoreTickets', `Please login to buy up to ${USER_MAX_QUANTITY} tickets at once`)}
+                        {t(
+                          "ticketPurchase.loginForMoreTickets",
+                          `Please login to buy up to ${USER_MAX_QUANTITY} tickets at once`,
+                        )}
                       </p>
                       <Button
                         variant="link"
@@ -336,7 +428,7 @@ function GuestPurchaseContent() {
                         className="ml-auto text-blue-700 font-semibold p-0 h-auto"
                         onClick={() => setIsLoginModalOpen(true)}
                       >
-                        {t('auth.login.loginButton', 'Log In')}
+                        {t("auth.login.loginButton", "Log In")}
                       </Button>
                     </div>
                   )}
@@ -344,9 +436,15 @@ function GuestPurchaseContent() {
                   {/* Info bar for logged-in users at max quantity */}
                   {isAuthenticated && totalQuantity >= USER_MAX_QUANTITY && (
                     <div className="mt-4 bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
-                      <TicketIcon size={18} className="text-amber-600 flex-shrink-0" />
+                      <TicketIcon
+                        size={18}
+                        className="text-amber-600 flex-shrink-0"
+                      />
                       <p className="text-sm text-amber-700">
-                        {t('ticketPurchase.maxReached', `Maximum of ${USER_MAX_QUANTITY} tickets reached`)}
+                        {t(
+                          "ticketPurchase.maxReached",
+                          `Maximum of ${USER_MAX_QUANTITY} tickets reached`,
+                        )}
                       </p>
                     </div>
                   )}
@@ -354,14 +452,18 @@ function GuestPurchaseContent() {
               </div>
             )}
 
-            {/* Step 2: Guest Details / Payment */}
+            {/* Step 2: Details & Payment Gateway */}
             {step === 2 && (
               <div className="space-y-6">
-                {!isAuthenticated ? (
+                {/* Guest email form (only for non-authenticated users) */}
+                {!isAuthenticated && (
                   <div className="glass-card-lower rounded-2xl p-6">
                     <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
                       <TicketIcon className="w-6 h-6 mr-2 text-primary" />
-                      {t('ticketPurchase.ticketDeliveryInformation', 'Ticket Delivery Information')}
+                      {t(
+                        "ticketPurchase.ticketDeliveryInformation",
+                        "Ticket Delivery Information",
+                      )}
                     </h2>
                     <Form {...guestForm}>
                       <form className="space-y-4">
@@ -370,15 +472,27 @@ function GuestPurchaseContent() {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t('auth.signup.email', 'Email Address')}</FormLabel>
+                              <FormLabel>
+                                {t("auth.signup.email", "Email Address")}
+                              </FormLabel>
                               <FormControl>
                                 <div className="relative">
-                                  <EnvelopeIcon className="absolute left-3 top-3.5 text-gray-400 z-10" size={18} />
-                                  <Input placeholder="john@example.com" {...field} className="pl-10 h-11" />
+                                  <EnvelopeIcon
+                                    className="absolute left-3 top-3.5 text-gray-400 z-10"
+                                    size={18}
+                                  />
+                                  <Input
+                                    placeholder="john@example.com"
+                                    {...field}
+                                    className="pl-10 h-11"
+                                  />
                                 </div>
                               </FormControl>
                               <p className="text-xs text-gray-500 mt-1">
-                                {t('ticketPurchase.emailDeliveryNote', 'Your ticket will be sent to this email address')}
+                                {t(
+                                  "ticketPurchase.emailDeliveryNote",
+                                  "Your ticket will be sent to this email address",
+                                )}
                               </p>
                               <FormMessage />
                             </FormItem>
@@ -388,48 +502,145 @@ function GuestPurchaseContent() {
                     </Form>
 
                     {/* Login Prompt if not logged in */}
-                    {!isAuthenticated && (
-                      <>
-                        <div className="my-6 w-full flex items-center justify-center gap-2 overflow-hidden">
-                          <Separator variant="dashed" className="flex-grow" />
-                          <span className="text-sm text-muted-foreground">OR</span>
-                          <Separator variant="dashed" className="flex-grow" />
-                        </div>
-                        <div className="bg-blue-50 mt-6 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary">
-                              <UserIcon size={20} weight="bold" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-blue-900">{t('auth.signup.haveAccount', 'Already have an account?')}</p>
-                              <p className="text-xs text-blue-700">{t('auth.signup.loginToSkip', 'Log in to skip entering your details.')}</p>
-                            </div>
-                          </div>
-                          <Button
-                            variant="outline"
-                            className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
-                            onClick={() => setIsLoginModalOpen(true)}
-                          >
-                            {t('auth.login.loginButton', 'Log In')}
-                          </Button>
-                        </div>
-                      </>
-                    )}
-
-                  </div>
-                ) : (
-                    <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center gap-4">
-                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-600">
-                      <UserIcon size={32} weight="duotone" />
-                    </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-green-900">{t('ticketPurchase.loggedIn', 'Logged In')}</h3>
-                        <p className="text-green-700 mt-1">
-                          {t('ticketPurchase.loggedInInfo', 'Please proceed to checkout.')}
-                        </p>
+                    <>
+                      <div className="my-6 w-full flex items-center justify-center gap-2 overflow-hidden">
+                        <Separator variant="dashed" className="flex-grow" />
+                        <span className="text-sm text-muted-foreground">
+                          OR
+                        </span>
+                        <Separator variant="dashed" className="flex-grow" />
                       </div>
+                      <div className="bg-blue-50 mt-6 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                            <UserIcon size={20} weight="bold" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-blue-900">
+                              {t(
+                                "auth.signup.haveAccount",
+                                "Already have an account?",
+                              )}
+                            </p>
+                            <p className="text-xs text-blue-700">
+                              {t(
+                                "auth.signup.loginToSkip",
+                                "Log in to skip entering your details.",
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
+                          onClick={() => setIsLoginModalOpen(true)}
+                        >
+                          {t("auth.login.loginButton", "Log In")}
+                        </Button>
+                      </div>
+                    </>
                   </div>
                 )}
+
+                {/* Payment Gateway Selection */}
+                <div className="glass-card-lower rounded-2xl p-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center">
+                    <CreditCardIcon className="w-6 h-6 mr-2 text-primary" />
+                    {t(
+                      "ticketPurchase.selectPaymentMethod",
+                      "Select Payment Method",
+                    )}
+                  </h2>
+                  <p className="text-sm text-gray-500 mb-6">
+                    {t(
+                      "ticketPurchase.choosePaymentGateway",
+                      "Choose your preferred payment method",
+                    )}
+                  </p>
+
+                  {isLoadingGateways ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className="h-16 bg-gray-100 rounded-xl animate-pulse"
+                        />
+                      ))}
+                    </div>
+                  ) : !gateways || gateways.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400 border border-dashed border-gray-200 rounded-xl">
+                      <CreditCardIcon className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                      <p className="text-sm">
+                        {t(
+                          "ticketPurchase.noGatewaysAvailable",
+                          "No payment methods available",
+                        )}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {gateways.map((gateway: GatewayInfo) => (
+                        <button
+                          key={gateway.name}
+                          type="button"
+                          onClick={() => setSelectedGateway(gateway.name)}
+                          className={cn(
+                            "w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left cursor-pointer",
+                            selectedGateway === gateway.name
+                              ? "border-primary bg-blue-50/50 shadow-sm"
+                              : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30",
+                          )}
+                        >
+                          {/* Gateway icon */}
+                          <div
+                            className={cn(
+                              "w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
+                              selectedGateway === gateway.name
+                                ? "bg-primary/10 text-primary"
+                                : "bg-gray-100 text-gray-500",
+                            )}
+                          >
+                            {gateway.icon_url ? (
+                              <img
+                                src={gateway.icon_url}
+                                alt={gateway.display_name}
+                                className="w-8 h-8 object-contain"
+                              />
+                            ) : (
+                              <CreditCardIcon className="w-6 h-6" />
+                            )}
+                          </div>
+
+                          {/* Gateway info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-gray-900">
+                              {gateway.display_name}
+                            </p>
+                            {gateway.description && (
+                              <p className="text-sm text-gray-500 truncate">
+                                {gateway.description}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Selection indicator */}
+                          <div
+                            className={cn(
+                              "w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                              selectedGateway === gateway.name
+                                ? "border-primary bg-primary"
+                                : "border-gray-300",
+                            )}
+                          >
+                            {selectedGateway === gateway.name && (
+                              <div className="w-2 h-2 rounded-full bg-white" />
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -440,10 +651,16 @@ function GuestPurchaseContent() {
               {/* Event Mini Header */}
               <div className="p-4 bg-gray-50 border-b border-gray-100 flex gap-4">
                 <div className="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0 relative">
-                  <img src={eventData.imageUrl} alt={eventData.title} className="w-full h-full object-cover" />
+                  <img
+                    src={eventData.imageUrl}
+                    alt={eventData.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 text-sm line-clamp-2">{eventData.title}</h3>
+                  <h3 className="font-bold text-gray-900 text-sm line-clamp-2">
+                    {eventData.title}
+                  </h3>
                   <div className="flex items-center text-xs text-gray-500 mt-1">
                     <CalendarIcon size={14} className="mr-1" />
                     {format(new Date(eventData.startDate), "MMM dd, yyyy")}
@@ -457,34 +674,49 @@ function GuestPurchaseContent() {
 
               <div className="p-6 space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900 mb-3">{t('ticketPurchase.orderSummary', 'Order Summary')}</h4>
+                  <h4 className="text-sm font-bold text-gray-900 mb-3">
+                    {t("ticketPurchase.orderSummary", "Order Summary")}
+                  </h4>
 
                   {selectedTiers.length === 0 ? (
                     <div className="text-sm text-gray-400 text-center py-4 border border-dashed border-gray-200 rounded-xl">
-                      {t('ticketPurchase.noTicketsSelected', 'No tickets selected')}
+                      {t(
+                        "ticketPurchase.noTicketsSelected",
+                        "No tickets selected",
+                      )}
                     </div>
                   ) : (
-                      <div className="space-y-3">
-                        {selectedTiers.map((st) => (
-                          <div key={st.id} className="flex justify-between items-start text-sm">
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-gray-900 truncate">{st.tier_name}</p>
-                              <p className="text-xs text-gray-500">
-                                {st.selectedQty} × {formatCurrency(st.price, st.currency)}
-                              </p>
-                            </div>
+                    <div className="space-y-3">
+                      {selectedTiers.map((st) => (
+                        <div
+                          key={st.id}
+                          className="flex justify-between items-start text-sm"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 truncate">
+                              {st.tier_name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {st.selectedQty} ×{" "}
+                              {formatCurrency(st.price, st.currency)}
+                            </p>
+                          </div>
                           <span className="font-bold text-gray-900 ml-3">
                             {formatCurrency(st.subtotal, st.currency)}
                           </span>
                         </div>
                       ))}
-                        <div className="border-t border-gray-100 pt-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">{t('ticketPurchase.totalTickets', 'Total Tickets')}</span>
-                            <span className="font-medium text-gray-900">{totalQuantity}</span>
-                          </div>
+                      <div className="border-t border-gray-100 pt-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">
+                            {t("ticketPurchase.totalTickets", "Total Tickets")}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {totalQuantity}
+                          </span>
                         </div>
                       </div>
+                    </div>
                   )}
                 </div>
 
@@ -492,14 +724,20 @@ function GuestPurchaseContent() {
                   <div className="flex justify-between items-center mb-4">
                     <span className="font-bold text-gray-900">Total</span>
                     <span className="font-black text-2xl text-primary">
-                      {totalAmount > 0 ? formatCurrency(totalAmount, defaultCurrency) : "-"}
+                      {totalAmount > 0
+                        ? formatCurrency(totalAmount, defaultCurrency)
+                        : "-"}
                     </span>
                   </div>
 
                   <Button
                     onClick={handleContinue}
                     className="w-full h-12 text-lg font-bold shadow-lg shadow-blue-200"
-                    disabled={isPending || totalQuantity === 0}
+                    disabled={
+                      isPending ||
+                      totalQuantity === 0 ||
+                      (step === 2 && !selectedGateway)
+                    }
                   >
                     {isPending ? (
                       <span className="flex items-center gap-2">
@@ -507,9 +745,12 @@ function GuestPurchaseContent() {
                         {t("common.processing", "Processing...")}
                       </span>
                     ) : step === 1 ? (
-                        t("common.continue", "Continue")
+                      t("common.continue", "Continue")
                     ) : (
-                          t("ticketPurchase.proceedToCheckout", "Proceed to Checkout")
+                      t(
+                        "ticketPurchase.proceedToCheckout",
+                        "Proceed to Checkout",
+                      )
                     )}
                   </Button>
                   <p className="text-xs text-center text-gray-400 mt-3">
