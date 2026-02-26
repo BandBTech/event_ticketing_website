@@ -9,6 +9,8 @@ import {
   MapPin,
   Clock,
   Search,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,6 +78,8 @@ export default function TicketsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedTicketForQR, setSelectedTicketForQR] =
     useState<TicketItems | null>(null);
+  const [currentTicketQR, setCurrentTicketQR] = useState<number>(0);
+  const [modalTicketsList, setModalTicketsList] = useState<TicketItems[]>([]);
 
   //   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(()=> {
   //  if (typeof window !== "undefined") {
@@ -99,9 +103,7 @@ export default function TicketsPage() {
     isError: isDetailError,
   } = useTransactionDetails(selectedOrderId ?? undefined);
   // Use the existing query hook
-const { data: responseData, isLoading, error } = useUserTickets(currentPage);
-
-  // 2. Extract tickets array and pagination metadata
+  const { data: responseData, isLoading, error } = useUserTickets(currentPage);
   const ticketsArray = responseData?.tickets || [];
   const pagination = responseData?.pagination;
   const view = selectedOrderId ? "detail" : "list";
@@ -165,7 +167,7 @@ const { data: responseData, isLoading, error } = useUserTickets(currentPage);
   };
   const router = useRouter();
   const pathname = usePathname();
-useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, statusFilter, activeTab]);
 
@@ -176,15 +178,31 @@ useEffect(() => {
     router.push(pathname);
   };
 
+  const handleNextQR = () => {
+    if (currentTicketQR < modalTicketsList.length - 1) {
+      const nextIndex = currentTicketQR + 1;
+      setCurrentTicketQR(nextIndex);
+      setSelectedTicketForQR(modalTicketsList[nextIndex]);
+    }
+  };
+
+  const handlePrevQR = () => {
+    if (currentTicketQR > 0) {
+      const prevIndex = currentTicketQR - 1;
+      setCurrentTicketQR(prevIndex);
+      setSelectedTicketForQR(modalTicketsList[prevIndex]);
+    }
+  };
+
   useEffect(() => {
     console.log("selectedOrderId:", selectedOrderId);
     console.log("detailTickets:", detailTickets);
   }, [selectedOrderId, detailTickets]);
 
   useEffect(() => {
-  if (error) console.error("User Tickets Error:", error);
-  if (isDetailError) console.error("Detail Tickets Error:", isDetailError);
-}, [error, isDetailError]);
+    if (error) console.error("User Tickets Error:", error);
+    if (isDetailError) console.error("Detail Tickets Error:", isDetailError);
+  }, [error, isDetailError]);
 
   if (error) {
     return (
@@ -275,9 +293,7 @@ useEffect(() => {
               <h1 className="pb-2 px-1 capitalize font-medium transition-colors cursor-pointer">
                 {view === "list" ? "All Tickets" : "Ticket Details"}
               </h1>
-              <p className="text-sm text-gray-600">
-                {view === "list"}
-              </p>
+              <p className="text-sm text-gray-600">{view === "list"}</p>
             </div>
 
             {view === "detail" && (
@@ -428,8 +444,14 @@ useEffect(() => {
                   {pagination && (
                     <div className="flex items-center justify-between border-t border-gray-100 pt-6 mt-4">
                       <div className="text-sm text-muted-foreground">
-                        Showing page <span className="font-medium text-foreground">{pagination.page}</span> of{" "}
-                        <span className="font-medium text-foreground">{pagination.total_pages}</span>
+                        Showing page{" "}
+                        <span className="font-medium text-foreground">
+                          {pagination.page}
+                        </span>{" "}
+                        of{" "}
+                        <span className="font-medium text-foreground">
+                          {pagination.total_pages}
+                        </span>
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -451,9 +473,7 @@ useEffect(() => {
                       </div>
                     </div>
                   )}
-
                 </div>
-          
               )}
             </>
           )}
@@ -571,7 +591,7 @@ useEffect(() => {
                                 {ticket.tierName?.name || "General"}
                               </Badge>
                               <p className="text-xl font-mono font-bold">
-                               Ticket Number : {ticket.ticketNumber}
+                                Ticket Number : {ticket.ticketNumber}
                               </p>
                             </div>
                             <Badge
@@ -615,6 +635,12 @@ useEffect(() => {
                           <Button
                             className="w-full text-xs h-8"
                             onClick={() => {
+                              const ticketIndex =
+                                detailTickets.tickets.findIndex(
+                                  (t) => t.ticketId === ticket.ticketId,
+                                );
+                              setModalTicketsList(detailTickets.tickets);
+                              setCurrentTicketQR(ticketIndex);
                               setSelectedTicketForQR(ticket);
                               setShowQRModal(true);
                             }}
@@ -651,21 +677,61 @@ useEffect(() => {
               )?.event.title || "Ticket QR Code"}
             </DialogTitle>
             <DialogDescription>
-              Ticket #{selectedTicketForQR?.ticketNumber}
+              Ticket Number: #{selectedTicketForQR?.ticketNumber}
             </DialogDescription>
           </DialogHeader>
           {selectedTicketForQR && (
-            <div className="flex flex-col items-center py-4">
-              <QRCodeSVG
-                value={selectedTicketForQR.qrData}
-                size={250}
-                level="H"
-                includeMargin={true}
-                fgColor="#0f172a"
-              />
-              <p className="text-sm text-muted-foreground text-center mt-4">
-                Present this QR code at the venue entrance
-              </p>
+            <div className="relative flex flex-col items-center py-6">
+              {/* Navigation Buttons */}
+              <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 pointer-events-none">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-10 w-10 rounded-full bg-white/80 shadow-md pointer-events-auto transition-opacity",
+                    currentTicketQR === 0
+                      ? "opacity-0 pointer-events-none"
+                      : "opacity-100",
+                  )}
+                  onClick={handlePrevQR}
+                >
+                  <ChevronLeftIcon className="h-6 w-6" />
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-10 w-10 rounded-full bg-white/80 shadow-md pointer-events-auto transition-opacity",
+                    currentTicketQR === modalTicketsList.length - 1
+                      ? "opacity-0 pointer-events-none"
+                      : "opacity-100",
+                  )}
+                  onClick={handleNextQR}
+                >
+                  <ChevronRightIcon className="h-6 w-6" />
+                </Button>
+              </div>
+
+              {/* QR Code Wrapper */}
+              <div className="bg-white p-4 rounded-xl shadow-inner border border-gray-100 animate-in zoom-in-95 duration-200">
+                <QRCodeSVG
+                  value={selectedTicketForQR.qrData}
+                  size={240}
+                  level="H"
+                  includeMargin={true}
+                  fgColor="#0f172a"
+                />
+              </div>
+
+              <div className="mt-6 text-center space-y-1">
+                <Badge variant="secondary" className="px-3 py-1">
+                  {selectedTicketForQR.tierName?.name}
+                </Badge>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Present this QR code at the venue entrance
+                </p>
+              </div>
             </div>
           )}
         </DialogContent>
