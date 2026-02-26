@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ticketService, GuestPurchasePayload, UserPurchasePayload, GuestPurchaseResponse, UserPurchaseResponse } from '@/services/ticketService';
+import { ticketService, GuestPurchasePayload, UserPurchasePayload, GuestPurchaseResponse, UserPurchaseResponse, PaginatedUserTickets } from '@/services/ticketService';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/toast';
 
@@ -69,10 +69,10 @@ export const useUserPurchaseMutation = () => {
   });
 };
 
-export const useUserTickets = () => {
-  return useQuery({
-    queryKey: ['tickets', 'user-purchases'],
-    queryFn: ()=> ticketService.getUserTickets(),
+export const useUserTickets = (page: number =1 ) => {
+  return useQuery<PaginatedUserTickets>({
+    queryKey: ['tickets', 'user-purchases', page],
+    queryFn: ()=> ticketService.getUserTickets(page),
   })
 };
 

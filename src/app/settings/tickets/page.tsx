@@ -65,6 +65,7 @@ const isUpcoming = (startDate: string) => {
 };
 
 export default function TicketsPage() {
+  const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "all">(
     "all",
   );
@@ -98,10 +99,14 @@ export default function TicketsPage() {
     isError: isDetailError,
   } = useTransactionDetails(selectedOrderId ?? undefined);
   // Use the existing query hook
-  const { data: tickets = [], isLoading, error } = useUserTickets();
+const { data: responseData, isLoading, error } = useUserTickets(currentPage);
+
+  // 2. Extract tickets array and pagination metadata
+  const ticketsArray = responseData?.tickets || [];
+  const pagination = responseData?.pagination;
   const view = selectedOrderId ? "detail" : "list";
   // Filter tickets based on active tab and search
-  const filteredTickets = tickets.filter((order: ViewTicketDetails) => {
+  const filteredTickets = ticketsArray.filter((order: ViewTicketDetails) => {
     const eventDate = order.event.startDate;
     const isEventUpcoming = isUpcoming(eventDate);
 
@@ -160,6 +165,9 @@ export default function TicketsPage() {
   };
   const router = useRouter();
   const pathname = usePathname();
+useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, activeTab]);
 
   const handleViewTickets = (order: ViewTicketDetails) => {
     router.push(`${pathname}?id=${order.orderId}`);
@@ -284,7 +292,7 @@ export default function TicketsPage() {
             )}
           </div>
 
-          {/* Tickets Grid */}
+          {/* Tickets list */}
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -415,7 +423,37 @@ export default function TicketsPage() {
                       </CardContent>
                     </Card>
                   ))}
+
+                  {/* 4. ADD PAGINATION CONTROLS HERE */}
+                  {pagination && (
+                    <div className="flex items-center justify-between border-t border-gray-100 pt-6 mt-4">
+                      <div className="text-sm text-muted-foreground">
+                        Showing page <span className="font-medium text-foreground">{pagination.page}</span> of{" "}
+                        <span className="font-medium text-foreground">{pagination.total_pages}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={!pagination.has_prev}
+                          onClick={() => setCurrentPage((prev) => prev - 1)}
+                        >
+                          Previous
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={!pagination.has_next}
+                          onClick={() => setCurrentPage((prev) => prev + 1)}
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
                 </div>
+          
               )}
             </>
           )}
@@ -606,7 +644,7 @@ export default function TicketsPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {tickets.find((order) =>
+              {ticketsArray.find((order) =>
                 order.tickets.some(
                   (t) => t.ticketId === selectedTicketForQR?.ticketId,
                 ),

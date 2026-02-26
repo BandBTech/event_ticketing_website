@@ -54,7 +54,17 @@ export interface UserPurchaseResponse {
     }>;
   };
 }
-
+export interface PaginatedUserTickets {
+  tickets: ViewTicketDetails[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    total_pages?: number;
+    has_next?: boolean;
+    has_prev?: boolean;
+  };
+}
 export const ticketService = {
   guestPurchase: async (data: GuestPurchasePayload) => {
     const response = await api.post<GuestPurchaseResponse>(
@@ -111,8 +121,8 @@ export const ticketService = {
     return mapTicketView(rawTicket);
   },
 
-  getUserTickets: async (): Promise<ViewTicketDetails[]> => {
-    const response = await api.get<UserTicketsApiResponse>("/user/tickets", {
+  getUserTickets: async (page: number =1, limit: number =10): Promise<PaginatedUserTickets> => {
+    const response = await api.get<UserTicketsApiResponse>(`/user/tickets?page=${page}&limit=${limit}`, {
       requiresAuth: true,
     });
 
@@ -134,7 +144,7 @@ export const ticketService = {
 
     // const detailedTickets = await Promise.all(detailedTicketsPromises);
 
-    return rawTickets.map((t: ApiUserTicket) => ({
+    const mappedTickets = rawTickets.map((t: ApiUserTicket) => ({
       orderId: t.id,
       ticketCount: t.ticket_count,
       transactionStatus: t.transaction_status,
@@ -172,6 +182,10 @@ export const ticketService = {
       totalAmount: t.total_amount,
       currency: "NPR",
     }));
+    return{
+      tickets: mappedTickets,
+      pagination: response.pagination
+    };
   },
 
   getUserTicketById: async (ticketId: string) => {
