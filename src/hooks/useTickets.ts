@@ -67,6 +67,7 @@ export const useUserTickets = (page: number =1 ) => {
   return useQuery<PaginatedUserTickets>({
     queryKey: ['tickets', 'user-purchases', page],
     queryFn: ()=> ticketService.getUserTickets(page),
+    placeholderData: (previousData) => previousData,
   })
 };
 

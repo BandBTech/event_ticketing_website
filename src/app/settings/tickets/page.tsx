@@ -68,6 +68,7 @@ const isUpcoming = (startDate: string) => {
 
 export default function TicketsPage() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [allTickets, setAllTickets] = useState<ViewTicketDetails[]>([]);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "all">(
     "all",
   );
@@ -103,12 +104,17 @@ export default function TicketsPage() {
     isError: isDetailError,
   } = useTransactionDetails(selectedOrderId ?? undefined);
   // Use the existing query hook
-  const { data: responseData, isLoading, error } = useUserTickets(currentPage);
+  const {
+    data: responseData,
+    isLoading,
+    isFetching,
+    error,
+  } = useUserTickets(currentPage);
   const ticketsArray = responseData?.tickets || [];
   const pagination = responseData?.pagination;
   const view = selectedOrderId ? "detail" : "list";
   // Filter tickets based on active tab and search
-  const filteredTickets = ticketsArray.filter((order: ViewTicketDetails) => {
+  const filteredTickets = allTickets.filter((order: ViewTicketDetails) => {
     const eventDate = order.event.startDate;
     const isEventUpcoming = isUpcoming(eventDate);
 
@@ -194,10 +200,24 @@ export default function TicketsPage() {
     }
   };
 
+  const handleLoadMore = () => {
+    if (pagination?.has_next) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
   useEffect(() => {
-    console.log("selectedOrderId:", selectedOrderId);
-    console.log("detailTickets:", detailTickets);
-  }, [selectedOrderId, detailTickets]);
+    if (responseData?.tickets) {
+      setAllTickets((prev) => {
+        if (currentPage === 1) return responseData.tickets;
+        const existingIds = new Set(prev.map((t) => t.orderId));
+        const newUnique = responseData.tickets.filter(
+          (t) => !existingIds.has(t.orderId),
+        );
+        return [...prev, ...newUnique];
+      });
+    }
+  }, [responseData, currentPage]);
 
   useEffect(() => {
     if (error) console.error("User Tickets Error:", error);
@@ -441,36 +461,31 @@ export default function TicketsPage() {
                   ))}
 
                   {/* 4. ADD PAGINATION CONTROLS HERE */}
-                  {pagination && (
-                    <div className="flex items-center justify-between border-t border-gray-100 pt-6 mt-4">
-                      <div className="text-sm text-muted-foreground">
-                        Showing page{" "}
-                        <span className="font-medium text-foreground">
-                          {pagination.page}
-                        </span>{" "}
-                        of{" "}
-                        <span className="font-medium text-foreground">
-                          {pagination.total_pages}
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={!pagination.has_prev}
-                          onClick={() => setCurrentPage((prev) => prev - 1)}
-                        >
-                          Previous
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={!pagination.has_next}
-                          onClick={() => setCurrentPage((prev) => prev + 1)}
-                        >
-                          Next
-                        </Button>
-                      </div>
+                  {pagination?.has_next && (
+                    <div className="text-center py-8">
+                      <Button
+                        
+                        size="lg"
+                        onClick={handleLoadMore}
+                        disabled={isFetching}
+                        className="min-w-[160px]"
+                      >
+                        {isFetching ? (
+                          <span className="flex items-center gap-2">
+                            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                            Loading...
+                          </span>
+                        ) : (
+                          "Load More"
+                        )}
+                      </Button>
+
+                      {pagination && (
+                        <p className="text-gray-500 text-sm mt-3">
+                          Showing {allTickets.length} of {pagination.total}{" "}
+                          tickets
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
