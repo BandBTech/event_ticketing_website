@@ -13,6 +13,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import DOMPurify from "dompurify";
 import { useEventById } from "@/hooks/useEvents";
+import { COMMON_FAQS } from "@/data/commonFAQs";
 
 interface EventDetailClientProps {
   eventId: string;
@@ -260,6 +261,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   <h2 className="text-xl font-bold text-gray-900">
                     {t("common.faq")}
                   </h2>
+
                   <CaretDownIcon
                     size={24}
                     className={cn(
@@ -269,22 +271,54 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   />
                 </button>
                 {showFAQ && (
-                  <div className="px-6 pb-6 space-y-4">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-2">
-                        What is the refund policy?
-                      </h3>
-                      <p className="text-gray-700">
-                        Refunds are available up to 48 hours before the event.
-                      </p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-2">
-                        Is parking available?
-                      </h3>
-                      <p className="text-gray-700">
-                        Yes, free parking is available at the venue.
-                      </p>
+                  <div className="px-6 py-4 space-y-0 divide-y divide-gray-100">
+                    {COMMON_FAQS.map((faq, index) => (
+                      <div key={index} className="py-4 first:pt-0 last:pb-0">
+                        <h3 className="font-semibold text-gray-900 mb-2 flex items-start gap-2">
+                          <span className="text-blue-500 font-bold">Q:</span>
+                          {faq.question}
+                        </h3>
+                        <div className="flex items-start gap-2">
+                          <span className="text-gray-400 font-bold">A:</span>
+                          <p className="text-gray-700 leading-relaxed text-sm">
+                            {faq.answer}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    {/* Still have questions? */}
+                    <div className="mt-8 pt-6 border-t border-gray-100">
+                      <div className="bg-blue-50/50 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="text-center md:text-left">
+                          <h4 className="text-sm font-bold text-gray-900">
+                            {t(
+                              "eventDetails.faq.stillQuestions",
+                              "Still have questions?",
+                            )}
+                          </h4>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {t("eventDetails.faq.contactPrefix", "Contact")}{" "}
+                            <span className="font-bold text-blue-600">
+                              {event.organizer.business_name}
+                            </span>{" "}
+                            {t(
+                              "eventDetails.faq.contactSuffix",
+                              "for specific event inquiries.",
+                            )}
+                          </p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white hover:bg-gray-50 border-gray-200 text-blue-600 font-semibold"
+                          onClick={() => {}}
+                        >
+                          {t(
+                            "eventDetails.button.contactOrganizer",
+                            "Contact Organizer",
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )}
