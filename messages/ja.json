@@ -445,7 +445,12 @@
     "selectAtLeastOne": "少なくとも 1 枚のチケットを選択してください",
     "selectPaymentMethod": "支払い方法を選択してください",
     "choosePaymentGateway": "ご希望の支払い方法を選択してください",
-    "noGatewaysAvailable": "利用できる支払い方法がありません"
+    "noGatewaysAvailable": "利用できる支払い方法がありません",
+    "maxQuantityReached": "合計で許可されるチケットの最大数は {maxQuantity} です",
+    "maxReached": "最大 {USER_MAX_QUANTITY} チケットに達しました",
+    "multiTierHint": "各チケットタイプの数量を選択してください (合計最大 {maxQuantity})",
+    "noTicketsSelected": "チケットが選択されていません",
+    "totalTickets": "合計チケット数"
   },
   "ticketView": {
     "title": "デジタルチケット",

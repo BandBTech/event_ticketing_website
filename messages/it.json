@@ -443,7 +443,12 @@
     "selectAtLeastOne": "Seleziona almeno un biglietto",
     "selectPaymentMethod": "Seleziona il metodo di pagamento",
     "choosePaymentGateway": "Scegli il tuo metodo di pagamento preferito",
-    "noGatewaysAvailable": "Nessun metodo di pagamento disponibile"
+    "noGatewaysAvailable": "Nessun metodo di pagamento disponibile",
+    "maxQuantityReached": "Sono consentiti in totale un massimo di {maxQuantity} biglietti",
+    "maxReached": "È stato raggiunto il numero massimo di {USER_MAX_QUANTITY} biglietti",
+    "multiTierHint": "Seleziona le quantità per ciascun tipo di biglietto (max {maxQuantity} totale)",
+    "noTicketsSelected": "Nessun biglietto selezionato",
+    "totalTickets": "Biglietti totali"
   },
   "ticketView": {
     "title": "Biglietto Digitale",

@@ -558,7 +558,12 @@
     "selectAtLeastOne": "Please select at least one ticket",
     "selectPaymentMethod": "Select Payment Method",
     "choosePaymentGateway": "Choose your preferred payment method",
-    "noGatewaysAvailable": "No payment methods available"
+    "noGatewaysAvailable": "No payment methods available",
+    "maxQuantityReached": "Maximum {maxQuantity} tickets allowed in total",
+    "maxReached": "Maximum of {USER_MAX_QUANTITY} tickets reached",
+    "multiTierHint": "Select quantities for each ticket type (max {maxQuantity} total)",
+    "noTicketsSelected": "No tickets selected",
+    "totalTickets": "Total Tickets"
   },
   "ticketView": {
     "title": "Digital Ticket",

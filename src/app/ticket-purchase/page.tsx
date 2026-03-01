@@ -19,8 +19,9 @@ import { GuestPurchasePayload, UserPurchasePayload } from "@/services/ticketServ
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
-import { useGateways } from "@/hooks/usePayments";
-import type { GatewayInfo } from "@/types/payment";
+// NOTE: Payment gateway API calls are temporarily disabled.
+// import { useGateways } from "@/hooks/usePayments";
+// import type { GatewayInfo } from "@/types/payment";
 import { format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -82,8 +83,9 @@ function GuestPurchaseContent() {
     {},
   );
 
-  // Payment gateway state
-  const [selectedGateway, setSelectedGateway] = useState<string>("");
+  // Payment gateway state — cash is the default (gateway API calls are disabled)
+  const CASH_GATEWAY = { name: "cash", display_name: "Cash", description: "For use with developer", icon_url: "" };
+  const [selectedGateway, setSelectedGateway] = useState<string>("cash");
 
   // Form for Guest Details (email only)
   const guestForm = useForm<GuestFormData>({
@@ -97,11 +99,10 @@ function GuestPurchaseContent() {
 
   const { isAuthenticated } = useAuthStore();
 
-  // Fetch payment gateways based on the event's currency
-  const { data: gateways, isLoading: isLoadingGateways } = useGateways();
-  // const { data: gateways, isLoading: isLoadingGateways } = useGateways({
-  //   currency: eventData?.ticketTypes?.[0]?.currency,
-  // });
+  // NOTE: Payment gateway API calls are disabled. Cash is used as the default.
+  // const { data: gateways, isLoading: isLoadingGateways } = useGateways();
+  const gateways = [CASH_GATEWAY];
+  const isLoadingGateways = false;
 
   const maxQuantity = isAuthenticated ? USER_MAX_QUANTITY : GUEST_MAX_QUANTITY;
 
@@ -154,6 +155,9 @@ function GuestPurchaseContent() {
           t(
             "ticketPurchase.maxQuantityReached",
             `Maximum ${maxQuantity} tickets allowed in total`,
+            {
+              maxQuantity,
+            },
           ),
         );
         return prev;
@@ -579,7 +583,7 @@ function GuestPurchaseContent() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {gateways.map((gateway: GatewayInfo) => (
+                          {gateways.map((gateway) => (
                         <button
                           key={gateway.name}
                           type="button"
@@ -735,8 +739,7 @@ function GuestPurchaseContent() {
                     className="w-full h-12 text-lg font-bold shadow-lg shadow-blue-200"
                     disabled={
                       isPending ||
-                      totalQuantity === 0 ||
-                      (step === 2 && !selectedGateway)
+                      totalQuantity === 0
                     }
                   >
                     {isPending ? (
