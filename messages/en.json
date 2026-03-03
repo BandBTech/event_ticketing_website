@@ -512,7 +512,8 @@
       "buyTicketsGuest": "Buy Tickets as Guest",
       "loginToBuy": "Login to Buy Tickets",
       "share": "Share Event",
-      "findTickets": "Find Tickets"
+      "findTickets": "Find Tickets",
+      "ticketSalesEnded": "Ticket Sales Ended"
     },
     "backtoEvents": "Back to Events",
     "description": {

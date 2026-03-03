@@ -1,6 +1,6 @@
 'use client';
 
-import {  useState } from 'react';
+import { useState } from 'react';
 import { EventSearch } from '@/components/events/EventSearch';
 import { EventGrid } from '@/components/events/EventGrid';
 import { Badge } from '@/components/ui/badge';
@@ -30,7 +30,7 @@ export default function EventsPage() {
   });
 
   const allEvents = data?.pages.flatMap(page => page.events) || [];
-  
+
 
   const pagination = data?.pages[data.pages.length - 1]?.pagination;
 
@@ -80,7 +80,7 @@ export default function EventsPage() {
                 "px-4 py-2 cursor-pointer transition-all duration-300",
                 "glass border text-gray-700 hover:bg-white/90",
                 selectedCategory === category.name &&
-                  "bg-primary/20 border-blue-400/50 text-primary"
+                "bg-primary/20 border-blue-400/50 text-primary"
               )}
               onClick={() => handleCategorySelect(category.name)}
             >
@@ -91,19 +91,19 @@ export default function EventsPage() {
       )}
 
       {/* Event Grid */}
-    <div className="mb-12">
-        <EventGrid 
-          events={allEvents} 
-          isLoading={isLoading && allEvents.length === 0} 
+      <div className="mb-12">
+        <EventGrid
+          events={allEvents}
+          isLoading={isLoading && allEvents.length === 0}
         />
       </div>
 
       {/* Load More */}
- {hasNextPage && (
+      {hasNextPage && (
         <div className="text-center">
-          <FigmaButton 
-            variant="primary" 
-            size="lg" 
+          <FigmaButton
+            variant="primary"
+            size="lg"
             showGlow={true}
             onClick={handleLoadMore}
             disabled={isFetchingNextPage}
@@ -117,14 +117,14 @@ export default function EventsPage() {
               t('common.loadMore')
             )}
           </FigmaButton>
-                  {pagination && (
+          {pagination && (
             <p className="text-gray-600 text-sm mt-3">
               Showing {allEvents.length} of {pagination.total} events
             </p>
           )}
         </div>
       )}
-       {/* {!hasNextPage && allEvents.length > 0 && (
+      {/* {!hasNextPage && allEvents.length > 0 && (
         <div className="text-center">
           <p className="text-gray-600">
             {t('common.allEventsLoaded')}

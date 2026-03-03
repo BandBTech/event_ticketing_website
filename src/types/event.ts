@@ -18,7 +18,7 @@ export interface Event {
   sales_status: string;
   is_cancelled: boolean;
   available: number;
-
+  is_featured: boolean;
 }
 
 export interface Organizer{

@@ -14,6 +14,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import DOMPurify from "dompurify";
 import { useEventById } from "@/hooks/useEvents";
 import { COMMON_FAQS } from "@/data/commonFAQs";
+import FeaturedBadge from "./FeaturedBadge";
 
 interface EventDetailClientProps {
   eventId: string;
@@ -132,6 +133,11 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   className="object-cover"
                   priority
                 />
+                {event.is_featured && (
+                  <div className="absolute top-3 right-3">
+                    <FeaturedBadge />
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
               {/* Description */}
@@ -311,7 +317,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                           variant="outline"
                           size="sm"
                           className="bg-white hover:bg-gray-50 border-gray-200 text-blue-600 font-semibold"
-                          onClick={() => {}}
+                          onClick={() => { }}
                         >
                           {t(
                             "eventDetails.button.contactOrganizer",
@@ -331,33 +337,41 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
               <div className="glass-card rounded-2xl p-6 sticky top-24">
                 <div className="space-y-4">
                   {/* Action Buttons */}
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <div className="space-y-3">
-                      {event.ticketTypes.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-sm text-gray-500 font-medium">
-                            {t("events.startingFrom", "Tickets starting from")}
-                          </p>
-                          <p className="text-2xl font-bold text-blue-600">
-                            {new Intl.NumberFormat("en-NP", {
-                              style: "currency",
-                              currency: event.ticketTypes[0].currency,
-                              minimumFractionDigits: 0,
-                            }).format(
-                              Math.min(
-                                ...event.ticketTypes.map((t) => t.price),
-                              ),
-                            )}
-                          </p>
+
+                      {event.ticketTypes.some((t) => t.sales_end < new Date().toISOString()) ? (
+                        <>
+                          {event.ticketTypes.length > 0 && (
+                            <div className="mb-4">
+                              <p className="text-sm text-gray-500 font-medium">
+                                {t("events.startingFrom", "Tickets starting from")}
+                              </p>
+                              <p className="text-2xl font-bold text-blue-600">
+                                {new Intl.NumberFormat("en-NP", {
+                                  style: "currency",
+                                  currency: event.ticketTypes[0].currency,
+                                  minimumFractionDigits: 0,
+                                }).format(
+                                  Math.min(
+                                    ...event.ticketTypes.map((t) => t.price),
+                                  ),
+                                )}
+                              </p>
+                            </div>
+                          )}
+                          <Button
+                            onClick={handleFindTickets}
+                            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
+                          >
+                            {t("eventDetails.button.findTickets", "Find Tickets")}
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="w-full h-12 bg-destructive/15 text-destructive font-medium rounded-lg flex items-center justify-center">
+                          {t("eventDetails.button.ticketSalesEnded", "Ticket Sales Ended")}
                         </div>
                       )}
-
-                      <Button
-                        onClick={handleFindTickets}
-                        className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
-                      >
-                        {t("eventDetails.button.findTickets", "Find Tickets")}
-                      </Button>
 
                       <Button
                         onClick={handleShare}

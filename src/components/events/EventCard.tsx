@@ -12,6 +12,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { Event } from "@/types";
 import { cn } from "@/lib/utils";
 import { ArrowRightIcon } from "@phosphor-icons/react";
+import FeaturedBadge from "./FeaturedBadge";
 
 interface EventCardProps {
   event: Event;
@@ -117,6 +118,12 @@ export function EventCard({ event, className }: EventCardProps) {
               </span>
             </Badge>
           </div>
+
+          {event.is_featured && (
+            <div className="absolute top-2 right-2">
+              <FeaturedBadge />
+            </div>
+          )}
 
           {/* Gradient overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-30" />

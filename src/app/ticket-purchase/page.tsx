@@ -334,6 +334,7 @@ function GuestPurchaseContent() {
                   {eventData.ticketTypes.map((ticketType) => {
                     const qty = tierQuantities[ticketType.id] || 0;
                     const isAtMaxTotal = totalQuantity >= maxQuantity;
+                    if (ticketType.sales_end < new Date().toISOString()) return null;
 
                     return (
                       <div
