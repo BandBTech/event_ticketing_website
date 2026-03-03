@@ -97,7 +97,7 @@ export default function MultiStepRegister() {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [defaultCountry, setDefaultCountry] = useState<Country>("NP");
+  const [defaultCountry, setDefaultCountry] = useState<Country>("JP");
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [registrationData, setRegistrationData] = useState<{
@@ -175,7 +175,7 @@ export default function MultiStepRegister() {
           }
         }
       } catch (error) {
-        console.log("Could not detect country, using default (NP)", error);
+        console.log("Could not detect country, using default (JP)", error);
       }
     };
 
