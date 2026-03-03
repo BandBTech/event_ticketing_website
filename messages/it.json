@@ -485,5 +485,14 @@
     "title": "Fatturazione",
     "description": "Gestisci i tuoi metodi di pagamento e visualizza la cronologia delle transazioni",
     "paymentMethods": "Metodi di pagamento"
+  },
+  "setting": {
+    "menu": {
+      "tickets": {
+        "title": "I miei biglietti",
+        "subtitle": "Gestisci e visualizza tutti i biglietti degli eventi",
+        "search": "Cerca per nome dell'evento, luogo o numero del biglietto..."
+      }
+    }
   }
 }

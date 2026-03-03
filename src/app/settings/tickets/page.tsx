@@ -42,6 +42,8 @@ import { cn } from "@/lib/utils";
 import { SelectViewport } from "@radix-ui/react-select";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Helper function to format date
 const formatDate = (dateString: string) => {
@@ -82,6 +84,8 @@ export default function TicketsPage() {
   const [currentTicketQR, setCurrentTicketQR] = useState<number>(0);
   const [modalTicketsList, setModalTicketsList] = useState<TicketItems[]>([]);
 
+    const { locale } = useLanguageStore();
+    const { t } = useTranslation(locale);
   //   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(()=> {
   //  if (typeof window !== "undefined") {
   //       return localStorage.getItem("active_order_id");
@@ -134,9 +138,11 @@ export default function TicketsPage() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
-        order.event.title.toLowerCase().includes(query) ||
-        order.event.venueName.toLowerCase().includes(query) ||
-        order.tickets.some((t) => t.ticketNumber.toLowerCase().includes(query))
+        (order.event?.title?.toLowerCase() ?? "").includes(query) ||
+        (order.event?.venueName?.toLowerCase() ?? "").includes(query) ||
+        order.tickets?.some((t) =>
+          (t.ticketNumber?.toLowerCase() ?? "").includes(query),
+        )
       );
     }
 
@@ -228,7 +234,7 @@ export default function TicketsPage() {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-          My Tickets
+          {t('setting.menu.tickets.title')}
         </h1>
         <Card>
           <CardContent className="text-center py-12">
@@ -252,10 +258,10 @@ export default function TicketsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-          My Tickets
+         {t('setting.menu.tickets.title', 'My Tickets')}
         </h1>
         <p className="text-sm text-gray-600">
-          Manage and view all your event tickets
+         {t('setting.menu.tickets.subtitle','Manage and view all your event tickets')} 
         </p>
       </div>
 
@@ -266,7 +272,7 @@ export default function TicketsPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 flex gap-2">
               <Input
-                placeholder="Search by event name, location, or ticket number..."
+                placeholder={t('setting.menu.tickets.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -361,110 +367,98 @@ export default function TicketsPage() {
               {view === "list" && (
                 <div className="flex flex-col gap-4 animate-in fade-in duration-500">
                   {filteredTickets.map((order: ViewTicketDetails) => (
-                    <Card
-                      key={order.orderId}
-                      className={cn(
-                        "flex flex-between w-full group overflow-hidden",
-                        "bg-white/60 backdrop-blur-[20px]",
-                        "border border-white/10 border-gradient-to-r from-white/0 via-white/100 to-white/100",
-                        "shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05),0px_4px_4px_0px_rgba(0,0,0,0.05),0px_1px_0px_0px_rgba(0,0,0,0.03)]",
-                        "hover:shadow-lg transition-all duration-300 hover:scale-[1.01]",
-                        "rounded-[10px] cursor-pointer",
-                      )}
-                    >
-                      <CardContent className="p-0 flex flex-col md:flex-row items-stretch">
-                        {/* Thumbnail Image - Fixed width on desktop */}
-                        <div
-                          className="w-full md:w-48 h-32 md:h-auto bg-cover bg-center shrink-0 transition-transform duration-500 group-hover:scale-105"
-                          style={{
-                            backgroundImage: `url(${order.event.imageUrl})`,
-                          }}
-                        />
+  <Card
+    key={order.orderId}
+    className={cn(
+      "w-full group overflow-hidden transition-all duration-300 hover:scale-[1.01]",
+      "bg-white/60 backdrop-blur-[20px]",
+      "border border-white/10 shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05)]",
+      "rounded-[10px] cursor-pointer"
+    )}
+  >
+    <CardContent className="p-0 flex flex-col md:flex-row">
+      {/* 1. Image: Full width on mobile, fixed width on desktop */}
+      <div
+        className="w-full h-48 md:w-48 md:h-auto shrink-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+        style={{ backgroundImage: `url(${order.event.imageUrl})` }}
+      />
 
-                        {/* Content Area */}
-                        <div className="flex-1 p-5 flex flex-col md:flex-row justify-between gap-4">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-bold text-xl text-gray-900">
-                                {order.event.title}
-                              </h3>
-                              <Badge
-                                variant="secondary"
-                                className="bg-primary/10 text-primary"
-                              >
-                                <TicketIcon />
-                                {order.ticketCount}{" "}
-                                {order.ticketCount === 1 ? "Ticket" : "Tickets"}
-                              </Badge>
-                            </div>
+      {/* 2. Main Wrapper: Spreads content and status apart */}
+      <div className="flex-1 flex flex-col sm:flex-row justify-between p-5 gap-6">
+        
+        {/* Left Side: Event Details */}
+        <div className="flex-1 min-w-0 space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-bold text-xl text-gray-900 leading-tight line-clamp-1">
+              {order.event.title}
+            </h3>
+            <Badge variant="secondary" className="bg-primary/10 text-primary shrink-0">
+              <TicketIcon className="w-3 h-3 mr-1" />
+              {order.ticketCount} {order.ticketCount === 1 ? "Ticket" : "Tickets"}
+            </Badge>
+          </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-primary" />
-                                {formatDate(order.event.startDate)}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-primary" />
-                                {formatTime(order.event.startDate)}
-                              </div>
-                              <div className="flex items-center gap-2 col-span-full">
-                                <MapPin className="h-4 w-4 text-primary" />
-                                <span className="truncate">
-                                  {order.event.venueName}, {order.event.address}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-primary shrink-0" />
+              <span className="truncate">{formatDate(order.event.startDate)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-primary shrink-0" />
+              <span>{formatTime(order.event.startDate)}</span>
+            </div>
+            <div className="flex items-center gap-2 col-span-full">
+              <MapPin className="h-4 w-4 text-primary shrink-0" />
+              <span className="line-clamp-1">
+                {order.event.venueName}, {order.event.address}
+              </span>
+            </div>
+          </div>
+        </div>
 
-                          {/* Status Section */}
-                          <div className="flex flex-row md:flex-col justify-end items-center md:items-end gap-3 min-w-[140px] border-t md:border-t-0 pt-4 md:pt-0">
-                            <div className="md:text-right">
-                              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-0.5">
-                                Payment Status
-                              </p>
+        {/* Right Side: Status & Action */}
+        <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4 sm:min-w-[150px] pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l sm:pl-6 border-gray-100">
+          <div className="sm:text-right">
+            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">
+              Payment Status
+            </p>
+            <div className="flex items-center sm:justify-end gap-1.5">
+              {order.transactionStatus === "completed" && (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+              )}
+              <p className={cn(
+                "font-bold text-sm capitalize",
+                order.transactionStatus === "completed" ? "text-green-600" : "text-amber-600"
+              )}>
+                {order.transactionStatus}
+              </p>
+            </div>
+          </div>
 
-                              <div className="flex items-center md:justify-end gap-1.5">
-                                {order.transactionStatus === "completed" && (
-                                  <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                                  </span>
-                                )}
-                                <p
-                                  className={cn(
-                                    "font-bold text-sm capitalize",
-                                    order.transactionStatus === "completed"
-                                      ? "text-green-600"
-                                      : "text-amber-600",
-                                  )}
-                                >
-                                  {order.transactionStatus}
-                                </p>
-                              </div>
-                              <p className="text-[11px] text-muted-foreground mt-0.5">
-                                Purchased {formatDate(order.purchaseDate)}
-                              </p>
-                            </div>
+          <Button
+            size="default"
+            className="px-6 bg-primary hover:bg-primary/90 w-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewTickets(order);
+            }}
+          >
+            View Tickets
+          </Button>
+        </div>
 
-                            <Button
-                              size="default"
-                              key={order.orderId}
-                              className="w-full md:w-auto px-6 bg-primary hover:bg-primary/90"
-                              onClick={() => handleViewTickets(order)}
-                            >
-                              View Tickets
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+      </div>
+    </CardContent>
+  </Card>
+))}
 
                   {/* 4. ADD PAGINATION CONTROLS HERE */}
                   {pagination?.has_next && (
                     <div className="text-center py-8">
                       <Button
-                        
                         size="lg"
                         onClick={handleLoadMore}
                         disabled={isFetching}

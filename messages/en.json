@@ -603,5 +603,14 @@
     "title": "Billing & Payments",
     "description": "Manage your payment methods and view transaction history",
     "paymentMethods": "Payment Methods"
+  },
+  "setting": {
+    "menu": {
+      "tickets": {
+        "title": "My Tickets",
+        "subtitle": "Manage and view all your event tickets",
+        "search": "Search by event name, location, or ticket number..."
+      }
+    }
   }
 }

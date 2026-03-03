@@ -10,6 +10,12 @@ export const useCompanyInfo = () => {
     queryKey: ['company-info'],
     queryFn: () => companyService.getCompanyInfo(),
     staleTime: 1000 * 60 * 30,
+    initialData: () => {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : undefined;
+      }
+    },
   });
 
   const { data } = query;
