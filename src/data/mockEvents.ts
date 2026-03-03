@@ -46,7 +46,6 @@ export const mockEvents: Event[] = [
         isActive: true,
         available: 500
       },
-
     ],
     status: 'Completed' as EventStatus,
     sales_status: 'active',
@@ -58,7 +57,8 @@ export const mockEvents: Event[] = [
     maxTicketsPerOrder: 10,
     allowReEntry: true,
     createdAt: '2024-12-01T00:00:00Z',
-    updatedAt: '2025-01-15T00:00:00Z'
+    updatedAt: '2025-01-15T00:00:00Z',
+    is_featured: true,
   },
   
 ];

@@ -186,6 +186,7 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
     updatedAt: apiEvent.updated_at || apiEvent.created_at,
     sales_status: apiEvent.sales_status || 'active',
     is_cancelled: apiEvent.is_cancelled || false,
+    is_featured: apiEvent.is_featured || false,
   };
 };
 export const eventService = {
