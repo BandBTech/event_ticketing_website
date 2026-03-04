@@ -58,8 +58,6 @@ export default function ContactPage() {
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      console.log({ ...data, category: selectedCategory });
-
       toast.success(t("contact.toast.success"));
 
       reset();
