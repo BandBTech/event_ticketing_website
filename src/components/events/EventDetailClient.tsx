@@ -339,13 +339,17 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                   {/* Action Buttons */}
                   <div className="pt-2">
                     <div className="space-y-3">
-
-                      {event.ticketTypes.some((t) => t.sales_end < new Date().toISOString()) ? (
+                      {event.ticketTypes.some(
+                        (t) => t.sales_end > new Date().toISOString(),
+                      ) ? (
                         <>
                           {event.ticketTypes.length > 0 && (
                             <div className="mb-4">
                               <p className="text-sm text-gray-500 font-medium">
-                                {t("events.startingFrom", "Tickets starting from")}
+                                  {t(
+                                    "events.startingFrom",
+                                    "Tickets starting from",
+                                  )}
                               </p>
                               <p className="text-2xl font-bold text-blue-600">
                                 {new Intl.NumberFormat("en-NP", {
@@ -364,12 +368,18 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
                             onClick={handleFindTickets}
                             className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
                           >
-                            {t("eventDetails.button.findTickets", "Find Tickets")}
+                              {t(
+                                "eventDetails.button.findTickets",
+                                "Find Tickets",
+                              )}
                           </Button>
                         </>
                       ) : (
                         <div className="w-full h-12 bg-destructive/15 text-destructive font-medium rounded-lg flex items-center justify-center">
-                          {t("eventDetails.button.ticketSalesEnded", "Ticket Sales Ended")}
+                            {t(
+                              "eventDetails.button.ticketSalesEnded",
+                              "Ticket Sales Ended",
+                            )}
                         </div>
                       )}
 
