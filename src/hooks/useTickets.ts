@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { ticketService, GuestPurchasePayload, UserPurchasePayload, GuestPurchaseResponse, UserPurchaseResponse, PaginatedUserTickets } from '@/services/ticketService';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/toast';
+import { redirectToCheckout } from '@/lib/stripe';
 
 interface ApiError {
   response?: {
@@ -18,6 +19,14 @@ export const useGuestPurchaseMutation = () => {
     mutationFn: (data: GuestPurchasePayload) => ticketService.guestPurchase(data),
     onSuccess: (res: GuestPurchaseResponse, variables) => {
       if (res.success) {
+        // Stripe flow: redirect to Stripe Checkout URL
+        if (res.data?.payment_url) {
+          toast.message("Redirecting to payment...", "success");
+          window.location.href = res.data.payment_url;
+          return;
+        }
+
+        // Cash flow: redirect to local success page
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
@@ -44,6 +53,14 @@ export const useUserPurchaseMutation = () => {
     mutationFn: (data: UserPurchasePayload) => ticketService.userPurchase(data),
     onSuccess: (res: UserPurchaseResponse, variables) => {
       if (res.success) {
+        // Stripe flow: redirect to Stripe Checkout URL
+        if (res.data?.gateway_data?.session_id) {
+          toast.message("Redirecting to payment...", "success");
+          redirectToCheckout(res.data.gateway_data.session_id);
+          return;
+        }
+
+        // Cash flow: redirect to local success page
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
@@ -92,3 +109,4 @@ export const useTransactionDetails = (transactionId?: string) => {
     enabled: !!transactionId,
   });
 };
+

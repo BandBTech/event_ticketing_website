@@ -16,10 +16,12 @@ import {
 } from "@phosphor-icons/react";
 import cn from "clsx";
 import { GuestPurchasePayload, UserPurchasePayload } from "@/services/ticketService";
+import { ShieldCheckIcon } from "lucide-react";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
-// NOTE: Payment gateway API calls are temporarily disabled.
+// Payment gateways are currently hardcoded (gateway API is disabled).
+// When the gateway API is enabled, uncomment:
 // import { useGateways } from "@/hooks/usePayments";
 // import type { GatewayInfo } from "@/types/payment";
 import { format } from "date-fns";
@@ -83,9 +85,10 @@ function GuestPurchaseContent() {
     {},
   );
 
-  // Payment gateway state — cash is the default (gateway API calls are disabled)
-  const CASH_GATEWAY = { name: "cash", display_name: "Cash", description: "For use with developer", icon_url: "" };
-  const [selectedGateway, setSelectedGateway] = useState<string>("cash");
+  // Payment gateway state
+  const CASH_GATEWAY = { name: "cash", display_name: "Cash", description: "Pay with cash at the venue", icon_url: "" };
+  const STRIPE_GATEWAY = { name: "stripe", display_name: "Stripe", description: "Secure online payment via Stripe", icon_url: "" };
+  const [selectedGateway, setSelectedGateway] = useState<string>("stripe");
 
   // Form for Guest Details (email only)
   const guestForm = useForm<GuestFormData>({
@@ -96,12 +99,13 @@ function GuestPurchaseContent() {
   });
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
 
   const { isAuthenticated } = useAuthStore();
 
-  // NOTE: Payment gateway API calls are disabled. Cash is used as the default.
+  // Gateway list (hardcoded while gateway API is disabled)
   // const { data: gateways, isLoading: isLoadingGateways } = useGateways();
-  const gateways = [CASH_GATEWAY];
+  const gateways = [STRIPE_GATEWAY, CASH_GATEWAY];
   const isLoadingGateways = false;
 
   const maxQuantity = isAuthenticated ? USER_MAX_QUANTITY : GUEST_MAX_QUANTITY;
@@ -207,12 +211,23 @@ function GuestPurchaseContent() {
         return;
       }
 
+      if (selectedGateway === "stripe") {
+        setIsRedirectingToPayment(true);
+      }
+
       if (isAuthenticated) {
         // Logged-in user purchase
+
+        const user = useAuthStore.getState().user;
+
         const userPayload: UserPurchasePayload = {
           event_id: eventData.id,
           payment_gateway: selectedGateway,
           tiers: tiersPayload,
+          customer_email: user?.email || "",
+          customer_name: `${user?.firstName || ""} ${user?.lastName || ""}`,
+          customer_phone: user?.phone || "",
+          country_code: user?.countryCode || "",
         };
         userPurchaseMutation.mutate(userPayload);
       } else {
@@ -645,6 +660,17 @@ function GuestPurchaseContent() {
                       ))}
                     </div>
                   )}
+
+                  {/* Stripe branding badge */}
+                  {selectedGateway === "stripe" && (
+                    <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500 bg-gray-50 rounded-lg p-3 border border-gray-100">
+                      <ShieldCheckIcon className="w-4 h-4 text-green-500" />
+                      <span>
+                        {t("ticketPurchase.securePayment", "Secure payment powered by")}{" "}
+                        <span className="font-bold text-[#635BFF]">Stripe</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -737,19 +763,32 @@ function GuestPurchaseContent() {
 
                   <Button
                     onClick={handleContinue}
-                    className="w-full h-12 text-lg font-bold shadow-lg shadow-blue-200"
+                    className={cn(
+                      "w-full h-12 text-lg font-bold shadow-lg",
+                      step === 2 && selectedGateway === "stripe"
+                        ? "bg-[#635BFF] hover:bg-[#5851db] shadow-purple-200"
+                        : "shadow-blue-200",
+                    )}
                     disabled={
                       isPending ||
+                      isRedirectingToPayment ||
                       totalQuantity === 0
                     }
                   >
-                    {isPending ? (
+                    {isPending || isRedirectingToPayment ? (
                       <span className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded-full border-2 border-white/50 border-t-white animate-spin" />
-                        {t("common.processing", "Processing...")}
+                        {isRedirectingToPayment
+                          ? t("ticketPurchase.redirectingToPayment", "Redirecting to payment...")
+                          : t("common.processing", "Processing...")}
                       </span>
                     ) : step === 1 ? (
                       t("common.continue", "Continue")
+                      ) : selectedGateway === "stripe" ? (
+                        t(
+                          "ticketPurchase.payWithStripe",
+                          "Pay with Stripe",
+                        )
                     ) : (
                       t(
                         "ticketPurchase.proceedToCheckout",
