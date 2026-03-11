@@ -612,5 +612,8 @@
         "search": "Search by event name, location, or ticket number..."
       }
     }
+  },
+  "transaction": {
+    "loadMore": "Load More Transactions"
   }
 }

@@ -43,7 +43,7 @@ export default function SettingsLayout({
       description: t('settings.menu.notificationsDesc', 'Email and push notifications'),
     },
     {
-      href: '/settings/billing',
+      href: '/settings/transactions',
       label: t('settings.menu.transactions', 'Billing'),
       icon: CreditCardIcon,
       description: t('settings.menu.billingDesc', 'Manage your payment methods'),

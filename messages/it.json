@@ -494,5 +494,8 @@
         "search": "Cerca per nome dell'evento, luogo o numero del biglietto..."
       }
     }
+  },
+  "transaction": {
+    "loadMore": "Carica più transazioni"
   }
 }
