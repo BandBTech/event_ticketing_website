@@ -44,7 +44,8 @@
     "myTickets": "私のチケット",
     "billing": "請求する",
     "notifications": "通知",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "transactions": "トランザクション"
   },
   "hero": {
     "badge": "ネパール最高のイベントプラットフォーム",

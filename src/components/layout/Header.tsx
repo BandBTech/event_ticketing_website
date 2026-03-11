@@ -114,9 +114,9 @@ export function Header() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/settings/billing" className="cursor-pointer flex items-center">
+                        <Link href="/settings/transactions" className="cursor-pointer flex items-center">
                           <User size={16} className="mr-2" />
-                          {t('navigation.billing', 'Billing')}
+                          {t('navigation.transactions', 'Transactions')}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>

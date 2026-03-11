@@ -45,7 +45,8 @@
     "logout": "Logout",
     "myTickets": "My Tickets",
     "billing": "Billing",
-    "notifications": "Notification"
+    "notifications": "Notification",
+    "transactions": "Transactions"
   },
   "profile": {
     "title": "My Profile",

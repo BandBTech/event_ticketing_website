@@ -44,7 +44,8 @@
     "myTickets": "I miei biglietti",
     "billing": "Fatturazione",
     "notifications": "Notifica",
-    "logout": "Esci"
+    "logout": "Esci",
+    "transactions": "Transazioni"
   },
   "hero": {
     "badge": "La Piattaforma Eventi Premier del Nepal",
