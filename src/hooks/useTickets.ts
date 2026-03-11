@@ -20,7 +20,16 @@ export const useGuestPurchaseMutation = () => {
     onSuccess: (res: GuestPurchaseResponse, variables) => {
       if (res.success) {
         // Stripe flow: redirect to Stripe Checkout URL
-        if (res.data?.payment_url) {
+        const gatewayData = res.data?.gateway_data;
+        if (gatewayData?.session_id) {
+          toast.message("Redirecting to payment...", "success");
+          redirectToCheckout(gatewayData.session_id);
+          return;
+        } else if (gatewayData?.url) {
+          toast.message("Redirecting to payment...", "success");
+          window.location.href = gatewayData.url;
+          return;
+        } else if (res.data?.payment_url) {
           toast.message("Redirecting to payment...", "success");
           window.location.href = res.data.payment_url;
           return;
@@ -54,9 +63,14 @@ export const useUserPurchaseMutation = () => {
     onSuccess: (res: UserPurchaseResponse, variables) => {
       if (res.success) {
         // Stripe flow: redirect to Stripe Checkout URL
-        if (res.data?.gateway_data?.session_id) {
+        const gatewayData = res.data?.gateway_data;
+        if (gatewayData?.session_id) {
           toast.message("Redirecting to payment...", "success");
-          redirectToCheckout(res.data.gateway_data.session_id);
+          redirectToCheckout(gatewayData.session_id);
+          return;
+        } else if (gatewayData?.url) {
+          toast.message("Redirecting to payment...", "success");
+          window.location.href = gatewayData.url;
           return;
         }
 
@@ -67,7 +81,7 @@ export const useUserPurchaseMutation = () => {
         const totalQuantity = variables.tiers.reduce((sum, t) => sum + t.quantity, 0);
         query.append("quantity", totalQuantity.toString());
 
-        const token = res.data?.order_id;
+        const token = res.data?.order_id || res.data?.id;
         if (token) {
           query.append("token", token);
         }

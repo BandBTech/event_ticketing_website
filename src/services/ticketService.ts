@@ -33,6 +33,10 @@ export interface GuestPurchaseResponse {
     id: string;
     token: string;
     payment_url?: string;
+    gateway_data?: {
+      session_id?: string;
+      url?: string;
+    };
   };
 }
 
@@ -51,6 +55,7 @@ export interface UserPurchaseResponse {
   success: boolean;
   message: string;
   data?: {
+    id?: string;
     order_id: string;
     checkout_token: string;
     payment_gateway: string;
@@ -59,7 +64,7 @@ export interface UserPurchaseResponse {
     status: string;
     gateway_data: {
       cancel_url: string;
-      line_items: Array<{
+      line_items?: Array<{
         price_data: {
           currency: string;
           product_data: {
@@ -70,13 +75,14 @@ export interface UserPurchaseResponse {
         };
         quantity: number;
       }>;
-      metadata: {
+      metadata?: {
         checkout_token: string;
         ticket_id: string;
         user_id: string;
       };
       session_id: string;
       success_url: string;
+      url?: string;
     };
     expires_at: string;
     created_at: string;

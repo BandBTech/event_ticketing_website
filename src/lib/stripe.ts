@@ -26,9 +26,16 @@ export const redirectToCheckout = async (sessionId: string) => {
     throw new Error("Stripe not initialized");
   }
 
-  const response = await stripe.initCheckout({
-    clientSecret: sessionId,
+  type CheckoutStripe = Stripe & {
+    redirectToCheckout: (options: { sessionId: string }) => Promise<{ error?: { message: string } }>;
+  };
+
+  const { error } = await (stripe as unknown as CheckoutStripe).redirectToCheckout({
+    sessionId,
   });
 
-  console.log(response);
+  if (error) {
+    console.error("Stripe Checkout error:", error.message);
+    throw new Error(error.message);
+  }
 };
