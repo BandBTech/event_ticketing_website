@@ -2,7 +2,6 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { ticketService, GuestPurchasePayload, UserPurchasePayload, GuestPurchaseResponse, UserPurchaseResponse, PaginatedUserTickets } from '@/services/ticketService';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/toast';
-import { redirectToCheckout } from '@/lib/stripe';
 
 interface ApiError {
   response?: {
@@ -21,11 +20,7 @@ export const useGuestPurchaseMutation = () => {
       if (res.success) {
         // Stripe flow: redirect to Stripe Checkout URL
         const gatewayData = res.data?.gateway_data;
-        if (gatewayData?.session_id) {
-          toast.message("Redirecting to payment...", "success");
-          redirectToCheckout(gatewayData.session_id);
-          return;
-        } else if (gatewayData?.url) {
+        if (gatewayData?.url) {
           toast.message("Redirecting to payment...", "success");
           window.location.href = gatewayData.url;
           return;
@@ -64,11 +59,7 @@ export const useUserPurchaseMutation = () => {
       if (res.success) {
         // Stripe flow: redirect to Stripe Checkout URL
         const gatewayData = res.data?.gateway_data;
-        if (gatewayData?.session_id) {
-          toast.message("Redirecting to payment...", "success");
-          redirectToCheckout(gatewayData.session_id);
-          return;
-        } else if (gatewayData?.url) {
+        if (gatewayData?.url) {
           toast.message("Redirecting to payment...", "success");
           window.location.href = gatewayData.url;
           return;
