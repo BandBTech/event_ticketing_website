@@ -9,7 +9,7 @@ export interface Event {
   endDate: string;
   categories: EventCategory[];
   ticketTypes: TicketType[];
-  status: EventStatus;
+  status: string;
   organizer: Organizer;
   maxTicketsPerOrder: number;
   allowReEntry: boolean;

@@ -31,7 +31,6 @@ export default function EventsPage() {
 
   const allEvents = data?.pages.flatMap(page => page.events) || [];
 
-
   const pagination = data?.pages[data.pages.length - 1]?.pagination;
 
   const { data: categories } = useEventCategories();

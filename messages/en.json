@@ -158,7 +158,22 @@
     "startingFrom": "Tickets starting from",
     "ticketsLeft": "tickets left",
     "soldOut": "Sold out",
-    "priceTBA": "Price TBA"
+    "priceTBA": "Price TBA",
+    "badge": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "cancelled": "Cancelled",
+      "draft": "Draft",
+      "completed": "Completed",
+      "rejected": "Rejected",
+      "on_sale": "Sales Live",
+      "active": "Sales Live",
+      "paused": "Sales Paused",
+      "stopped": "Sales Stopped",
+      "sold_out": "Sold Out",
+      "sales_ended": "Sales Ended",
+      "live": "Live"
+    }
   },
   "languages": {
     "en": "English",

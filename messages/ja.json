@@ -132,7 +132,22 @@
     "startingFrom": "チケット料金は次から",
     "ticketsLeft": "枚残り",
     "soldOut": "売り切れ",
-    "priceTBA": "価格未定"
+    "priceTBA": "価格未定",
+    "badge": {
+      "approved": "承認済み",
+      "pending": "保留中",
+      "cancelled": "キャンセル済み",
+      "draft": "下書き",
+      "completed": "完了",
+      "rejected": "却下",
+      "on_sale": "セールスライブ",
+      "active": "セールスライブ",
+      "paused": "販売停止",
+      "stopped": "販売停止",
+      "sold_out": "売り切れ",
+      "sales_ended": "販売終了",
+      "live": "ライブ"
+    }
   },
   "languages": {
     "en": "English",

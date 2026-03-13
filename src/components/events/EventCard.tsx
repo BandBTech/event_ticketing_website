@@ -13,65 +13,17 @@ import { Event } from "@/types";
 import { cn } from "@/lib/utils";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import FeaturedBadge from "./FeaturedBadge";
+import { EventStatusBadge } from "./EventStatusBadge";
+import { SalesStatusBadge } from "./SalesStatusBadge";
 
 interface EventCardProps {
   event: Event;
   className?: string;
 }
-const getEventStatusStyles = (status: string) => {
-  const s = status?.toLowerCase().replace(" ", "_");
-  switch (s) {
-    case "on_sale":
-      return "text-emerald-600 bg-emerald-500/10 border-emerald-500/20";
-    case "completed":
-      return "text-slate-500 bg-slate-500/10 border-slate-500/20";
-    case "cancelled":
-      return "text-rose-600 bg-rose-500/10 border-rose-500/20";
-    default:
-      return "text-indigo-600 bg-indigo-500/10 border-indigo-500/20";
-  }
-};
-
-const getSalesStatusStyles = (salesStatus: string) => {
-  switch (salesStatus) {
-    case "active":
-      return {
-        label: "Active",
-        color: "text-white",
-        dot: "bg-green-700",
-        badge: "bg-green-500/75 border-green-200",
-      };
-    case "stopped":
-      return {
-        label: "Sales Ended",
-        color: "text-white",
-        dot: "bg-red-500",
-        badge: "bg-red-500/75 border-red-200",
-      };
-    default:
-      return {
-        label: "Hold",
-        color: "text-yellow-600",
-        dot: "bg-yellow-500",
-        badge: "bg-yellow-100 border-yellow-200",
-      };
-  }
-};
 
 export function EventCard({ event, className }: EventCardProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-
-  // const availableTickets = event.ticketTypes.reduce(
-  //   (total, ticket) => {
-  //     const sold = ticket.sold || 0;
-  //     const quantity = ticket.quantity || 0;
-  //     console.log(`🎫 Ticket ${ticket.name}: quantity=${quantity}, sold=${sold}, available=${quantity - sold}`);
-  //     return total + (quantity - sold);
-  //   },
-  //   0
-  // );
-  const salesInfo = getSalesStatusStyles(event.sales_status);
 
   return (
     <Link href={`/events/detail?id=${event.id}`} className="block">
@@ -95,28 +47,12 @@ export function EventCard({ event, className }: EventCardProps) {
             height={225}
             className="w-full h-[225px] object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute top-2 left-2 ">
-            <Badge
-              className={cn(
-                "flex items-center gap-1.5 px-2 py-1 border rounded-2xl backdrop-blur-[8px]",
-                salesInfo.badge,
-              )}
-            >
-              <span
-                className={cn(
-                  "w-1.5 h-1.5 rounded-full animate-pulse",
-                  salesInfo.dot,
-                )}
-              />
-              <span
-                className={cn(
-                  "text-[10px] font-bold uppercase tracking-wide",
-                  salesInfo.color,
-                )}
-              >
-                {salesInfo.label}
-              </span>
-            </Badge>
+          <div className="absolute top-2 left-2">
+            {event.status?.toLowerCase().replace(" ", "_") === "on_sale" && event.sales_status !== "active" ? (
+              <SalesStatusBadge status={event.sales_status} />
+            ) : (
+              <EventStatusBadge status={event.status} />
+            )}
           </div>
 
           {event.is_featured && (
@@ -161,19 +97,6 @@ export function EventCard({ event, className }: EventCardProps) {
               <span className="text-gray-600 text-[13px] leading-[1.54] truncate">
                 {event.venue.name}, {event.venue.country}
               </span>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-2">
-            <div
-              className={cn(
-                "inline-flex items-center px-2.5 py-1 rounded-md border",
-                "text-[10px] font-semibold uppercase tracking-[0.1em]",
-                "transition-colors duration-200",
-                getEventStatusStyles(event.status),
-              )}
-            >
-              {event.status?.replace("_", " ")}
             </div>
           </div>
 

@@ -102,21 +102,6 @@ interface ApiUpcomingEventsResponse {
 
 }
 
-const mapStatus = (status: string): EventStatus => {
-  const statusMap: Record<string, EventStatus> = {
-    'draft': 'Draft',
-    'completed': 'Completed',
-    'on_sale': 'On Sale',
-    'sale_on_hold': 'Sale on Hold',
-    'sold_out': 'Sold Out',
-    'closed': 'Closed',
-    'cancelled': 'Cancelled',
-    'held': 'Sale on Hold',
-    'approved': 'Approved',
-  };
-  return statusMap[status.toLowerCase()];
-};
-
 const parseCategoryString = (categoryStr: string): string[] => {
   if (!categoryStr) return [];
 
@@ -174,7 +159,7 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
       color: 'blue',
     })),
     ticketTypes: (apiEvent.tiers || []).map(mapTier),
-    status: mapStatus(apiEvent.status),
+    status: apiEvent.status,
     organizer: apiEvent.organizer ? {
       id: apiEvent.organizer.id,
       business_name: apiEvent.organizer.business_name,
@@ -189,7 +174,7 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
     available: apiEvent.available || 0,
     createdAt: apiEvent.created_at,
     updatedAt: apiEvent.updated_at || apiEvent.created_at,
-    sales_status: apiEvent.sales_status || 'active',
+    sales_status: apiEvent.sales_status || "",
     is_cancelled: apiEvent.is_cancelled || false,
     is_featured: apiEvent.is_featured || false,
   };

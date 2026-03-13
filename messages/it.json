@@ -131,7 +131,22 @@
     "from": "Da",
     "ticketsLeft": "biglietti rimasti",
     "soldOut": "Esaurito",
-    "priceTBA": "Prezzo da Annunciare"
+    "priceTBA": "Prezzo da Annunciare",
+    "badge": {
+      "approved": "Approvato",
+      "pending": "In attesa",
+      "cancelled": "Annullato",
+      "draft": "Bozza",
+      "completed": "Completato",
+      "rejected": "Rifiutato",
+      "on_sale": "Vendite Live",
+      "active": "Vendite Live",
+      "paused": "Vendite in Pausa",
+      "stopped": "Vendite Interrotte",
+      "sold_out": "Esaurito",
+      "sales_ended": "Vendite Terminate",
+      "live": "Live"
+    }
   },
   "languages": {
     "en": "English",
