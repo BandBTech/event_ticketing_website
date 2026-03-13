@@ -275,7 +275,7 @@ import {
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { HomeEvent } from "@/components/events/HomeEvent";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -291,13 +291,12 @@ export default function HomePage() {
 
   const { data: featuredEvents } = useFeaturedEvents();
   const { data: categories } = useEventCategories();
-  const { data: upcomingEvents, isLoading: upcomingLoading } =
-    useUpcomingEvents({
-      limit: 3,
-      page: 1,
-    });
-  const upcomingEventsArray = upcomingEvents?.events || [];
-  const upcomingPagination = upcomingEvents?.pagination;
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useUpcomingEvents(3);
+
+  const upcomingEvents = data?.pages.flatMap((page) => page.events) || [];
+  const totalItems = data?.pages[0]?.pagination.total;
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -426,9 +425,9 @@ export default function HomePage() {
 
       {/* Featured Events Section */}
       {featuredEvents && featuredEvents.length > 0 && (
-        <section id="events" className="py-16 px-4 sm:px-6 lg:px-8">
+        <section id="events" className="py-4 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="text-left mb-6">
               <h2 className="text-3xl font-bold text-gray-900 mb-4 font-poppins">
                 {t("sections.featuredEvents.title")}
               </h2>
@@ -436,39 +435,9 @@ export default function HomePage() {
                 {t("sections.featuredEvents.subtitle")}
               </p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredEvents.slice(0, 3).map((event) => (
-                <div
-                  key={event.id}
-                  className="group relative overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/15 transition-all duration-300"
-                >
-                  <div className="aspect-video relative overflow-hidden">
-                    <Image
-                      src={event.imageUrl}
-                      alt={event.title}
-                      width={400}
-                      height={225}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <h3 className="text-white font-semibold text-lg mb-2 line-clamp-2">
-                        {event.title}
-                      </h3>
-                      <div className="flex items-center gap-4 text-sm text-slate-300">
-                        <div className="flex items-center gap-1">
-                          <CalendarDotsIcon weight="duotone" size={16} />
-                          <span>Aug 12</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPinIcon weight="duotone" size={16} />
-                          <span>{event.venue.city}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <HomeEvent key={event.id} event={event} />
               ))}
             </div>
           </div>
@@ -500,7 +469,51 @@ export default function HomePage() {
         </section>
       )}
 
-      {upcomingEvents && upcomingEventsArray.length > 0 && (
+      {upcomingEvents && upcomingEvents.length > 0 && (
+        <section id="upcoming-events" className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Header aligned to center to match Featured section */}
+            <div className="text-left mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4 font-poppins">
+                {t("sections.upcomingEvents.title")}
+              </h2>
+              <p className="text-gray-600 text-lg">
+                Showing {upcomingEvents.length} of {totalItems} {t("sections.upcomingEvents.subtitle")}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingEvents.map((event) => (
+                <HomeEvent key={event.id} event={event} />
+              ))}
+            </div>
+
+            {/* View All Link */}
+            {hasNextPage && (
+              <div className="text-center mt-12">
+                <FigmaButton
+                  variant="primary"
+                  size="lg"
+                  showGlow={true}
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Loading...
+                    </span>
+                  ) : (
+                    t("upcomming.loadMore")
+                  )}
+                </FigmaButton>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* {upcomingEvents && upcomingEventsArray.length > 0 && (
         <section id="upcoming-events" className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-left mb-12">
@@ -517,7 +530,7 @@ export default function HomePage() {
               isLoading={upcomingLoading}
             />
 
-            {/* View All Link - if you have pagination */}
+           
             {upcomingPagination && upcomingPagination.total > 3 && (
               <div className="text-center mt-8">
                 <Link
@@ -531,7 +544,7 @@ export default function HomePage() {
             )}
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Search Query and SelectedCategory>*/}
       {/* <section className="py-16 px-4 sm:px-6 lg:px-8">

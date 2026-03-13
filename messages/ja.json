@@ -500,5 +500,8 @@
   },
   "transaction": {
     "loadMore": "さらにトランザクションをロードする"
+  },
+  "upcomming": {
+    "loadMore": "今後さらにロードする"
   }
 }

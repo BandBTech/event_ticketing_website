@@ -89,11 +89,16 @@ interface ApiEventsResponse {
 };
 
 interface ApiUpcomingEventsResponse {
+  has_next: boolean;
   events: ApiEvent[];
-  current_page: number;
-  limit: number;
-  total_items: number;
-  total_pages: number;
+  pagination: {
+    has_next: boolean;
+    has_prev: boolean;
+    limit: number;
+    page: number;
+    total: number;
+    total_pages: number;
+  };
 
 }
 
@@ -221,10 +226,8 @@ export const eventService = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
 
     const response = await api.get<ApiEventsResponse>(`/public/events/featured?${queryParams.toString()}`);
-
-    const responseData = response as unknown as { events: ApiEvent[] };
-
-    return (responseData.events || []).map(mapEvent);
+     const eventsArray = Array.isArray(response) ? response : [];
+    return eventsArray.map(mapEvent);
   },
 
   getEventCategories: async (params: EventCategoriesParams = {}) => {
@@ -282,10 +285,11 @@ export const eventService = {
     return {
       events: (response.events || []).map(mapEvent),
       pagination: {
-        total: response.total_items || 0,
-        page: response.current_page || 1,
-        limit: response.limit || 10,
-        totalPages: response.total_pages || 1,
+        total: response.pagination.total,
+        page: response.pagination.page,
+        limit: response.pagination.limit,
+        totalPages: response.pagination.total_pages,
+        hasNext: response.pagination.has_next,
       },
     };
   }

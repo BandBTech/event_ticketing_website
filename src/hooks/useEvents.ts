@@ -54,11 +54,15 @@ export const useInfiniteEvents = (params: Omit<QueryParams, 'page'> = {}) => {
   });
 };
 
-export const useUpcomingEvents = (params: QueryParams = {}) => {
-  return useQuery({
-    queryKey: ['upcoming-events', params],
-    queryFn: () => eventService.getUpcomingEvents(params),
-    staleTime: 5 * 60 * 1000, // 5 minutes cache
+export const useUpcomingEvents = (limit: number = 3) => {
+  return useInfiniteQuery({
+    queryKey: ['upcoming-events-infinite', limit],
+    queryFn: ({ pageParam = 1 }) => 
+      eventService.getUpcomingEvents({ page: pageParam, limit }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+const { page, totalPages } = lastPage.pagination;
+      return page < totalPages ? page + 1 : undefined;
+    },
   });
 };
-

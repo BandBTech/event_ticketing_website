@@ -69,7 +69,7 @@ export default function BillingPage() {
         <div className="space-y-6">
           {/* Tabs */}
           <div className="flex gap-4 mb-6 border-b">
-            {(["transactions", "invoices"] as const).map((tab) => (
+            {(["transactions",/* "invoices"*/] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -163,11 +163,11 @@ export default function BillingPage() {
                 </>
               )}
 
-              {activeTab === "invoices" && (
+              {/* {activeTab === "invoices" && (
                 <div className="text-center py-10 text-muted-foreground">
                   Invoices functionality coming soon.
                 </div>
-              )}
+              )} */}
             </div>
           )}
         </div>
