@@ -580,7 +580,16 @@
     "maxReached": "Maximum of {USER_MAX_QUANTITY} tickets reached",
     "multiTierHint": "Select quantities for each ticket type (max {maxQuantity} total)",
     "noTicketsSelected": "No tickets selected",
-    "totalTickets": "Total Tickets"
+    "totalTickets": "Total Tickets",
+    "payWithStripe": "Pay with Stripe",
+    "redirectingToPayment": "Redirecting to payment...",
+    "validatingPayment": "Verifying your payment...",
+    "paymentFailed": "Payment Confirmation Failed",
+    "invalidAccess": "Invalid Access",
+    "invalidAccessMessage": "We could not verify your payment details.",
+    "cancelledTitle": "Purchase Cancelled",
+    "cancelledMessage": "Your payment has been cancelled.",
+    "cancellationFailed": "Payment Cancellation Failed"
   },
   "ticketView": {
     "title": "Digital Ticket",

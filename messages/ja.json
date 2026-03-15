@@ -466,7 +466,16 @@
     "maxReached": "最大 {USER_MAX_QUANTITY} チケットに達しました",
     "multiTierHint": "各チケットタイプの数量を選択してください (合計最大 {maxQuantity})",
     "noTicketsSelected": "チケットが選択されていません",
-    "totalTickets": "合計チケット数"
+    "totalTickets": "合計チケット数",
+    "payWithStripe": "Stripe で支払う",
+    "redirectingToPayment": "支払いにリダイレクトしています...",
+    "validatingPayment": "お支払いを確認しています...",
+    "paymentFailed": "支払い確認に失敗しました",
+    "invalidAccess": "無効なアクセス",
+    "invalidAccessMessage": "お支払いの詳細を確認できませんでした。",
+    "cancelledTitle": "購入がキャンセルされました",
+    "cancelledMessage": "お支払いはキャンセルされました。",
+    "cancellationFailed": "支払いのキャンセルに失敗しました"
   },
   "ticketView": {
     "title": "デジタルチケット",

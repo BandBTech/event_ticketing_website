@@ -33,6 +33,10 @@ export interface GuestPurchaseResponse {
     id: string;
     token: string;
     payment_url?: string;
+    gateway_data?: {
+      session_id?: string;
+      url?: string;
+    };
   };
 }
 
@@ -41,17 +45,47 @@ export interface UserPurchasePayload {
   event_id: string;
   tiers: PurchaseTierPayload[];
   payment_gateway: string;
+  customer_email: string;
+  customer_name: string;
+  customer_phone: string;
+  country_code: string;
 }
 
 export interface UserPurchaseResponse {
   success: boolean;
   message: string;
   data?: {
+    id?: string;
     order_id: string;
-    tickets: Array<{
-      ticket_id: string;
-      ticket_number: string;
-    }>;
+    checkout_token: string;
+    payment_gateway: string;
+    amount: number;
+    currency: string;
+    status: string;
+    gateway_data: {
+      cancel_url: string;
+      line_items?: Array<{
+        price_data: {
+          currency: string;
+          product_data: {
+            description: string;
+            name: string;
+          };
+          unit_amount: number;
+        };
+        quantity: number;
+      }>;
+      metadata?: {
+        checkout_token: string;
+        ticket_id: string;
+        user_id: string;
+      };
+      session_id: string;
+      success_url: string;
+      url?: string;
+    };
+    expires_at: string;
+    created_at: string;
   };
 }
 export interface PaginatedUserTickets {

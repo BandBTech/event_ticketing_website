@@ -18,6 +18,19 @@ export const useGuestPurchaseMutation = () => {
     mutationFn: (data: GuestPurchasePayload) => ticketService.guestPurchase(data),
     onSuccess: (res: GuestPurchaseResponse, variables) => {
       if (res.success) {
+        // Stripe flow: redirect to Stripe Checkout URL
+        const gatewayData = res.data?.gateway_data;
+        if (gatewayData?.url) {
+          toast.message("Redirecting to payment...", "success");
+          window.location.href = gatewayData.url;
+          return;
+        } else if (res.data?.payment_url) {
+          toast.message("Redirecting to payment...", "success");
+          window.location.href = res.data.payment_url;
+          return;
+        }
+
+        // Cash flow: redirect to local success page
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
@@ -44,13 +57,23 @@ export const useUserPurchaseMutation = () => {
     mutationFn: (data: UserPurchasePayload) => ticketService.userPurchase(data),
     onSuccess: (res: UserPurchaseResponse, variables) => {
       if (res.success) {
+        // Stripe flow: redirect to Stripe Checkout URL
+        const gatewayData = res.data?.gateway_data;
+        console.log({ res })
+        if (gatewayData?.url) {
+          toast.message("Redirecting to payment...", "success");
+          window.location.href = gatewayData.url;
+          return;
+        }
+
+        // Cash flow: redirect to local success page
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
         const totalQuantity = variables.tiers.reduce((sum, t) => sum + t.quantity, 0);
         query.append("quantity", totalQuantity.toString());
 
-        const token = res.data?.order_id;
+        const token = res.data?.order_id || res.data?.id;
         if (token) {
           query.append("token", token);
         }
@@ -92,3 +115,4 @@ export const useTransactionDetails = (transactionId?: string) => {
     enabled: !!transactionId,
   });
 };
+

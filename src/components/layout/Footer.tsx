@@ -64,13 +64,13 @@ export function Footer() {
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/10 border border-blue-600/20">
                   <TicketIcon size={24} className="text-blue-600" />
-                  <span className="text-xl font-bold text-gray-900 font-poppins">
+                  <span className="text-xl font-bold text-gray-900 font-poppins" suppressHydrationWarning>
                     {company?.name}
                   </span>
                 </div>
               </div>
               
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed" suppressHydrationWarning>
                 {/* {t('footer.description')} */}{company?.description}
               </p>
 
@@ -78,20 +78,20 @@ export function Footer() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                   <EnvelopeSimpleIcon size={16} className="text-blue-500" />
-                  <span>{company?.email}
+                  <span suppressHydrationWarning>{company?.email}
                     {/* {t('footer.contact.email')} */}
                     </span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                   <PhoneIcon size={16} className="text-blue-500" />
-                  <span>
+                  <span suppressHydrationWarning>
                     {company?.phone}
                     {/* {t('footer.contact.phone')} */}
                     </span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                   <MapPinIcon size={16} className="text-blue-500" />
-                  <span>
+                  <span suppressHydrationWarning>
                     {company?.address}
                     {/* {t('footer.contact.address')} */}
                     </span>
