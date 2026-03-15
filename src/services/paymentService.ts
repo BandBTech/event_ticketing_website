@@ -1,5 +1,5 @@
 import { api } from "@/lib/apiClient";
-import { type GatewayInfo } from "@/types/payment";
+import { type GatewayInfo, type PaymentSuccessResponse } from "@/types/payment";
 
 export interface GetGatewaysParams {
   currency?: string;
@@ -26,5 +26,11 @@ export const paymentService = {
     const asObj = response as { data?: GatewayInfo[] };
     if (Array.isArray(asObj?.data)) return asObj.data;
     return [];
+  },
+  confirmPayment: async (checkoutToken: string): Promise<PaymentSuccessResponse> => {
+    return api.post<PaymentSuccessResponse>(`/public/payment/success?checkout_token=${checkoutToken}`, { checkout_token: checkoutToken });
+  },
+  cancelledPayment: async (checkoutToken: string): Promise<PaymentSuccessResponse> => {
+    return api.post<PaymentSuccessResponse>(`/public/payment/failure?checkout_token=${checkoutToken}`, { checkout_token: checkoutToken });
   },
 };

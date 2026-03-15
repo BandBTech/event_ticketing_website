@@ -14,3 +14,13 @@ export interface GatewaysResponse {
   message: string;
   data: GatewayInfo[];
 }
+
+export interface PaymentSuccessResponse {
+  token: string;
+  message?: string;
+}
+
+export interface PaymentCancelResponse {
+  success: boolean;
+  message: string;
+}

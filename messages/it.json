@@ -448,7 +448,16 @@
     "maxReached": "È stato raggiunto il numero massimo di {USER_MAX_QUANTITY} biglietti",
     "multiTierHint": "Seleziona le quantità per ciascun tipo di biglietto (max {maxQuantity} totale)",
     "noTicketsSelected": "Nessun biglietto selezionato",
-    "totalTickets": "Biglietti totali"
+    "totalTickets": "Biglietti totali",
+    "payWithStripe": "Paga con Stripe",
+    "redirectingToPayment": "Reindirizzamento al pagamento...",
+    "validatingPayment": "Verifica del pagamento...",
+    "paymentFailed": "Conferma del pagamento non riuscita",
+    "invalidAccess": "Accesso non valido",
+    "invalidAccessMessage": "Non siamo riusciti a verificare i dettagli del tuo pagamento.",
+    "cancelledTitle": "Acquisto annullato",
+    "cancelledMessage": "Il tuo pagamento è stato annullato.",
+    "cancellationFailed": "Annullamento del pagamento non riuscito"
   },
   "ticketView": {
     "title": "Biglietto Digitale",

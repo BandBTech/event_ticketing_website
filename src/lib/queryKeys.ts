@@ -17,4 +17,8 @@ export const queryKeys = {
     view: (token: string) => ['tickets', 'view', token],
     validate: (token: string) => ['tickets', 'validate', token],
   },
+  payment: {
+    confirm: (checkoutToken: string) => ['payment', 'confirm', checkoutToken],
+    cancel: (checkoutToken: string) => ['payment', 'cancel', checkoutToken],
+  },
 };

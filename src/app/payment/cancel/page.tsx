@@ -7,6 +7,8 @@ import {
   TicketIcon,
   HouseIcon,
   SealCheckIcon,
+  ExcludeIcon,
+  XCircleIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -17,17 +19,15 @@ import { paymentService } from "@/services/paymentService";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
-function PaymentSuccessContent() {
+function PaymentCancelledContent() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const searchParams = useSearchParams();
-  const checkoutToken = searchParams.get("checkout_token") || "";
-
+  const checkoutToken = useSearchParams().get("checkout_token") || "";
 
   const { data, status, error } = useQuery({
-    queryKey: queryKeys.payment.confirm(checkoutToken.trim()),
-    queryFn: () => paymentService.confirmPayment(checkoutToken.trim()),
+    queryKey: queryKeys.payment.cancel(checkoutToken.trim()),
+    queryFn: () => paymentService.cancelledPayment(checkoutToken.trim()),
     enabled: !!checkoutToken,
     retry: 1,
   });
@@ -38,7 +38,7 @@ function PaymentSuccessContent() {
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
         <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md w-full">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
-            <WarningCircleIcon size={32} weight="duotone" className="rotate-45" />
+            <WarningCircleIcon size={32} weight="duotone" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("ticketPurchase.invalidAccess", "Invalid Access")}</h1>
           <p className="text-gray-600 mb-6">{t("ticketPurchase.invalidAccessMessage", "We could not verify your payment details.")}</p>
@@ -75,7 +75,7 @@ function PaymentSuccessContent() {
             <SealCheckIcon size={32} weight="duotone" className="rotate-45" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {t("ticketPurchase.paymentFailed", "Payment Confirmation Failed")}
+            {t("ticketPurchase.cancellationFailed", "Payment Cancellation Failed")}
           </h1>
           <p className="text-gray-600 mb-6">{msg}</p>
           <Button onClick={() => router.push("/")} className="w-full">
@@ -86,37 +86,26 @@ function PaymentSuccessContent() {
     );
   }
 
-  // Success state — data.token is the ticket view token
-  const viewTicketsUrl = `/tickets/view/?token=${data.token}`;
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full text-center border border-gray-100">
         {/* Animated check icon */}
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 animate-in zoom-in duration-300">
-          <CheckCircleIcon size={40} weight="duotone" />
+          <XCircleIcon size={40} weight="duotone" />
         </div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {t("ticketPurchase.successTitle", "Purchase Successful!")}
+          {t("ticketPurchase.cancelledTitle", "Ticket Purchase Cancelled")}
         </h1>
 
         <p className="text-gray-600 mb-6 text-lg">
           {t(
-            "ticketPurchase.successMessage",
-            "Your tickets have been booked successfully. A confirmation email has been sent to you."
+            "ticketPurchase.cancelledMessage",
+            "Your payment has been cancelled."
           )}
         </p>
 
         <div className="space-y-3">
-          {/* View Tickets — uses the token returned from the API */}
-          <Button
-            onClick={() => router.push(viewTicketsUrl)}
-            className="w-full h-12 text-lg font-bold shadow-lg shadow-primary/20 group"
-          >
-            <TicketIcon size={20} className="mr-2" />
-            {t("ticketPurchase.viewTicket", "View Ticket")}
-          </Button>
 
           <Button
             variant="outline"
@@ -141,7 +130,7 @@ export default function PaymentSuccessPage() {
         </div>
       }
     >
-      <PaymentSuccessContent />
+      <PaymentCancelledContent />
     </Suspense>
   );
 }
