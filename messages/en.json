@@ -32,7 +32,12 @@
     "processing": "Processing...",
     "continue": "Continue",
     "apply": "Apply",
-    "returnHome": "Return to Home"
+    "returnHome": "Return to Home",
+    "pagination": {
+      "showing": "Showing",
+      "of": "of",
+      "events": "events."
+    }
   },
   "navigation": {
     "events": "Events",
@@ -151,7 +156,8 @@
       "placeholder": "Enter your email"
     },
     "copyright": "Timro-Ticket. All rights reserved.",
-    "madeIn": "Made with ❤️ in Nepal"
+    "madeIn": "Made with ❤️ in Nepal",
+    "developedby": "Developed by"
   },
   "events": {
     "from": "From",
@@ -409,7 +415,8 @@
         "secure": "100%"
       },
       "subtitle": "Our impact in numbers across Nepal."
-    }
+    },
+    "badge": "Our Journey"
   },
   "newsletter": {
     "title": "Stay Updated",

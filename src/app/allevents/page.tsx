@@ -53,10 +53,10 @@ export default function EventsPage() {
       {/* Page Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-2 font-poppins">
-          {t('sections.allEvents.title')}
+          {t('sections.allEvents.title','All Events')}
         </h1>
         <p className="text-gray-600 text-lg">
-          {t('sections.allEvents.subTitle')}
+          {t('sections.allEvents.subTitle','Here you can find all events')}
         </p>
       </div>
 
@@ -64,7 +64,7 @@ export default function EventsPage() {
       <div className="max-w-2xl mx-auto mb-8 realative">
         <EventSearch
           onSearch={handleSearch}
-          placeholder={t('hero.searchPlaceholder')}
+          placeholder={t('hero.searchPlaceholder',' Search for events...')}
           className="w-full pl-10"
         />
       </div>
@@ -110,15 +110,15 @@ export default function EventsPage() {
             {isFetchingNextPage ? (
               <span className="flex items-center gap-2">
                 <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-                {t('common.loading')}
+                {t('common.loading','Loading...')}
               </span>
             ) : (
-              t('common.loadMore')
+              t('common.loadMore','Load More Events')
             )}
           </FigmaButton>
           {pagination && (
             <p className="text-gray-600 text-sm mt-3">
-              Showing {allEvents.length} of {pagination.total} events
+              {t('common.pagination.showing',"Showing")} {allEvents.length} {t('common.pagination.of','of')} {pagination.total} {t('common.pagination.events','events.')}
             </p>
           )}
         </div>

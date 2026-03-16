@@ -31,7 +31,12 @@
     "processing": "Elaborazione...",
     "continue": "Continuare",
     "apply": "Fare domanda a",
-    "returnHome": "Ritorno a casa"
+    "returnHome": "Ritorno a casa",
+    "pagination": {
+      "showing": "Mostrare",
+      "of": "Di",
+      "events": "eventi."
+    }
   },
   "navigation": {
     "events": "Eventi",
@@ -125,7 +130,8 @@
       "placeholder": "Inserisci la tua email"
     },
     "copyright": "Biglietto Timro. \nTutti i diritti riservati.",
-    "madeIn": "Fatto con ❤️ in Nepal"
+    "madeIn": "Fatto con ❤️ in Nepal",
+    "developedby": "Sviluppato da"
   },
   "events": {
     "from": "Da",
@@ -290,7 +296,8 @@
       "title": "Pronto a ospitare il tuo evento?",
       "subtitle": "Che si tratti di un piccolo raduno o di un grande festival, siamo qui per aiutarti a creare e far crescere esperienze indimenticabili.",
       "becomeOrganizer": "Diventa un organizzatore"
-    }
+    },
+    "badge": "Il nostro viaggio"
   },
   "newsletter": {
     "title": "Rimani aggiornato",

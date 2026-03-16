@@ -31,7 +31,12 @@
     "processing": "処理...",
     "continue": "続く",
     "apply": "適用する",
-    "returnHome": "ホームに戻る"
+    "returnHome": "ホームに戻る",
+    "pagination": {
+      "showing": "表示中",
+      "of": "の",
+      "events": "イベント。"
+    }
   },
   "navigation": {
     "events": "イベント",
@@ -125,7 +130,8 @@
       "placeholder": "メールアドレスを入力"
     },
     "copyright": "ティムロチケット。\n無断転載を禁じます。",
-    "madeIn": "ネパールで❤️を込めて作成"
+    "madeIn": "ネパールで❤️を込めて作成",
+    "developedby": "開発者"
   },
   "events": {
     "from": "から",
@@ -292,7 +298,8 @@
       "title": "独自のイベントを主催する準備はできましたか?",
       "subtitle": "小規模な集まりでも大規模なフェスティバルでも、私たちは忘れられない経験を生み出し、成長させるお手伝いをいたします。",
       "becomeOrganizer": "オーガナイザーになる"
-    }
+    },
+    "badge": "私たちの旅"
   },
   "newsletter": {
     "title": "最新情報を入手",

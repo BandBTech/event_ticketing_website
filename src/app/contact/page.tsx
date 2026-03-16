@@ -107,18 +107,18 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <EnvelopeSimpleIcon size={18} className="text-primary" />
-                  <span>{t("footer.contact.email")}</span>
+                  <span>{t("footer.contact.email",'info@timroticket.com')}</span>
                 </div>
 
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <PhoneIcon size={18} className="text-primary" />
-                  <span>{t("footer.contact.phone")}</span>
+                  <span>{t("footer.contact.phone", '+977-1-4567890')}</span>
                 </div>
 
                 <div className="flex items-start gap-3 text-sm text-muted-foreground">
                   <MapPinIcon size={18} className="text-primary mt-0.5" />
                   <span className="leading-relaxed">
-                    {t("footer.contact.address")}
+                    {t("footer.contact.address",'Kathmadnu, Nepal')}
                   </span>
                 </div>
               </div>
@@ -161,12 +161,12 @@ export default function ContactPage() {
                 {/* Name */}
                 <div>
                   <label className="text-sm font-medium block mb-2">
-                    {t("contact.form.fullName")}{" "}
+                    {t("contact.form.fullName", 'Full Name')}{" "}
                     <span className="text-destructive ml-0.5">*</span>
                   </label>
                   <Input
                     className={cn("h-12", errors.name && "border-destructive")}
-                    placeholder={t("contact.form.placeholder.fullName")}
+                    placeholder={t("contact.form.placeholder.fullName", 'Enter your full name')}
                     {...register("name")}
                   />
                   {errors.name && (
@@ -179,13 +179,13 @@ export default function ContactPage() {
                 {/* Email */}
                 <div>
                   <label className="text-sm font-medium block mb-2">
-                    {t("contact.form.email")}{" "}
+                    {t("contact.form.email",'Email')}{" "}
                     <span className="text-destructive ml-0.5">*</span>
                   </label>
                   <Input
                     type="email"
                     className={cn("h-12", errors.email && "border-destructive")}
-                    placeholder={t("contact.form.placeholder.email")}
+                    placeholder={t("contact.form.placeholder.email",'Enter your email')}
                     {...register("email")}
                   />
                   {errors.email && (
@@ -198,7 +198,7 @@ export default function ContactPage() {
                 {/* Category */}
                 <div>
                   <label className="text-sm font-medium block mb-2">
-                    {t("contact.support.title")}
+                    {t("contact.support.title",'Support Category')}
                   </label>
                   <Select
                     value={selectedCategory}
@@ -214,7 +214,7 @@ export default function ContactPage() {
                       )}
                     >
                       <SelectValue
-                        placeholder={t("contact.support.option.selectIssue")}
+                        placeholder={t("contact.support.option.selectIssue", 'Select an issue')}
                       />
                     </SelectTrigger>
 
@@ -229,35 +229,35 @@ export default function ContactPage() {
                         value="ticket"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.ticketBooking")}
+                        {t("contact.support.option.ticketBooking",'Ticket Booking Issue')}
                       </SelectItem>
 
                       <SelectItem
                         value="event"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.eventPublishing")}
+                        {t("contact.support.option.eventPublishing", 'Event Publishing')}
                       </SelectItem>
 
                       <SelectItem
                         value="payment"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.paymentsRefund")}
+                        {t("contact.support.option.paymentsRefund",'Payments & Refund')}
                       </SelectItem>
 
                       <SelectItem
                         value="tech"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.technicalSupport")}
+                        {t("contact.support.option.technicalSupport",'Technical Support')}
                       </SelectItem>
 
                       <SelectItem
                         value="partner"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.partner")}
+                        {t("contact.support.option.partner",'Partner/Bussiness Inquiry')}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -266,7 +266,7 @@ export default function ContactPage() {
                 {/* Message */}
                 <div>
                   <label className="text-sm font-medium block mb-2">
-                    {t("contact.message.title")}{" "}
+                    {t("contact.message.title",'Message')}{" "}
                     <span className="text-destructive ml-0.5">*</span>
                   </label>
                   <textarea
@@ -276,7 +276,7 @@ export default function ContactPage() {
                       "focus:outline-none focus:ring-2 focus:ring-primary",
                       errors.message && "border-destructive"
                     )}
-                    placeholder={t("contact.message.textarea")}
+                    placeholder={t("contact.message.textarea",'Write your message...')}
                     {...register("message")}
                   />
                   {errors.message && (
@@ -290,7 +290,7 @@ export default function ContactPage() {
                   type="submit"
                   className="w-full h-12 rounded-lg text-base font-semibold"
                 >
-                  {t("contact.button.sendMessage")}
+                  {t("contact.button.sendMessage",'Send Message')}
                 </Button>
               </form>
             </div>

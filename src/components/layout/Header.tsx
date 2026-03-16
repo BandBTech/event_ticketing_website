@@ -19,6 +19,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from '@/lib/toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { BellIcon, CreditCardIcon } from '@phosphor-icons/react';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,10 +38,10 @@ export function Header() {
   };
 
   const navigation = [
-    { name: t('navigation.events'), href: '/allevents' },
+    { name: t('navigation.events','Events'), href: '/allevents' },
     // { name: t('navigation.categories'), href: '#categories' },
-    { name: t('navigation.about'), href: '/about' },
-    { name: t('navigation.contact'), href: '/contact' },
+    { name: t('navigation.about','About'), href: '/about' },
+    { name: t('navigation.contact','Contact'), href: '/contact' },
   ];
 
   return (
@@ -115,13 +116,13 @@ export function Header() {
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href="/settings/transactions" className="cursor-pointer flex items-center">
-                          <User size={16} className="mr-2" />
+                          <CreditCardIcon size={16} className="mr-2" />
                           {t('navigation.transactions', 'Transactions')}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href="/settings/notifications" className="cursor-pointer flex items-center">
-                          <User size={16} className="mr-2" />
+                          <BellIcon size={16} className="mr-2" />
                           {t('navigation.notifications', 'Notifications')}
                         </Link>
                       </DropdownMenuItem>
@@ -145,7 +146,7 @@ export function Header() {
                       className="text-gray-700 hover:text-blue-600 hover:bg-blue-50"
                     >
                       <User size={16} className="mr-1" />
-                      {t('navigation.signIn')}
+                      {t('navigation.signIn','Sign In')}
                     </Button>
                   </Link>
                   <FigmaButton
@@ -153,7 +154,7 @@ export function Header() {
                     size="md"
                     showGlow={true}
                   >
-                    {t('navigation.organizeEvent')}
+                    {t('navigation.organizeEvent','Organize Event')}
                   </FigmaButton>
                 </>
               )}
@@ -227,7 +228,7 @@ export function Header() {
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <User size={16} className="mr-2" />
-                          {t('navigation.signIn')}
+                          {t('navigation.signIn','Sign In')}
                         </Button>
                       </Link>
                       <FigmaButton
@@ -235,7 +236,7 @@ export function Header() {
                         size="md"
                         showGlow={true}
                       >
-                        {t('navigation.organizeEvent')}
+                        {t('navigation.organizeEvent','Organize Event')}
                       </FigmaButton>
                     </>
                   )}

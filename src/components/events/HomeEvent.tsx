@@ -3,6 +3,8 @@ import Link from "next/link";
 import { CalendarDotsIcon, MapPinIcon } from "@phosphor-icons/react";
 import { Event } from "@/types/event";
 import FeaturedBadge from "./FeaturedBadge";
+import { SalesStatusBadge } from "./SalesStatusBadge";
+import { EventStatusBadge } from "./EventStatusBadge";
 
 interface EventCardProps {
   event: Event;
@@ -23,7 +25,13 @@ export function HomeEvent({ event }: EventCardProps) {
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
+          <div className="absolute top-2 left-2">
+            {event.status?.toLowerCase().replace(" ", "_") === "on_sale" && event.sales_status !== "active" ? (
+              <SalesStatusBadge status={event.sales_status} />
+            ) : (
+              <EventStatusBadge status={event.status} />
+            )}
+          </div>
       {/* Featured Badge - Positioned inside the image container */}
       {event.is_featured && (
         <div className="absolute top-3 right-3 z-10">

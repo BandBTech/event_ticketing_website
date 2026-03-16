@@ -7,8 +7,10 @@ import { ArrowRightIcon, EnvelopeSimpleIcon, FacebookLogoIcon, InstagramLogoIcon
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCompanyInfo } from '@/hooks/useCompany';
+import { useEffect, useState } from 'react';
 
 export function Footer() {
+  const [mounted, setMounted] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const pathname = usePathname();
@@ -16,27 +18,31 @@ export function Footer() {
 
   const {data: company, isLoading} = useCompanyInfo();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
   if (authPaths.some(path => pathname?.startsWith(path))) {
     return null;
   }
   const footerLinks = {
     company: [
-      { name: t('footer.links.company.aboutUs'), href: '/about' },
-      { name: t('footer.links.company.howItWorks'), href: '#how-it-works' },
+      { name: t('footer.links.company.aboutUs','About Us'), href: '/about' },
+      { name: t('footer.links.company.howItWorks','How It Works'), href: '#how-it-works' },
       // { name: t('footer.links.company.careers'), href: '#careers' },
       // { name: t('footer.links.company.press'), href: '#press' },
     ],
     organizers: [
-      { name: t('footer.links.organizers.createEvent'), href: '#create-event' },
-      { name: t('footer.links.organizers.pricing'), href: '#pricing' },
-      { name: t('footer.links.organizers.eventManagement'), href: '#management' },
-      { name: t('footer.links.organizers.analytics'), href: '#analytics' },
+      { name: t('footer.links.organizers.createEvent','Create Event'), href: '#create-event' },
+      { name: t('footer.links.organizers.pricing','Pricing'), href: '#pricing' },
+      { name: t('footer.links.organizers.eventManagement','Event Management'), href: '#management' },
+      { name: t('footer.links.organizers.analytics','Analytics'), href: '#analytics' },
     ],
     support: [
-      { name: t('footer.links.support.helpCenter'), href: '#help' },
-      { name: t('footer.links.support.contactSupport'), href: '#support' },
-      { name: t('footer.links.support.eventGuidelines'), href: '#guidelines' },
-      { name: t('footer.links.support.refundPolicy'), href: '#refunds' },
+      { name: t('footer.links.support.helpCenter','Help Center'), href: '#help' },
+      { name: t('footer.links.support.contactSupport','Contact Support'), href: '#support' },
+      { name: t('footer.links.support.eventGuidelines','Event Guidelines'), href: '#guidelines' },
+      { name: t('footer.links.support.refundPolicy','Refund Policy'), href: '#refunds' },
     ],
     legal: [
       { name: 'Privacy Policy', href: '#privacy' },
@@ -53,6 +59,16 @@ export function Footer() {
     { name: 'LinkedIn', icon: LinkedinLogoIcon, href: company?.linkedin_url},
   ];
 
+if (!mounted || (isLoading && !company)) {
+    return (
+      <footer className="bg-white/80 border-t border-white/30 py-12">
+        <div className="max-w-7xl mx-auto px-4 text-center text-gray-400">
+      
+          <div className="animate-pulse h-8 bg-gray-100 rounded w-1/4 mx-auto" />
+        </div>
+      </footer>
+    );
+  }
   return (
     <footer className="bg-white/80 backdrop-blur-[25px] border-t border-white/30 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -105,7 +121,7 @@ export function Footer() {
                   return (
                     <a
                       key={social.name}
-                      href={social.href}
+                      href={mounted?(social.href): '#'}
                       className="p-2 rounded-lg glass border hover:bg-white/90 transition-all duration-200"
                       aria-label={social.name}
                     >
@@ -119,7 +135,7 @@ export function Footer() {
             {/* Links Grid */}
             <div className="lg:col-span-5 grid grid-cols-2 md:grid-cols-3 gap-8">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.company.title')}</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.company.title','Company')}</h3>
                 <ul className="space-y-3">
                   {footerLinks.company.map((link) => (
                     <li key={link.name}>
@@ -135,7 +151,7 @@ export function Footer() {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.organizers.title')}</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.organizers.title','Organizers')}</h3>
                 <ul className="space-y-3">
                   {footerLinks.organizers.map((link) => (
                     <li key={link.name}>
@@ -151,7 +167,7 @@ export function Footer() {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.support.title')}</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{t('footer.links.support.title','Support')}</h3>
                 <ul className="space-y-3">
                   {footerLinks.support.map((link) => (
                     <li key={link.name}>
@@ -169,14 +185,14 @@ export function Footer() {
 
             {/* Newsletter Signup */}
             <div className="lg:col-span-3 space-y-4">
-              <h3 className="font-semibold text-gray-900">{t('newsletter.title')}</h3>
+              <h3 className="font-semibold text-gray-900">{t('newsletter.title','Stay Updated')}</h3>
               <p className="text-sm text-gray-600">
-                {t('newsletter.subtitle')}
+                {t('newsletter.subtitle','Get notified about new events and exclusive offers.')}
               </p>
               <div className="flex gap-2">
                 <Input
                   type="email"
-                  placeholder={t('newsletter.email.placeholder')}
+                  placeholder={t('newsletter.email.placeholder','Enter your email')}
                   className="glass border text-gray-900 placeholder:text-gray-500 flex-1"
                 />
                 <Button
@@ -194,20 +210,20 @@ export function Footer() {
         <div className="border-t border-white/20 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-gray-600">
-            © {new Date().getFullYear()} {t('footer.copyright')}
+            © {new Date().getFullYear()} {t('footer.copyright','Timro-Ticket. All rights reserved.')}
             </div>
             
             <div className="flex items-center gap-6 text-sm text-gray-600">
-              <span>Developed by <a href='https://thebandbtech.com/'>B&B Tech Group.</a></span>
+              <span>{t('footer.developedby','Developed by') }<a href='https://thebandbtech.com/'> B&B Tech Group.</a></span>
               <div className="flex items-center gap-4">
                 <a href="#privacy" className="hover:text-blue-600 transition-colors">
-                  {t('footer.links.legal.privacyPolicy')}
+                  {t('footer.links.legal.privacyPolicy','Privacy Policy')}
                 </a>
                 <a href="#terms" className="hover:text-blue-600 transition-colors">
-                  {t('footer.links.legal.termsOfService')}
+                  {t('footer.links.legal.termsOfService','Terms of Service')}
                 </a>
                 <a href="#cookies" className="hover:text-blue-600 transition-colors">
-                  {t('footer.links.legal.cookiePolicy')}
+                  {t('footer.links.legal.cookiePolicy','Cookies Policy')}
                 </a>
               </div>
             </div>
@@ -217,3 +233,4 @@ export function Footer() {
     </footer>
   );
 }
+

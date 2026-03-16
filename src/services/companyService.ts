@@ -1,6 +1,7 @@
 import { api } from "@/lib/apiClient";
 
 export interface CompanyInfo{
+     
     id: string;
     name: string;
     description: string;
@@ -14,14 +15,15 @@ export interface CompanyInfo{
     instagram_url: string;
     linkedin_url: string;
     youtube_url: string;
+    updated_at: string;
+    
 }
-
 
 
 export const companyService ={
     
     getCompanyInfo: async (): Promise<CompanyInfo> => {
-        const response = await api.get<{success: boolean; data: CompanyInfo}>('/public/company-info');
-        return response.data || response;
+        const response = await api.get<CompanyInfo>('/public/company-info');
+        return response;
     }
 }
