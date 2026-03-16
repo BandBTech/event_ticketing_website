@@ -24,7 +24,8 @@ import { createValidationHelpers } from "@/lib/validation";
 // When the gateway API is enabled, uncomment:
 // import { useGateways } from "@/hooks/usePayments";
 // import type { GatewayInfo } from "@/types/payment";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
+import { formatEventDateTime } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -87,7 +88,7 @@ function GuestPurchaseContent() {
 
   // Payment gateway state
   const CASH_GATEWAY = { name: "cash", display_name: "Cash", description: "Pay with cash at the venue", icon_url: "" };
-  const STRIPE_GATEWAY = { name: "stripe", display_name: "Stripe", description: "Secure online payment via Stripe", icon_url: "" };
+  const STRIPE_GATEWAY = { name: "stripe", display_name: "Stripe", description: "Secure online payment via Stripe", icon_url: "/images/stripe.svg" };
   const [selectedGateway, setSelectedGateway] = useState<string>("stripe");
 
   // Form for Guest Details (email only)
@@ -144,10 +145,26 @@ function GuestPurchaseContent() {
   // Get a default currency from the first ticket type
   const defaultCurrency = eventData?.ticketTypes?.[0]?.currency || "USD";
 
+  const availableTicketTypes = useMemo(() => {
+    if (!eventData) return [];
+    const now = new Date().toISOString();
+    return eventData.ticketTypes.filter(
+      (tt) => tt.sales_start <= now && tt.sales_end >= now && tt.isActive,
+    );
+  }, [eventData]);
+
   const handleTierQuantityChange = (tierId: string, delta: number) => {
     setTierQuantities((prev) => {
       const current = prev[tierId] || 0;
+      const tier = eventData?.ticketTypes.find((t) => t.id === tierId);
       const newQty = Math.max(0, current + delta);
+
+      if (tier && newQty > tier.available) {
+        toast.error(
+          t("ticketPurchase.notEnoughTickets", `Only ${tier.available} tickets available`, { count: tier.available })
+        );
+        return prev;
+      }
 
       // Check total limit
       const otherTotal = Object.entries(prev)
@@ -346,10 +363,33 @@ function GuestPurchaseContent() {
                 </div>
 
                 <div className="p-6 space-y-4">
+                  {availableTicketTypes.length === 0 && (
+                    <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                      <TicketIcon className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {t(
+                          "ticketPurchase.noTicketsCurrentlyAvailable",
+                          "No tickets currently available",
+                        )}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-2 max-w-xs mx-auto">
+                        {t(
+                          "ticketPurchase.noTicketsCurrentlyAvailableDesc",
+                          "Tickets for this event are not on sale at the moment. Please check back later.",
+                        )}
+                      </p>
+                    </div>
+                  )}
                   {eventData.ticketTypes.map((ticketType) => {
                     const qty = tierQuantities[ticketType.id] || 0;
                     const isAtMaxTotal = totalQuantity >= maxQuantity;
-                    if (ticketType.sales_end < new Date().toISOString()) return null;
+                    const now = new Date().toISOString();
+                    const isSalesActive =
+                      ticketType.sales_start <= now &&
+                      ticketType.sales_end >= now &&
+                      ticketType.isActive;
+
+                    if (!isSalesActive) return null;
 
                     return (
                       <div
@@ -363,13 +403,23 @@ function GuestPurchaseContent() {
                       >
                         {/* Tier Info */}
                         <div className="flex-1 min-w-0 mb-3 sm:mb-0">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center flex-wrap gap-2">
                             <Label className="font-bold text-gray-900 text-lg">
                               {ticketType.tier_name}
                             </Label>
                             {qty > 0 && (
                               <span className="text-xs font-bold bg-primary text-white px-2 py-0.5 rounded-full">
                                 {qty}×
+                              </span>
+                            )}
+                            {ticketType.available === 0 && (
+                              <span className="text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                {t("events.soldOut", "Sold out")}
+                              </span>
+                            )}
+                            {ticketType.available > 0 && ticketType.available < 10 && (
+                              <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                {t("ticketPurchase.onlyTicketsLeft", `Only ${ticketType.available} left!`, { count: ticketType.available })}
                               </span>
                             )}
                           </div>
@@ -416,7 +466,7 @@ function GuestPurchaseContent() {
                             }
                             variant="outline"
                             size="icon"
-                            disabled={isAtMaxTotal || isPending}
+                            disabled={isAtMaxTotal || isPending || qty >= ticketType.available}
                             className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                           >
                             <PlusIcon
@@ -464,6 +514,7 @@ function GuestPurchaseContent() {
                         {t(
                           "ticketPurchase.maxReached",
                           `Maximum of ${USER_MAX_QUANTITY} tickets reached`,
+                          { USER_MAX_QUANTITY }
                         )}
                       </p>
                     </div>
@@ -692,9 +743,21 @@ function GuestPurchaseContent() {
                   <h3 className="font-bold text-gray-900 text-sm line-clamp-2">
                     {eventData.title}
                   </h3>
-                  <div className="flex items-center text-xs text-gray-500 mt-1">
-                    <CalendarIcon size={14} className="mr-1" />
-                    {format(new Date(eventData.startDate), "MMM dd, yyyy")}
+                  <div className="flex flex-col text-xs text-gray-500 mt-1 space-y-0.5">
+                    <div className="flex items-start">
+                      <CalendarIcon size={14} className="mr-1 flex-shrink-0 text-primary mt-0.5" />
+                      <div className="flex flex-col">
+                        {(() => {
+                          const dateDisplay = formatEventDateTime(eventData.startDate, eventData.endDate);
+                          return (
+                            <>
+                              <span>{dateDisplay.start} {dateDisplay.isSameDay ? `- ${dateDisplay.end}` : "-"}</span>
+                              {!dateDisplay.isSameDay && <span>{dateDisplay.end}</span>}
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center text-xs text-gray-500 mt-0.5">
                     <MapPinIcon size={14} className="mr-1" />
@@ -796,9 +859,9 @@ function GuestPurchaseContent() {
                       )
                     )}
                   </Button>
-                  <p className="text-xs text-center text-gray-400 mt-3">
+                  {/* <p className="text-xs text-center text-gray-400 mt-3">
                     {step === 2 && "By placing order you agree to our terms."}
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>

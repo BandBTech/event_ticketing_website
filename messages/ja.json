@@ -153,7 +153,8 @@
       "sold_out": "売り切れ",
       "sales_ended": "販売終了",
       "live": "ライブ"
-    }
+    },
+    "salesStartingIn": "チケット販売開始日"
   },
   "languages": {
     "en": "English",
@@ -417,7 +418,13 @@
       "buyTicketsGuest": "ゲストとしてチケットを購入する",
       "loginToBuy": "ログインしてチケットを購入する",
       "share": "イベントを共有する",
-      "findTickets": "チケットを探す"
+      "findTickets": "チケットを購入する",
+      "ticketSalesPaused": "チケット販売一時停止中",
+      "ticketSalesStopped": "チケット販売終了",
+      "ticketSalesPausedNote": "チケット販売は一時的に中止とさせていただきます。\n後でもう一度確認してください。",
+      "ticketSalesStoppedNote": "本イベントのチケット販売は終了いたしました。\n詳細については、サポートにお問い合わせください。",
+      "eventLive": "イベント開催中",
+      "eventLiveNote": "このイベントは現在開催中です。オンラインチケット販売は終了しました。"
     },
     "backtoEvents": "イベントに戻る",
     "description": {
@@ -482,7 +489,8 @@
     "invalidAccessMessage": "お支払いの詳細を確認できませんでした。",
     "cancelledTitle": "購入がキャンセルされました",
     "cancelledMessage": "お支払いはキャンセルされました。",
-    "cancellationFailed": "支払いのキャンセルに失敗しました"
+    "cancellationFailed": "支払いのキャンセルに失敗しました",
+    "securePayment": "安全な支払いを活用した"
   },
   "ticketView": {
     "title": "デジタルチケット",
