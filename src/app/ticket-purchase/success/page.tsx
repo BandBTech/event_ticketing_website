@@ -105,15 +105,15 @@ function TicketSuccessContent() {
         )}
 
         <div className="space-y-3">
-          {/* {isAuthenticated && (
+          {token && (
             <Button
               onClick={() => router.push(`/tickets/view?token=${token}`)}
               className="w-full h-12 text-lg font-bold shadow-lg shadow-blue-200 group"
             >
               <TicketIcon size={20} className="mr-2" />
-              {t('ticketPurchase.viewTicket', 'View Ticket')}
+              {t("ticketPurchase.viewTicket", "View Ticket")}
             </Button>
-          )} */}
+          )}
 
           <Button
             variant="outline"
