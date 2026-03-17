@@ -59,7 +59,6 @@ export const useUserPurchaseMutation = () => {
       if (res.success) {
         // Stripe flow: redirect to Stripe Checkout URL
         const gatewayData = res.data?.gateway_data;
-        console.log({ res })
         if (gatewayData?.url) {
           toast.message("Redirecting to payment...", "success");
           window.location.href = gatewayData.url;
