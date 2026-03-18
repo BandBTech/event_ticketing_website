@@ -90,7 +90,7 @@ function TicketSuccessContent() {
               <h3 className="font-bold text-gray-900 line-clamp-1">{ticket.title}</h3>
               <p className="text-sm text-gray-500">{ticket.venue?.name}</p>
               <p className="text-sm text-gray-500">
-                {formatDate(ticket.startDate, "EEEE, MMM d, yyyy h:mm a")}
+                {formatDate(ticket.startDate)}
               </p>
             </div>
           </div>

@@ -22,13 +22,18 @@ export interface TransactionInvoice {
 export interface Transaction {
   id: string;
   event_title: string;
-  tiers:[];
+  tiers:{
+    id: string; 
+    name: string;
+    quantity: number;
+    price: number;
+  }[];
   price: number;
   status: 'completed' | 'pending' | 'failed' | 'refunded';
   date: string;
   payment_method: string;
   user: TransactionUser;
-  invoice: TransactionInvoice;
+  // invoice: TransactionInvoice;
 }
 
 export interface PaginatedTransactions {

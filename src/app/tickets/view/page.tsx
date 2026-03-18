@@ -2,7 +2,7 @@
 
 import { useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { TicketDisplay } from "@/components/ticket/TicketDisplay";
+import { TicketDisplay } from "@/components/tickets/TicketDisplay";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CaretLeft, Ticket } from "@phosphor-icons/react";

@@ -38,30 +38,14 @@ import {
   useUserTickets,
 } from "@/hooks/useTickets";
 import { QRCodeSVG } from "qrcode.react";
-import { cn } from "@/lib/utils";
+import { cn, formatDate, formatTime } from "@/lib/utils";
 import { SelectViewport } from "@radix-ui/react-select";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Helper function to format date
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-};
 
-const formatTime = (dateString: string) => {
-  return new Date(dateString).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  });
-};
 
 // Check if event is upcoming (start date is in the future)
 const isUpcoming = (startDate: string) => {
@@ -372,8 +356,16 @@ export default function TicketsPage() {
                   {filteredTickets.map((order: ViewTicketDetails) => (
                     <Card
                       key={order.orderId}
+                      onClick={()=> handleViewTickets(order)}
+                      tabIndex={0}
+                      onKeyDown={(e)=>{
+                        if(e.key === 'Enter' || e.key === ' '){
+                          handleViewTickets(order);
+                        }
+                      }}
                       className={cn(
-                        "w-full group overflow-hidden transition-all duration-300 hover:scale-[1.01]",
+                        "w-full group overflow-hidden transition-all duration-300",
+                        "hover:scale-[1.01] hover:shadow-lg hover:border-primary/20",
                         "bg-white/60 backdrop-blur-[20px]",
                         "border border-white/10 shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05)]",
                         "rounded-[10px] cursor-pointer",
@@ -586,6 +578,7 @@ export default function TicketsPage() {
                       className="bg-white/50 text-[10px] uppercase tracking-wider"
                     >
                       Purchased: {formatDate(detailTickets.purchaseDate)}
+                     <Clock className="h-4 w-4 text-primary" /> {formatTime(detailTickets.purchaseDate)}
                     </Badge>
                   </div>
                 </div>
