@@ -179,7 +179,8 @@
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_ended": "Sales Ended",
-      "live": "Live"
+      "live": "Live",
+      "hold": "Sales On Hold"
     }
   },
   "languages": {

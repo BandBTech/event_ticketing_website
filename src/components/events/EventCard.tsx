@@ -48,7 +48,7 @@ export function EventCard({ event, className }: EventCardProps) {
             className="w-full h-[225px] object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute top-2 left-2">
-            {event.status?.toLowerCase().replace(" ", "_") === "on_sale" && event.sales_status !== "active" ? (
+            {(event.status?.toLowerCase().replace(" ", "_") === "on_sale" || event.status?.toLowerCase() === "hold") && event.sales_status !== "active" ? (
               <SalesStatusBadge status={event.sales_status} />
             ) : (
               <EventStatusBadge status={event.status} />

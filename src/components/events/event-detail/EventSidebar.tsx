@@ -30,7 +30,7 @@ export const EventSidebar = ({ event, onShare, onFindTickets }: EventSidebarProp
 
   const renderSalesAction = () => {
     const isLive = event.status?.toLowerCase() === "live";
-    const isPaused = event.sales_status === "paused";
+    const isPaused = event.sales_status === "paused" || event.status?.toLowerCase() === "hold";
     const isStopped = event.sales_status === "stopped";
 
     if (isLive) {
