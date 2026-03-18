@@ -152,7 +152,8 @@
       "sold_out": "Esaurito",
       "sales_ended": "Vendite Terminate",
       "live": "Live"
-    }
+    },
+    "salesStartingIn": "Vendita biglietti a partire da"
   },
   "languages": {
     "en": "English",
@@ -415,7 +416,13 @@
       "buyTicketsGuest": "Acquista i biglietti come ospite",
       "loginToBuy": "Accedi per acquistare i biglietti",
       "share": "Condividi evento",
-      "findTickets": "Trova i biglietti"
+      "findTickets": "Acquista i biglietti",
+      "ticketSalesPaused": "Vendita biglietti sospesa",
+      "ticketSalesStopped": "La vendita dei biglietti è stata interrotta",
+      "ticketSalesPausedNote": "La vendita dei biglietti è momentaneamente sospesa. \nRicontrolla più tardi.",
+      "ticketSalesStoppedNote": "La vendita dei biglietti per questo evento è stata interrotta. \nSi prega di contattare il supporto per ulteriori informazioni.",
+      "eventLive": "L'evento è in diretta",
+      "eventLiveNote": "Questo evento è attualmente in corso. La vendita dei biglietti online non è più disponibile."
     },
     "backtoEvents": "Torna a Eventi",
     "description": {
@@ -480,7 +487,8 @@
     "invalidAccessMessage": "Non siamo riusciti a verificare i dettagli del tuo pagamento.",
     "cancelledTitle": "Acquisto annullato",
     "cancelledMessage": "Il tuo pagamento è stato annullato.",
-    "cancellationFailed": "Annullamento del pagamento non riuscito"
+    "cancellationFailed": "Annullamento del pagamento non riuscito",
+    "securePayment": "Pagamento sicuro fornito da"
   },
   "ticketView": {
     "title": "Biglietto Digitale",

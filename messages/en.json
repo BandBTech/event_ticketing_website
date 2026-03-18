@@ -165,6 +165,7 @@
     "ticketsLeft": "tickets left",
     "soldOut": "Sold out",
     "priceTBA": "Price TBA",
+    "salesStartingIn": "Ticket Sales Starting In",
     "badge": {
       "approved": "Approved",
       "pending": "Pending",
@@ -535,8 +536,17 @@
       "buyTicketsGuest": "Buy Tickets as Guest",
       "loginToBuy": "Login to Buy Tickets",
       "share": "Share Event",
-      "findTickets": "Find Tickets",
-      "ticketSalesEnded": "Ticket Sales Ended"
+      "findTickets": "Buy Tickets",
+      "ticketSalesEnded": "Ticket Sales Ended",
+      "ticketSalesNotStarted": "Ticket Sales Not Started",
+      "ticketSalesPaused": "Ticket Sales Paused",
+      "ticketSalesStopped": "Ticket Sales Stopped",
+      "ticketSalesPausedNote": "Ticket sales are temporarily on hold. Please check back later.",
+      "ticketSalesStoppedNote": "Ticket sales for this event have been stopped. Please contact the support for more information.",
+      "ticketSalesNotStartedNote": "Tickets are not yet available for purchase. Please check back when sales begin.",
+      "ticketSalesEndedNote": "Official ticket sales for this event have concluded.",
+      "eventLive": "Event is Live Now",
+      "eventLiveNote": "This event is currently happening. Online ticket sales are no longer available."
     },
     "backtoEvents": "Back to Events",
     "description": {
@@ -596,7 +606,12 @@
     "invalidAccessMessage": "We could not verify your payment details.",
     "cancelledTitle": "Purchase Cancelled",
     "cancelledMessage": "Your payment has been cancelled.",
-    "cancellationFailed": "Payment Cancellation Failed"
+    "cancellationFailed": "Payment Cancellation Failed",
+    "noTicketsCurrentlyAvailable": "No tickets currently available",
+    "noTicketsCurrentlyAvailableDesc": "Tickets for this event are not on sale at the moment. Please check back later.",
+    "onlyTicketsLeft": "Only {count} left!",
+    "notEnoughTickets": "Only {count} tickets available",
+    "securePayment": "Secure payment powered by"
   },
   "ticketView": {
     "title": "Digital Ticket",

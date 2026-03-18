@@ -1,20 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { CalendarIcon, HeartIcon, CaretDownIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import DOMPurify from "dompurify";
 import { useEventById } from "@/hooks/useEvents";
-import { COMMON_FAQS } from "@/data/commonFAQs";
-import FeaturedBadge from "./FeaturedBadge";
+import { EventHero } from "./event-detail/EventHero";
+import { EventDescription } from "./event-detail/EventDescription";
+import { EventOrganizer } from "./event-detail/EventOrganizer";
+import { EventLocation } from "./event-detail/EventLocation";
+import { EventFAQ } from "./event-detail/EventFAQ";
+import { EventSidebar } from "./event-detail/EventSidebar";
 
 interface EventDetailClientProps {
   eventId: string;
@@ -22,10 +19,6 @@ interface EventDetailClientProps {
 
 export function EventDetailClient({ eventId }: EventDetailClientProps) {
   const router = useRouter();
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [showLocationMap, setShowLocationMap] = useState(false);
-  const [showFAQ, setShowFAQ] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
@@ -54,7 +47,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       <div className="min-h-screen relative">
         <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
         <div className="relative z-10">
-          <main className="max-w-7xl mx-auto px-4 py-8">
+          <main className="max-w-7xl mx-auto px-4 py-12">
             <Skeleton className="w-full h-96 mb-8" />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
@@ -76,7 +69,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       <div className="min-h-screen relative">
         <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />
         <div className="relative z-10">
-          <main className="max-w-7xl mx-auto px-4 py-8">
+          <main className="max-w-7xl mx-auto px-4 py-12">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
                 {t("eventDetails.eventNotFound", "Event Not Found")}
@@ -90,10 +83,6 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       </div>
     );
   }
-
-  // const minPrice = Math.min(...event.ticketTypes.map((t) => t.price));
-  const eventDate = new Date(event.startDate);
-  const formattedDate = format(eventDate, "dd MMM yyyy 'at' HH:mm");
 
   return (
     <div className="min-h-screen relative">
@@ -115,371 +104,27 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       </div>
 
       <div className="relative z-10">
-        <main className="max-w-7xl mx-auto px-4 py-8">
-          {/* Content Grid */}
+        <main className="max-w-7xl mx-auto px-4 py-12">
+          <h2 className="text-3xl font-semibold text-gray-900 mb-5">
+            {event.title}
+          </h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
-
-            <h2 className="text-3xl font-semibold text-gray-900 lg:col-span-2 -mb-2 mt-6">
-              {event.title}
-            </h2>
             <div className="lg:col-span-2 space-y-6">
-              {/* Hero Image */}
-              <div className="relative w-full aspect-16/10 rounded-2xl overflow-hidden mb-8 shadow-2xl">
-                <Image
-                  src={event.bannerImageUrl || event.imageUrl}
-                  alt={event.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-                {event.is_featured && (
-                  <div className="absolute top-3 right-3">
-                    <FeaturedBadge />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              </div>
-              {/* Description */}
-              <div className="glass-card rounded-2xl p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  {t("eventDetails.description.title")}
-                </h2>
-                <div className={cn("text-gray-700 space-y-4")}>
-                  <div
-                    className={cn(
-                      "prose prose-sm max-w-none",
-                      !isDescriptionExpanded && "line-clamp-4",
-                    )}
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(event.description),
-                    }}
-                  />
-
-                  {event.description.length > 200 && (
-                    <button
-                      onClick={() =>
-                        setIsDescriptionExpanded(!isDescriptionExpanded)
-                      }
-                      className="text-blue-600 hover:text-blue-700 font-medium text-sm"
-                    >
-                      {isDescriptionExpanded
-                        ? t("eventDetails.description.readLess", "Read Less")
-                        : t("eventDetails.description.readMore", "Read More")}
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Organizer */}
-              <div className="glass-card rounded-2xl p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                  {t("common.organizer")}
-                </h2>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-                      {event.organizer.business_logo ? (
-                        <img
-                          src={event.organizer.business_logo}
-                          alt={event.organizer.business_logo}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-white text-2xl font-bold">
-                          {event.title.charAt(0)}
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {event.organizer.business_name}
-                      </h3>
-                      <p className="text-sm text-gray-600">Event organizer</p>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-gray-700 mt-4">
-                  {event.venue.name} is a premier venue located at{" "}
-                  {event.venue.address}, {event.venue.city}. With a capacity of{" "}
-                  {event.venue.capacity.toLocaleString()} guests, we host
-                  amazing events.
-                </p>
-              </div>
-
-              {/* Location */}
-              <div className="glass-card rounded-2xl overflow-hidden">
-                <button
-                  onClick={() => setShowLocationMap(!showLocationMap)}
-                  className="w-full flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors"
-                >
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {t("common.location")}
-                  </h2>
-                  <CaretDownIcon
-                    size={24}
-                    className={cn(
-                      "text-gray-600 transition-transform",
-                      showLocationMap && "rotate-180",
-                    )}
-                  />
-                </button>
-                {showLocationMap &&
-                  (() => {
-                    const isCoord = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
-                      event.venue.address.trim(),
-                    );
-                    const mapQuery = isCoord
-                      ? event.venue.address.trim()
-                      : `${event.venue.name}, ${event.venue.address}, ${event.venue.city}`;
-
-                    return (
-                      <div className="px-6 pb-6">
-                        <div className="w-full h-64 rounded-lg overflow-hidden">
-                          <iframe
-                            title={`${event.venue.name} location`}
-                            src={`https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=15&output=embed`}
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0 }}
-                            allowFullScreen
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                          />
-                        </div>
-                        <div className="mt-4">
-                          <p className="text-gray-700">
-                            {event.venue.address}, {event.venue.city},{" "}
-                            {event.venue.country}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })()}
-              </div>
-
-              {/* FAQ */}
-              <div className="glass-card rounded-2xl overflow-hidden">
-                <button
-                  onClick={() => setShowFAQ(!showFAQ)}
-                  className="w-full flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors"
-                >
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {t("common.faq")}
-                  </h2>
-
-                  <CaretDownIcon
-                    size={24}
-                    className={cn(
-                      "text-gray-600 transition-transform",
-                      showFAQ && "rotate-180",
-                    )}
-                  />
-                </button>
-                {showFAQ && (
-                  <div className="px-6 py-4 space-y-0 divide-y divide-gray-100">
-                    {COMMON_FAQS.map((faq, index) => (
-                      <div key={index} className="py-4 first:pt-0 last:pb-0">
-                        <h3 className="font-semibold text-gray-900 mb-2 flex items-start gap-2">
-                          <span className="text-blue-500 font-bold">Q:</span>
-                          {faq.question}
-                        </h3>
-                        <div className="flex items-start gap-2">
-                          <span className="text-gray-400 font-bold">A:</span>
-                          <p className="text-gray-700 leading-relaxed text-sm">
-                            {faq.answer}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    {/* Still have questions? */}
-                    <div className="mt-8 pt-6 border-t border-gray-100">
-                      <div className="bg-blue-50/50 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div className="text-center md:text-left">
-                          <h4 className="text-sm font-bold text-gray-900">
-                            {t(
-                              "eventDetails.faq.stillQuestions",
-                              "Still have questions?",
-                            )}
-                          </h4>
-                          <p className="text-xs text-gray-600 mt-1">
-                            {t("eventDetails.faq.contactPrefix", "Contact")}{" "}
-                            <span className="font-bold text-blue-600">
-                              {event.organizer.business_name}
-                            </span>{" "}
-                            {t(
-                              "eventDetails.faq.contactSuffix",
-                              "for specific event inquiries.",
-                            )}
-                          </p>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="bg-white hover:bg-gray-50 border-gray-200 text-blue-600 font-semibold"
-                          onClick={() => { }}
-                        >
-                          {t(
-                            "eventDetails.button.contactOrganizer",
-                            "Contact Organizer",
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <EventHero event={event} />
+              <EventDescription description={event.description} />
+              <EventOrganizer event={event} />
+              <EventLocation venue={event.venue} />
+              <EventFAQ organizerName={event.organizer.business_name} />
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Actions */}
-              <div className="glass-card rounded-2xl p-6 sticky top-24">
-                <div className="space-y-4">
-                  {/* Action Buttons */}
-                  <div className="pt-2">
-                    <div className="space-y-3">
-                      {event.ticketTypes.some(
-                        (t) => t.sales_end > new Date().toISOString(),
-                      ) ? (
-                        <>
-                          {event.ticketTypes.length > 0 && (
-                            <div className="mb-4">
-                              <p className="text-sm text-gray-500 font-medium">
-                                  {t(
-                                    "events.startingFrom",
-                                    "Tickets starting from",
-                                  )}
-                              </p>
-                              <p className="text-2xl font-bold text-blue-600">
-                                {new Intl.NumberFormat("en-NP", {
-                                  style: "currency",
-                                  currency: event.ticketTypes[0].currency,
-                                  minimumFractionDigits: 0,
-                                }).format(
-                                  Math.min(
-                                    ...event.ticketTypes.map((t) => t.price),
-                                  ),
-                                )}
-                              </p>
-                            </div>
-                          )}
-                          <Button
-                            onClick={handleFindTickets}
-                            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
-                          >
-                              {t(
-                                "eventDetails.button.findTickets",
-                                "Find Tickets",
-                              )}
-                          </Button>
-                        </>
-                      ) : (
-                        <div className="w-full h-12 bg-destructive/15 text-destructive font-medium rounded-lg flex items-center justify-center">
-                            {t(
-                              "eventDetails.button.ticketSalesEnded",
-                              "Ticket Sales Ended",
-                            )}
-                        </div>
-                      )}
-
-                      <Button
-                        onClick={handleShare}
-                        variant="outline"
-                        className="w-full h-12 border-2 border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-between"
-                      >
-                        <span className="font-medium text-gray-900">
-                          {t("eventDetails.button.share")}
-                        </span>
-                        <div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsFavorite(!isFavorite);
-                          }}
-                        >
-                          <HeartIcon
-                            size={24}
-                            weight={isFavorite ? "fill" : "regular"}
-                            className={cn(
-                              "transition-colors",
-                              isFavorite ? "text-red-500" : "text-gray-600",
-                            )}
-                          />
-                        </div>
-                      </Button>
-                    </div>
-                  </div>
-                  {/* Place */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-2">
-                      {t("common.place")}
-                    </h3>
-                    <p className="text-gray-900 font-medium">
-                      {event.venue.name}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {event.venue.address}, {event.venue.city}
-                    </p>
-                  </div>
-
-                  {/* Date */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-2">
-                      {t("common.date")}
-                    </h3>
-                    <div className="flex items-center gap-2 text-gray-900">
-                      <CalendarIcon size={20} />
-                      <span>{formattedDate}</span>
-                    </div>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">
-                      {t("common.tags")}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {event.categories.map((category) => (
-                        <Badge
-                          key={category.id}
-                          variant="outline"
-                          className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                        >
-                          {category.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">
-                      {t(
-                        "common.acceptedPaymentMethods",
-                        "Accepted Payment Methods",
-                      )}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Image
-                        src="/images/stripe.svg"
-                        alt="Stripe"
-                        width={50}
-                        height={50}
-                      />
-                      <Image
-                        src="/images/visa.svg"
-                        alt="Visa"
-                        width={50}
-                        height={50}
-                      />
-                      <Image
-                        src="/images/mastercard.svg"
-                        alt="Mastercard"
-                        width={50}
-                        height={50}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <EventSidebar
+                event={event}
+                onShare={handleShare}
+                onFindTickets={handleFindTickets}
+              />
             </div>
           </div>
         </main>
