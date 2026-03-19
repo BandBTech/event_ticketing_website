@@ -657,7 +657,20 @@
       "tickets": {
         "title": "My Tickets",
         "subtitle": "Manage and view all your event tickets",
-        "search": "Search by event name, location, or ticket number..."
+        "search": "Search by event name, location, or ticket number...",
+        "error": "Error loading tickets",
+        "messageError": "Failed to load tickets. Please try again.",
+        "selectValue": {
+          "allStatus": "All Status",
+          "active": "Active",
+          "used": "Used",
+          "cancelled": "Cancelled",
+          "expired": "Expired"
+        },
+        "button": {
+          "back": "Back to List"
+        },
+        "notickets": "No Tickets Found"
       }
     }
   },

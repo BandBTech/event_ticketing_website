@@ -51,3 +51,48 @@ export interface PaginatedTransactions {
     transactions: Transaction[];
   };
 }
+
+export interface InvoiceInfo {
+  company_name: string;
+  company_address: string;
+  company_phone: string;
+  company_email: string;
+  tax_number: string;
+  invoice_number: string;
+  transaction_ref: string;
+  payment_gateway: string;
+  currency: string;
+  subtotal: number;
+  tax_amount: number;
+  total_amount: number;
+  issue_date: string;
+}
+
+export interface TransactionDetail {
+  id: string;
+  event_id: string;
+  event_title: string;
+  tier_id: string;
+  tier_name: string;
+  user_id: string;
+  user_name: string;
+  customer_email: string;
+  ticket_count: number;
+  payment_gateway: string;
+  amount: number;
+  currency: string;
+  status: 'completed' | 'pending' | 'failed' | 'cancelled';
+  gateway_txn_id: string;
+  processed_at: string;
+  created_at: string;
+  updated_at: string;
+  invoice_info: InvoiceInfo;
+}
+
+export interface TransactionDetailApiResponse {
+  success: boolean;
+  message: string;
+  data: TransactionDetail;
+  timestamp: string;
+  request_id: string;
+}

@@ -12,9 +12,14 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useUserTransactions } from "@/hooks/useTransactions";
+import {
+  useUserTransactions,
+  useTransactionDetail,
+} from "@/hooks/useTransactions";
 import { Transaction } from "@/types/transaction";
 import { formatDate } from "@/lib/utils";
+import { TransactionDetail } from "@/components/transactions/TransactionDetail";
+import { _undefined } from "zod/v4/core";
 
 export default function BillingPage() {
   const { t } = useTranslation();
@@ -23,8 +28,12 @@ export default function BillingPage() {
     "transactions",
   );
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: response, isLoading, isFetching } = useUserTransactions(page);
+  const { data: detailData, isLoading: isDetailLoading } =
+    useTransactionDetail(selectedId ?? undefined);
   const pagination = response?.data?.pagination;
 
   useEffect(() => {
@@ -45,7 +54,14 @@ export default function BillingPage() {
       setPage((prev) => prev + 1);
     }
   };
-
+  const handleOpenDetail = (id: string) => {
+    setSelectedId(id);
+    setIsModalOpen(true);
+  };
+const handleCloseModal = () => {
+  setIsModalOpen(false);
+  setSelectedId(null); 
+};
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
@@ -111,6 +127,7 @@ export default function BillingPage() {
                   {allTransactions.map((tx) => (
                     <Card
                       key={tx.id}
+                      onClick={() => handleOpenDetail(tx.id)}
                       className="hover:bg-accent/50 transition-colors border-none bg-white shadow-sm"
                     >
                       <CardContent className="p-4">
@@ -142,11 +159,7 @@ export default function BillingPage() {
                                 )}
                               </div>
                               <div className="text-xs text-muted-foreground flex items-center gap-2">
-                                <span>
-                                  {formatDate(
-                                    (tx.date)
-                                  )}
-                                </span>
+                                <span>{formatDate(tx.date)}</span>
                                 <span className="h-1 w-1 rounded-full bg-gray-300" />
                                 <span className="capitalize">
                                   {tx.payment_method}
@@ -221,6 +234,12 @@ export default function BillingPage() {
                   Invoices functionality coming soon.
                 </div>
               )} */}
+              <TransactionDetail
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                data={detailData}
+                isLoading={isDetailLoading}
+              />
             </div>
           )}
         </div>

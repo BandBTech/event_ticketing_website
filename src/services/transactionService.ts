@@ -1,5 +1,6 @@
 import { api } from '@/lib/apiClient';
-import { PaginatedTransactions } from '@/types/transaction';
+
+import { PaginatedTransactions,TransactionDetailApiResponse } from '@/types/transaction';
 
 export const transactionService = {
 
@@ -12,6 +13,16 @@ export const transactionService = {
       }
     );
   },
+
+getTransactionById: (id: string) => {
+    return api.get<TransactionDetailApiResponse>(
+      `/user/transactions/${id}`,
+      {
+        requiresAuth: true,
+        returnFullResponse: true
+      }
+    );
+  }
 
 
 };

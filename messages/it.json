@@ -531,7 +531,20 @@
       "tickets": {
         "title": "I miei biglietti",
         "subtitle": "Gestisci e visualizza tutti i biglietti degli eventi",
-        "search": "Cerca per nome dell'evento, luogo o numero del biglietto..."
+        "search": "Cerca per nome dell'evento, luogo o numero del biglietto...",
+        "error": "Errore durante il caricamento dei biglietti",
+        "messageError": "Impossibile caricare i biglietti. \nPer favore riprova.",
+        "selectValue": {
+          "allStatus": "Tutti gli stati",
+          "active": "Attivo",
+          "used": "Usato",
+          "cancelled": "Annullato",
+          "expired": "Scaduto"
+        },
+        "button": {
+          "back": "Torna alla lista"
+        },
+        "notickets": "Nessun biglietto trovato"
       }
     }
   },

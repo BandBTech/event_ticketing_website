@@ -10,3 +10,16 @@ export const useUserTransactions = (page: number = 1, limit: number = 10) => {
     
   });
 };
+
+export function useTransactionDetail(transactionId?: string) {
+  return useQuery({
+    queryKey: ['transaction', transactionId],
+    queryFn: async () => {
+      if (!transactionId) throw new Error("Transaction ID is required");
+      const response = await transactionService.getTransactionById(transactionId);
+  return response; 
+    },
+    enabled: !!transactionId,
+    staleTime: 1000 * 60 * 5, 
+  });
+}

@@ -224,12 +224,12 @@ export default function TicketsPage() {
           <CardContent className="text-center py-12">
             <TicketIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">
-              Error loading tickets
+             {t('setting.menu.tickets.error','Error loading tickets')} 
             </h3>
             <p className="text-muted-foreground">
               {error instanceof Error
                 ? error.message
-                : "Failed to load tickets. Please try again."}
+                :t('setting.menu.tickets.messageError', "Failed to load tickets. Please try again.")}
             </p>
           </CardContent>
         </Card>
@@ -273,11 +273,11 @@ export default function TicketsPage() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="used">Used</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                  <SelectItem value="expired">Expired</SelectItem>
+                  <SelectItem value="all">{t('setting.menu.tickets.selectValue.allStatus','All Status')}</SelectItem>
+                  <SelectItem value="active">{t('setting.menu.tickets.selectValue.active','Active')}</SelectItem>
+                  <SelectItem value="used">{t('setting.menu.tickets.selectValue.used','Used')}</SelectItem>
+                  <SelectItem value="cancelled">{t('setting.menu.tickets.selectValue.cancelled','Cancelled')}</SelectItem>
+                  <SelectItem value="expired">{t('setting.menu.tickets.selectValue.expired','Expired')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -316,14 +316,14 @@ export default function TicketsPage() {
                 onClick={handleBackToList}
               >
                 <ArrowLeftIcon className="w-5 h-5 mr-1" />
-                Back to List
+                {t('setting.menu.tickets.button.back','Back to Lisr')}
               </Button>
             )}
           </div>
 
           {/* Tickets list */}
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex flex-cols-1 md:flex-cols-2 lg:flex-cols-3 gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
                 <Card key={i} className="overflow-hidden">
                   <Skeleton className="h-40 w-full" />
@@ -339,7 +339,7 @@ export default function TicketsPage() {
             <Card>
               <CardContent className="text-center py-12">
                 <TicketIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No tickets found</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('setting.menu.tickets.notickets','No Tickets Found')}</h3>
                 <p className="text-muted-foreground">
                   {activeTab === "upcoming"
                     ? "You don't have any upcoming events"
