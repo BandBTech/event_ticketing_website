@@ -223,6 +223,39 @@ export interface EventTicketsApiResponse {
   };
 }
 
+export interface ApiTransaction {
+  id: string;
+  event: {
+    id: string;
+    title: string;
+    banner_image: string;
+    venue_name: string;
+    address: string;
+    start_date: string;
+    end_date: string;
+    status: string;
+    timezone?: string;
+  };
+  tickets: Array<{
+    id: string;
+    ticket_number: string;
+    tier: {
+      id: string;
+      name: string;
+    };
+    qr_data: string;
+
+  }>;
+  transaction_status: string;
+  created_at: string;
+  updated_at: string;
+}
+export interface TransactionDetailApiResponse {
+  success: boolean;
+  message: string;
+  data: ApiTransaction;
+  timestamp: string;
+}
 
 export interface ViewTicketDetail {
   orderId: string;

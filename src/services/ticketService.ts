@@ -3,12 +3,11 @@ import {
   type ViewTicketDetails,
   type ApiTicketResponse,
   UserTicketsApiResponse,
-  ApiSingleTicketResponse,
   ApiUserTicket,
   TicketItem,
   EventTicketsApiResponse,
-  TransactionDetailApiResponse,
   ViewTicketDetail,
+  TransactionDetailApiResponse,
 } from "@/types/ticket";
 
 export interface PurchaseTierPayload {

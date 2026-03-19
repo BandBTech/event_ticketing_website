@@ -69,6 +69,7 @@ export interface InvoiceInfo {
 }
 
 export interface TransactionDetail {
+  transaction_status: string;
   id: string;
   event_id: string;
   event_title: string;
