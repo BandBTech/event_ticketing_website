@@ -37,7 +37,7 @@ const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
       .string()
       .min(1, v.required("Phone number"))
       .refine(
-        (val) => !val || val.length === 0 || (typeof val === 'string' && isValidPhoneNumber(val)),
+        (val) => typeof val === 'string' && isValidPhoneNumber(val),
         v.phone("Phone")
       ),
   });
@@ -198,7 +198,7 @@ export default function ProfileSettingsPage() {
             {/* First Name */}
             <div className="space-y-2">
               <label htmlFor="firstName" className="text-sm font-medium text-gray-900 block">
-                {t('settings.profile.firstName', 'First Name')}
+                {t('settings.profile.firstName', 'First Name')} <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -224,7 +224,7 @@ export default function ProfileSettingsPage() {
             {/* Last Name */}
             <div className="space-y-2">
               <label htmlFor="lastName" className="text-sm font-medium text-gray-900 block">
-                {t('settings.profile.lastName', 'Last Name')}
+                {t('settings.profile.lastName', 'Last Name')} <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -272,8 +272,9 @@ export default function ProfileSettingsPage() {
 
           {/* Phone */}
           <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-medium text-gray-900 block">
+            <label htmlFor="phone" className="text-sm font-medium text-gray-900 flex items-center gap-1">
               {t('settings.profile.phone', 'Phone Number')}
+              <span className="text-destructive">*</span>
             </label>
             <Controller
               name="phone"
