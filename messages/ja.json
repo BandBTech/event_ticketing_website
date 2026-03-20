@@ -551,7 +551,8 @@
     }
   },
   "transaction": {
-    "loadMore": "さらにトランザクションをロードする"
+    "loadMore": "さらにトランザクションをロードする",
+    "history": "取引履歴"
   },
   "upcomming": {
     "loadMore": "今後さらにロードする"

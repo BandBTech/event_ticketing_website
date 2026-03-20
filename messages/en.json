@@ -675,7 +675,8 @@
     }
   },
   "transaction": {
-    "loadMore": "Load More Transactions"
+    "loadMore": "Load More Transactions",
+    "history": "Transaction History"
   },
   "upcomming": {
     "loadMore": "Load More Upcoming"

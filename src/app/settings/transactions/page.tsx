@@ -1,247 +1,550 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   DollarSign,
-  Receipt,
-  TrendingDown,
-  Loader2, // For a nice spinner
+  Search,
+  Filter,
+  X,
+  ChevronDown,
+  Calendar as CalendarIcon,
+  Loader2,
+  Check,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useTranslation } from "@/hooks/useTranslation";
 import {
   useUserTransactions,
   useTransactionDetail,
 } from "@/hooks/useTransactions";
 import { Transaction } from "@/types/transaction";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
+import { isBefore, startOfDay, differenceInMonths, parseISO } from "date-fns";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TransactionDetail } from "@/components/transactions/TransactionDetail";
-import { _undefined } from "zod/v4/core";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function BillingPage() {
-  const { t } = useTranslation();
-  const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<"transactions" | "invoices">(
-    "transactions",
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // 1. UI State
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isEventDropdownOpen, setIsEventDropdownOpen] = useState(false);
+  const [eventSearch, setEventSearch] = useState("");
+  const [eventSearchInput, setEventSearchInput] = useState("");
+  const eventRef = useRef<HTMLDivElement>(null);
+  const selectedId = searchParams.get("id");
+
+  // 2. Filter State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [tempFilters, setTempFilters] = useState({
+    status: "all",
+    payment_gateway: "all",
+    event_title: "all",
+    start_date: "",
+    end_date: "",
+  });
+
+  const [appliedFilters, setAppliedFilters] = useState(tempFilters);
+  const [dateError, setDateError] = useState("");
+
+  // 3. API Data
+  const { data: response, isLoading } = useUserTransactions(1);
+  const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
+    selectedId ?? undefined,
   );
-  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const transactions: Transaction[] = response?.data?.transactions || [];
 
-  const { data: response, isLoading, isFetching } = useUserTransactions(page);
-  const { data: detailData, isLoading: isDetailLoading } =
-    useTransactionDetail(selectedId ?? undefined);
-  const pagination = response?.data?.pagination;
+  // 4. Unique Events for the "Event Bar" dropdown
+  const filteredEventList = useMemo(() => {
+    const allTitles = Array.from(
+      new Set(transactions.map((t) => t.event_title)),
+    ).sort();
+    if (!eventSearchInput.trim()) return allTitles;
 
+    return allTitles.filter((title) =>
+      title.toLowerCase().includes(eventSearchInput.toLowerCase()),
+    );
+  }, [transactions, eventSearchInput]);
+
+  // Close dropdown on outside click
   useEffect(() => {
-    if (response?.data?.transactions) {
-      setAllTransactions((prev) => {
-        if (page === 1) return response.data.transactions;
-        const existingIds = new Set(prev.map((tx) => tx.id));
-        const newUnique = response.data.transactions.filter(
-          (tx) => !existingIds.has(tx.id),
-        );
-        return [...prev, ...newUnique];
-      });
-    }
-  }, [response, page]);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        eventRef.current &&
+        !eventRef.current.contains(event.target as Node)
+      ) {
+        setIsEventDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const handleLoadMore = () => {
-    if (pagination?.has_next) {
-      setPage((prev) => prev + 1);
+  // 5. Date Validation Logic
+  const handleDateChange = (
+    field: "start_date" | "end_date",
+    value: string,
+  ) => {
+    const updated = { ...tempFilters, [field]: value };
+    setDateError("");
+
+    if (updated.start_date && updated.end_date) {
+      const start = parseISO(updated.start_date);
+      const end = parseISO(updated.end_date);
+
+      if (isBefore(startOfDay(end), startOfDay(start))) {
+        setDateError("End date cannot be before start date");
+      } else if (differenceInMonths(end, start) >= 3) {
+        setDateError("Date range cannot exceed 3 months");
+      }
     }
+    setTempFilters(updated);
   };
-  const handleOpenDetail = (id: string) => {
-    setSelectedId(id);
-    setIsModalOpen(true);
+
+  // 6. Filtering Logic (Client-side)
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => {
+      // Title Search
+      const matchesSearch = tx.event_title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+      // Select Filters
+      const matchesStatus =
+        appliedFilters.status === "all" ||
+        tx.status.toLowerCase() === appliedFilters.status.toLowerCase();
+
+      const matchesGateway =
+        appliedFilters.payment_gateway === "all" ||
+        tx.payment_method?.toLowerCase() ===
+          appliedFilters.payment_gateway.toLowerCase();
+
+      const matchesEvent =
+        appliedFilters.event_title === "all" ||
+        tx.event_title === appliedFilters.event_title;
+
+      // Date Range
+      const txTime = new Date(tx.date).getTime();
+      const start = appliedFilters.start_date
+        ? new Date(appliedFilters.start_date).getTime()
+        : null;
+      const end = appliedFilters.end_date
+        ? new Date(appliedFilters.end_date).getTime()
+        : null;
+      const matchesDate =
+        (!start || txTime >= start) && (!end || txTime <= end);
+
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesGateway &&
+        matchesEvent &&
+        matchesDate
+      );
+    });
+  }, [transactions, searchQuery, appliedFilters]);
+
+  // 7. Handlers
+  const handleApply = () => {
+    if (dateError) return;
+    setAppliedFilters(tempFilters);
+    setIsFilterOpen(false);
   };
-const handleCloseModal = () => {
-  setIsModalOpen(false);
-  setSelectedId(null); 
-};
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return "bg-green-100 text-green-800 border-none";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 border-none";
-      case "failed":
-        return "bg-red-100 text-red-800 border-none";
-      default:
-        return "bg-gray-100 text-gray-800 border-none";
-    }
+
+  const handleClear = () => {
+    const reset = {
+      status: "all",
+      payment_gateway: "all",
+      event_title: "all",
+      start_date: "",
+      end_date: "",
+    };
+    setTempFilters(reset);
+    setAppliedFilters(reset);
+    setDateError("");
   };
+
+  const activeCount = useMemo(() => {
+    let count = 0;
+    if (appliedFilters.status !== "all") count++;
+    if (appliedFilters.payment_gateway !== "all") count++;
+    if (appliedFilters.event_title !== "all") count++;
+    if (appliedFilters.start_date) count++;
+    if (appliedFilters.end_date) count++;
+    return count;
+  }, [appliedFilters]);
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-          {t("billing.title", "Billing & Payments")}
+    <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-screen bg-gray-50/30">
+      {!selectedId && (
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 font-poppins">
+          Billing & Payments
         </h1>
-        <p className="text-sm text-gray-600">
-          {t(
-            "billing.description",
-            "Manage your payment methods and view transaction history",
-          )}
-        </p>
+      )}
+
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6">
+        {selectedId ? (
+          <TransactionDetail
+            data={detailData}
+            isLoading={isDetailLoading}
+            onBack={() => router.push(pathname)}
+          />
+        ) : (
+          <>
+            {/* Main Search & Filter Toggle */}
+            <div className="flex gap-3 mb-8">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search by event title..."
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <button
+                onClick={() => setIsFilterOpen(true)}
+                className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all font-semibold text-gray-700 shadow-sm active:scale-95"
+              >
+                <Filter className="h-5 w-5 text-gray-500" />
+                Filters
+                {activeCount > 0 && (
+                  <span className="flex items-center justify-center bg-blue-600 text-white text-[10px] h-5 w-5 rounded-full ml-1">
+                    {activeCount}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Transaction List */}
+            {isLoading ? (
+              <div className="flex justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredTransactions.map((tx) => (
+                  <div
+                    key={tx.id}
+                    onClick={() => router.push(`${pathname}?id=${tx.id}`)}
+                    className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-100 hover:shadow-md transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-gray-50 rounded-xl text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                        <DollarSign className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900 group-hover:text-blue-700 transition-colors">
+                          {tx.event_title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {formatDate(tx.date)} •{" "}
+                          <span className="capitalize">
+                            {tx.payment_method}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-black text-gray-900">
+                        ${tx.price.toLocaleString()}
+                      </p>
+                      <span
+                        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                          tx.status === "completed"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-amber-100 text-amber-700"
+                        }`}
+                      >
+                        {tx.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {filteredTransactions.length === 0 && (
+                  <div className="text-center py-20 border-2 border-dashed rounded-2xl text-gray-400">
+                    No transactions found matching your selection.
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </div>
 
-      <div className="glass-card rounded-xl p-6 border bg-white/50 backdrop-blur-sm">
-        <div className="space-y-6">
-          {/* Tabs */}
-          <div className="flex gap-4 mb-6 border-b">
-            {(["transactions" /* "invoices"*/] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-2 px-1 capitalize font-medium transition-colors cursor-pointer text-sm ${
-                  activeTab === tab
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t(`billing.tabs.${tab}`, tab)}
-              </button>
-            ))}
+      {/* --- CUSTOM SLIDE-IN FILTER PANEL --- */}
+      {/* Dark Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${isFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        onClick={() => setIsFilterOpen(false)}
+      />
+
+      {/* The Panel */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full max-w-[450px] bg-[#f5f7f8] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        {/* Panel Header */}
+        <div className="flex items-center justify-between p-6 bg-white border-b">
+          <div className="flex items-center gap-2 text-xl font-bold text-gray-800">
+            <Filter className="h-6 w-6 text-blue-600" />
+            <span>Filter Transaction</span>
+          </div>
+          <button
+            onClick={() => setIsFilterOpen(false)}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X className="h-6 w-6 text-gray-400" />
+          </button>
+        </div>
+
+        {/* Panel Content (Scrollable) */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+          {/* Date Range Section */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-wider text-gray-500">
+                  Start Date
+                </label>
+                <div className="relative">
+                  <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <input
+                    type="date"
+                    className="w-full pl-10 pr-3 py-3 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 text-sm"
+                    value={tempFilters.start_date}
+                    onChange={(e) =>
+                      handleDateChange("start_date", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-wider text-gray-500">
+                  End Date
+                </label>
+                <div className="relative">
+                  <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <input
+                    type="date"
+                    className={`w-full pl-10 pr-3 py-3 bg-white border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 text-sm ${dateError ? "border-red-500" : "border-gray-200"}`}
+                    value={tempFilters.end_date}
+                    onChange={(e) =>
+                      handleDateChange("end_date", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+            {dateError && (
+              <p className="text-[11px] font-bold text-red-500 bg-red-50 p-2 rounded-lg border border-red-100">
+                {dateError}
+              </p>
+            )}
           </div>
 
-          {/* Initial Loading Skeleton */}
-          {isLoading && allTransactions.length === 0 ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-24 w-full rounded-xl" />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {activeTab === "transactions" && (
-                <>
-                  <h2 className="text-lg font-semibold mb-4">
-                    {t("billing.history", "Transaction History")}
-                  </h2>
+          {/* Payment Gateway Select */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-black uppercase text-gray-500 tracking-wider">
+              Payment Gateway
+            </label>
+            <Select
+              value={tempFilters.payment_gateway}
+              onValueChange={(value) =>
+                setTempFilters({ ...tempFilters, payment_gateway: value })
+              }
+            >
+              <SelectTrigger className="w-full h-auto px-4 py-3.5 bg-white border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/10 hover:border-blue-400 transition-all text-sm font-medium">
+                <SelectValue placeholder="Select Payment Gateway" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-gray-100 shadow-2xl">
+                <SelectItem value="all" className="cursor-pointer py-3">
+                  All Gateways
+                </SelectItem>
+                <SelectItem value="stripe" className="cursor-pointer py-3">
+                  Stripe
+                </SelectItem>
+                <SelectItem value="khalti" className="cursor-pointer py-3">
+                  Khalti
+                </SelectItem>
+                <SelectItem value="cash" className="cursor-pointer py-3">
+                  Cash
+                </SelectItem>
+                <SelectItem
+                  value="bank_transfer"
+                  className="cursor-pointer py-3"
+                >
+                  Bank Transfer
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-                  {allTransactions.map((tx) => (
-                    <Card
-                      key={tx.id}
-                      onClick={() => handleOpenDetail(tx.id)}
-                      className="hover:bg-accent/50 transition-colors border-none bg-white shadow-sm"
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div
-                              className={`p-2 rounded-lg ${tx.price > 0 ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}
-                            >
-                              <DollarSign className="h-5 w-5" />
-                            </div>
-                            <div>
-                              <div className="font-medium text-gray-900">
-                                {tx.event_title}
-                              </div>
-                              <div className="flex gap-1 mt-1">
-                                {tx.tiers && tx.tiers.length > 0 ? (
-                                  tx.tiers.map((tier) => (
-                                    <span
-                                      key={tier.id}
-                                      className="items-center py-0.5 rounded text-sm  text-blue-700"
-                                    >
-                                      {tier.name} × {tier.quantity}
-                                    </span>
-                                  ))
-                                ) : (
-                                  <span className="text-xs text-muted-foreground italic">
-                                    No tier info
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-xs text-muted-foreground flex items-center gap-2">
-                                <span>{formatDate(tx.date)}</span>
-                                <span className="h-1 w-1 rounded-full bg-gray-300" />
-                                <span className="capitalize">
-                                  {tx.payment_method}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-6">
-                            <div className="text-right">
-                              {/* <div className="font-bold text-gray-900">
-                                {tx.invoice.currency} {tx.invoice.total_amount.toLocaleString()}
-                              </div> */}
-                              <div className="font-bold text-gray-900 text-lg">
-                                ${tx.price.toLocaleString()}
-                              </div>
-                              <Badge
-                                variant="secondary"
-                                className={`${getStatusColor(tx.status)} text-[10px] px-2 py-0`}
-                              >
-                                {tx.status}
-                              </Badge>
-                            </div>
-                            {/* <Button variant="ghost" size="icon" className="rounded-full">
-                              <Receipt className="h-4 w-4 text-muted-foreground" />
-                            </Button> */}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-
-                  {pagination?.has_next && (
-                    <div className="text-center py-4">
-                      <Button
-                        size="lg"
-                        onClick={handleLoadMore}
-                        disabled={isFetching}
-                        className="min-w-[160px] rounded-full shadow-sm"
+          {/* Searchable Event Bar */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-black uppercase text-gray-500 tracking-wider">
+              Event Bar
+            </label>
+            <Popover
+              open={isEventDropdownOpen}
+              onOpenChange={setIsEventDropdownOpen}
+            >
+              <PopoverTrigger asChild>
+                <button
+                  role="combobox"
+                  className="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-xl flex items-center justify-between text-sm shadow-sm hover:border-blue-400 transition-all"
+                >
+                  <span
+                    className={
+                      tempFilters.event_title === "all"
+                        ? "text-gray-400"
+                        : "text-gray-900 font-bold"
+                    }
+                  >
+                    {tempFilters.event_title === "all"
+                      ? "Search and select event"
+                      : tempFilters.event_title}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "h-5 w-5 text-gray-400 transition-transform",
+                      isEventDropdownOpen && "rotate-180 text-blue-500",
+                    )}
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl shadow-2xl border-gray-100 overflow-hidden">
+                <Command>
+                  <CommandInput
+                    placeholder="Type event name..."
+                    className="h-12"
+                  />
+                  <CommandList className="max-h-60 custom-scrollbar">
+                    <CommandEmpty>No events found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        onSelect={() => {
+                          setTempFilters({
+                            ...tempFilters,
+                            event_title: "all",
+                          });
+                          setIsEventDropdownOpen(false);
+                        }}
+                        className="py-3 cursor-pointer"
                       >
-                        {isFetching ? (
-                          <span className="flex items-center gap-2">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            {t("common.loading", "Loading...")}
-                          </span>
-                        ) : (
-                          t("transaction.loadMore", "Load More")
-                        )}
-                      </Button>
+                        <div className="flex items-center justify-between w-full">
+                          <span>All Events</span>
+                          {tempFilters.event_title === "all" && (
+                            <Check className="h-4 w-4 text-blue-600" />
+                          )}
+                        </div>
+                      </CommandItem>
+                      {filteredEventList.map((title) => (
+                        <CommandItem
+                          key={title}
+                          onSelect={() => {
+                            setTempFilters({
+                              ...tempFilters,
+                              event_title: title,
+                            });
+                            setIsEventDropdownOpen(false);
+                          }}
+                          className="py-3 cursor-pointer"
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span>{title}</span>
+                            {tempFilters.event_title === title && (
+                              <Check className="h-4 w-4 text-blue-600" />
+                            )}
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
 
-                      <p className="text-gray-500 text-xs mt-4">
-                        {t(
-                          "billing.showingCount",
-                          `Showing ${allTransactions.length} of ${pagination.total} transactions`,
-                        )}
-                      </p>
-                    </div>
-                  )}
+          {/* Status Select */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-black uppercase text-gray-500 tracking-wider">
+              Status
+            </label>
+            <Select
+              value={tempFilters.status}
+              onValueChange={(value) =>
+                setTempFilters({ ...tempFilters, status: value })
+              }
+            >
+              <SelectTrigger className="w-full h-auto px-4 py-3.5 bg-white border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/10 hover:border-blue-400 transition-all text-sm font-medium cursor-pointer shadow-sm">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-gray-100 shadow-2xl z-[100]">
+                <SelectItem
+                  value="all"
+                  className="cursor-pointer py-3 hover:bg-blue-50 focus:bg-blue-50 transition-colors"
+                >
+                  All Status
+                </SelectItem>
+                <SelectItem
+                  value="completed"
+                  className="cursor-pointer py-3 hover:bg-blue-50 focus:bg-blue-50 transition-colors"
+                >
+                  Completed
+                </SelectItem>
+                <SelectItem
+                  value="pending"
+                  className="cursor-pointer py-3 hover:bg-blue-50 focus:bg-blue-50 transition-colors"
+                >
+                  Pending
+                </SelectItem>
+                <SelectItem
+                  value="failed"
+                  className="cursor-pointer py-3 hover:bg-blue-50 focus:bg-blue-50 transition-colors"
+                >
+                  Failed
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-                  {!pagination?.has_next && allTransactions.length > 0 && (
-                    <p className="text-center text-gray-400 text-xs py-4 italic">
-                      {t(
-                        "billing.endOfList",
-                        "You have reached the end of your history",
-                      )}
-                    </p>
-                  )}
-                </>
-              )}
-
-              {/* {activeTab === "invoices" && (
-                <div className="text-center py-10 text-muted-foreground">
-                  Invoices functionality coming soon.
-                </div>
-              )} */}
-              <TransactionDetail
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                data={detailData}
-                isLoading={isDetailLoading}
-              />
-            </div>
-          )}
+        {/* Panel Footer */}
+        <div className="p-6 bg-white border-t grid grid-cols-2 gap-4">
+          <button
+            onClick={handleClear}
+            className="flex items-center justify-center gap-2 py-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition-all active:scale-95"
+          >
+            <X className="h-5 w-5" /> Clear
+          </button>
+          <button
+            onClick={handleApply}
+            disabled={!!dateError}
+            className="flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 disabled:grayscale transition-all shadow-lg shadow-blue-100 active:scale-95"
+          >
+            <Filter className="h-5 w-5" /> Apply Filters
+          </button>
         </div>
       </div>
     </div>

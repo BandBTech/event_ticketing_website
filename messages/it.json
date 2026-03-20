@@ -549,7 +549,8 @@
     }
   },
   "transaction": {
-    "loadMore": "Carica più transazioni"
+    "loadMore": "Carica più transazioni",
+    "history": "Cronologia delle transazioni"
   },
   "upcomming": {
     "loadMore": "Carica altri in arrivo"

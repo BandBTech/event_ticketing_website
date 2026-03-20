@@ -1,135 +1,113 @@
 "use client";
 
 import React from "react";
-import { Receipt, Calendar, User, Mail, Download, Globe, Hash } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { 
+  User, 
+  CreditCard, 
+  Ticket as TicketIcon, 
+  Download,
+  Calendar,
+  ArrowLeft,
+  Receipt
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/utils";
 import { TransactionDetailApiResponse } from "@/types/transaction";
 
-interface TransactionDetailModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  data?: TransactionDetailApiResponse; 
+
+
+interface TransactionDetailViewProps {
+  data?: TransactionDetailApiResponse;
   isLoading: boolean;
+  onBack: () => void;
 }
 
-export function TransactionDetail({ 
-  isOpen, 
-  onClose, 
-  data, 
-  isLoading 
-}: TransactionDetailModalProps) {
-    if (!isOpen) return null;
+export function TransactionDetail({ data, isLoading, onBack }: TransactionDetailViewProps) {
+
   const tx = data?.data;
   const inv = tx?.invoice_info;
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-0 overflow-hidden border-none shadow-2xl bg-white">
-        <DialogHeader className="p-6 bg-slate-50 border-b">
-          <div className="flex justify-between items-center">
-            <div className="p-2 bg-white rounded-lg border shadow-sm">
-              <Receipt className="h-5 w-5 text-primary" />
-            </div>
-            {!isLoading && tx && (
-              <Badge className={tx.status === "completed" ? "bg-green-100 text-green-700 border-none" : "bg-amber-100 text-amber-700 border-none"}>
-                {tx.status}
-              </Badge>
-            )}
-          </div>
-          <DialogTitle className="text-xl font-bold mt-4">
-            {isLoading ? <Skeleton className="h-7 w-32" /> : `Transaction Detail`}
-          </DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            {isLoading ? <Skeleton className="h-4 w-48 mt-1" /> : inv?.invoice_number}
-          </p>
-        </DialogHeader>
-
-        <div className="p-6 space-y-6">
-          {isLoading ? (
-            <div className="space-y-4">
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          ) : (tx && inv) ? (
-            <>
-              {/* Event & Tier Info */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-gray-900">{tx.event_title}</h4>
-                    <p className="text-xs text-muted-foreground">{tx.tier_name} × {tx.ticket_count} Tickets</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-primary">${tx.amount} {tx.currency}</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <Calendar className="h-3.5 w-3.5" />
-                    {formatDate(tx.created_at)}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 justify-end text-right">
-                    <Globe className="h-3.5 w-3.5" />
-                    {tx.payment_gateway.toUpperCase()}
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="border-dashed" />
-
-              {/* Customer Info */}
-              <div className="space-y-2">
-                <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Billing To</p>
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                    <User className="h-4 w-4 text-gray-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{tx.user_name}</p>
-                    <p className="text-xs text-muted-foreground">{tx.customer_email}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Order Summary */}
-              <div className="bg-slate-50 rounded-xl p-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Subtotal</span>
-                  <span>${inv.subtotal}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Tax</span>
-                  <span>${inv.tax_amount}</span>
-                </div>
-                <Separator className="my-2" />
-                <div className="flex justify-between font-bold text-gray-900">
-                  <span>Total Paid</span>
-                  <span>${inv.total_amount} {inv.currency}</span>
-                </div>
-              </div>
-
-              <Button className="w-full gap-2" variant="outline" size="lg">
-                <Download className="h-4 w-4" />
-                Download Invoice
-              </Button>
-            </>
-          ) : (
-            <div className="text-center py-6 text-muted-foreground">Failed to load details.</div>
-          )}
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-10 w-48 bg-gray-200 rounded" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-48 w-full rounded-xl" />
         </div>
-      </DialogContent>
-    </Dialog>
+        <Skeleton className="h-64 w-full rounded-xl" />
+      </div>
+    );
+  }
+
+  if (!tx || !inv) {
+    return (
+      <div className="text-center py-20 bg-white rounded-xl border border-dashed">
+        <p className="text-muted-foreground mb-4">Transaction details not found.</p>
+        <Button onClick={onBack}>Back to Transactions</Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      {/* Header with Back Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <Button variant="ghost" onClick={onBack} className="-ml-2 text-gray-600 hover:text-primary">
+          <ArrowLeft className="h-4 w-4 mr-2" /> Back to History
+        </Button>
+        <div className="flex gap-2">
+          <Badge className="bg-[#E7F7EF] text-[#0FAF62] hover:bg-[#E7F7EF] border-none px-3 py-1 capitalize">
+            {tx.status}
+          </Badge>
+          <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 px-3 py-1">
+            {tx.payment_gateway}
+          </Badge>
+        </div>
+      </div>
+
+      <h1 className="text-3xl font-bold text-gray-900">Transaction Detail</h1>
+
+      {/* Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl border p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-[#E7F7EF] rounded-lg"><User className="h-5 w-5 text-[#0FAF62]" /></div>
+            <h3 className="font-bold">Buyer</h3>
+          </div>
+          <div className="space-y-4 text-sm">
+            <div className="flex justify-between"><span className="text-gray-500">User Name</span><span className="font-semibold">{tx.user_name}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-semibold">{tx.customer_email}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Event Name</span><span className="font-semibold">{tx.event_title}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Quantity</span><span className="font-semibold">{tx.ticket_count} ticket</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Ticket</span><span className="font-semibold">{tx.tier_name} Ticket</span></div>
+         
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-[#FEF3EB] rounded-lg"><CreditCard className="h-5 w-5 text-[#F38C39]" /></div>
+            <h3 className="font-bold">Payment</h3>
+          </div>
+          <div className="space-y-4 text-sm">
+            <div className="flex justify-between"><span className="text-gray-500">Gateway</span><span className="font-semibold capitalize">{tx.payment_gateway}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Created At</span><span className="font-semibold">{formatDate(tx.created_at)}</span></div>
+            <div className="mt-6 p-4 bg-[#F8F9FB] rounded-lg flex justify-between items-center">
+              <span className="text-gray-500 text-xs">Total Amount</span>
+              <span className="text-xl font-bold">${tx.amount.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <Button className="gap-2 bg-[#635BFF] hover:bg-[#5249E0] px-8 h-12">
+          <Download className="h-4 w-4" /> Download PDF Invoice
+        </Button>
+      </div>
+    </div>
   );
 }

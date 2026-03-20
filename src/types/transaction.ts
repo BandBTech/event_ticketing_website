@@ -73,6 +73,7 @@ export interface TransactionDetail {
   id: string;
   event_id: string;
   event_title: string;
+  tiers:Tier[];
   tier_id: string;
   tier_name: string;
   user_id: string;
@@ -96,4 +97,11 @@ export interface TransactionDetailApiResponse {
   data: TransactionDetail;
   timestamp: string;
   request_id: string;
+}
+
+export interface Tier {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
 }
