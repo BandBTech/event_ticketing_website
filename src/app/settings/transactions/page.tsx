@@ -289,13 +289,17 @@ export default function BillingPage() {
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-screen bg-gray-50/30">
-      {!selectedId && (
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 font-poppins">
-          Billing & Payments
+      {!selectedId && (<>
+        <h1 className="text-2xl font-bold text-gray-900 font-poppins">
+          Transactions
         </h1>
+            <p className="text-sm text-gray-600 mb-6">
+          Manage and view all your transactions.
+        </p>
+        </>
       )}
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6">
+      <div className="bg-white  rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6">
         {selectedId ? (
           <TransactionDetail
             data={detailData}
@@ -307,6 +311,7 @@ export default function BillingPage() {
             {/* Main Search & Filter Toggle */}
             <div className="flex gap-3 mb-8">
               <div className="relative flex-1">
+
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
@@ -350,6 +355,7 @@ export default function BillingPage() {
               </div>
             ) : (
               <div className="space-y-3">
+                <p className="text-sm text-gray-600 mb-6">Transaction History</p>
                 {filteredTransactions.map((tx) => (
                   <div
                     key={tx.id}
