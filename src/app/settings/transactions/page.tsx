@@ -10,6 +10,7 @@ import {
   Calendar as CalendarIcon,
   Loader2,
   Check,
+  Eraser,
 } from "lucide-react";
 import {
   useUserTransactions,
@@ -20,13 +21,6 @@ import { cn, formatDate } from "@/lib/utils";
 import { isBefore, startOfDay, differenceInMonths, parseISO } from "date-fns";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TransactionDetail } from "@/components/transactions/TransactionDetail";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Command,
   CommandEmpty,
@@ -40,21 +34,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { FigmaButton } from "@/components/ui/figma-button";
 
 export default function BillingPage() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
-  // 1. UI State
+  // 1. Pagination State
+  const [page, setPage] = useState(1);
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalTransactions, setTotalTransactions] = useState(0);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  // 2. UI State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isEventDropdownOpen, setIsEventDropdownOpen] = useState(false);
-  const [eventSearch, setEventSearch] = useState("");
+  const [isGatewayOpen, setIsGatewayOpen] = useState(false);
+  const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [eventSearchInput, setEventSearchInput] = useState("");
-  const eventRef = useRef<HTMLDivElement>(null);
   const selectedId = searchParams.get("id");
 
-  // 2. Filter State
+  // 3. Filter State
   const [searchQuery, setSearchQuery] = useState("");
   const [tempFilters, setTempFilters] = useState({
     status: "all",
@@ -67,40 +69,145 @@ export default function BillingPage() {
   const [appliedFilters, setAppliedFilters] = useState(tempFilters);
   const [dateError, setDateError] = useState("");
 
-  // 3. API Data
-  const { data: response, isLoading } = useUserTransactions(1);
+  // 4. API Data
+  const { data: response, isLoading, isFetching } = useUserTransactions(page);
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
   );
-  const transactions: Transaction[] = response?.data?.transactions || [];
+  
+  const transactionsFromApi: Transaction[] = response?.data?.transactions || [];
+  const pagination = response?.data?.pagination;
 
-  // 4. Unique Events for the "Event Bar" dropdown
-  const filteredEventList = useMemo(() => {
-    const allTitles = Array.from(
-      new Set(transactions.map((t) => t.event_title)),
-    ).sort();
-    if (!eventSearchInput.trim()) return allTitles;
-
-    return allTitles.filter((title) =>
-      title.toLowerCase().includes(eventSearchInput.toLowerCase()),
-    );
-  }, [transactions, eventSearchInput]);
-
-  // Close dropdown on outside click
+  // 5. Reset pagination when filters change 
+  const prevFiltersRef = useRef(appliedFilters);
+  const prevSearchRef = useRef(searchQuery);
+  
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        eventRef.current &&
-        !eventRef.current.contains(event.target as Node)
-      ) {
-        setIsEventDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+ 
+    const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(appliedFilters);
+    const searchChanged = prevSearchRef.current !== searchQuery;
+    
+    if (filtersChanged || searchChanged) {
+     
+      setPage(1);
+      setAllTransactions([]);
+      setHasMore(true);
+      setIsInitialLoad(true);
 
-  // 5. Date Validation Logic
+      prevFiltersRef.current = appliedFilters;
+      prevSearchRef.current = searchQuery;
+    }
+  }, [appliedFilters, searchQuery]);
+
+  // 6. Append new transactions to the list
+  useEffect(() => {
+    if (transactionsFromApi.length > 0) {
+      setAllTransactions((prev) => {
+        if (page === 1) {
+          
+          setIsInitialLoad(false);
+          return transactionsFromApi;
+        } else {
+          // Avoid duplicates
+          const existingIds = new Set(prev.map((tx) => tx.id));
+          const newTransactions = transactionsFromApi.filter(
+            (tx) => !existingIds.has(tx.id)
+          );
+         
+          return [...prev, ...newTransactions];
+        }
+      });
+      
+      if (pagination) {
+        setHasMore(pagination.has_next);
+        setTotalTransactions(pagination.total);
+      }
+    } else if (page === 1 && transactionsFromApi.length === 0 && !isFetching && isInitialLoad) {
+      setAllTransactions([]);
+      setHasMore(false);
+      setTotalTransactions(0);
+      setIsInitialLoad(false);
+    }
+  }, [transactionsFromApi, page, pagination, isFetching, isInitialLoad]);
+
+  // 7. Get unique events from all transactions
+  const allEventList = useMemo(() => {
+    const events = Array.from(
+      new Set(allTransactions.map((t) => t.event_title))
+    ).sort();
+    return events;
+  }, [allTransactions]);
+
+  // 8. Filtered event list based on search input
+  const filteredEventList = useMemo(() => {
+    if (!eventSearchInput.trim()) return allEventList;
+    return allEventList.filter((title) =>
+      title.toLowerCase().includes(eventSearchInput.toLowerCase())
+    );
+  }, [allEventList, eventSearchInput]);
+
+  // 9. Filtering Logic
+  const filteredTransactions = useMemo(() => {
+    if (allTransactions.length === 0) return [];
+    
+    const filtered = allTransactions.filter((tx) => {
+      // Title Search
+      const matchesSearch = searchQuery === "" || 
+        tx.event_title.toLowerCase().includes(searchQuery.toLowerCase());
+
+      // Status logic
+      const matchesStatus =
+        appliedFilters.status === "all" ||
+        tx.status.toLowerCase() === appliedFilters.status.toLowerCase();
+
+      // Gateway logic
+      const matchesGateway =
+        appliedFilters.payment_gateway === "all" ||
+        (tx.payment_method && 
+         tx.payment_method.toLowerCase() === appliedFilters.payment_gateway.toLowerCase());
+
+      // Event logic
+      const matchesEvent =
+        appliedFilters.event_title === "all" ||
+        tx.event_title === appliedFilters.event_title;
+
+      // Date Range logic
+      let matchesDate = true;
+      if (appliedFilters.start_date || appliedFilters.end_date) {
+        const txDate = new Date(tx.date);
+        txDate.setHours(0, 0, 0, 0);
+        
+        if (appliedFilters.start_date) {
+          const startDate = new Date(appliedFilters.start_date);
+          startDate.setHours(0, 0, 0, 0);
+          if (txDate < startDate) matchesDate = false;
+        }
+        
+        if (appliedFilters.end_date && matchesDate) {
+          const endDate = new Date(appliedFilters.end_date);
+          endDate.setHours(23, 59, 59, 999);
+          if (txDate > endDate) matchesDate = false;
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesGateway && matchesEvent && matchesDate;
+    });
+    
+    return filtered;
+  }, [allTransactions, searchQuery, appliedFilters]);
+
+  // 10. Calculate if we should show load more button
+  const shouldShowLoadMore = useMemo(() => {
+    if (!hasMore) return false;
+    if (filteredTransactions.length === 0) return false;
+    if (allTransactions.length >= totalTransactions && totalTransactions > 0) {
+      return false;
+    }
+    
+    return true;
+  }, [hasMore, filteredTransactions.length, allTransactions.length, totalTransactions]);
+
+  // 11. Date Validation Logic
   const handleDateChange = (
     field: "start_date" | "end_date",
     value: string,
@@ -121,57 +228,14 @@ export default function BillingPage() {
     setTempFilters(updated);
   };
 
-  // 6. Filtering Logic (Client-side)
-  const filteredTransactions = useMemo(() => {
-    return transactions.filter((tx) => {
-      // Title Search
-      const matchesSearch = tx.event_title
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-
-      // Select Filters
-      const matchesStatus =
-        appliedFilters.status === "all" ||
-        tx.status.toLowerCase() === appliedFilters.status.toLowerCase();
-
-      const matchesGateway =
-        appliedFilters.payment_gateway === "all" ||
-        tx.payment_method?.toLowerCase() ===
-          appliedFilters.payment_gateway.toLowerCase();
-
-      const matchesEvent =
-        appliedFilters.event_title === "all" ||
-        tx.event_title === appliedFilters.event_title;
-
-      // Date Range
-      const txTime = new Date(tx.date).getTime();
-      const start = appliedFilters.start_date
-        ? new Date(appliedFilters.start_date).getTime()
-        : null;
-      const end = appliedFilters.end_date
-        ? new Date(appliedFilters.end_date).getTime()
-        : null;
-      const matchesDate =
-        (!start || txTime >= start) && (!end || txTime <= end);
-
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesGateway &&
-        matchesEvent &&
-        matchesDate
-      );
-    });
-  }, [transactions, searchQuery, appliedFilters]);
-
-  // 7. Handlers
+  // 12. Handlers
   const handleApply = () => {
     if (dateError) return;
     setAppliedFilters(tempFilters);
     setIsFilterOpen(false);
   };
 
-  const handleClear = () => {
+  const handleClearFilters = () => {
     const reset = {
       status: "all",
       payment_gateway: "all",
@@ -179,9 +243,33 @@ export default function BillingPage() {
       start_date: "",
       end_date: "",
     };
+
     setTempFilters(reset);
     setAppliedFilters(reset);
     setDateError("");
+    setSearchQuery("");
+  };
+
+  const handleClearAll = () => {
+    const reset = {
+      status: "all",
+      payment_gateway: "all",
+      event_title: "all",
+      start_date: "",
+      end_date: "",
+    };
+  
+    setTempFilters(reset);
+    setAppliedFilters(reset);
+    setDateError("");
+    setSearchQuery("");
+  };
+
+  const handleLoadMore = () => {
+    if (!isFetching && hasMore) {
+    
+      setPage((prev) => prev + 1);
+    }
   };
 
   const activeCount = useMemo(() => {
@@ -193,6 +281,11 @@ export default function BillingPage() {
     if (appliedFilters.end_date) count++;
     return count;
   }, [appliedFilters]);
+
+  // Check if any filters are active (including search)
+  const hasActiveFilters = useMemo(() => {
+    return activeCount > 0 || searchQuery !== "";
+  }, [activeCount, searchQuery]);
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-screen bg-gray-50/30">
@@ -223,6 +316,8 @@ export default function BillingPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
+              
+              {/* Filter Button */}
               <button
                 onClick={() => setIsFilterOpen(true)}
                 className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all font-semibold text-gray-700 shadow-sm active:scale-95"
@@ -235,10 +330,21 @@ export default function BillingPage() {
                   </span>
                 )}
               </button>
+
+              {/* Clear Filters Button - Only shows when filters are active */}
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClearAll}
+                  className="flex items-center gap-2 px-6 py-3 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-all font-semibold text-red-700 shadow-sm active:scale-95"
+                >
+                  <Eraser className="h-5 w-5 text-red-500" />
+                  Clear Filters
+                </button>
+              )}
             </div>
 
             {/* Transaction List */}
-            {isLoading ? (
+            {isLoading && page === 1 && isInitialLoad ? (
               <div className="flex justify-center py-20">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
               </div>
@@ -282,9 +388,39 @@ export default function BillingPage() {
                     </div>
                   </div>
                 ))}
-                {filteredTransactions.length === 0 && (
+                
+                {filteredTransactions.length === 0 && !isFetching && allTransactions.length > 0 && (
                   <div className="text-center py-20 border-2 border-dashed rounded-2xl text-gray-400">
-                    No transactions found matching your selection.
+                    No transactions found matching your filters.
+                  </div>
+                )}
+
+                {filteredTransactions.length === 0 && !isFetching && allTransactions.length === 0 && !isInitialLoad && (
+                  <div className="text-center py-20 border-2 border-dashed rounded-2xl text-gray-400">
+                    No transactions found.
+                  </div>
+                )}
+
+                {/* Load More Button - Now shows only when there are actually more transactions to load */}
+                {shouldShowLoadMore && (
+                  <div className="flex flex-col items-center pt-8">
+                    <FigmaButton
+                      onClick={handleLoadMore}
+                      disabled={isFetching}
+                      className={isFetching ? "opacity-70 cursor-not-allowed" : ""}
+                    >
+                      {isFetching ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                          Loading more...
+                        </>
+                      ) : (
+                        <>Load More Transactions</>
+                      )}
+                    </FigmaButton>
+                    <p className="text-[10px] text-gray-400 mt-4 uppercase tracking-[0.2em] font-black">
+                      Showing {filteredTransactions.length} of {totalTransactions} Transactions
+                    </p>
                   </div>
                 )}
               </div>
@@ -293,14 +429,12 @@ export default function BillingPage() {
         )}
       </div>
 
-      {/* --- CUSTOM SLIDE-IN FILTER PANEL --- */}
-      {/* Dark Overlay */}
+      {/* FILTER PANEL - Same as before */}
       <div
         className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${isFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={() => setIsFilterOpen(false)}
       />
 
-      {/* The Panel */}
       <div
         className={`fixed top-0 right-0 h-full w-full max-w-[450px] bg-[#f5f7f8] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
       >
@@ -318,7 +452,7 @@ export default function BillingPage() {
           </button>
         </div>
 
-        {/* Panel Content (Scrollable) */}
+        {/* Panel Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
           {/* Date Range Section */}
           <div className="space-y-3">
@@ -339,6 +473,7 @@ export default function BillingPage() {
                   />
                 </div>
               </div>
+
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-wider text-gray-500">
                   End Date
@@ -368,42 +503,47 @@ export default function BillingPage() {
             <label className="text-[11px] font-black uppercase text-gray-500 tracking-wider">
               Payment Gateway
             </label>
-            <Select
-              value={tempFilters.payment_gateway}
-              onValueChange={(value) =>
-                setTempFilters({ ...tempFilters, payment_gateway: value })
-              }
-            >
-              <SelectTrigger className="w-full h-auto px-4 py-3.5 bg-white border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/10 hover:border-blue-400 transition-all text-sm font-medium">
-                <SelectValue placeholder="Select Payment Gateway" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-gray-100 shadow-2xl">
-                <SelectItem value="all" className="cursor-pointer py-3">
-                  All Gateways
-                </SelectItem>
-                <SelectItem value="stripe" className="cursor-pointer py-3">
-                  Stripe
-                </SelectItem>
-                <SelectItem value="khalti" className="cursor-pointer py-3">
-                  Khalti
-                </SelectItem>
-                <SelectItem value="cash" className="cursor-pointer py-3">
-                  Cash
-                </SelectItem>
-                <SelectItem
-                  value="bank_transfer"
-                  className="cursor-pointer py-3"
-                >
-                  Bank Transfer
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <Popover open={isGatewayOpen} onOpenChange={setIsGatewayOpen}>
+              <PopoverTrigger asChild>
+                <button className="w-full h-12 px-4 bg-white border border-gray-200 rounded-xl flex items-center justify-between text-sm shadow-sm hover:border-blue-400 transition-all outline-none">
+                  <span className={cn("capitalize", tempFilters.payment_gateway === "all" ? "text-gray-400" : "text-gray-900 font-medium")}>
+                    {tempFilters.payment_gateway === "all" ? "Select Gateway" : tempFilters.payment_gateway.replace('_', ' ')}
+                  </span>
+                  <ChevronDown className={cn("h-4 w-4 text-gray-400 transition-transform", isGatewayOpen && "rotate-180")} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0 rounded-2xl shadow-2xl border-gray-100 overflow-hidden w-[var(--radix-popover-trigger-width)]" align="start">
+                <Command>
+                  <CommandInput placeholder="Search gateway..." className="h-11" />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup>
+                      {["all", "stripe", "khalti", "cash", "bank_transfer"].map((opt) => (
+                        <CommandItem
+                          key={opt}
+                          onSelect={() => {
+                            setTempFilters({ ...tempFilters, payment_gateway: opt });
+                            setIsGatewayOpen(false);
+                          }}
+                          className="py-3 cursor-pointer capitalize"
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span>{opt === "all" ? "All Gateways" : opt.replace('_', ' ')}</span>
+                            {tempFilters.payment_gateway === opt && <Check className="h-4 w-4 text-blue-600" />}
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Searchable Event Bar */}
           <div className="space-y-2">
             <label className="text-[11px] font-black uppercase text-gray-500 tracking-wider">
-              Event Bar
+              Event
             </label>
             <Popover
               open={isEventDropdownOpen}
@@ -418,11 +558,11 @@ export default function BillingPage() {
                     className={
                       tempFilters.event_title === "all"
                         ? "text-gray-400"
-                        : "text-gray-900 font-bold"
+                        : "text-gray-900"
                     }
                   >
                     {tempFilters.event_title === "all"
-                      ? "Search and select event"
+                      ? "Select Event"
                       : tempFilters.event_title}
                   </span>
                   <ChevronDown
@@ -438,6 +578,8 @@ export default function BillingPage() {
                   <CommandInput
                     placeholder="Type event name..."
                     className="h-12"
+                    value={eventSearchInput}
+                    onValueChange={setEventSearchInput}
                   />
                   <CommandList className="max-h-60 custom-scrollbar">
                     <CommandEmpty>No events found.</CommandEmpty>
@@ -449,6 +591,7 @@ export default function BillingPage() {
                             event_title: "all",
                           });
                           setIsEventDropdownOpen(false);
+                          setEventSearchInput("");
                         }}
                         className="py-3 cursor-pointer"
                       >
@@ -468,6 +611,7 @@ export default function BillingPage() {
                               event_title: title,
                             });
                             setIsEventDropdownOpen(false);
+                            setEventSearchInput("");
                           }}
                           className="py-3 cursor-pointer"
                         >
@@ -491,49 +635,48 @@ export default function BillingPage() {
             <label className="text-[11px] font-black uppercase text-gray-500 tracking-wider">
               Status
             </label>
-            <Select
-              value={tempFilters.status}
-              onValueChange={(value) =>
-                setTempFilters({ ...tempFilters, status: value })
-              }
-            >
-              <SelectTrigger className="w-full h-auto px-4 py-3.5 bg-white border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/10 hover:border-blue-400 transition-all text-sm font-medium cursor-pointer shadow-sm">
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-gray-100 shadow-2xl z-[100]">
-                <SelectItem
-                  value="all"
-                  className="cursor-pointer py-3 hover:bg-blue-50 focus:bg-blue-50 transition-colors"
-                >
-                  All Status
-                </SelectItem>
-                <SelectItem
-                  value="completed"
-                  className="cursor-pointer py-3 hover:bg-blue-50 focus:bg-blue-50 transition-colors"
-                >
-                  Completed
-                </SelectItem>
-                <SelectItem
-                  value="pending"
-                  className="cursor-pointer py-3 hover:bg-blue-50 focus:bg-blue-50 transition-colors"
-                >
-                  Pending
-                </SelectItem>
-                <SelectItem
-                  value="failed"
-                  className="cursor-pointer py-3 hover:bg-blue-50 focus:bg-blue-50 transition-colors"
-                >
-                  Failed
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <Popover open={isStatusOpen} onOpenChange={setIsStatusOpen}>
+              <PopoverTrigger asChild>
+                <button className="w-full h-12 px-4 bg-white border border-gray-200 rounded-xl flex items-center justify-between text-sm shadow-sm hover:border-blue-400 transition-all outline-none">
+                  <span className={cn("capitalize", tempFilters.status === "all" ? "text-gray-400" : "text-gray-900 font-medium")}>
+                    {tempFilters.status === "all" ? "Select Status" : tempFilters.status}
+                  </span>
+                  <ChevronDown className={cn("h-4 w-4 text-gray-400 transition-transform", isStatusOpen && "rotate-180")} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0 rounded-2xl shadow-2xl border-gray-100 overflow-hidden w-[var(--radix-popover-trigger-width)]" align="start">
+                <Command>
+                  <CommandInput placeholder="Search status..." className="h-11" />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup>
+                      {["all", "completed", "pending", "failed"].map((opt) => (
+                        <CommandItem
+                          key={opt}
+                          onSelect={() => {
+                            setTempFilters({ ...tempFilters, status: opt });
+                            setIsStatusOpen(false);
+                          }}
+                          className="py-3 cursor-pointer capitalize"
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span>{opt === "all" ? "All Status" : opt}</span>
+                            {tempFilters.status === opt && <Check className="h-4 w-4 text-blue-600" />}
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
         {/* Panel Footer */}
         <div className="p-6 bg-white border-t grid grid-cols-2 gap-4">
           <button
-            onClick={handleClear}
+            onClick={handleClearFilters}
             className="flex items-center justify-center gap-2 py-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition-all active:scale-95"
           >
             <X className="h-5 w-5" /> Clear
