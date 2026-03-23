@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 
@@ -15,21 +15,29 @@ interface GuestRouteProps {
  * (Login, Signup, Forgot Password, etc.)
  * Redirects authenticated users to homepage
  */
-export function GuestRoute({ 
-  children, 
+export function GuestRoute({
+  children,
   redirectTo = '/'
 }: GuestRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (!authChecked) {
+      checkAuth();
+      setAuthChecked(true);
+    }
+  }, [authChecked, checkAuth]);
+
+  useEffect(() => {
+    if (authChecked && !isLoading && isAuthenticated) {
       router.push(redirectTo);
     }
-  }, [isAuthenticated, isLoading, redirectTo, router]);
+  }, [authChecked, isAuthenticated, isLoading, redirectTo, router]);
 
-  // Show loading state while checking auth
-  if (isLoading) {
+  // Show loading state while checking auth OR if auth hasn't been checked yet
+  if (!authChecked || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
