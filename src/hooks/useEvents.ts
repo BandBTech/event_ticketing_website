@@ -20,7 +20,8 @@ export const useEventById = (id: string) => {
     queryKey: queryKeys.events.byId(id),
     queryFn: () => eventService.getEventById(id),
     enabled: !!id,
-    staleTime: 0
+    staleTime: 0,
+    retry: false,
   });
 };
 
