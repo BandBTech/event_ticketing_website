@@ -8,7 +8,12 @@ interface SalesCountdownProps {
 }
 
 export const SalesCountdown = ({ targetDate, label }: SalesCountdownProps) => {
-  const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
+  const [timeLeft, setTimeLeft] = useState<{
+    d: number;
+    h: number;
+    m: number;
+    s: number;
+  } | null>(null);
 
   useEffect(() => {
     const calculate = () => {
@@ -39,18 +44,32 @@ export const SalesCountdown = ({ targetDate, label }: SalesCountdownProps) => {
   if (!timeLeft) return null;
 
   return (
-    <div className="space-y-2 mb-5">
-      <p className="text-sm font-bold text-primary uppercase tracking-wider">{label}</p>
-      <div className="flex bg-primary px-2 py-4 rounded-t-sm shadow-lg shadow-primary/40 -mx-8">
+    <div className="space-y-2 mb-4">
+      <p className="text-sm font-bold text-primary uppercase tracking-wider">
+        {label}
+      </p>
+      <div className="flex bg-primary px-2 py-3 shadow-lg shadow-primary/40 -mx-[25px]">
         {Object.entries(timeLeft).map(([unit, value]) => (
           <div key={unit} className="flex items-center flex-1">
-            <div className="flex flex-col items-center flex-1 rounded-lg gap-1">
-              <span className="text-4xl font-bold text-white tabular-nums tracking-tighter">{value.toString().padStart(2, '0')}</span>
+            <div className="flex flex-col items-center flex-1 rounded-lg gap-0.5">
+              <span className="text-3xl font-bold text-white tabular-nums tracking-tighter">
+                {value.toString().padStart(2, "0")}
+              </span>
               <span className="text-xs uppercase font-bold text-gray-300">
-                {unit === 'd' ? 'Days' : unit === 'h' ? 'Hrs' : unit === 'm' ? 'Mins' : 'Secs'}
+                {unit === "d"
+                  ? "Days"
+                  : unit === "h"
+                    ? "Hrs"
+                    : unit === "m"
+                      ? "Mins"
+                      : "Secs"}
               </span>
             </div>
-            {unit !== 's' && <span className="text-3xl font-bold text-white self-start mt-1">:</span>}
+            {unit !== "s" && (
+              <span className="text-2xl font-bold text-white self-start mt-1">
+                :
+              </span>
+            )}
           </div>
         ))}
       </div>
