@@ -173,14 +173,14 @@
       "draft": "Draft",
       "completed": "Completed",
       "rejected": "Rejected",
-      "on_sale": "Sales Live",
-      "active": "Sales Live",
+      "on_sale": "On Sale",
+      "active": "On Sale",
       "paused": "Sales Paused",
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_ended": "Sales Ended",
       "live": "Live",
-      "hold": "Sales On Hold"
+      "hold": "On Hold"
     }
   },
   "languages": {
