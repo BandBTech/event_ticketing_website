@@ -21,6 +21,11 @@ export interface TransactionInvoice {
 
 export interface Transaction {
   id: string;
+  event:{
+    id: string,
+    title: string,
+    banner_image:string,
+  },
   event_title: string;
   tiers:{
     id: string; 
@@ -105,3 +110,21 @@ export interface Tier {
   quantity: number;
   price: number;
 }
+
+export interface TransactionFilters {
+  status: string;
+  payment_gateway: string;
+  event_title: string;
+  start_date: Date | undefined;
+  end_date:  Date | undefined;
+}
+
+
+export const getDefaultFilters = (): TransactionFilters => ({
+  status: "all",
+  payment_gateway: "all",
+  event_title: "all",
+  start_date: undefined,
+  end_date:undefined,
+});
+

@@ -1,13 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { transactionService } from '@/services/transactionService';
-import { PaginatedTransactions } from '@/types/transaction';
+import { PaginatedTransactions, TransactionFilters } from '@/types/transaction';
 
-export const useUserTransactions = (page: number = 1, limit: number = 10) => {
+export const useUserTransactions = (
+  page: number = 1, 
+  limit: number = 10, 
+  filters?: TransactionFilters 
+) => {
   return useQuery<PaginatedTransactions>({
-    queryKey: ['transactions', 'user-list', page, limit],
-    queryFn: () => transactionService.getUserTransactions(page, limit),
+    queryKey: ['transactions', 'user-list', page, limit, filters],
+    queryFn: () => transactionService.getUserTransactions(page, limit, filters),
     placeholderData: (previousData) => previousData,
-    
   });
 };
 
@@ -23,3 +26,35 @@ export function useTransactionDetail(transactionId?: string) {
     staleTime: 1000 * 60 * 5, 
   });
 }
+
+export const useUserTransactionEvents = () => {
+  return useQuery({
+    queryKey: ['user-transactions', 'events-list'],
+    queryFn: async () => {
+
+ const response = await transactionService.getUserTransactions(1, 1000);
+
+   const transactions = response?.data?.transactions;
+      
+      if (!transactions || transactions.length === 0) {
+      
+        return [];
+      }
+     const uniqueEvents = new Set<string>();
+    transactions.forEach((transaction) => {
+
+      const eventTitle = transaction.event?.title;
+      
+        if (eventTitle) {
+          uniqueEvents.add(eventTitle);
+        }
+      });
+      
+   const events = Array.from(uniqueEvents).sort();
+      return events;
+    },
+    staleTime: 1000 * 60 * 5, 
+    gcTime: 1000 * 60 * 10, 
+    refetchOnWindowFocus: false, 
+  });
+};

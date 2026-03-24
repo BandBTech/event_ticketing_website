@@ -81,9 +81,9 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
             <div className="flex justify-between"><span className="text-gray-500">User Name</span><span className="font-semibold">{tx.user_name}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-semibold">{tx.customer_email}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Event Name</span><span className="font-semibold">{tx.event_title}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Quantity</span><span className="font-semibold">{tx.ticket_count} ticket</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Ticket</span><span className="font-semibold">{tx.tier_name} Ticket</span></div>
-         
+            <div className="flex justify-between"><span className="text-gray-500">Quantity</span><span className="font-semibold">{tx.ticket_count} {tx.ticket_count === 1 ? "ticket" : "tickets"}</span></div>
+            {/* <div className="flex justify-between"><span className="text-gray-500">Ticket</span><span className="font-semibold">{tx.tier_name} Ticket</span></div>
+          */}
           </div>
         </div>
 
@@ -103,11 +103,11 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
         </div>
       </div>
 
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end">
         <Button className="gap-2 bg-[#635BFF] hover:bg-[#5249E0] px-8 h-12">
           <Download className="h-4 w-4" /> Download PDF Invoice
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }
