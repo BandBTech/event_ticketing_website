@@ -447,6 +447,7 @@ function GuestPurchaseContent() {
                             {formatCurrency(
                               ticketType.price,
                               ticketType.currency,
+                              locale,
                             )}
                           </p>
                         </div>
@@ -827,11 +828,11 @@ function GuestPurchaseContent() {
                             </p>
                             <p className="text-xs text-gray-500">
                               {st.selectedQty} ×{" "}
-                              {formatCurrency(st.price, st.currency)}
+                              {formatCurrency(st.price, st.currency, locale)}
                             </p>
                           </div>
                           <span className="font-bold text-gray-900 ml-3">
-                            {formatCurrency(st.subtotal, st.currency)}
+                            {formatCurrency(st.subtotal, st.currency, locale)}
                           </span>
                         </div>
                       ))}
@@ -854,7 +855,7 @@ function GuestPurchaseContent() {
                     <span className="font-bold text-gray-900">Total</span>
                     <span className="font-black text-2xl text-primary">
                       {totalAmount > 0
-                        ? formatCurrency(totalAmount, defaultCurrency)
+                        ? formatCurrency(totalAmount, defaultCurrency, locale)
                         : "-"}
                     </span>
                   </div>

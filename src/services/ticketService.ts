@@ -55,7 +55,7 @@ export interface UserPurchaseResponse {
   message: string;
   data?: {
     id?: string;
-    order_id: string;
+    order_id?: string;
     checkout_token: string;
     payment_gateway: string;
     amount: number;
@@ -63,22 +63,6 @@ export interface UserPurchaseResponse {
     status: string;
     gateway_data: {
       cancel_url: string;
-      line_items?: Array<{
-        price_data: {
-          currency: string;
-          product_data: {
-            description: string;
-            name: string;
-          };
-          unit_amount: number;
-        };
-        quantity: number;
-      }>;
-      metadata?: {
-        checkout_token: string;
-        ticket_id: string;
-        user_id: string;
-      };
       session_id: string;
       success_url: string;
       url?: string;

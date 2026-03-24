@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format, isSameDay } from "date-fns";
-import { useLanguageStore } from "@/store/languageStore";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -239,8 +238,7 @@ export function formatEventDateTime(
  * @param currency - The currency code (e.g. "USD", "EUR")
  * @returns Formatted currency string
  */
-export const formatCurrency = (amount: number, currency: string) => {
-  const { locale } = useLanguageStore();
+export const formatCurrency = (amount: number, currency: string, locale: string) => {
   // we have three languages japaneses english and italian if currency is not available use currency based on language
   const currencyMap: Record<string, string> = {
     ja: "JPY",

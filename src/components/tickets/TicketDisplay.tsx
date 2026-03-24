@@ -60,6 +60,9 @@ function SingleTicketCard({
   // Combined date and time format
   const dateTimeString = format(new Date(event.startDate), "EEE, MMM d, yyyy • h:mm a");
 
+  const isCoordinates = (addr: string) =>
+    /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(addr?.trim() ?? "");
+
   return (
     <div className="relative print:break-inside-avoid print:mb-4">
       {/* Main Ticket Container - White Background */}
@@ -143,8 +146,10 @@ function SingleTicketCard({
                     {t("ticketView.venue", "Venue")}
                   </p>
                   <div className="flex gap-2">
-                    <p className="text-sm font-semibold">{event.venueName},</p>
-                    <p className="text-sm text-black/60">{event.address}</p>
+                    <p className="text-sm font-semibold">{event.venueName}</p>
+                    {event.address && !isCoordinates(event.address) && (
+                      <p className="text-sm text-black/60">{event.address}</p>
+                    )}
                   </div>
                 </div>
               </div>

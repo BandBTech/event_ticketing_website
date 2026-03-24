@@ -86,8 +86,8 @@ function PaymentSuccessContent() {
     );
   }
 
-  // Success state — data.token is the ticket view token
-  const viewTicketsUrl = `/tickets/view/?token=${data.token}`;
+  // Success state — use ticket_view_url returned directly from the API
+  const viewTicketsUrl = data.ticket_view_url;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
