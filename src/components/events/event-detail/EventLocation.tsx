@@ -54,7 +54,7 @@ export const EventLocation = ({ venue }: EventLocationProps) => {
           </div>
           <div className="mt-4">
             <p className="text-gray-700">
-              {venue.address}
+              {isCoord ? venue.name : venue.address}
             </p>
           </div>
         </div>

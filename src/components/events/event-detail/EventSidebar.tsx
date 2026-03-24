@@ -199,9 +199,11 @@ export const EventSidebar = ({ event, onShare, onFindTickets }: EventSidebarProp
           <p className="text-gray-900 font-medium">
             {event.venue.name}
           </p>
-          <p className="text-sm text-gray-600">
-            {event.venue.address}
-          </p>
+          {!/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.venue.address?.trim() || "") && (
+            <p className="text-sm text-gray-600">
+              {event.venue.address}
+            </p>
+          )}
         </div>
 
         {/* Date */}

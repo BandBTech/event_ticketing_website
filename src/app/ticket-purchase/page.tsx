@@ -15,7 +15,10 @@ import {
   TicketIcon,
 } from "@phosphor-icons/react";
 import cn from "clsx";
-import { GuestPurchasePayload, UserPurchasePayload } from "@/services/ticketService";
+import {
+  GuestPurchasePayload,
+  UserPurchasePayload,
+} from "@/services/ticketService";
 import { ShieldCheckIcon } from "lucide-react";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -25,7 +28,7 @@ import { createValidationHelpers } from "@/lib/validation";
 // import { useGateways } from "@/hooks/usePayments";
 // import type { GatewayInfo } from "@/types/payment";
 import { format, isSameDay } from "date-fns";
-import { formatEventDateTime } from "@/lib/utils";
+import { formatCurrency, formatEventDateTime } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -44,7 +47,10 @@ import { Input } from "@/components/ui/input";
 import { ChevronRightIcon } from "lucide-react";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { Separator } from "@/components/ui/separator-extended";
-import { useGuestPurchaseMutation, useUserPurchaseMutation } from "@/hooks/useTickets";
+import {
+  useGuestPurchaseMutation,
+  useUserPurchaseMutation,
+} from "@/hooks/useTickets";
 import { CreditCardIcon } from "lucide-react";
 
 // Max total tickets allowed
@@ -60,7 +66,6 @@ const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
 };
 
 type GuestFormData = z.infer<ReturnType<typeof createGuestSchema>>;
-
 
 function GuestPurchaseContent() {
   const searchParams = useSearchParams();
@@ -87,8 +92,18 @@ function GuestPurchaseContent() {
   );
 
   // Payment gateway state
-  const CASH_GATEWAY = { name: "cash", display_name: "Cash", description: "Pay with cash at the venue", icon_url: "" };
-  const STRIPE_GATEWAY = { name: "stripe", display_name: "Stripe", description: "Secure online payment via Stripe", icon_url: "/images/stripe.svg" };
+  const CASH_GATEWAY = {
+    name: "cash",
+    display_name: "Cash",
+    description: "Pay with cash at the venue",
+    icon_url: "",
+  };
+  const STRIPE_GATEWAY = {
+    name: "stripe",
+    display_name: "Stripe",
+    description: "Secure online payment via Stripe",
+    icon_url: "/images/stripe.svg",
+  };
   const [selectedGateway, setSelectedGateway] = useState<string>("stripe");
 
   // Form for Guest Details (email only)
@@ -110,15 +125,6 @@ function GuestPurchaseContent() {
   const isLoadingGateways = false;
 
   const maxQuantity = isAuthenticated ? USER_MAX_QUANTITY : GUEST_MAX_QUANTITY;
-
-  const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   // Compute total quantity across all tiers
   const totalQuantity = useMemo(() => {
@@ -161,7 +167,11 @@ function GuestPurchaseContent() {
 
       if (tier && newQty > tier.available) {
         toast.error(
-          t("ticketPurchase.notEnoughTickets", `Only ${tier.available} tickets available`, { count: tier.available })
+          t(
+            "ticketPurchase.notEnoughTickets",
+            `Only ${tier.available} tickets available`,
+            { count: tier.available },
+          ),
         );
         return prev;
       }
@@ -417,11 +427,16 @@ function GuestPurchaseContent() {
                                 {t("events.soldOut", "Sold out")}
                               </span>
                             )}
-                            {ticketType.available > 0 && ticketType.available < 10 && (
-                              <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                {t("ticketPurchase.onlyTicketsLeft", `Only ${ticketType.available} left!`, { count: ticketType.available })}
-                              </span>
-                            )}
+                            {ticketType.available > 0 &&
+                              ticketType.available < 10 && (
+                                <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                  {t(
+                                    "ticketPurchase.onlyTicketsLeft",
+                                    `Only ${ticketType.available} left!`,
+                                    { count: ticketType.available },
+                                  )}
+                                </span>
+                              )}
                           </div>
                           {ticketType.description && (
                             <p className="text-sm text-gray-500 mt-1 pr-4">
@@ -466,7 +481,11 @@ function GuestPurchaseContent() {
                             }
                             variant="outline"
                             size="icon"
-                            disabled={isAtMaxTotal || isPending || qty >= ticketType.available}
+                            disabled={
+                              isAtMaxTotal ||
+                              isPending ||
+                              qty >= ticketType.available
+                            }
                             className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
                           >
                             <PlusIcon
@@ -514,7 +533,7 @@ function GuestPurchaseContent() {
                         {t(
                           "ticketPurchase.maxReached",
                           `Maximum of ${USER_MAX_QUANTITY} tickets reached`,
-                          { USER_MAX_QUANTITY }
+                          { USER_MAX_QUANTITY },
                         )}
                       </p>
                     </div>
@@ -650,7 +669,7 @@ function GuestPurchaseContent() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                          {gateways.map((gateway) => (
+                      {gateways.map((gateway) => (
                         <button
                           key={gateway.name}
                           type="button"
@@ -717,7 +736,10 @@ function GuestPurchaseContent() {
                     <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500 bg-gray-50 rounded-lg p-3 border border-gray-100">
                       <ShieldCheckIcon className="w-4 h-4 text-green-500" />
                       <span>
-                        {t("ticketPurchase.securePayment", "Secure payment powered by")}{" "}
+                        {t(
+                          "ticketPurchase.securePayment",
+                          "Secure payment powered by",
+                        )}{" "}
                         <span className="font-bold text-[#635BFF]">Stripe</span>
                       </span>
                     </div>
@@ -745,14 +767,27 @@ function GuestPurchaseContent() {
                   </h3>
                   <div className="flex flex-col text-xs text-gray-500 mt-1 space-y-0.5">
                     <div className="flex items-start">
-                      <CalendarIcon size={14} className="mr-1 flex-shrink-0 text-primary mt-0.5" />
+                      <CalendarIcon
+                        size={14}
+                        className="mr-1 flex-shrink-0 text-primary mt-0.5"
+                      />
                       <div className="flex flex-col">
                         {(() => {
-                          const dateDisplay = formatEventDateTime(eventData.startDate, eventData.endDate);
+                          const dateDisplay = formatEventDateTime(
+                            eventData.startDate,
+                            eventData.endDate,
+                          );
                           return (
                             <>
-                              <span>{dateDisplay.start} {dateDisplay.isSameDay ? `- ${dateDisplay.end}` : "-"}</span>
-                              {!dateDisplay.isSameDay && <span>{dateDisplay.end}</span>}
+                              <span>
+                                {dateDisplay.start}{" "}
+                                {dateDisplay.isSameDay
+                                  ? `- ${dateDisplay.end}`
+                                  : "-"}
+                              </span>
+                              {!dateDisplay.isSameDay && (
+                                <span>{dateDisplay.end}</span>
+                              )}
                             </>
                           );
                         })()}
@@ -833,25 +868,23 @@ function GuestPurchaseContent() {
                         : "shadow-blue-200",
                     )}
                     disabled={
-                      isPending ||
-                      isRedirectingToPayment ||
-                      totalQuantity === 0
+                      isPending || isRedirectingToPayment || totalQuantity === 0
                     }
                   >
                     {isPending || isRedirectingToPayment ? (
                       <span className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded-full border-2 border-white/50 border-t-white animate-spin" />
                         {isRedirectingToPayment
-                          ? t("ticketPurchase.redirectingToPayment", "Redirecting to payment...")
+                          ? t(
+                              "ticketPurchase.redirectingToPayment",
+                              "Redirecting to payment...",
+                            )
                           : t("common.processing", "Processing...")}
                       </span>
                     ) : step === 1 ? (
                       t("common.continue", "Continue")
-                      ) : selectedGateway === "stripe" ? (
-                        t(
-                          "ticketPurchase.payWithStripe",
-                          "Pay with Stripe",
-                        )
+                    ) : selectedGateway === "stripe" ? (
+                      t("ticketPurchase.payWithStripe", "Pay with Stripe")
                     ) : (
                       t(
                         "ticketPurchase.proceedToCheckout",
