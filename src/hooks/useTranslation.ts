@@ -14,7 +14,7 @@ const translations: Record<Locale, () => Promise<TranslationMessages>> = {
   it: () => import('../../messages/it.json').then(m => m.default),
 };
 
-export function useTranslation(locale: Locale = 'en') {
+export function useTranslation(locale: Locale = 'ja') {
   const [messages, setMessages] = useState<TranslationMessages>({});
   const [isLoading, setIsLoading] = useState(true);
 
