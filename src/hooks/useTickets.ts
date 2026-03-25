@@ -47,7 +47,7 @@ export const useGuestPurchaseMutation = () => {
       } else {
         toast.message(res.message || "Purchase failed", 'error');
       }
-    }
+    },
   });
 };
 

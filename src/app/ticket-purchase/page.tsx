@@ -256,7 +256,10 @@ function GuestPurchaseContent() {
           customer_phone: user?.phone || "",
           country_code: user?.countryCode || "",
         };
-        userPurchaseMutation.mutate(userPayload);
+        userPurchaseMutation.mutate(userPayload, {
+          onError: () => setIsRedirectingToPayment(false),
+          onSuccess: (res) => { if (!res.success) setIsRedirectingToPayment(false); },
+        });
       } else {
         // Guest purchase
         guestForm.handleSubmit((data) => {
@@ -270,7 +273,10 @@ function GuestPurchaseContent() {
             payment_gateway: selectedGateway,
             tiers: tiersPayload,
           };
-          guestPurchaseMutation.mutate(guestPayload);
+          guestPurchaseMutation.mutate(guestPayload, {
+            onError: () => setIsRedirectingToPayment(false),
+            onSuccess: (res) => { if (!res.success) setIsRedirectingToPayment(false); },
+          });
         })();
       }
     }
