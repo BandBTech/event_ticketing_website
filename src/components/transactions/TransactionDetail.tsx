@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { 
   User, 
   CreditCard, 
@@ -8,13 +8,15 @@ import {
   Download,
   Calendar,
   ArrowLeft,
-  Receipt
+  Receipt,
+  Eye
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/utils";
 import { TransactionDetailApiResponse } from "@/types/transaction";
+import { InvoiceModal } from "./InvoiceModal";
 
 
 
@@ -24,8 +26,10 @@ interface TransactionDetailViewProps {
   onBack: () => void;
 }
 
+
 export function TransactionDetail({ data, isLoading, onBack }: TransactionDetailViewProps) {
 
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const tx = data?.data;
   const inv = tx?.invoice_info;
 
@@ -103,6 +107,27 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
         </div>
       </div>
 
+<div className="flex justify-end gap-3">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsInvoiceModalOpen(true)}
+            className="gap-2"
+          >
+            <Eye className="h-4 w-4" />
+            View Invoice
+          </Button>
+
+        
+      </div>
+
+      {/* Invoice Modal */}
+      <InvoiceModal
+        open={isInvoiceModalOpen}
+        onOpenChange={setIsInvoiceModalOpen}
+        invoiceInfo={inv}
+        transaction={tx}
+      />
+    
       {/* <div className="flex justify-end">
         <Button className="gap-2 bg-[#635BFF] hover:bg-[#5249E0] px-8 h-12">
           <Download className="h-4 w-4" /> Download PDF Invoice

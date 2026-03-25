@@ -39,15 +39,48 @@ export default function BillingPage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const selectedId = searchParams.get("id");
 
-  // 3. Filter State - Use proper types
+  // 3. Filter State
   const [appliedFilters, setAppliedFilters] = useState<TransactionFilters>(getDefaultFilters());
 
-  // 4. API Data
+  // 4. Create API filters based on what actually works
+  const apiFilters = useMemo((): TransactionFilters => {
+    const filters: TransactionFilters = getDefaultFilters();
+    
+    // Payment method - WORKS ALONE
+    if (appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") {
+      filters.payment_gateway = appliedFilters.payment_gateway;
+    }
+    
+    // Date from - WORKS ALONE
+    if (appliedFilters.start_date) {
+      filters.start_date = appliedFilters.start_date;
+    }
+    
+    // Date to - ONLY works when combined with date_from
+    if (appliedFilters.end_date && appliedFilters.start_date) {
+      filters.end_date = appliedFilters.end_date;
+    }
+    
+    // Event title / Search - ONLY works when combined with payment_method OR date_from
+    if (appliedFilters.event_title && appliedFilters.event_title !== "all") {
+      const hasCombinedFilter = 
+        (appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") ||
+        appliedFilters.start_date;
+      
+      if (hasCombinedFilter) {
+        filters.event_title = appliedFilters.event_title;
+      }
+    }
+    
+    return filters;
+  }, [appliedFilters]);
+
+  // 5. API Data
   const {
     data: response,
     isLoading,
     isFetching,
-  } = useUserTransactions(page, 10, appliedFilters);
+  } = useUserTransactions(page, 10, apiFilters);
   
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
@@ -56,15 +89,12 @@ export default function BillingPage() {
   const transactionsFromApi: Transaction[] = response?.data?.transactions || [];
   const pagination = response?.data?.pagination;
 
-  // 5. Reset pagination when filters change
-  const prevFiltersRef = useRef(appliedFilters);
+  // 6. Reset pagination when filters change
+  const prevFiltersRef = useRef(apiFilters);
   const prevSearchRef = useRef(searchQuery);
 
-
-  
   useEffect(() => {
-    const filtersChanged =
-      JSON.stringify(prevFiltersRef.current) !== JSON.stringify(appliedFilters);
+    const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(apiFilters);
     const searchChanged = prevSearchRef.current !== searchQuery;
 
     if (filtersChanged || searchChanged) {
@@ -73,16 +103,14 @@ export default function BillingPage() {
       setHasMore(true);
       setIsInitialLoad(true);
 
-      prevFiltersRef.current = appliedFilters;
+      prevFiltersRef.current = apiFilters;
       prevSearchRef.current = searchQuery;
     }
-  }, [appliedFilters, searchQuery]);
+  }, [apiFilters, searchQuery]);
 
-  // 6. Append new transactions to the list
+  // 7. Append new transactions to the list
   useEffect(() => {
     if (transactionsFromApi.length > 0) {
-        console.log("API Response - Pagination:", pagination);
-    console.log("Total from API:", pagination?.total);
       setAllTransactions((prev) => {
         if (page === 1) {
           setIsInitialLoad(false);
@@ -113,90 +141,85 @@ export default function BillingPage() {
     }
   }, [transactionsFromApi, page, pagination, isFetching, isInitialLoad]);
 
-  // 7. Filtering Logic with search
+  // 8. Client-side filtering for unsupported filters
   const filteredTransactions = useMemo(() => {
-    if (allTransactions.length === 0) return [];
+    let filtered = allTransactions;
     
-
-    return allTransactions.filter((tx) => {
-      // Search logic
-      const matchesSearch =
-        searchQuery === "" ||
-        tx.event?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tx.event_title?.toLowerCase().includes(searchQuery.toLowerCase());
-
-      // Status logic
-      const matchesStatus =
-        appliedFilters.status === "all" ||
-        tx.status.toLowerCase() === appliedFilters.status.toLowerCase();
-
-      // Gateway logic
-      const matchesGateway =
-        appliedFilters.payment_gateway === "all" ||
-        (tx.payment_method &&
-          tx.payment_method.toLowerCase() ===
-            appliedFilters.payment_gateway.toLowerCase());
-
-      // Event logic
-      const matchesEvent =
-        appliedFilters.event_title === "all" ||
-        tx.event?.title === appliedFilters.event_title ||
-        tx.event_title === appliedFilters.event_title;
-
-      // Date Range logic
-      let matchesDate = true;
-      if (appliedFilters.start_date || appliedFilters.end_date) {
+    // Apply status filter client-side (API doesn't support)
+    if (appliedFilters.status && appliedFilters.status !== "all") {
+      filtered = filtered.filter(tx => tx.status === appliedFilters.status);
+    }
+    
+    // Apply event filter client-side if it wasn't sent to API
+    const eventFilterSentToAPI = 
+      (appliedFilters.event_title && appliedFilters.event_title !== "all") &&
+      ((appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") ||
+       appliedFilters.start_date);
+    
+    if (!eventFilterSentToAPI && appliedFilters.event_title && appliedFilters.event_title !== "all") {
+      filtered = filtered.filter(tx => {
+        const title = tx.event?.title || "";
+        return title === appliedFilters.event_title;
+      });
+    }
+    
+    // Apply date_to client-side if it wasn't sent to API
+    const dateToSentToAPI = appliedFilters.end_date && appliedFilters.start_date;
+    
+    if (!dateToSentToAPI && appliedFilters.end_date) {
+      const endDate = new Date(appliedFilters.end_date);
+      endDate.setHours(23, 59, 59, 999);
+      
+      filtered = filtered.filter(tx => {
         const txDate = new Date(tx.date);
-        txDate.setHours(0, 0, 0, 0);
-
-        if (appliedFilters.start_date) {
-          const startDate = new Date(appliedFilters.start_date);
-          startDate.setHours(0, 0, 0, 0);
-          if (txDate < startDate) matchesDate = false;
-        }
-
-        if (appliedFilters.end_date && matchesDate) {
-          const endDate = new Date(appliedFilters.end_date);
-          endDate.setHours(23, 59, 59, 999);
-          if (txDate > endDate) matchesDate = false;
-        }
+        return txDate <= endDate;
+      });
+    }
+    
+    // Apply search client-side (since search is just event_title and may not be sent to API)
+    if (searchQuery) {
+      const searchFilterSentToAPI = 
+        eventFilterSentToAPI && appliedFilters.event_title === searchQuery;
+      
+      if (!searchFilterSentToAPI) {
+        filtered = filtered.filter(tx => {
+          const title = (tx.event?.title || "").toLowerCase();
+          return title.includes(searchQuery.toLowerCase());
+        });
       }
-
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesGateway &&
-        matchesEvent &&
-        matchesDate
-      );
-    });
+    }
+    
+    return filtered;
   }, [allTransactions, searchQuery, appliedFilters]);
 
-const filteredTotal = useMemo(() => {
-  if (!hasMore && !isFetching) {
-    return filteredTransactions.length;
-  }
- 
-  return totalTransactions;
-}, [hasMore, isFetching, filteredTransactions.length, totalTransactions]);
+  // 9. Load more button logic
+  const shouldShowLoadMore = useMemo(() => {
+    // Don't show if client-side filters are active
+    if (searchQuery && appliedFilters.event_title !== searchQuery) return false;
+    if (appliedFilters.status && appliedFilters.status !== "all") return false;
+    if (appliedFilters.end_date && !appliedFilters.start_date) return false;
+    
+    // Don't show if event filter is active and not sent to API
+    if (appliedFilters.event_title && appliedFilters.event_title !== "all") {
+      const eventFilterSentToAPI = 
+        (appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") ||
+        appliedFilters.start_date;
+      if (!eventFilterSentToAPI) return false;
+    }
+    
+    return hasMore && !isFetching && filteredTransactions.length > 0 && 
+           filteredTransactions.length < totalTransactions;
+  }, [hasMore, isFetching, filteredTransactions.length, totalTransactions, searchQuery, appliedFilters]);
 
-// 8. Calculate if we should show load more button
-const shouldShowLoadMore = useMemo(() => {
-  return hasMore && 
-         !isFetching && 
-         filteredTransactions.length > 0 && 
-         filteredTransactions.length < filteredTotal;
-}, [hasMore, isFetching, filteredTransactions.length, filteredTotal]);
-
-  // 9. Handlers
+  // 10. Handlers
   const handleClearAll = () => {
     const defaultFilters = getDefaultFilters();
     setAppliedFilters(defaultFilters);
     setSearchQuery("");
     setPage(1);
-  setAllTransactions([]);
-  setHasMore(true);
-  setIsInitialLoad(true);
+    setAllTransactions([]);
+    setHasMore(true);
+    setIsInitialLoad(true);
   };
 
   const handleLoadMore = () => {
@@ -336,12 +359,12 @@ const shouldShowLoadMore = useMemo(() => {
               </div>
             ) : (
               <div className="space-y-3">
-                {filteredTransactions.map((tx, index) => (
-             <div
-  key={tx.id}
-  onClick={() => router.push(`${pathname}?id=${tx.id}`)}
-  className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-100 hover:shadow-md transition-all cursor-pointer group"
->
+                {filteredTransactions.map((tx) => (
+                  <div
+                    key={tx.id}
+                    onClick={() => router.push(`${pathname}?id=${tx.id}`)}
+                    className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-100 hover:shadow-md transition-all cursor-pointer group"
+                  >
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       {/* Image Section */}
                       <div className="flex-shrink-0">
@@ -370,7 +393,7 @@ const shouldShowLoadMore = useMemo(() => {
                         {/* Tier Badges */}
                         {tx.tiers && tx.tiers.length > 0 && (
                           <div className="flex flex-wrap gap-2 py-1">
-                            {tx.tiers.slice(0, 2).map((tier) => (
+                            {tx.tiers.map((tier) => (
                               <span
                                 key={tier.id}
                                 className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-100"
@@ -378,11 +401,7 @@ const shouldShowLoadMore = useMemo(() => {
                                 {tier.name} × {tier.quantity}
                               </span>
                             ))}
-                            {tx.tiers.length > 2 && (
-                              <span className="text-[10px] text-gray-500">
-                                +{tx.tiers.length - 2} more
-                              </span>
-                            )}
+                       
                           </div>
                         )}
 
