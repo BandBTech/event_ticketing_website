@@ -23,7 +23,9 @@ function ClientQRCode({ value }: { value: string }) {
   }, []);
 
   if (!mounted) {
-    return <div className="w-[100px] h-[100px] bg-gray-100 rounded animate-pulse" />;
+    return (
+      <div className="w-[100px] h-[100px] bg-gray-100 rounded animate-pulse" />
+    );
   }
 
   return (
@@ -45,12 +47,12 @@ function SingleTicketCard({
   currency,
   company,
   index,
-  total
+  total,
 }: {
   ticket: TicketItem;
-  event: ViewTicketDetails['event'];
+  event: ViewTicketDetails["event"];
   currency: string;
-  company?: ViewTicketDetails['company'];
+  company?: ViewTicketDetails["company"];
   index: number;
   total: number;
 }) {
@@ -58,13 +60,18 @@ function SingleTicketCard({
   const { t } = useTranslation(locale);
 
   // Combined date and time format
-  const dateTimeString = format(new Date(event.startDate), "EEE, MMM d, yyyy • h:mm a");
+  const dateTimeString = format(
+    new Date(event.startDate),
+    "EEE, MMM d, yyyy • h:mm a",
+  );
 
   const isCoordinates = (addr: string) =>
     /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(addr?.trim() ?? "");
 
   return (
-    <div className="relative print:break-inside-avoid print:mb-4">
+    <div
+      className={`relative print:break-inside-avoid ${index < total - 1 ? "print:break-after-page" : ""}`}
+    >
       {/* Main Ticket Container - White Background */}
       <div className="relative max-w-xl mx-auto bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 print:shadow-none print:border">
         {/* Top Section - Event Banner (Compact) */}
@@ -215,7 +222,12 @@ function SingleTicketCard({
   );
 }
 
-export function TicketDisplay({ order, onPrint, onDownload, isLoading }: TicketDisplayProps) {
+export function TicketDisplay({
+  order,
+  onPrint,
+  onDownload,
+  isLoading,
+}: TicketDisplayProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
@@ -223,7 +235,10 @@ export function TicketDisplay({ order, onPrint, onDownload, isLoading }: TicketD
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-2xl animate-pulse border border-gray-200">
+          <div
+            key={i}
+            className="bg-white rounded-2xl animate-pulse border border-gray-200"
+          >
             <div className="h-32 bg-gray-200 rounded-t-2xl" />
             <div className="p-4 space-y-3">
               <div className="flex gap-4">
@@ -241,9 +256,12 @@ export function TicketDisplay({ order, onPrint, onDownload, isLoading }: TicketD
   }
 
   return (
-    <div id="ticket-container" className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 print:space-y-0">
+    <div
+      id="ticket-container"
+      className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 print:space-y-0"
+    >
       {/* 3-Column Grid on Desktop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 print:grid-cols-2 print:gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 print:grid-cols-1 print:max-w-md print:mx-auto print:gap-0">
         {order.tickets.map((ticket, index) => (
           <SingleTicketCard
             key={ticket.ticketId}
@@ -261,7 +279,7 @@ export function TicketDisplay({ order, onPrint, onDownload, isLoading }: TicketD
         @media print {
           @page {
             margin: 1cm;
-            size: auto;
+            size: A4;
           }
           .print\\:hidden {
             display: none !important;
@@ -270,7 +288,8 @@ export function TicketDisplay({ order, onPrint, onDownload, isLoading }: TicketD
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          body, html {
+          body,
+          html {
             background: white !important;
             margin: 0 !important;
             padding: 0 !important;
