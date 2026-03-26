@@ -4,12 +4,13 @@ import { PaginatedTransactions, TransactionFilters } from '@/types/transaction';
 
 export const useUserTransactions = (
   page: number = 1, 
-  limit: number = 10, 
-  filters?: TransactionFilters 
+  limit: number = 20, 
+  filters?: TransactionFilters,
+  search?: string
 ) => {
   return useQuery<PaginatedTransactions>({
-    queryKey: ['transactions', 'user-list', page, limit, filters],
-    queryFn: () => transactionService.getUserTransactions(page, limit, filters),
+    queryKey: ['transactions', 'user-list', page, limit, filters, search],
+    queryFn: () => transactionService.getUserTransactions(page, limit, filters, search),
     placeholderData: (previousData) => previousData,
   });
 };
@@ -27,35 +28,35 @@ export function useTransactionDetail(transactionId?: string) {
   });
 }
 
-export const useUserTransactionEvents = () => {
-  return useQuery({
-    queryKey: ['user-transactions', 'events-list'],
-    queryFn: async () => {
+// export const useUserTransactionEvents = () => {
+//   return useQuery({
+//     queryKey: ['user-transactions', 'events-list'],
+//     queryFn: async () => {
 
- const response = await transactionService.getUserTransactions(1, 1000);
+//  const response = await transactionService.getUserTransactions(1, 1000);
 
-   const transactions = response?.data?.transactions;
+//    const transactions = response?.data?.transactions;
       
-      if (!transactions || transactions.length === 0) {
+//       if (!transactions || transactions.length === 0) {
       
-        return [];
-      }
-     const uniqueEvents = new Set<string>();
-    transactions.forEach((transaction) => {
+//         return [];
+//       }
+//      const uniqueEvents = new Set<string>();
+//     transactions.forEach((transaction) => {
 
-      const eventTitle = transaction.event?.title;
+//       const eventTitle = transaction.event?.title;
       
-        if (eventTitle) {
-          uniqueEvents.add(eventTitle);
-        }
-      });
+//         if (eventTitle) {
+//           uniqueEvents.add(eventTitle);
+//         }
+//       });
       
-   const events = Array.from(uniqueEvents).sort();
-      return events;
-    },
-    staleTime: 1000 * 60 * 5, 
-    gcTime: 1000 * 60 * 10, 
-    refetchOnWindowFocus: false, 
+//    const events = Array.from(uniqueEvents).sort();
+//       return events;
+//     },
+//     staleTime: 1000 * 60 * 5, 
+//     gcTime: 1000 * 60 * 10, 
+//     refetchOnWindowFocus: false, 
     
-  });
-};
+//   });
+// };

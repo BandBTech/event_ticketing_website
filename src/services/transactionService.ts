@@ -8,12 +8,15 @@ export const transactionService = {
   
 
 
-getUserTransactions: (page: number = 1, limit: number = 20, filters?: TransactionFilters) => {
+getUserTransactions: (page: number = 1, limit: number = 20, filters?: TransactionFilters, search?: string) => {
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
   });
 
+  if(search){
+    params.append('search', search);
+  }
   if (filters) {
     // Payment method - WORKS ALONE
     if (filters.payment_gateway && filters.payment_gateway !== 'all') {

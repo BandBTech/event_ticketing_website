@@ -32,6 +32,7 @@ export default function BillingPage() {
   const [hasMore, setHasMore] = useState(true);
   const [totalTransactions, setTotalTransactions] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   // 2. UI State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -42,34 +43,20 @@ export default function BillingPage() {
   // 3. Filter State
   const [appliedFilters, setAppliedFilters] = useState<TransactionFilters>(getDefaultFilters());
 
-  // 4. Create API filters based on what actually works
+  // 4. Create API filters
   const apiFilters = useMemo((): TransactionFilters => {
     const filters: TransactionFilters = getDefaultFilters();
     
-    // Payment method - WORKS ALONE
     if (appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") {
       filters.payment_gateway = appliedFilters.payment_gateway;
     }
     
-    // Date from - WORKS ALONE
     if (appliedFilters.start_date) {
       filters.start_date = appliedFilters.start_date;
     }
     
-    // Date to - ONLY works when combined with date_from
     if (appliedFilters.end_date && appliedFilters.start_date) {
       filters.end_date = appliedFilters.end_date;
-    }
-    
-    // Event title / Search - ONLY works when combined with payment_method OR date_from
-    if (appliedFilters.event_title && appliedFilters.event_title !== "all") {
-      const hasCombinedFilter = 
-        (appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") ||
-        appliedFilters.start_date;
-      
-      if (hasCombinedFilter) {
-        filters.event_title = appliedFilters.event_title;
-      }
     }
     
     return filters;
@@ -80,7 +67,7 @@ export default function BillingPage() {
     data: response,
     isLoading,
     isFetching,
-  } = useUserTransactions(page, 10, apiFilters);
+  } = useUserTransactions(page, 20, apiFilters, searchQuery);
   
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
@@ -89,9 +76,20 @@ export default function BillingPage() {
   const transactionsFromApi: Transaction[] = response?.data?.transactions || [];
   const pagination = response?.data?.pagination;
 
-  // 6. Reset pagination when filters change
+  // 6. Reset pagination when filters or search change
   const prevFiltersRef = useRef(apiFilters);
   const prevSearchRef = useRef(searchQuery);
+
+  // 7. Extract unique event titles
+  const eventList = useMemo(() => {
+    const events = new Set<string>();
+    allTransactions.forEach(tx => {
+      if (tx.event?.title) {
+        events.add(tx.event.title);
+      }
+    });
+    return Array.from(events).sort();
+  }, [allTransactions]);
 
   useEffect(() => {
     const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(apiFilters);
@@ -108,7 +106,7 @@ export default function BillingPage() {
     }
   }, [apiFilters, searchQuery]);
 
-  // 7. Append new transactions to the list
+  // 8. Append new transactions
   useEffect(() => {
     if (transactionsFromApi.length > 0) {
       setAllTransactions((prev) => {
@@ -138,32 +136,20 @@ export default function BillingPage() {
       setHasMore(false);
       setTotalTransactions(0);
       setIsInitialLoad(false);
+      setHasLoaded(true);
     }
   }, [transactionsFromApi, page, pagination, isFetching, isInitialLoad]);
 
-  // 8. Client-side filtering for unsupported filters
+  // 9. Client-side filtering for unsupported filters
   const filteredTransactions = useMemo(() => {
     let filtered = allTransactions;
     
-    // Apply status filter client-side (API doesn't support)
+    // Apply status filter client-side
     if (appliedFilters.status && appliedFilters.status !== "all") {
       filtered = filtered.filter(tx => tx.status === appliedFilters.status);
     }
     
-    // Apply event filter client-side if it wasn't sent to API
-    const eventFilterSentToAPI = 
-      (appliedFilters.event_title && appliedFilters.event_title !== "all") &&
-      ((appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") ||
-       appliedFilters.start_date);
-    
-    if (!eventFilterSentToAPI && appliedFilters.event_title && appliedFilters.event_title !== "all") {
-      filtered = filtered.filter(tx => {
-        const title = tx.event?.title || "";
-        return title === appliedFilters.event_title;
-      });
-    }
-    
-    // Apply date_to client-side if it wasn't sent to API
+    // Apply date_to client-side if not sent to API
     const dateToSentToAPI = appliedFilters.end_date && appliedFilters.start_date;
     
     if (!dateToSentToAPI && appliedFilters.end_date) {
@@ -176,42 +162,21 @@ export default function BillingPage() {
       });
     }
     
-    // Apply search client-side (since search is just event_title and may not be sent to API)
-    if (searchQuery) {
-      const searchFilterSentToAPI = 
-        eventFilterSentToAPI && appliedFilters.event_title === searchQuery;
-      
-      if (!searchFilterSentToAPI) {
-        filtered = filtered.filter(tx => {
-          const title = (tx.event?.title || "").toLowerCase();
-          return title.includes(searchQuery.toLowerCase());
-        });
-      }
-    }
-    
     return filtered;
-  }, [allTransactions, searchQuery, appliedFilters]);
+  }, [allTransactions, appliedFilters]);
 
-  // 9. Load more button logic
+  // 10. Loading state for initial load
+  const isLoadingInitial = isLoading && page === 1 && isInitialLoad;
+
+  // 11. Load more button logic
   const shouldShowLoadMore = useMemo(() => {
-    // Don't show if client-side filters are active
-    if (searchQuery && appliedFilters.event_title !== searchQuery) return false;
     if (appliedFilters.status && appliedFilters.status !== "all") return false;
     if (appliedFilters.end_date && !appliedFilters.start_date) return false;
-    
-    // Don't show if event filter is active and not sent to API
-    if (appliedFilters.event_title && appliedFilters.event_title !== "all") {
-      const eventFilterSentToAPI = 
-        (appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") ||
-        appliedFilters.start_date;
-      if (!eventFilterSentToAPI) return false;
-    }
-    
     return hasMore && !isFetching && filteredTransactions.length > 0 && 
            filteredTransactions.length < totalTransactions;
-  }, [hasMore, isFetching, filteredTransactions.length, totalTransactions, searchQuery, appliedFilters]);
+  }, [hasMore, isFetching, filteredTransactions.length, totalTransactions, appliedFilters]);
 
-  // 10. Handlers
+  // 12. Handlers
   const handleClearAll = () => {
     const defaultFilters = getDefaultFilters();
     setAppliedFilters(defaultFilters);
@@ -220,6 +185,7 @@ export default function BillingPage() {
     setAllTransactions([]);
     setHasMore(true);
     setIsInitialLoad(true);
+    setHasLoaded(false);
   };
 
   const handleLoadMore = () => {
@@ -228,19 +194,29 @@ export default function BillingPage() {
     }
   };
 
+  const handleEventSearch = (eventName: string) => {
+    setSearchQuery(eventName);
+    setPage(1);
+    setAllTransactions([]);
+    setIsInitialLoad(true);
+    setIsFilterOpen(false);
+    setHasLoaded(false);
+  };
+
+  // 13. Active count
   const activeCount = useMemo(() => {
     let count = 0;
     if (appliedFilters.status !== "all") count++;
     if (appliedFilters.payment_gateway !== "all") count++;
-    if (appliedFilters.event_title !== "all") count++;
     if (appliedFilters.start_date) count++;
     if (appliedFilters.end_date) count++;
+    if (searchQuery) count++;
     return count;
-  }, [appliedFilters]);
+  }, [appliedFilters, searchQuery]);
 
   const hasActiveFilters = useMemo(() => {
-    return activeCount > 0 || searchQuery !== "";
-  }, [activeCount, searchQuery]);
+    return activeCount > 0;
+  }, [activeCount]);
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-screen bg-gray-50/30">
@@ -329,13 +305,13 @@ export default function BillingPage() {
               )}
             </div>
 
-            {/* Transaction List */}
-            {isLoading && page === 1 && isInitialLoad ? (
+            {/* Transaction List - Fixed loading condition */}
+            {isLoadingInitial ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="h-10 w-10 animate-spin text-gray-300 mb-4" />
                 <p className="text-sm text-gray-500">Loading transactions...</p>
               </div>
-            ) : filteredTransactions.length === 0 ? (
+            ) : hasLoaded && filteredTransactions.length === 0 ? (
               <div className="text-center py-20">
                 <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <TicketIcon className="h-10 w-10 text-gray-400" />
@@ -357,7 +333,7 @@ export default function BillingPage() {
                   </button>
                 )}
               </div>
-            ) : (
+            ) :  filteredTransactions.length > 0 ?(
               <div className="space-y-3">
                 {filteredTransactions.map((tx) => (
                   <div
@@ -365,8 +341,8 @@ export default function BillingPage() {
                     onClick={() => router.push(`${pathname}?id=${tx.id}`)}
                     className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-100 hover:shadow-md transition-all cursor-pointer group"
                   >
+                    {/* Transaction card content remains the same */}
                     <div className="flex items-center gap-4 flex-1 min-w-0">
-                      {/* Image Section */}
                       <div className="flex-shrink-0">
                         {tx.event?.banner_image ? (
                           <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-gray-50 ring-1 ring-gray-100 group-hover:ring-blue-200 transition-all">
@@ -384,13 +360,11 @@ export default function BillingPage() {
                         )}
                       </div>
 
-                      {/* Content Section */}
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-gray-900 group-hover:text-blue-700 transition-colors truncate">
                           {tx.event?.title || tx.event_title}
                         </h3>
 
-                        {/* Tier Badges */}
                         {tx.tiers && tx.tiers.length > 0 && (
                           <div className="flex flex-wrap gap-2 py-1">
                             {tx.tiers.map((tier) => (
@@ -401,7 +375,6 @@ export default function BillingPage() {
                                 {tier.name} × {tier.quantity}
                               </span>
                             ))}
-                       
                           </div>
                         )}
 
@@ -412,7 +385,6 @@ export default function BillingPage() {
                       </div>
                     </div>
 
-                    {/* Price and Status */}
                     <div className="text-right ml-4 flex-shrink-0">
                       <p className="text-lg font-black text-gray-900">
                         ${tx.price.toLocaleString()}
@@ -455,7 +427,7 @@ export default function BillingPage() {
                   </div>
                 )}
               </div>
-            )}
+            ): null}
           </>
         )}
       </div>
@@ -465,11 +437,16 @@ export default function BillingPage() {
         onOpenChange={setIsFilterOpen}
         filters={appliedFilters}
         onApply={(newFilters) => {
-          setAppliedFilters(newFilters);
-          setPage(1);
-          setAllTransactions([]);
-          setIsFilterOpen(false);
+     setAppliedFilters(newFilters);
+    setPage(1);
+    setAllTransactions([]);
+    setHasMore(true);
+    setIsInitialLoad(true);
+    setHasLoaded(false); 
+    setIsFilterOpen(false);
         }}
+        eventList={eventList}
+        onSearchEvent={handleEventSearch}
       />
     </div>
   );
