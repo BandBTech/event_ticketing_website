@@ -15,11 +15,11 @@ export interface PurchaseTierPayload {
   tier_id: string;
 }
 export interface GuestPurchasePayload {
-  first_name: string;
-  last_name: string;
+  // first_name: string;
+  // last_name: string;
   email: string;
-  phone: string;
-  country_code: string;
+  // phone: string;
+  // country_code: string;
   event_id: string;
   payment_gateway: string;
   tiers: PurchaseTierPayload[];
@@ -138,10 +138,16 @@ export const ticketService = {
     return mapTicketView(rawTicket);
   },
 
-  getUserTickets: async (page: number =1, limit: number =10): Promise<PaginatedUserTickets> => {
-    const response = await api.get<UserTicketsApiResponse>(`/user/tickets?page=${page}&limit=${limit}`, {
-      requiresAuth: true,
-    });
+  getUserTickets: async (
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<PaginatedUserTickets> => {
+    const response = await api.get<UserTicketsApiResponse>(
+      `/user/tickets?page=${page}&limit=${limit}`,
+      {
+        requiresAuth: true,
+      },
+    );
 
     const rawTickets = response?.tickets || [];
     // const detailedTicketsPromises = rawTickets.map(async (t: ApiUserTicket) => {
@@ -195,9 +201,9 @@ export const ticketService = {
       totalAmount: t.total_amount,
       currency: "NPR",
     }));
-    return{
+    return {
       tickets: mappedTickets,
-      pagination: response.pagination
+      pagination: response.pagination,
     };
   },
 
@@ -231,9 +237,7 @@ export const ticketService = {
     }));
   },
 
-  getTransactionById: async (
-    id: string,
-  ): Promise<ViewTicketDetail> => {
+  getTransactionById: async (id: string): Promise<ViewTicketDetail> => {
     const response = await api.get<TransactionDetailApiResponse>(
       `/user/tickets/${id}`,
       { requiresAuth: true },
@@ -303,9 +307,9 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
     purchaseDate: apiResponse.purchase_date,
     company: apiResponse.company
       ? {
-        name: apiResponse.company.name,
-        logoUrl: apiResponse.company.logo_url,
-      }
+          name: apiResponse.company.name,
+          logoUrl: apiResponse.company.logo_url,
+        }
       : undefined,
   };
 };

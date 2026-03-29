@@ -258,24 +258,24 @@ function GuestPurchaseContent() {
         };
         userPurchaseMutation.mutate(userPayload, {
           onError: () => setIsRedirectingToPayment(false),
-          onSuccess: (res) => { if (!res.success) setIsRedirectingToPayment(false); },
+          onSuccess: (res) => {
+            if (!res.success) setIsRedirectingToPayment(false);
+          },
         });
       } else {
         // Guest purchase
         guestForm.handleSubmit((data) => {
           const guestPayload: GuestPurchasePayload = {
-            first_name: "",
-            last_name: "",
             email: data.email || "",
-            phone: "",
-            country_code: "",
             event_id: eventData.id,
             payment_gateway: selectedGateway,
             tiers: tiersPayload,
           };
           guestPurchaseMutation.mutate(guestPayload, {
             onError: () => setIsRedirectingToPayment(false),
-            onSuccess: (res) => { if (!res.success) setIsRedirectingToPayment(false); },
+            onSuccess: (res) => {
+              if (!res.success) setIsRedirectingToPayment(false);
+            },
           });
         })();
       }

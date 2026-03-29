@@ -152,7 +152,8 @@
       "stopped": "販売停止",
       "sold_out": "売り切れ",
       "sales_ended": "販売終了",
-      "live": "ライブ"
+      "live": "ライブ",
+      "scheduled": "スケジュール"
     },
     "salesStartingIn": "チケット販売開始日"
   },

@@ -178,9 +178,10 @@
       "paused": "Sales Paused",
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
-      "sales_ended": "Sales Ended",
+      "sales_end": "Sales Ended",
       "live": "Live",
-      "hold": "On Hold"
+      "hold": "On Hold",
+      "scheduled": "Scheduled"
     }
   },
   "languages": {

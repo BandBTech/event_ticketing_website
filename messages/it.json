@@ -150,8 +150,9 @@
       "paused": "Vendite in Pausa",
       "stopped": "Vendite Interrotte",
       "sold_out": "Esaurito",
-      "sales_ended": "Vendite Terminate",
-      "live": "Live"
+      "sales_end": "Vendite Terminate",
+      "live": "Live",
+      "scheduled": "Scheduled"
     },
     "salesStartingIn": "Vendita biglietti a partire da"
   },
