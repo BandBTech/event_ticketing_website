@@ -24,12 +24,11 @@ function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const checkoutToken = searchParams.get("checkout_token") || "";
 
-
   const { data, status, error } = useQuery({
     queryKey: queryKeys.payment.confirm(checkoutToken.trim()),
     queryFn: () => paymentService.confirmPayment(checkoutToken.trim()),
     enabled: !!checkoutToken,
-    retry: 1,
+    retry: false,
   });
 
   // No checkout token in query params — invalid access
@@ -38,10 +37,21 @@ function PaymentSuccessContent() {
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
         <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md w-full">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
-            <WarningCircleIcon size={32} weight="duotone" className="rotate-45" />
+            <WarningCircleIcon
+              size={32}
+              weight="duotone"
+              className="rotate-45"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("ticketPurchase.invalidAccess", "Invalid Access")}</h1>
-          <p className="text-gray-600 mb-6">{t("ticketPurchase.invalidAccessMessage", "We could not verify your payment details.")}</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {t("ticketPurchase.invalidAccess", "Invalid Access")}
+          </h1>
+          <p className="text-gray-600 mb-6">
+            {t(
+              "ticketPurchase.invalidAccessMessage",
+              "We could not verify your payment details.",
+            )}
+          </p>
           <Button onClick={() => router.push("/")} className="w-full">
             {t("common.returnHome", "Return to Home")}
           </Button>
@@ -67,7 +77,9 @@ function PaymentSuccessContent() {
   // Error state — only reached when status === "error"
   if (status === "error") {
     const msg =
-      error instanceof Error ? error.message : "Payment could not be confirmed.";
+      error instanceof Error
+        ? error.message
+        : "Payment could not be confirmed.";
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
         <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md w-full">
@@ -104,7 +116,7 @@ function PaymentSuccessContent() {
         <p className="text-gray-600 mb-6 text-lg">
           {t(
             "ticketPurchase.successMessage",
-            "Your tickets have been booked successfully. A confirmation email has been sent to you."
+            "Your tickets have been booked successfully. A confirmation email has been sent to you.",
           )}
         </p>
 
