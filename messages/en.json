@@ -672,6 +672,25 @@
           "back": "Back to List"
         },
         "notickets": "No Tickets Found"
+      },
+      "transaction": {
+        "search": "Search by event title...",
+        "title": "Transactions",
+        "subtitle": "Manage and view all your transactions.",
+        "filter": "Filters",
+        "error": {
+          "notfound": "No transactions found",
+          "tryadjust": "Try adjusting your filters or search query",
+          "notransaction": "You haven't made any transactions yet"
+        },
+        "button": {
+          "clearall": "Clear all filters",
+          "loadmore": "Loading more...",
+          "load": "Load More Transactions"
+        },
+        "showing": "Showing",
+        "of": "of",
+        "trans": "Transactions"
       }
     }
   },

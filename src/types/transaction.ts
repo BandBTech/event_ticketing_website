@@ -128,3 +128,8 @@ export const getDefaultFilters = (): TransactionFilters => ({
   end_date:undefined,
 });
 
+export interface TransactionApiFilters {
+  payment_gateway?: string;
+  date_from?: string;
+  date_to?: string;
+}

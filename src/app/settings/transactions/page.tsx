@@ -1,30 +1,42 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import {
-  Search,
-  Filter,
-  X,
-  Loader2,
-  Eraser,
-  TicketIcon,
-} from "lucide-react";
+import { Search, Filter, X, Loader2, Eraser, TicketIcon } from "lucide-react";
 import {
   useUserTransactions,
   useTransactionDetail,
 } from "@/hooks/useTransactions";
-import { Transaction, TransactionFilters, getDefaultFilters } from "@/types/transaction";
+import {
+  Transaction,
+  TransactionApiFilters,
+  TransactionFilters,
+  getDefaultFilters,
+} from "@/types/transaction";
 import { cn, formatDate } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TransactionDetail } from "@/components/transactions/TransactionDetail";
 import { FigmaButton } from "@/components/ui/figma-button";
-import { TransactionFilterSheet } from "@/components/transactions/TransactionFilterSheet";
+//import { TransactionFilterSheet } from "@/components/transactions/TransactionFilterSheet";
 import Image from "next/image";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
+import { Calendar as CalendarIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { differenceInMonths, isBefore, startOfDay } from "date-fns";
+import { format } from "date-fns";
+import { toast } from "sonner";
 
 export default function BillingPage() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
 
   // 1. Pagination State
   const [page, setPage] = useState(1);
@@ -39,26 +51,31 @@ export default function BillingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const selectedId = searchParams.get("id");
+  // const [dateError, setDateError] = useState<string | null>(null);
 
   // 3. Filter State
-  const [appliedFilters, setAppliedFilters] = useState<TransactionFilters>(getDefaultFilters());
+  const [appliedFilters, setAppliedFilters] =
+    useState<TransactionFilters>(getDefaultFilters());
 
   // 4. Create API filters
-  const apiFilters = useMemo((): TransactionFilters => {
-    const filters: TransactionFilters = getDefaultFilters();
-    
-    if (appliedFilters.payment_gateway && appliedFilters.payment_gateway !== "all") {
+  const apiFilters = useMemo((): TransactionApiFilters => {
+    const filters: TransactionApiFilters = {};
+
+    if (appliedFilters.start_date) {
+      filters.date_from = format(appliedFilters.start_date, "yyyy-MM-dd");
+    }
+
+    if (appliedFilters.end_date) {
+      filters.date_to = format(appliedFilters.end_date, "yyyy-MM-dd");
+    }
+
+    if (
+      appliedFilters.payment_gateway &&
+      appliedFilters.payment_gateway !== "all"
+    ) {
       filters.payment_gateway = appliedFilters.payment_gateway;
     }
-    
-    if (appliedFilters.start_date) {
-      filters.start_date = appliedFilters.start_date;
-    }
-    
-    if (appliedFilters.end_date && appliedFilters.start_date) {
-      filters.end_date = appliedFilters.end_date;
-    }
-    
+
     return filters;
   }, [appliedFilters]);
 
@@ -68,7 +85,7 @@ export default function BillingPage() {
     isLoading,
     isFetching,
   } = useUserTransactions(page, 20, apiFilters, searchQuery);
-  
+
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
   );
@@ -81,18 +98,19 @@ export default function BillingPage() {
   const prevSearchRef = useRef(searchQuery);
 
   // 7. Extract unique event titles
-  const eventList = useMemo(() => {
-    const events = new Set<string>();
-    allTransactions.forEach(tx => {
-      if (tx.event?.title) {
-        events.add(tx.event.title);
-      }
-    });
-    return Array.from(events).sort();
-  }, [allTransactions]);
+  // const eventList = useMemo(() => {
+  //   const events = new Set<string>();
+  //   allTransactions.forEach(tx => {
+  //     if (tx.event?.title) {
+  //       events.add(tx.event.title);
+  //     }
+  //   });
+  //   return Array.from(events).sort();
+  // }, [allTransactions]);
 
   useEffect(() => {
-    const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(apiFilters);
+    const filtersChanged =
+      JSON.stringify(prevFiltersRef.current) !== JSON.stringify(apiFilters);
     const searchChanged = prevSearchRef.current !== searchQuery;
 
     if (filtersChanged || searchChanged) {
@@ -143,25 +161,12 @@ export default function BillingPage() {
   // 9. Client-side filtering for unsupported filters
   const filteredTransactions = useMemo(() => {
     let filtered = allTransactions;
-    
+
     // Apply status filter client-side
     if (appliedFilters.status && appliedFilters.status !== "all") {
-      filtered = filtered.filter(tx => tx.status === appliedFilters.status);
+      filtered = filtered.filter((tx) => tx.status === appliedFilters.status);
     }
-    
-    // Apply date_to client-side if not sent to API
-    const dateToSentToAPI = appliedFilters.end_date && appliedFilters.start_date;
-    
-    if (!dateToSentToAPI && appliedFilters.end_date) {
-      const endDate = new Date(appliedFilters.end_date);
-      endDate.setHours(23, 59, 59, 999);
-      
-      filtered = filtered.filter(tx => {
-        const txDate = new Date(tx.date);
-        return txDate <= endDate;
-      });
-    }
-    
+
     return filtered;
   }, [allTransactions, appliedFilters]);
 
@@ -172,9 +177,19 @@ export default function BillingPage() {
   const shouldShowLoadMore = useMemo(() => {
     if (appliedFilters.status && appliedFilters.status !== "all") return false;
     if (appliedFilters.end_date && !appliedFilters.start_date) return false;
-    return hasMore && !isFetching && filteredTransactions.length > 0 && 
-           filteredTransactions.length < totalTransactions;
-  }, [hasMore, isFetching, filteredTransactions.length, totalTransactions, appliedFilters]);
+    return (
+      hasMore &&
+      !isFetching &&
+      filteredTransactions.length > 0 &&
+      filteredTransactions.length < totalTransactions
+    );
+  }, [
+    hasMore,
+    isFetching,
+    filteredTransactions.length,
+    totalTransactions,
+    appliedFilters,
+  ]);
 
   // 12. Handlers
   const handleClearAll = () => {
@@ -186,6 +201,7 @@ export default function BillingPage() {
     setHasMore(true);
     setIsInitialLoad(true);
     setHasLoaded(false);
+    toast.dismiss();
   };
 
   const handleLoadMore = () => {
@@ -202,7 +218,31 @@ export default function BillingPage() {
     setIsFilterOpen(false);
     setHasLoaded(false);
   };
+  const handleDateChange = (
+    field: "start_date" | "end_date",
+    date: Date | undefined,
+  ) => {
+    const updated = { ...appliedFilters, [field]: date };
 
+    if (updated.start_date && updated.end_date) {
+      if (
+        isBefore(startOfDay(updated.end_date), startOfDay(updated.start_date))
+      ) {
+        toast.error("End date cannot be before start date", {
+          id: "date-error",
+        });
+        return;
+      }
+
+      if (differenceInMonths(updated.end_date, updated.start_date) > 3) {
+        toast.error("Date range cannot exceed 3 months", { id: "date-error" });
+        return;
+      }
+    }
+
+    toast.dismiss("date-error");
+    setAppliedFilters(updated);
+  };
   // 13. Active count
   const activeCount = useMemo(() => {
     let count = 0;
@@ -223,10 +263,13 @@ export default function BillingPage() {
       {!selectedId && (
         <>
           <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-            Transactions
+            {t("setting.menu.transaction.title", "Transactions")}
           </h1>
           <p className="text-sm text-gray-600 mb-6">
-            Manage and view all your transactions.
+            {t(
+              "setting.menu.transaction.subtitle",
+              "Manage and view all your transactions.",
+            )}
           </p>
         </>
       )}
@@ -240,25 +283,20 @@ export default function BillingPage() {
           />
         ) : (
           <>
-            {/* Search & Filter Section */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            {/* Search Bar */}
+            <div className="flex flex-col lg:flex-row gap-3 mb-6">
               {/* Search Bar */}
-              <div className="relative flex-1">
+              <div className="relative flex-[1.5]">
                 <Search
                   className={cn(
-                    "absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 transition-colors",
-                    isSearchFocused ? "text-blue-500" : "text-gray-400"
+                    "absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
+                    isSearchFocused ? "text-blue-500" : "text-gray-400",
                   )}
                 />
                 <input
                   type="text"
-                  placeholder="Search by event title..."
-                  className={cn(
-                    "w-full pl-12 pr-10 py-3 bg-gray-50/50 border rounded-xl outline-none transition-all",
-                    isSearchFocused
-                      ? "border-blue-500 ring-2 ring-blue-500/10"
-                      : "border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
-                  )}
+                  placeholder={t("setting.menu.transaction.search", "Search transactions...")}
+                  className="w-full h-[42px] pl-10 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-gray-400"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
@@ -267,15 +305,77 @@ export default function BillingPage() {
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 )}
               </div>
 
+              {/* Start Date */}
+             <div className="flex flex-1 gap-2">
+                {/* Start Date */}
+                <div className="flex-1">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="flex items-center w-full gap-2 px-3 h-[42px] bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-white hover:border-blue-300 transition-all">
+                        <CalendarIcon className="h-4 w-4 text-gray-400" />
+                        <span className={cn("truncate", !appliedFilters.start_date && "text-gray-400")}>
+                          {appliedFilters.start_date
+                            ? format(appliedFilters.start_date, "MMM dd, yyyy")
+                            : "Start Date"}
+                        </span>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={appliedFilters.start_date}
+                        onSelect={(date) => handleDateChange("start_date", date)}
+                        disabled={{ after: new Date() }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+              {/* End Date */}
+          <div className="flex-1">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="flex items-center w-full gap-2 px-3 h-[42px] bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-white hover:border-blue-300 transition-all">
+                        <CalendarIcon className="h-4 w-4 text-gray-400" />
+                        <span className={cn("truncate", !appliedFilters.end_date && "text-gray-400")}>
+                          {appliedFilters.end_date
+                            ? format(appliedFilters.end_date, "MMM dd, yyyy")
+                            : "End Date"}
+                        </span>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={appliedFilters.end_date}
+                        onSelect={(date) => handleDateChange("end_date", date)}
+                        disabled={{ after: new Date() }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+              {/* Clear Button */}
+       {hasActiveFilters && (
+                <button
+                  onClick={handleClearAll}
+                  className="flex items-center justify-center gap-2 px-4 h-[42px] bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all font-medium text-red-600 text-sm active:scale-95"
+                >
+                  <Eraser className="h-4 w-4" />
+                  <span className="hidden sm:inline">Clear</span>
+                </button>
+              )}
+            
+
               {/* Filter Button */}
-              <button
+              {/* <button
                 onClick={() => setIsFilterOpen(true)}
                 className={cn(
                   "flex items-center gap-2 px-6 py-3 bg-white border rounded-xl transition-all font-semibold shadow-sm active:scale-95",
@@ -285,24 +385,13 @@ export default function BillingPage() {
                 )}
               >
                 <Filter className="h-5 w-5" />
-                Filters
+                {t("setting.menu.transaction.filter","Filters")}
                 {activeCount > 0 && (
                   <span className="flex items-center justify-center bg-blue-600 text-white text-[10px] h-5 w-5 rounded-full ml-1">
                     {activeCount}
                   </span>
                 )}
-              </button>
-
-              {/* Clear Filters Button */}
-              {hasActiveFilters && (
-                <button
-                  onClick={handleClearAll}
-                  className="flex items-center gap-2 px-6 py-3 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-all font-semibold text-red-700 shadow-sm active:scale-95"
-                >
-                  <Eraser className="h-5 w-5 text-red-500" />
-                  <span className="hidden sm:inline">Clear</span>
-                </button>
-              )}
+              </button> */}
             </div>
 
             {/* Transaction List - Fixed loading condition */}
@@ -317,23 +406,35 @@ export default function BillingPage() {
                   <TicketIcon className="h-10 w-10 text-gray-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  No transactions found
+                  {t(
+                    "setting.menu.transaction.error.notfound",
+                    " No transactions found",
+                  )}
                 </h3>
                 <p className="text-gray-500 mb-4">
                   {hasActiveFilters
-                    ? "Try adjusting your filters or search query"
-                    : "You haven't made any transactions yet"}
+                    ? t(
+                        "setting.menu.transaction.error.tryadjust",
+                        "Try adjusting your filters or search query",
+                      )
+                    : t(
+                        "setting.menu.transaction.error.notransaction",
+                        "You haven't made any transactions yet",
+                      )}
                 </p>
                 {hasActiveFilters && (
                   <button
                     onClick={handleClearAll}
                     className="text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    Clear all filters
+                    {t(
+                      "setting.menu.transaction.button.clearall",
+                      "Clear all filters",
+                    )}
                   </button>
                 )}
               </div>
-            ) :  filteredTransactions.length > 0 ?(
+            ) : filteredTransactions.length > 0 ? (
               <div className="space-y-3">
                 {filteredTransactions.map((tx) => (
                   <div
@@ -380,7 +481,9 @@ export default function BillingPage() {
 
                         <p className="text-xs text-gray-500 mt-0.5 truncate">
                           {formatDate(tx.date)} •{" "}
-                          <span className="capitalize">{tx.payment_method}</span>
+                          <span className="capitalize">
+                            {tx.payment_method}
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -392,10 +495,13 @@ export default function BillingPage() {
                       <span
                         className={cn(
                           "inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded",
-                          tx.status === "completed" && "bg-green-100 text-green-700",
-                          tx.status === "pending" && "bg-amber-100 text-amber-700",
+                          tx.status === "completed" &&
+                            "bg-green-100 text-green-700",
+                          tx.status === "pending" &&
+                            "bg-amber-100 text-amber-700",
                           tx.status === "failed" && "bg-red-100 text-red-700",
-                          tx.status === "refunded" && "bg-gray-100 text-gray-700"
+                          tx.status === "refunded" &&
+                            "bg-gray-100 text-gray-700",
                         )}
                       >
                         {tx.status}
@@ -410,29 +516,43 @@ export default function BillingPage() {
                     <FigmaButton
                       onClick={handleLoadMore}
                       disabled={isFetching}
-                      className={isFetching ? "opacity-70 cursor-not-allowed" : ""}
+                      className={
+                        isFetching ? "opacity-70 cursor-not-allowed" : ""
+                      }
                     >
                       {isFetching ? (
                         <>
                           <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                          Loading more...
+                          {t(
+                            "setting.menu.transaction.button.loadmore",
+                            "Loading more...",
+                          )}
                         </>
                       ) : (
-                        <>Load More Transactions</>
+                        <>
+                          {t(
+                            "setting.menu.transaction.button.load",
+                            "Load More Transactions",
+                          )}
+                        </>
                       )}
                     </FigmaButton>
                     <p className="text-[10px] text-gray-400 mt-4">
-                      Showing {filteredTransactions.length} of {totalTransactions} Transactions
+                      {t("setting.menu.transaction.showing", "Showing")}{" "}
+                      {filteredTransactions.length}{" "}
+                      {t("setting.menu.transaction.of", "of")}
+                      {totalTransactions}{" "}
+                      {t("setting.menu.transaction.trans", "Transactions")}
                     </p>
                   </div>
                 )}
               </div>
-            ): null}
+            ) : null}
           </>
         )}
       </div>
 
-      <TransactionFilterSheet
+      {/* <TransactionFilterSheet
         open={isFilterOpen}
         onOpenChange={setIsFilterOpen}
         filters={appliedFilters}
@@ -447,7 +567,7 @@ export default function BillingPage() {
         }}
         eventList={eventList}
         onSearchEvent={handleEventSearch}
-      />
+      />*/}
     </div>
   );
 }

@@ -343,6 +343,7 @@ export default function HomePage() {
                 className="w-full"
               />
             </div>
+     
             {/* Only show when searching or filtering */}
             {(searchQuery || selectedCategory) && (
               <section className="py-16 px-4 sm:px-6 lg:px-8">

@@ -36,12 +36,12 @@ export default function SettingsLayout({
       icon: LockKeyIcon,
       description: t('settings.menu.securityDesc', 'Password and authentication'),
     },
-    {
-      href: '/settings/notifications',
-      label: t('settings.menu.notifications', 'Notifications'),
-      icon: BellIcon,
-      description: t('settings.menu.notificationsDesc', 'Email and push notifications'),
-    },
+    // {
+    //   href: '/settings/notifications',
+    //   label: t('settings.menu.notifications', 'Notifications'),
+    //   icon: BellIcon,
+    //   description: t('settings.menu.notificationsDesc', 'Email and push notifications'),
+    // },
     {
       href: '/settings/transactions',
       label: t('settings.menu.transactions', 'Billing'),

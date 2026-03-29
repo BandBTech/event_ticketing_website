@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { transactionService } from '@/services/transactionService';
-import { PaginatedTransactions, TransactionFilters } from '@/types/transaction';
+import { PaginatedTransactions, TransactionApiFilters, TransactionFilters } from '@/types/transaction';
 
 export const useUserTransactions = (
   page: number = 1, 
   limit: number = 20, 
-  filters?: TransactionFilters,
+  filters?: TransactionApiFilters,
   search?: string
 ) => {
   return useQuery<PaginatedTransactions>({

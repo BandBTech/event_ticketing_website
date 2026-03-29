@@ -120,12 +120,12 @@ export function Header() {
                           {t('navigation.transactions', 'Transactions')}
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
+                      {/* <DropdownMenuItem asChild>
                         <Link href="/settings/notifications" className="cursor-pointer flex items-center">
                           <BellIcon size={16} className="mr-2" />
                           {t('navigation.notifications', 'Notifications')}
                         </Link>
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={handleLogout}
