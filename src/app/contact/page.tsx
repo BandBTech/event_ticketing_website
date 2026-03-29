@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState} from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -38,6 +38,8 @@ const createContactSchema = () => {
 
 export default function ContactPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -98,7 +100,7 @@ export default function ContactPage() {
                 <p className="text-muted-foreground leading-relaxed">
                   {t(
                     "contact.connectDescription",
-                    "Reach out for collaborations, support, or general inquiries."
+                    "Reach out for collaborations, support, or general inquiries.",
                   )}
                 </p>
               </div>
@@ -107,18 +109,20 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <EnvelopeSimpleIcon size={18} className="text-primary" />
-                  <span>{t("footer.contact.email",'info@timroticket.com')}</span>
+                  <span>
+                    {t("footer.contact.email", "info@timroticket.com")}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <PhoneIcon size={18} className="text-primary" />
-                  <span>{t("footer.contact.phone", '+977-1-4567890')}</span>
+                  <span>{t("footer.contact.phone", "+977-1-4567890")}</span>
                 </div>
 
                 <div className="flex items-start gap-3 text-sm text-muted-foreground">
                   <MapPinIcon size={18} className="text-primary mt-0.5" />
                   <span className="leading-relaxed">
-                    {t("footer.contact.address",'Kathmadnu, Nepal')}
+                    {t("footer.contact.address", "Kathmadnu, Nepal")}
                   </span>
                 </div>
               </div>
@@ -161,31 +165,46 @@ export default function ContactPage() {
                 {/* Name */}
                 <div>
                   <label className="text-sm font-medium block mb-2">
-                    {t("contact.form.fullName", 'Full Name')}{" "}
+                    {t("contact.form.fullName", "Full Name")}{" "}
                     <span className="text-destructive ml-0.5">*</span>
                   </label>
                   <Input
                     className={cn("h-12", errors.name && "border-destructive")}
-                    placeholder={t("contact.form.placeholder.fullName", 'Enter your full name')}
+                    placeholder={t(
+                      "contact.form.placeholder.fullName",
+                      "Enter your full name",
+                    )}
                     {...register("name")}
+                    maxLength={100}
+                    onChange={(e) => setName(e.target.value)}
                   />
-                  {errors.name && (
-                    <p className="text-sm text-destructive mt-1">
-                      {t(errors.name.message as string)}
-                    </p>
-                  )}
+
+                  <div className="flex justify-between items-center mt-1 min-h-5">
+                    {errors.name && (
+                      <p className="text-sm text-destructive mt-1">
+                        {t(errors.name.message as string)}
+                      </p>
+                    )}
+                    <div className="text-xs text-muted-foreground ml-auto">
+                      {name?.length || 0}/{100}{" "}
+                      {t("common.characters", "characters")}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Email */}
                 <div>
                   <label className="text-sm font-medium block mb-2">
-                    {t("contact.form.email",'Email')}{" "}
+                    {t("contact.form.email", "Email")}{" "}
                     <span className="text-destructive ml-0.5">*</span>
                   </label>
                   <Input
                     type="email"
                     className={cn("h-12", errors.email && "border-destructive")}
-                    placeholder={t("contact.form.placeholder.email",'Enter your email')}
+                    placeholder={t(
+                      "contact.form.placeholder.email",
+                      "Enter your email",
+                    )}
                     {...register("email")}
                   />
                   {errors.email && (
@@ -198,7 +217,7 @@ export default function ContactPage() {
                 {/* Category */}
                 <div>
                   <label className="text-sm font-medium block mb-2">
-                    {t("contact.support.title",'Support Category')}
+                    {t("contact.support.title", "Support Category")}
                   </label>
                   <Select
                     value={selectedCategory}
@@ -210,11 +229,14 @@ export default function ContactPage() {
                         "border border-border bg-background",
                         "px-4 text-sm",
                         "cursor-pointer",
-                        "focus:outline-none focus:ring-2 focus:ring-primary"
+                        "focus:outline-none focus:ring-2 focus:ring-primary",
                       )}
                     >
                       <SelectValue
-                        placeholder={t("contact.support.option.selectIssue", 'Select an issue')}
+                        placeholder={t(
+                          "contact.support.option.selectIssue",
+                          "Select an issue",
+                        )}
                       />
                     </SelectTrigger>
 
@@ -222,42 +244,57 @@ export default function ContactPage() {
                       className={cn(
                         "rounded-lg border border-border",
                         "bg-background shadow-lg",
-                        "p-1"
+                        "p-1",
                       )}
                     >
                       <SelectItem
                         value="ticket"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.ticketBooking",'Ticket Booking Issue')}
+                        {t(
+                          "contact.support.option.ticketBooking",
+                          "Ticket Booking Issue",
+                        )}
                       </SelectItem>
 
                       <SelectItem
                         value="event"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.eventPublishing", 'Event Publishing')}
+                        {t(
+                          "contact.support.option.eventPublishing",
+                          "Event Publishing",
+                        )}
                       </SelectItem>
 
                       <SelectItem
                         value="payment"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.paymentsRefund",'Payments & Refund')}
+                        {t(
+                          "contact.support.option.paymentsRefund",
+                          "Payments & Refund",
+                        )}
                       </SelectItem>
 
                       <SelectItem
                         value="tech"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.technicalSupport",'Technical Support')}
+                        {t(
+                          "contact.support.option.technicalSupport",
+                          "Technical Support",
+                        )}
                       </SelectItem>
 
                       <SelectItem
                         value="partner"
                         className="cursor-pointer rounded-md px-3 py-2 text-sm focus:bg-primary focus:text-white"
                       >
-                        {t("contact.support.option.partner",'Partner/Bussiness Inquiry')}
+                        {t(
+                          "contact.support.option.partner",
+                          "Partner/Bussiness Inquiry",
+                        )}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -266,7 +303,7 @@ export default function ContactPage() {
                 {/* Message */}
                 <div>
                   <label className="text-sm font-medium block mb-2">
-                    {t("contact.message.title",'Message')}{" "}
+                    {t("contact.message.title", "Message")}{" "}
                     <span className="text-destructive ml-0.5">*</span>
                   </label>
                   <textarea
@@ -274,23 +311,34 @@ export default function ContactPage() {
                     className={cn(
                       "w-full rounded-lg border border-border px-4 py-3 resize-none",
                       "focus:outline-none focus:ring-2 focus:ring-primary",
-                      errors.message && "border-destructive"
+                      errors.message && "border-destructive",
                     )}
-                    placeholder={t("contact.message.textarea",'Write your message...')}
+                    maxLength={500}
+                    placeholder={t(
+                      "contact.message.textarea",
+                      "Write your message...",
+                    )}
                     {...register("message")}
+                      onChange={(e) => setMessage(e.target.value)}
                   />
-                  {errors.message && (
-                    <p className="text-sm text-destructive mt-1">
-                      {t(errors.message.message as string)}
-                    </p>
-                  )}
+                  <div className="flex justify-between items-center mt-1 min-h-5">
+                    {errors.message && (
+                      <p className="text-sm text-destructive mt-1">
+                        {t(errors.message.message as string)}
+                      </p>
+                    )}
+                    <div className="text-xs text-muted-foreground ml-auto">
+                      {message?.length || 0}/{500}{" "}
+                      {t("common.characters", "characters")}
+                    </div>
+                  </div>
                 </div>
 
                 <Button
                   type="submit"
                   className="w-full h-12 rounded-lg text-base font-semibold"
                 >
-                  {t("contact.button.sendMessage",'Send Message')}
+                  {t("contact.button.sendMessage", "Send Message")}
                 </Button>
               </form>
             </div>

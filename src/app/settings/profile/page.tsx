@@ -1,22 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { UserIcon, EnvelopeIcon, PencilIcon } from '@phosphor-icons/react/dist/ssr';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { PhoneInput } from '@/components/ui/phone-input';
-import { useAuthStore } from '@/store/authStore';
-import { useLanguageStore } from '@/store/languageStore';
-import { useTranslation } from '@/hooks/useTranslation';
-import { authService, AuthError } from '@/lib/authService';
-import { toast } from '@/lib/toast';
-import { cn } from '@/lib/utils';
-import { createValidationHelpers } from '@/lib/validation';
+import { useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  UserIcon,
+  EnvelopeIcon,
+  PencilIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { useAuthStore } from "@/store/authStore";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
+import { authService, AuthError } from "@/lib/authService";
+import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
+import { createValidationHelpers } from "@/lib/validation";
 
-import { isValidPhoneNumber, parsePhoneNumber } from 'react-phone-number-input';
+import { isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
 
 // Validation schema
 const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
@@ -37,12 +41,11 @@ const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
       .string()
       .min(1, v.required("Phone number"))
       .refine(
-        (val) => typeof val === 'string' && isValidPhoneNumber(val),
-        v.phone("Phone")
+        (val) => typeof val === "string" && isValidPhoneNumber(val),
+        v.phone("Phone"),
       ),
   });
-}
-
+};
 
 export default function ProfileSettingsPage() {
   const { user, fetchProfile } = useAuthStore();
@@ -56,10 +59,10 @@ export default function ProfileSettingsPage() {
 
   // Helper function to combine country code and phone number
   const getFullPhoneNumber = (phone?: string, countryCode?: string): string => {
-    if (!phone) return '';
+    if (!phone) return "";
     if (!countryCode) return phone;
     // If phone already starts with +, return as is
-    if (phone.startsWith('+')) return phone;
+    if (phone.startsWith("+")) return phone;
     // Combine country code and phone number
     return `${countryCode}${phone}`;
   };
@@ -67,11 +70,11 @@ export default function ProfileSettingsPage() {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
       phone: getFullPhoneNumber(user?.phone, user?.countryCode),
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const {
@@ -85,13 +88,14 @@ export default function ProfileSettingsPage() {
   // Update form when user data changes (e.g., after profile fetch)
   useEffect(() => {
     if (user) {
-      const fullPhone = user.phone && user.countryCode && !user.phone.startsWith('+')
-        ? `${user.countryCode}${user.phone}`
-        : user.phone || '';
+      const fullPhone =
+        user.phone && user.countryCode && !user.phone.startsWith("+")
+          ? `${user.countryCode}${user.phone}`
+          : user.phone || "";
 
       reset({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
         phone: fullPhone,
       });
     }
@@ -121,14 +125,20 @@ export default function ProfileSettingsPage() {
       });
 
       await fetchProfile();
-      toast.success('settings.toast.profileUpdated', 'Profile updated successfully!');
+      toast.success(
+        "settings.toast.profileUpdated",
+        "Profile updated successfully!",
+      );
       setIsEditing(false);
     } catch (error) {
-      console.error('Profile update failed:', error);
+      console.error("Profile update failed:", error);
       if (error instanceof AuthError) {
-        toast.error('settings.toast.updateFailed', error.message || 'Failed to update profile');
+        toast.error(
+          "settings.toast.updateFailed",
+          error.message || "Failed to update profile",
+        );
       } else {
-        toast.error('settings.toast.updateFailed', 'Failed to update profile');
+        toast.error("settings.toast.updateFailed", "Failed to update profile");
       }
     } finally {
       setIsLoading(false);
@@ -137,8 +147,8 @@ export default function ProfileSettingsPage() {
 
   const handleCancel = () => {
     reset({
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
       phone: getFullPhoneNumber(user?.phone, user?.countryCode),
     });
     setIsEditing(false);
@@ -150,10 +160,10 @@ export default function ProfileSettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-            {t('settings.profile.title', 'Profile Settings')}
+            {t("settings.profile.title", "Profile Settings")}
           </h1>
           <p className="text-sm text-gray-600">
-            {t('settings.profile.subtitle', 'Manage your personal information')}
+            {t("settings.profile.subtitle", "Manage your personal information")}
           </p>
         </div>
         {!isEditing && (
@@ -162,12 +172,12 @@ export default function ProfileSettingsPage() {
             variant="outline"
             className="flex items-center gap-2 px-4 py-1.5 rounded-lg border-blue-600 text-blue-600 hover:bg-blue-50 shadow-sm"
             style={{
-              background: 'rgba(255, 255, 255, 0.6)',
-              backdropFilter: 'blur(20px)',
+              background: "rgba(255, 255, 255, 0.6)",
+              backdropFilter: "blur(20px)",
             }}
           >
             <PencilIcon size={16} weight="duotone" />
-            {t('settings.profile.editButton', 'Edit Profile')}
+            {t("settings.profile.editButton", "Edit Profile")}
           </Button>
         )}
       </div>
@@ -177,7 +187,8 @@ export default function ProfileSettingsPage() {
         {/* Avatar Section */}
         <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-            {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+            {user?.firstName?.charAt(0)}
+            {user?.lastName?.charAt(0)}
           </div>
           <div>
             <h3 className="text-xl font-semibold text-gray-900">
@@ -197,12 +208,20 @@ export default function ProfileSettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* First Name */}
             <div className="space-y-2">
-              <label htmlFor="firstName" className="text-sm font-medium text-gray-900 block">
-                {t('settings.profile.firstName', 'First Name')} <span className="text-destructive">*</span>
+              <label
+                htmlFor="firstName"
+                className="text-sm font-medium text-gray-900 block"
+              >
+                {t("settings.profile.firstName", "First Name")}{" "}
+                <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <UserIcon weight='duotone' size={18} className="text-gray-600" />
+                  <UserIcon
+                    weight="duotone"
+                    size={18}
+                    className="text-gray-600"
+                  />
                 </div>
                 <Input
                   id="firstName"
@@ -211,24 +230,44 @@ export default function ProfileSettingsPage() {
                   className={cn(
                     "h-11 pl-11 pr-4",
                     !isEditing && "bg-gray-50 cursor-not-allowed",
-                    errors.firstName && "border-destructive"
+                    errors.firstName && "border-destructive",
                   )}
-                  {...register('firstName')}
+                  {...register("firstName")}
+                  maxLength={50}
                 />
               </div>
-              {errors.firstName && (
-                <p className="text-xs text-destructive">{errors.firstName.message}</p>
-              )}
+
+              <div className="flex justify-between items-center mt-1 min-h-5">
+                {errors.firstName && (
+                  <p className="text-xs text-destructive">
+                    {errors.firstName.message}
+                  </p>
+                )}
+                {isEditing && (
+                  <div className="text-xs text-muted-foreground ml-auto">
+                    {user?.firstName?.length || 0}/{50}{" "}
+                    {t("common.characters", "characters")}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Last Name */}
             <div className="space-y-2">
-              <label htmlFor="lastName" className="text-sm font-medium text-gray-900 block">
-                {t('settings.profile.lastName', 'Last Name')} <span className="text-destructive">*</span>
+              <label
+                htmlFor="lastName"
+                className="text-sm font-medium text-gray-900 block"
+              >
+                {t("settings.profile.lastName", "Last Name")}{" "}
+                <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <UserIcon weight='duotone' size={18} className="text-gray-600" />
+                  <UserIcon
+                    weight="duotone"
+                    size={18}
+                    className="text-gray-600"
+                  />
                 </div>
                 <Input
                   id="lastName"
@@ -237,43 +276,65 @@ export default function ProfileSettingsPage() {
                   className={cn(
                     "h-11 pl-11 pr-4",
                     !isEditing && "bg-gray-50 cursor-not-allowed",
-                    errors.lastName && "border-destructive"
+                    errors.lastName && "border-destructive",
                   )}
-                  {...register('lastName')}
+                  {...register("lastName")}
+                  maxLength={50}
                 />
               </div>
-              {errors.lastName && (
-                <p className="text-xs text-destructive">{errors.lastName.message}</p>
-              )}
+
+              <div className="flex justify-between items-center mt-1 min-h-5">
+                {errors.lastName && (
+                  <p className="text-xs text-destructive">
+                    {errors.lastName.message}
+                  </p>
+                )}
+                {isEditing && (
+                  <div className="text-xs text-muted-foreground ml-auto">
+                    {user?.firstName?.length || 0}/{50}{" "}
+                    {t("common.characters", "characters")}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Email (Read-only) */}
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-900 block">
-              {t('settings.profile.email', 'Email Address')}
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-900 block"
+            >
+              {t("settings.profile.email", "Email Address")}
             </label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <EnvelopeIcon weight='duotone' size={18} className="text-gray-600" />
+                <EnvelopeIcon
+                  weight="duotone"
+                  size={18}
+                  className="text-gray-600"
+                />
               </div>
               <Input
                 id="email"
                 type="email"
-                value={user?.email || ''}
+                value={user?.email || ""}
                 disabled
                 className="h-11 pl-11 pr-4 bg-gray-50 cursor-not-allowed"
               />
             </div>
             <p className="text-xs text-gray-500">
-              {t('settings.profile.emailNote', 'Email cannot be changed')}
+              {t("settings.profile.emailNote", "Email cannot be changed")}
             </p>
           </div>
 
           {/* Phone */}
           <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-medium text-gray-900 flex items-center gap-1">
-              {t('settings.profile.phone', 'Phone Number')}
+            <label
+              htmlFor="phone"
+              className="text-sm font-medium text-gray-900 flex items-center gap-1"
+            >
+              {t("settings.profile.phone", "Phone Number")}
               <span className="text-destructive">*</span>
             </label>
             <Controller
@@ -281,13 +342,13 @@ export default function ProfileSettingsPage() {
               control={control}
               render={({ field }) => (
                 <PhoneInput
-                  value={field.value || ''}
-                  onChange={(value) => field.onChange(value || '')}
+                  value={field.value || ""}
+                  onChange={(value) => field.onChange(value || "")}
                   disabled={!isEditing}
                   defaultCountry="NP"
                   className={cn(
                     !isEditing && "opacity-50 cursor-not-allowed",
-                    errors.phone && "border-destructive"
+                    errors.phone && "border-destructive",
                   )}
                 />
               )}
@@ -305,14 +366,16 @@ export default function ProfileSettingsPage() {
                 disabled={isLoading || !isDirty}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {isLoading ? t('settings.profile.saving', 'Saving...') : t('settings.profile.saveButton', 'Save Changes')}
+                {isLoading
+                  ? t("settings.profile.saving", "Saving...")
+                  : t("settings.profile.saveButton", "Save Changes")}
               </Button>
               <Button
                 type="button"
                 onClick={handleCancel}
                 className="bg-gray-200 hover:bg-gray-300 text-gray-600"
               >
-                {t('settings.profile.cancelButton', 'Cancel')}
+                {t("settings.profile.cancelButton", "Cancel")}
               </Button>
             </div>
           )}
