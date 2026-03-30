@@ -85,10 +85,10 @@ export const useUserPurchaseMutation = () => {
   });
 };
 
-export const useUserTickets = (page: number =1 ) => {
+export const useUserTickets = (page: number = 1, search: string = "", filter: string = "all") => {
   return useQuery<PaginatedUserTickets>({
-    queryKey: ['tickets', 'user-purchases', page],
-    queryFn: ()=> ticketService.getUserTickets(page),
+    queryKey: ['tickets', 'user-purchases', page, search, filter],
+    queryFn: () => ticketService.getUserTickets(page, 10, search, filter),
     placeholderData: (previousData) => previousData,
   })
 };

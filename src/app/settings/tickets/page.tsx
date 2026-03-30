@@ -11,6 +11,8 @@ import {
   Search,
   ChevronLeftIcon,
   ChevronRightIcon,
+  Eraser,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,21 +33,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TicketItem, TicketItems, ViewTicketDetails } from "@/types/ticket";
-import {
-  useEventTickets,
-  useTransactionDetails,
-  useUserTickets,
-} from "@/hooks/useTickets";
+import { TicketItems, ViewTicketDetails } from "@/types/ticket";
+import { useTransactionDetails, useUserTickets } from "@/hooks/useTickets";
 import { QRCodeSVG } from "qrcode.react";
 import { cn, formatDate, formatTime } from "@/lib/utils";
-import { SelectViewport } from "@radix-ui/react-select";
+
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-
-
 
 // Check if event is upcoming (start date is in the future)
 const isUpcoming = (startDate: string) => {
@@ -59,23 +55,17 @@ export default function TicketsPage() {
     "all",
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTicket, setSelectedTicket] =
-    useState<ViewTicketDetails | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedTicketForQR, setSelectedTicketForQR] =
     useState<TicketItems | null>(null);
   const [currentTicketQR, setCurrentTicketQR] = useState<number>(0);
   const [modalTicketsList, setModalTicketsList] = useState<TicketItems[]>([]);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  //   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(()=> {
-  //  if (typeof window !== "undefined") {
-  //       return localStorage.getItem("active_order_id");
-  //     }
-  //     return null;
-  //   });
+
   const searchParams = useSearchParams();
   const selectedOrderId = searchParams.get("id");
 
@@ -97,7 +87,7 @@ export default function TicketsPage() {
     isLoading,
     isFetching,
     error,
-  } = useUserTickets(currentPage);
+  } = useUserTickets(currentPage,  statusFilter, searchQuery);
   const ticketsArray = responseData?.tickets || [];
   const pagination = responseData?.pagination;
   const view = selectedOrderId ? "detail" : "list";
@@ -133,34 +123,6 @@ export default function TicketsPage() {
     return true;
   });
 
-  const getStatusFromTicket = (ticket: ViewTicketDetails["tickets"][0]) => {
-    return ticket.checkedIn ? "used" : "active";
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "used":
-        return "bg-blue-100 text-blue-800";
-      case "cancelled":
-        return "bg-red-100 text-red-800";
-      case "expired":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const handleDownloadTicket = async (orderId: string) => {
-    // You'll need to implement this in your ticketService
-    console.log("Download ticket for order:", orderId);
-  };
-
-  const handleCancelTicket = async (orderId: string) => {
-    // You'll need to implement this in your ticketService
-    console.log("Cancel ticket for order:", orderId);
-  };
   const router = useRouter();
   const pathname = usePathname();
   useEffect(() => {
@@ -224,12 +186,15 @@ export default function TicketsPage() {
           <CardContent className="text-center py-12">
             <TicketIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">
-             {t('setting.menu.tickets.error','Error loading tickets')} 
+              {t("setting.menu.tickets.error", "Error loading tickets")}
             </h3>
             <p className="text-muted-foreground">
               {error instanceof Error
                 ? error.message
-                :t('setting.menu.tickets.messageError', "Failed to load tickets. Please try again.")}
+                : t(
+                    "setting.menu.tickets.messageError",
+                    "Failed to load tickets. Please try again.",
+                  )}
             </p>
           </CardContent>
         </Card>
@@ -256,32 +221,73 @@ export default function TicketsPage() {
       <div className="glass-card rounded-xl p-6">
         <div className="space-y-6">
           {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 flex gap-2">
-              <Input
-                placeholder={t("setting.menu.tickets.search")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Button>
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('setting.menu.tickets.selectValue.allStatus','All Status')}</SelectItem>
-                  <SelectItem value="active">{t('setting.menu.tickets.selectValue.active','Active')}</SelectItem>
-                  <SelectItem value="used">{t('setting.menu.tickets.selectValue.used','Used')}</SelectItem>
-                  <SelectItem value="cancelled">{t('setting.menu.tickets.selectValue.cancelled','Cancelled')}</SelectItem>
-                  <SelectItem value="expired">{t('setting.menu.tickets.selectValue.expired','Expired')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+        {/* Search and Filters - Synchronized with Transaction UI */}
+{view === "list" && (
+  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-6">
+    {/* Search Bar - Spans 7 columns on desktop */}
+    <div className="relative md:col-span-7 lg:col-span-8">
+      <Search
+        className={cn(
+          "absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
+          isSearchFocused ? "text-blue-500" : "text-gray-400"
+        )}
+      />
+      <input
+        type="text"
+        placeholder={t("setting.menu.tickets.search", "Search tickets...")}
+        className="w-full h-[42px] pl-10 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-gray-400"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onFocus={() => setIsSearchFocused(true)}
+        onBlur={() => setIsSearchFocused(false)}
+      />
+      {searchQuery && (
+        <button
+          onClick={() => setSearchQuery("")}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </div>
+
+    {/* Status & Clear Button Group - Spans 5 columns on desktop */}
+    <div className="flex md:col-span-5 lg:col-span-4 gap-2">
+      <div className="flex-1">
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-full h-[42px] bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-0 focus:ring-offset-0">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">
+              {t("setting.menu.tickets.selectValue.allStatus", "All Status")}
+            </SelectItem>
+            <SelectItem value="active">
+              {t("setting.menu.tickets.selectValue.active", "Active")}
+            </SelectItem>
+            <SelectItem value="used">
+              {t("setting.menu.tickets.selectValue.used", "Used")}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Clear Button - Only shows if filters are active */}
+      {(searchQuery || statusFilter !== "all") && (
+        <button
+          onClick={() => {
+            setSearchQuery("");
+            setStatusFilter("all");
+          }}
+          className="flex items-center justify-center px-3 h-[42px] bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all text-red-600 active:scale-95 shrink-0"
+          title="Clear Filters"
+        >
+          <Eraser className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  </div>
+)}
 
           {/* Tabs 
           <div className="flex gap-4 mb-6 border-b">
@@ -300,25 +306,24 @@ export default function TicketsPage() {
             ))}
           </div>
           */}
-
+          {view === "detail" && (
+            <Button
+              variant="ghost"
+              className="-ml-2 text-gray-600 hover:text-primary"
+              onClick={handleBackToList}
+            >
+              <ArrowLeftIcon className="w-4 h-4 mr-2" />
+              {t("setting.menu.tickets.button.back", "Back to ticket list")}
+            </Button>
+          )}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="pb-2 px-1 capitalize font-medium transition-colors cursor-pointer">
+              <h1 className="pb-2 px-1 text-3xl font-bold text-gray-900">
                 {view === "list" ? "All Tickets" : "Ticket Details"}
               </h1>
+
               <p className="text-sm text-gray-600">{view === "list"}</p>
             </div>
-
-            {view === "detail" && (
-              <Button
-                variant="ghost"
-                className="hover:bg-white! hover:shadow-sm transition-shadow"
-                onClick={handleBackToList}
-              >
-                <ArrowLeftIcon className="w-5 h-5 mr-1" />
-                {t('setting.menu.tickets.button.back','Back to Lisr')}
-              </Button>
-            )}
           </div>
 
           {/* Tickets list */}
@@ -339,7 +344,9 @@ export default function TicketsPage() {
             <Card>
               <CardContent className="text-center py-12">
                 <TicketIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t('setting.menu.tickets.notickets','No Tickets Found')}</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  {t("setting.menu.tickets.notickets", "No Tickets Found")}
+                </h3>
                 <p className="text-muted-foreground">
                   {activeTab === "upcoming"
                     ? "You don't have any upcoming events"
@@ -356,10 +363,10 @@ export default function TicketsPage() {
                   {filteredTickets.map((order: ViewTicketDetails) => (
                     <Card
                       key={order.orderId}
-                      onClick={()=> handleViewTickets(order)}
+                      onClick={() => handleViewTickets(order)}
                       tabIndex={0}
-                      onKeyDown={(e)=>{
-                        if(e.key === 'Enter' || e.key === ' '){
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
                           handleViewTickets(order);
                         }
                       }}
@@ -459,7 +466,6 @@ export default function TicketsPage() {
                       </CardContent>
                     </Card>
                   ))}
-
 
                   {pagination?.has_next && (
                     <div className="text-center py-4">
@@ -578,7 +584,8 @@ export default function TicketsPage() {
                       className="bg-white/50 text-[10px] uppercase tracking-wider"
                     >
                       Purchased: {formatDate(detailTickets.purchaseDate)}
-                     <Clock className="h-4 w-4 text-primary" /> {formatTime(detailTickets.purchaseDate)}
+                      <Clock className="h-4 w-4 text-primary" />{" "}
+                      {formatTime(detailTickets.purchaseDate)}
                     </Badge>
                   </div>
                 </div>

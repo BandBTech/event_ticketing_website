@@ -141,7 +141,16 @@ export const ticketService = {
   getUserTickets: async (
     page: number = 1,
     limit: number = 10,
+    search: string,
+    filter: string,
   ): Promise<PaginatedUserTickets> => {
+    const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+
+  if (search) params.append("search", search);
+  if (filter && filter !== "all") params.append("filter", filter);
     const response = await api.get<UserTicketsApiResponse>(
       `/user/tickets?page=${page}&limit=${limit}`,
       {

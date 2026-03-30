@@ -545,7 +545,7 @@
           "expired": "Scaduto"
         },
         "button": {
-          "back": "Torna alla lista"
+          "back": "Torna all'elenco dei biglietti"
         },
         "notickets": "Nessun biglietto trovato"
       },
@@ -566,7 +566,8 @@
         },
         "showing": "Mostrare",
         "of": "Di",
-        "trans": "Transazioni"
+        "trans": "Transazioni",
+        "loading": "Caricamento transazioni..."
       }
     }
   },

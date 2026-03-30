@@ -670,7 +670,7 @@
           "expired": "Expired"
         },
         "button": {
-          "back": "Back to List"
+          "back": "Back to ticket list"
         },
         "notickets": "No Tickets Found"
       },
@@ -691,7 +691,8 @@
         },
         "showing": "Showing",
         "of": "of",
-        "trans": "Transactions"
+        "trans": "Transactions",
+        "loading": "Loading transactions..."
       }
     }
   },
