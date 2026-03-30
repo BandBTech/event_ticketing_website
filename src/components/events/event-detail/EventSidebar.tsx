@@ -93,9 +93,16 @@ export const EventSidebar = ({ event, onShare, onFindTickets }: EventSidebarProp
     );
 
     if (hasActiveTickets) {
+      const availableTickets = event.ticketTypes.filter(
+        (t) => t.available > 0 && t.sales_start <= now && t.sales_end >= now && t.isActive
+      );
+      const lowestAvailablePrice = availableTickets.length > 0
+        ? Math.min(...availableTickets.map((t) => t.price))
+        : null;
+
       return (
         <>
-          {event.ticketTypes.length > 0 && (
+          {lowestAvailablePrice !== null && (
             <div className="mb-4">
               <p className="text-sm text-gray-500 font-medium">
                 {t("events.startingFrom", "Tickets starting from")}
@@ -103,11 +110,9 @@ export const EventSidebar = ({ event, onShare, onFindTickets }: EventSidebarProp
               <p className="text-2xl font-bold text-blue-600">
                 {new Intl.NumberFormat("en-NP", {
                   style: "currency",
-                  currency: event.ticketTypes[0].currency,
+                  currency: availableTickets[0].currency,
                   minimumFractionDigits: 0,
-                }).format(
-                  Math.min(...event.ticketTypes.map((t) => t.price))
-                )}
+                }).format(lowestAvailablePrice)}
               </p>
             </div>
           )}
