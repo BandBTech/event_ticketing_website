@@ -374,6 +374,7 @@ function GuestPurchaseContent() {
                     {t(
                       "ticketPurchase.multiTierHint",
                       `Select quantities for each ticket type (max ${maxQuantity} total)`,
+                      { maxQuantity },
                     )}
                   </p>
                 </div>

@@ -492,7 +492,8 @@
     "cancelledTitle": "購入がキャンセルされました",
     "cancelledMessage": "お支払いはキャンセルされました。",
     "cancellationFailed": "支払いのキャンセルに失敗しました",
-    "securePayment": "安全な支払いを活用した"
+    "securePayment": "安全な支払いを活用した",
+    "onlyTicketsLeft": "残りは {count} 個だけです!"
   },
   "ticketView": {
     "title": "デジタルチケット",

@@ -490,7 +490,8 @@
     "cancelledTitle": "Acquisto annullato",
     "cancelledMessage": "Il tuo pagamento è stato annullato.",
     "cancellationFailed": "Annullamento del pagamento non riuscito",
-    "securePayment": "Pagamento sicuro fornito da"
+    "securePayment": "Pagamento sicuro fornito da",
+    "onlyTicketsLeft": "Rimangono solo {count}!"
   },
   "ticketView": {
     "title": "Biglietto Digitale",
