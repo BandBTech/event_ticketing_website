@@ -127,22 +127,25 @@ function PaymentSuccessContent() {
           setLastMessage(data.message);
         }
 
-        // ✅ TICKETS CREATED - SUCCESS!
-        if (data.tickets_created && data.ticket_view_token) {
-          console.log("[POLL_SUCCESS] ✅ Tickets ready!");
+        // ✅ PAYMENT COMPLETED - SUCCESS!
+        if (data.status === "completed") {
+          console.log("[POLL_SUCCESS] ✅ Payment completed!");
           clearInterval(pollIntervalRef.current!);
           pollIntervalRef.current = null;
 
           setStatus("completed");
           setTicketCount(data.ticket_count || 1);
 
-          // Redirect to ticket view
-          setTimeout(() => {
-            router.push(
-              data.ticket_view_url ||
-                `/tickets/view?token=${data.ticket_view_token}`,
-            );
-          }, 1000);
+          // Redirect to ticket view if available
+          if (data.ticket_view_url) {
+            setTimeout(() => {
+              router.push(data.ticket_view_url!);
+            }, 1000);
+          } else if (data.ticket_view_token) {
+            setTimeout(() => {
+              router.push(`/tickets/view?token=${data.ticket_view_token}`);
+            }, 1000);
+          }
           return;
         }
 
