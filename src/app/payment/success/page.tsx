@@ -13,6 +13,7 @@ interface CheckoutStatus {
   success: boolean;
   status?: "processing" | "completed" | "failed";
   message: string;
+  // Nested structure (final response)
   data?: {
     checkout_token?: string;
     payment_info?: {
@@ -24,6 +25,7 @@ interface CheckoutStatus {
     ticket_view_token?: string;
     ticket_view_url?: string;
   };
+  // Flat structure (intermediate response)
   tickets_created?: boolean;
   ticket_count?: number;
   ticket_view_token?: string;
@@ -57,10 +59,6 @@ function PaymentSuccessContent() {
   console.log(
     "[PAYMENT_SUCCESS] Component rendered, checkoutToken:",
     checkoutToken,
-  );
-  console.log(
-    "[PAYMENT_SUCCESS] searchParams:",
-    searchParams ? Object.fromEntries(searchParams.entries()) : "null",
   );
 
   // Polling state
@@ -123,11 +121,11 @@ function PaymentSuccessContent() {
       try {
         console.log(
           `[POLL_ATTEMPT] Making API call to: /public/checkout/${token}`,
-        ); // Use the common API client for external polling
+        );
         const data: CheckoutStatus = await api.get<CheckoutStatus>(
           `/public/checkout/${token}`,
           {
-            showErrorToast: false, // Handle errors manually in polling
+            showErrorToast: false,
             requiresAuth: false,
           },
         );
@@ -136,44 +134,6 @@ function PaymentSuccessContent() {
         // Update status message
         if (data.message) {
           setLastMessage(data.message);
-        }
-
-        // ✅ PAYMENT COMPLETED - SUCCESS!
-        if (data.status === "completed") {
-          console.log("[POLL_SUCCESS] ✅ Payment completed!");
-          clearInterval(pollIntervalRef.current!);
-          pollIntervalRef.current = null;
-
-          setStatus("completed");
-
-          // Extract from nested data.data structure
-          const ticketData = data.data;
-          setTicketCount(ticketData?.ticket_count || 1);
-
-          // Redirect to ticket view URL if available
-          if (ticketData?.ticket_view_url) {
-            console.log(
-              "[POLL_SUCCESS] Redirecting to:",
-              ticketData.ticket_view_url,
-            );
-            setTimeout(() => {
-              router.push(ticketData.ticket_view_url!);
-            }, 1000);
-          } else if (ticketData?.ticket_view_token) {
-            const fallbackUrl = `/tickets/view?token=${ticketData.ticket_view_token}`;
-            console.log("[POLL_SUCCESS] Redirecting to fallback:", fallbackUrl);
-            setTimeout(() => {
-              router.push(fallbackUrl);
-            }, 1000);
-          } else {
-            console.warn("[POLL_SUCCESS] No redirect URL found in response");
-          }
-          return;
-        }
-
-        // ⏳ STILL PROCESSING
-        if (data.status === "processing") {
-          setStatus("processing");
         }
 
         // ❌ PAYMENT FAILED
@@ -187,7 +147,64 @@ function PaymentSuccessContent() {
           return;
         }
 
-        // ❌ TIMEOUT - Give up after 30 seconds
+        // ✅ PAYMENT COMPLETED - Check BOTH nested and flat structures for ticket data
+        //
+        // The API returns two different shapes:
+        //   Intermediate: { status: "completed", checkout_token, amount, currency, message }
+        //   Final:        { success, status: "completed", message, data: { ticket_view_url, ticket_view_token, ticket_count, ... } }
+        //
+        // We only consider it truly done when we have a ticket_view_url or ticket_view_token.
+        if (data.status === "completed") {
+          // Resolve ticket data from either nested (data.data) or flat (data.*) structure
+          const resolvedViewUrl =
+            data.data?.ticket_view_url ?? data.ticket_view_url;
+          const resolvedViewToken =
+            data.data?.ticket_view_token ?? data.ticket_view_token;
+          const resolvedTicketCount =
+            data.data?.ticket_count ?? data.ticket_count;
+
+          if (resolvedViewUrl || resolvedViewToken) {
+            // Truly complete — we have ticket info
+            console.log(
+              "[POLL_SUCCESS] ✅ Payment completed with ticket data!",
+            );
+            clearInterval(pollIntervalRef.current!);
+            pollIntervalRef.current = null;
+
+            setStatus("completed");
+            setTicketCount(resolvedTicketCount || 1);
+
+            if (resolvedViewUrl) {
+              console.log("[POLL_SUCCESS] Redirecting to:", resolvedViewUrl);
+              setTimeout(() => {
+                router.push(resolvedViewUrl);
+              }, 1500);
+            } else if (resolvedViewToken) {
+              const fallbackUrl = `/tickets/view?token=${resolvedViewToken}`;
+              console.log(
+                "[POLL_SUCCESS] Redirecting to fallback:",
+                fallbackUrl,
+              );
+              setTimeout(() => {
+                router.push(fallbackUrl);
+              }, 1500);
+            }
+            return;
+          } else {
+            // status is "completed" but ticket data isn't ready yet — keep polling
+            console.log(
+              "[POLL_WAIT] status=completed but no ticket URL yet, continuing to poll...",
+            );
+            setStatus("processing");
+          }
+        }
+
+        // ⏳ STILL PROCESSING
+        if (data.status === "processing") {
+          setStatus("processing");
+        }
+
+        // ❌ TIMEOUT - Give up after MAX_WAIT_TIME
         if (elapsed >= MAX_WAIT_TIME) {
           console.error("[POLL_TIMEOUT] Gave up after 30 seconds");
           clearInterval(pollIntervalRef.current!);
