@@ -11,8 +11,19 @@ import { Suspense, useEffect, useRef, useState } from "react";
 
 interface CheckoutStatus {
   success: boolean;
-  status: "processing" | "completed" | "failed";
+  status?: "processing" | "completed" | "failed";
   message: string;
+  data?: {
+    checkout_token?: string;
+    payment_info?: {
+      id: string;
+      amount?: number;
+      currency?: string;
+    };
+    ticket_count?: number;
+    ticket_view_token?: string;
+    ticket_view_url?: string;
+  };
   tickets_created?: boolean;
   ticket_count?: number;
   ticket_view_token?: string;
@@ -134,17 +145,28 @@ function PaymentSuccessContent() {
           pollIntervalRef.current = null;
 
           setStatus("completed");
-          setTicketCount(data.ticket_count || 1);
 
-          // Redirect to ticket view if available
-          if (data.ticket_view_url) {
+          // Handle nested data structure (data.data.*)
+          const ticketData = data.data || data;
+          setTicketCount(ticketData.ticket_count || 1);
+
+          // Redirect to ticket view URL if available
+          if (ticketData.ticket_view_url) {
+            console.log(
+              "[POLL_SUCCESS] Redirecting to:",
+              ticketData.ticket_view_url,
+            );
             setTimeout(() => {
-              router.push(data.ticket_view_url!);
+              router.push(ticketData.ticket_view_url!);
             }, 1000);
-          } else if (data.ticket_view_token) {
+          } else if (ticketData.ticket_view_token) {
+            const fallbackUrl = `/tickets/view?token=${ticketData.ticket_view_token}`;
+            console.log("[POLL_SUCCESS] Redirecting to fallback:", fallbackUrl);
             setTimeout(() => {
-              router.push(`/tickets/view?token=${data.ticket_view_token}`);
+              router.push(fallbackUrl);
             }, 1000);
+          } else {
+            console.warn("[POLL_SUCCESS] No redirect URL found in response");
           }
           return;
         }
