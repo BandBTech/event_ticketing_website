@@ -154,7 +154,8 @@
       "live": "Live",
       "scheduled": "Scheduled"
     },
-    "salesStartingIn": "Vendita biglietti a partire da"
+    "salesStartingIn": "Vendita biglietti a partire da",
+    "nextTierSalesStartingIn": "Prossima vendita dei biglietti a partire da"
   },
   "languages": {
     "en": "English",

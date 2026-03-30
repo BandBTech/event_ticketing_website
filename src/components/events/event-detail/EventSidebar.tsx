@@ -129,12 +129,20 @@ export const EventSidebar = ({ event, onShare, onFindTickets }: EventSidebarProp
 
       const nextSalesStart = futureActiveTiers[0]?.sales_start;
 
+      const hadPreviousSales = event.ticketTypes.some(
+        (t) => new Date(t.sales_end) < new Date()
+      );
+
+      const countdownLabel = hadPreviousSales
+        ? t("events.nextTierSalesStartingIn", "Next Ticket Sales Starting In")
+        : t("events.salesStartingIn", "Ticket Sales Starting In");
+
       return (
         <>
           {nextSalesStart && (
             <SalesCountdown
               targetDate={nextSalesStart}
-              label={t("events.salesStartingIn", "Ticket Sales Starting In")}
+              label={countdownLabel}
             />
           )}
         </>

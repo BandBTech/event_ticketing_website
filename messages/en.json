@@ -182,7 +182,8 @@
       "live": "Live",
       "hold": "On Hold",
       "scheduled": "Scheduled"
-    }
+    },
+    "nextTierSalesStartingIn": "Next Ticket Sales Starting In"
   },
   "languages": {
     "en": "English",

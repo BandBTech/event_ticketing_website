@@ -155,7 +155,8 @@
       "live": "ライブ",
       "scheduled": "スケジュール"
     },
-    "salesStartingIn": "チケット販売開始日"
+    "salesStartingIn": "チケット販売開始日",
+    "nextTierSalesStartingIn": "次回のチケット販売開始日"
   },
   "languages": {
     "en": "English",
