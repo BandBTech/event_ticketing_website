@@ -57,13 +57,13 @@ const eventStatusConfig: Record<
     color: "bg-amber-700 text-amber-100 border-amber-600",
     variant: "secondary",
   },
-  sales_end: {
-    color: "bg-gray-700 text-gray-100 border-gray-600",
+  scheduled: {
+    color: "bg-blue-700 text-blue-100 border-blue-600",
     variant: "secondary",
   },
   sold_out: {
-    color: "bg-red-100 text-red-700 border-red-600",
-    variant: "secondary",
+    color: "bg-red-200 text-red-800 border-red-300",
+    variant: "destructive",
   },
 };
 
