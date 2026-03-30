@@ -146,12 +146,12 @@ function PaymentSuccessContent() {
 
           setStatus("completed");
 
-          // Handle nested data structure (data.data.*)
-          const ticketData = data.data || data;
-          setTicketCount(ticketData.ticket_count || 1);
+          // Extract from nested data.data structure
+          const ticketData = data.data;
+          setTicketCount(ticketData?.ticket_count || 1);
 
           // Redirect to ticket view URL if available
-          if (ticketData.ticket_view_url) {
+          if (ticketData?.ticket_view_url) {
             console.log(
               "[POLL_SUCCESS] Redirecting to:",
               ticketData.ticket_view_url,
@@ -159,7 +159,7 @@ function PaymentSuccessContent() {
             setTimeout(() => {
               router.push(ticketData.ticket_view_url!);
             }, 1000);
-          } else if (ticketData.ticket_view_token) {
+          } else if (ticketData?.ticket_view_token) {
             const fallbackUrl = `/tickets/view?token=${ticketData.ticket_view_token}`;
             console.log("[POLL_SUCCESS] Redirecting to fallback:", fallbackUrl);
             setTimeout(() => {
