@@ -11,14 +11,22 @@
 
 export const queryKeys = {
   events: {
-    byId: (id: string) => ['event', id],
+    byId: (id: string) => ["event", id],
   },
   tickets: {
-    view: (token: string) => ['tickets', 'view', token],
-    validate: (token: string) => ['tickets', 'validate', token],
+    userTickets: (page: number, filter: string, search: string) => [
+      "tickets",
+      "user",
+      page,
+      filter,
+      search,
+    ],
+    view: (token: string) => ["tickets", "view", token],
+    validate: (token: string) => ["tickets", "validate", token],
+    detail: (orderId: string) => ["tickets", "detail", orderId],
   },
   payment: {
-    confirm: (checkoutToken: string) => ['payment', 'confirm', checkoutToken],
-    cancel: (checkoutToken: string) => ['payment', 'cancel', checkoutToken],
+    confirm: (checkoutToken: string) => ["payment", "confirm", checkoutToken],
+    cancel: (checkoutToken: string) => ["payment", "cancel", checkoutToken],
   },
 };

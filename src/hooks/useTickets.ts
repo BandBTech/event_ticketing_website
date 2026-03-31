@@ -1,7 +1,17 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { ticketService, GuestPurchasePayload, UserPurchasePayload, GuestPurchaseResponse, UserPurchaseResponse, PaginatedUserTickets } from '@/services/ticketService';
-import { useRouter } from 'next/navigation';
-import { toast } from '@/lib/toast';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  ticketService,
+  GuestPurchasePayload,
+  UserPurchasePayload,
+  GuestPurchaseResponse,
+  UserPurchaseResponse,
+  PaginatedUserTickets,
+  CancelTicketRequest,
+  CancelTicketResponse,
+} from "@/services/ticketService";
+import { useRouter } from "next/navigation";
+import { toast } from "@/lib/toast";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface ApiError {
   response?: {
@@ -15,7 +25,8 @@ interface ApiError {
 export const useGuestPurchaseMutation = () => {
   const router = useRouter();
   return useMutation({
-    mutationFn: (data: GuestPurchasePayload) => ticketService.guestPurchase(data),
+    mutationFn: (data: GuestPurchasePayload) =>
+      ticketService.guestPurchase(data),
     onSuccess: (res: GuestPurchaseResponse, variables) => {
       if (res.success) {
         // Stripe flow: redirect to Stripe Checkout URL
@@ -34,7 +45,10 @@ export const useGuestPurchaseMutation = () => {
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
-        const totalQuantity = variables.tiers.reduce((sum, t) => sum + t.quantity, 0);
+        const totalQuantity = variables.tiers.reduce(
+          (sum, t) => sum + t.quantity,
+          0,
+        );
         query.append("quantity", totalQuantity.toString());
         query.append("email", variables.email);
 
@@ -45,7 +59,7 @@ export const useGuestPurchaseMutation = () => {
 
         router.push(`/ticket-purchase/success?${query.toString()}`);
       } else {
-        toast.message(res.message || "Purchase failed", 'error');
+        toast.message(res.message || "Purchase failed", "error");
       }
     },
   });
@@ -69,7 +83,10 @@ export const useUserPurchaseMutation = () => {
         toast.message(res.message || "Order placed successfully!", "success");
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
-        const totalQuantity = variables.tiers.reduce((sum, t) => sum + t.quantity, 0);
+        const totalQuantity = variables.tiers.reduce(
+          (sum, t) => sum + t.quantity,
+          0,
+        );
         query.append("quantity", totalQuantity.toString());
 
         const token = res.data?.order_id || res.data?.id;
@@ -79,28 +96,32 @@ export const useUserPurchaseMutation = () => {
 
         router.push(`/ticket-purchase/success?${query.toString()}`);
       } else {
-        toast.message(res.message || "Purchase failed", 'error');
+        toast.message(res.message || "Purchase failed", "error");
       }
-    }
+    },
   });
 };
 
-export const useUserTickets = (page: number = 1, search: string = "", filter: string = "all") => {
+export const useUserTickets = (
+  page: number = 1,
+  search: string = "",
+  filter: string = "all",
+) => {
   return useQuery<PaginatedUserTickets>({
-    queryKey: ['tickets', 'user-purchases', page, search, filter],
+    queryKey: ["tickets", "user-purchases", page, search, filter],
     queryFn: () => ticketService.getUserTickets(page, 10, search, filter),
     placeholderData: (previousData) => previousData,
-  })
+  });
 };
 
-export const useEventTickets = (eventId: string | null) => { 
+export const useEventTickets = (eventId: string | null) => {
   return useQuery({
-    queryKey: ['event-tickets', eventId],
+    queryKey: ["event-tickets", eventId],
     queryFn: () => {
       if (!eventId) throw new Error("Event ID is required");
       return ticketService.getEventTickets(eventId);
     },
-    enabled: !!eventId, 
+    enabled: !!eventId,
   });
 };
 
@@ -115,3 +136,48 @@ export const useTransactionDetails = (transactionId?: string) => {
   });
 };
 
+export const useCancelTicket = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: ({
+      ticketId,
+      data,
+    }: {
+      ticketId: string;
+      data: CancelTicketRequest;
+    }) => ticketService.cancelTicket(ticketId, data),
+    onSuccess: (res, variables) => {
+      if (res.success) {
+        toast.success(
+          "cancelTicket.toast.success",
+          res.message ||
+            "Ticket cancelled successfully. Refund will be processed.",
+        );
+
+        // Invalidate user tickets query to refetch updated list
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tickets.userTickets(1, "all", ""),
+        });
+
+        // Also invalidate any detail queries for this ticket
+        queryClient.invalidateQueries({
+          queryKey: ["tickets", "user-purchases"],
+        });
+      } else {
+        toast.error(
+          "cancelTicket.toast.error",
+          res.message || "Failed to cancel ticket",
+        );
+      }
+    },
+    onError: (error: ApiError) => {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to cancel ticket";
+      toast.error("cancelTicket.toast.error", message);
+    },
+  });
+};

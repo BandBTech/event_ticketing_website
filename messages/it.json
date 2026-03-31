@@ -36,7 +36,10 @@
       "showing": "Mostrare",
       "of": "Di",
       "events": "eventi."
-    }
+    },
+    "cancel": "Cancellare",
+    "characters": "caratteri",
+    "back": "Indietro"
   },
   "navigation": {
     "events": "Eventi",
@@ -569,6 +572,42 @@
         "trans": "Transazioni",
         "loading": "Caricamento transazioni..."
       }
+    }
+  },
+  "cancelTicket": {
+    "button": {
+      "cancel": "Annulla biglietto",
+      "cancelOrder": "Annulla ordine"
+    },
+    "reasonDialog": {
+      "title": "Annulla ordine",
+      "description": "Fornisci un motivo per l'annullamento dell'ordine",
+      "reasonLabel": "Motivo dell'annullamento",
+      "reasonPlaceholder": "Spiega perché devi annullare il tuo ordine...",
+      "nextButton": "Avanti"
+    },
+    "confirmationDialog": {
+      "title": "Conferma annullamento",
+      "description": "Rivedi i dettagli seguenti prima di confermare l'annullamento",
+      "ticketDetails": "Dettagli del biglietto",
+      "ticketsToCancel": "Biglietti da annullare",
+      "tier": "Livello",
+      "ticketNumber": "Numero del biglietto",
+      "price": "Prezzo",
+      "status": "Stato",
+      "refundNotice": "Il rimborso sarà elaborato secondo la politica di cancellazione dell'evento. L'importo del rimborso verrà accreditato sul metodo di pagamento originale entro 5-7 giorni lavorativi.",
+      "reason": "Motivo dell'annullamento",
+      "confirmButton": "Conferma annullamento",
+      "cancelling": "Annullamento..."
+    },
+    "validation": {
+      "reasonRequired": "Fornisci un motivo per l'annullamento",
+      "reasonMinLength": "Il motivo deve essere di almeno 20 caratteri",
+      "reasonMaxLength": "Il motivo non può superare i 500 caratteri"
+    },
+    "toast": {
+      "success": "Ordine annullato con successo. Il rimborso sarà elaborato.",
+      "error": "Impossibile annullare l'ordine"
     }
   },
   "transaction": {

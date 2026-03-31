@@ -37,7 +37,10 @@
       "showing": "Showing",
       "of": "of",
       "events": "events."
-    }
+    },
+    "cancel": "Cancel",
+    "characters": "characters",
+    "back": "Back"
   },
   "navigation": {
     "events": "Events",
@@ -694,6 +697,42 @@
         "trans": "Transactions",
         "loading": "Loading transactions..."
       }
+    }
+  },
+  "cancelTicket": {
+    "button": {
+      "cancel": "Cancel Ticket",
+      "cancelOrder": "Cancel Order"
+    },
+    "reasonDialog": {
+      "title": "Cancel Order",
+      "description": "Please provide a reason for cancelling your order",
+      "reasonLabel": "Cancellation Reason",
+      "reasonPlaceholder": "Please explain why you need to cancel your order...",
+      "nextButton": "Next"
+    },
+    "confirmationDialog": {
+      "title": "Confirm Cancellation",
+      "description": "Please review the details below before confirming cancellation",
+      "ticketDetails": "Ticket Details",
+      "ticketsToCancel": "Tickets to be Cancelled",
+      "tier": "Tier",
+      "ticketNumber": "Ticket Number",
+      "price": "Price",
+      "status": "Status",
+      "refundNotice": "A refund will be processed according to the event's cancellation policy. The refund amount will be credited to your original payment method within 5-7 business days.",
+      "reason": "Cancellation Reason",
+      "confirmButton": "Confirm Cancellation",
+      "cancelling": "Cancelling..."
+    },
+    "validation": {
+      "reasonRequired": "Please provide a reason for cancellation",
+      "reasonMinLength": "Reason must be at least 20 characters",
+      "reasonMaxLength": "Reason must not exceed 500 characters"
+    },
+    "toast": {
+      "success": "Order cancelled successfully. Refund will be processed.",
+      "error": "Failed to cancel order"
     }
   },
   "transaction": {

@@ -71,6 +71,20 @@ export interface UserPurchaseResponse {
     created_at: string;
   };
 }
+
+export interface CancelTicketRequest {
+  reason: string;
+}
+
+export interface CancelTicketResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    refund_amount?: number;
+    refund_status?: string;
+    cancelled_at?: string;
+  };
+}
 export interface PaginatedUserTickets {
   tickets: ViewTicketDetails[];
   pagination: {
@@ -145,12 +159,12 @@ export const ticketService = {
     filter: string,
   ): Promise<PaginatedUserTickets> => {
     const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-  });
+      page: page.toString(),
+      limit: limit.toString(),
+    });
 
-  if (search) params.append("search", search);
-  if (filter && filter !== "all") params.append("filter", filter);
+    if (search) params.append("search", search);
+    if (filter && filter !== "all") params.append("filter", filter);
     const response = await api.get<UserTicketsApiResponse>(
       `/user/tickets?page=${page}&limit=${limit}`,
       {
@@ -279,6 +293,22 @@ export const ticketService = {
         checkedIn: false,
       })),
     };
+  },
+
+  cancelTicket: async (
+    ticketId: string,
+    data: CancelTicketRequest,
+  ): Promise<CancelTicketResponse> => {
+    const response = await api.post<CancelTicketResponse>(
+      `/user/tickets/${ticketId}/cancel`,
+      data,
+      {
+        requiresAuth: true,
+        returnFullResponse: true,
+        showErrorToast: false, // Let the hook handle error toasts
+      },
+    );
+    return response;
   },
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Ticket as TicketIcon,
   QrCode,
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,6 +42,8 @@ import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
+import { CancelTicketDialog } from "@/components/tickets/CancelTicketDialog";
+import { useCancelTicket } from "@/hooks/useTickets";
 
 // Check if event is upcoming (start date is in the future)
 const isUpcoming = (startDate: string) => {
@@ -62,9 +64,15 @@ export default function TicketsPage() {
   const [currentTicketQR, setCurrentTicketQR] = useState<number>(0);
   const [modalTicketsList, setModalTicketsList] = useState<TicketItems[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [selectedOrderForCancel, setSelectedOrderForCancel] = useState<
+    string | null
+  >(null);
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+
+  const cancelMutation = useCancelTicket();
 
   const searchParams = useSearchParams();
   const selectedOrderId = searchParams.get("id");
@@ -87,7 +95,7 @@ export default function TicketsPage() {
     isLoading,
     isFetching,
     error,
-  } = useUserTickets(currentPage,  statusFilter, searchQuery);
+  } = useUserTickets(currentPage, statusFilter, searchQuery);
   const ticketsArray = responseData?.tickets || [];
   const pagination = responseData?.pagination;
   const view = selectedOrderId ? "detail" : "list";
@@ -134,6 +142,28 @@ export default function TicketsPage() {
   };
   const handleBackToList = () => {
     router.push(pathname);
+  };
+
+  const handleCancelOrder = (orderId: string) => {
+    setSelectedOrderForCancel(orderId);
+    setShowCancelDialog(true);
+  };
+
+  const handleCancelConfirm = async (reason: string) => {
+    if (!selectedOrderForCancel || !detailTickets) return;
+
+    // Cancel all active tickets in the order
+    const activeTickets = detailTickets.tickets.filter((t) => !t.checkedIn);
+
+    for (const ticket of activeTickets) {
+      await cancelMutation.mutateAsync({
+        ticketId: ticket.ticketId,
+        data: { reason },
+      });
+    }
+
+    setShowCancelDialog(false);
+    setSelectedOrderForCancel(null);
   };
 
   const handleNextQR = () => {
@@ -221,75 +251,81 @@ export default function TicketsPage() {
       <div className="glass-card rounded-xl p-6">
         <div className="space-y-6">
           {/* Search and Filters */}
-        {/* Search and Filters - Synchronized with Transaction UI */}
-{view === "list" && (
-  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-6">
-    {/* Search Bar - Spans 7 columns on desktop */}
-    <div className="relative md:col-span-7 lg:col-span-8">
-      <Search
-        className={cn(
-          "absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
-          isSearchFocused ? "text-blue-500" : "text-gray-400"
-        )}
-      />
-      <input
-        type="text"
-        placeholder={t("setting.menu.tickets.search", "Search tickets...")}
-        className="w-full h-[42px] pl-10 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-gray-400"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        onFocus={() => setIsSearchFocused(true)}
-        onBlur={() => setIsSearchFocused(false)}
-      />
-      {searchQuery && (
-        <button
-          onClick={() => setSearchQuery("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
-      )}
-    </div>
+          {/* Search and Filters - Synchronized with Transaction UI */}
+          {view === "list" && (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-6">
+              {/* Search Bar - Spans 7 columns on desktop */}
+              <div className="relative md:col-span-7 lg:col-span-8">
+                <Search
+                  className={cn(
+                    "absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
+                    isSearchFocused ? "text-blue-500" : "text-gray-400",
+                  )}
+                />
+                <input
+                  type="text"
+                  placeholder={t(
+                    "setting.menu.tickets.search",
+                    "Search tickets...",
+                  )}
+                  className="w-full h-[42px] pl-10 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-gray-400"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
 
-    {/* Status & Clear Button Group - Spans 5 columns on desktop */}
-    <div className="flex md:col-span-5 lg:col-span-4 gap-2">
-      <div className="flex-1">
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full h-[42px] bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-0 focus:ring-offset-0">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">
-              {t("setting.menu.tickets.selectValue.allStatus", "All Status")}
-            </SelectItem>
-            <SelectItem value="active">
-              {t("setting.menu.tickets.selectValue.active", "Active")}
-            </SelectItem>
-            <SelectItem value="used">
-              {t("setting.menu.tickets.selectValue.used", "Used")}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+              {/* Status & Clear Button Group - Spans 5 columns on desktop */}
+              <div className="flex md:col-span-5 lg:col-span-4 gap-2">
+                <div className="flex-1">
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-full h-[42px] bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-0 focus:ring-offset-0">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">
+                        {t(
+                          "setting.menu.tickets.selectValue.allStatus",
+                          "All Status",
+                        )}
+                      </SelectItem>
+                      <SelectItem value="active">
+                        {t("setting.menu.tickets.selectValue.active", "Active")}
+                      </SelectItem>
+                      <SelectItem value="used">
+                        {t("setting.menu.tickets.selectValue.used", "Used")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      {/* Clear Button - Only shows if filters are active */}
-      {(searchQuery || statusFilter !== "all") && (
-        <button
-          onClick={() => {
-            setSearchQuery("");
-            setStatusFilter("all");
-          }}
-          className="flex items-center justify-center px-3 h-[42px] bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all text-red-600 active:scale-95 shrink-0"
-          title="Clear Filters"
-        >
-          <Eraser className="h-4 w-4" />
-        </button>
-      )}
-    </div>
-  </div>
-)}
+                {/* Clear Button - Only shows if filters are active */}
+                {(searchQuery || statusFilter !== "all") && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setStatusFilter("all");
+                    }}
+                    className="flex items-center justify-center px-3 h-[42px] bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all text-red-600 active:scale-95 shrink-0"
+                    title="Clear Filters"
+                  >
+                    <Eraser className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
-          {/* Tabs 
+          {/* Tabs
           <div className="flex gap-4 mb-6 border-b">
             {(['upcoming', 'past', "all"] as const).map((tab) => (
               <button
@@ -324,6 +360,23 @@ export default function TicketsPage() {
 
               <p className="text-sm text-gray-600">{view === "list"}</p>
             </div>
+            {view === "detail" &&
+              detailTickets &&
+              detailTickets.tickets?.some((t) => !t.checkedIn) && (
+                <Button
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive hover:bg-red-50!"
+                  onClick={() => handleCancelOrder(detailTickets.orderId)}
+                  disabled={cancelMutation.isPending}
+                >
+                  {cancelMutation.isPending
+                    ? t(
+                        "cancelTicket.confirmationDialog.cancelling",
+                        "Cancelling...",
+                      )
+                    : t("cancelTicket.button.cancelOrder", "Cancel Order")}
+                </Button>
+              )}
           </div>
 
           {/* Tickets list */}
@@ -628,7 +681,7 @@ export default function TicketsPage() {
                           </div>
 
                           {/* Actions */}
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
                             <Button
                               variant="outline"
                               size="sm"
@@ -758,6 +811,15 @@ export default function TicketsPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Cancel Ticket Dialog */}
+      <CancelTicketDialog
+        open={showCancelDialog}
+        onOpenChange={setShowCancelDialog}
+        ticket={selectedOrderForCancel && detailTickets ? detailTickets : null}
+        onCancelConfirm={handleCancelConfirm}
+        isPending={cancelMutation.isPending}
+      />
     </div>
   );
 }

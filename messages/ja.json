@@ -36,7 +36,10 @@
       "showing": "表示中",
       "of": "の",
       "events": "イベント。"
-    }
+    },
+    "cancel": "キャンセル",
+    "characters": "キャラクター",
+    "back": "戻る"
   },
   "navigation": {
     "events": "イベント",
@@ -571,6 +574,42 @@
         "trans": "取引",
         "loading": "トランザクションをロード中..."
       }
+    }
+  },
+  "cancelTicket": {
+    "button": {
+      "cancel": "チケットをキャンセル",
+      "cancelOrder": "注文をキャンセル"
+    },
+    "reasonDialog": {
+      "title": "注文をキャンセル",
+      "description": "注文をキャンセルする理由を入力してください",
+      "reasonLabel": "キャンセル理由",
+      "reasonPlaceholder": "注文をキャンセルする理由を説明してください...",
+      "nextButton": "次へ"
+    },
+    "confirmationDialog": {
+      "title": "キャンセルの確認",
+      "description": "キャンセルを確認する前に、以下の詳細を確認してください",
+      "ticketDetails": "チケットの詳細",
+      "ticketsToCancel": "キャンセルされるチケット",
+      "tier": "ティア",
+      "ticketNumber": "チケット番号",
+      "price": "価格",
+      "status": "ステータス",
+      "refundNotice": "イベントのキャンセルポリシーに従って返金が処理されます。返金額は、5〜7 営業日以内に元の支払い方法にクレジットされます。",
+      "reason": "キャンセル理由",
+      "confirmButton": "キャンセルを確認",
+      "cancelling": "キャンセル中..."
+    },
+    "validation": {
+      "reasonRequired": "キャンセル理由を入力してください",
+      "reasonMinLength": "理由は少なくとも 20 文字である必要があります",
+      "reasonMaxLength": "理由は 500 文字を超えることはできません"
+    },
+    "toast": {
+      "success": "注文が正常にキャンセルされました。返金が処理されます。",
+      "error": "注文のキャンセルに失敗しました"
     }
   },
   "transaction": {
