@@ -154,7 +154,6 @@ export default function BillingPage() {
     !!appliedFilters.end_date;
 
   return (
-   
     <div className="space-y-4 px-2 sm:px-0">
       {!selectedId && (
         <div className="space-y-1">
@@ -169,8 +168,7 @@ export default function BillingPage() {
           </p>
         </div>
       )}
- <div className="glass-card rounded-xl p-6">
-   
+      <div className="glass-card rounded-xl p-6">
         {selectedId ? (
           <TransactionDetail
             data={detailData}
@@ -330,6 +328,18 @@ export default function BillingPage() {
                         <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-blue-700 truncate">
                           {tx.event?.title || tx.event_title}
                         </h3>
+                        {tx.tiers && tx.tiers.length > 0 && (
+                          <div className="flex flex-wrap gap-2 py-1">
+                            {tx.tiers.map((tier) => (
+                              <span
+                                key={tier.id}
+                                className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-100"
+                              >
+                                {tier.name} × {tier.quantity}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <p className="text-[10px] sm:text-xs text-gray-500">
                           {formatDate(tx.date)} •{" "}
                           <span className="capitalize">
@@ -371,6 +381,5 @@ export default function BillingPage() {
         )}
       </div>
     </div>
-   
   );
 }
