@@ -68,6 +68,9 @@ export default function TicketsPage() {
   const [selectedOrderForCancel, setSelectedOrderForCancel] = useState<
     string | null
   >(null);
+  const [selectedTicketForCancel, setSelectedTicketForCancel] = useState<
+    string | null
+  >(null);
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -146,24 +149,48 @@ export default function TicketsPage() {
 
   const handleCancelOrder = (orderId: string) => {
     setSelectedOrderForCancel(orderId);
+    setSelectedTicketForCancel(null);
+    setShowCancelDialog(true);
+  };
+
+  const handleCancelTicket = (ticketId: string) => {
+    setSelectedTicketForCancel(ticketId);
+    setSelectedOrderForCancel(null);
     setShowCancelDialog(true);
   };
 
   const handleCancelConfirm = async (reason: string) => {
-    if (!selectedOrderForCancel || !detailTickets) return;
+    if (!selectedOrderForCancel && !selectedTicketForCancel) return;
 
-    // Cancel all active tickets in the order
-    const activeTickets = detailTickets.tickets.filter((t) => !t.checkedIn);
+    try {
+      // Cancel specific ticket if selected
+      if (selectedTicketForCancel) {
+        await cancelMutation.mutateAsync({
+          ticketId: selectedTicketForCancel,
+          data: { reason },
+        });
+      } else if (selectedOrderForCancel && detailTickets) {
+        // Cancel all active tickets in the order
+        const activeTickets = detailTickets.tickets.filter((t) => !t.checkedIn);
 
-    for (const ticket of activeTickets) {
-      await cancelMutation.mutateAsync({
-        ticketId: ticket.ticketId,
-        data: { reason },
-      });
+        for (const ticket of activeTickets) {
+          await cancelMutation.mutateAsync({
+            ticketId: ticket.ticketId,
+            data: { reason },
+          });
+        }
+      }
+
+      // Close dialog on success
+      setShowCancelDialog(false);
+      setSelectedOrderForCancel(null);
+      setSelectedTicketForCancel(null);
+    } catch (error) {
+      // Error toast is shown by apiClient, just close the dialog
+      setShowCancelDialog(false);
+      setSelectedOrderForCancel(null);
+      setSelectedTicketForCancel(null);
     }
-
-    setShowCancelDialog(false);
-    setSelectedOrderForCancel(null);
   };
 
   const handleNextQR = () => {
@@ -360,7 +387,7 @@ export default function TicketsPage() {
 
               <p className="text-sm text-gray-600">{view === "list"}</p>
             </div>
-            {view === "detail" &&
+            {/*{view === "detail" &&
               detailTickets &&
               detailTickets.tickets?.some((t) => !t.checkedIn) && (
                 <Button
@@ -376,7 +403,7 @@ export default function TicketsPage() {
                       )
                     : t("cancelTicket.button.cancelOrder", "Cancel Order")}
                 </Button>
-              )}
+              )}*/}
           </div>
 
           {/* Tickets list */}
@@ -696,6 +723,19 @@ export default function TicketsPage() {
                             >
                               <QrCode className="h-3.5 w-3.5 mr-1" /> Share
                             </Button>
+                            {!ticket.checkedIn && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 text-xs text-destructive hover:text-destructive hover:bg-red-50 border-destructive/20"
+                                onClick={() =>
+                                  handleCancelTicket(ticket.ticketId)
+                                }
+                                disabled={cancelMutation.isPending}
+                              >
+                                <X className="h-3.5 w-3.5 mr-1" /> Cancel
+                              </Button>
+                            )}
                           </div>
                         </div>
 
@@ -816,7 +856,12 @@ export default function TicketsPage() {
       <CancelTicketDialog
         open={showCancelDialog}
         onOpenChange={setShowCancelDialog}
-        ticket={selectedOrderForCancel && detailTickets ? detailTickets : null}
+        ticket={
+          (selectedOrderForCancel || selectedTicketForCancel) && detailTickets
+            ? detailTickets
+            : null
+        }
+        ticketId={selectedTicketForCancel}
         onCancelConfirm={handleCancelConfirm}
         isPending={cancelMutation.isPending}
       />

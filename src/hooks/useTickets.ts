@@ -13,15 +13,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/lib/toast";
 import { queryKeys } from "@/lib/queryKeys";
 
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-  message?: string;
-}
-
 export const useGuestPurchaseMutation = () => {
   const router = useRouter();
   return useMutation({
@@ -148,7 +139,7 @@ export const useCancelTicket = () => {
       ticketId: string;
       data: CancelTicketRequest;
     }) => ticketService.cancelTicket(ticketId, data),
-    onSuccess: (res, variables) => {
+    onSuccess: (res) => {
       if (res.success) {
         toast.success(
           "cancelTicket.toast.success",
@@ -165,19 +156,7 @@ export const useCancelTicket = () => {
         queryClient.invalidateQueries({
           queryKey: ["tickets", "user-purchases"],
         });
-      } else {
-        toast.error(
-          "cancelTicket.toast.error",
-          res.message || "Failed to cancel ticket",
-        );
       }
-    },
-    onError: (error: ApiError) => {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to cancel ticket";
-      toast.error("cancelTicket.toast.error", message);
     },
   });
 };

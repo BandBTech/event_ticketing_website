@@ -579,7 +579,8 @@
   "cancelTicket": {
     "button": {
       "cancel": "チケットをキャンセル",
-      "cancelOrder": "注文をキャンセル"
+      "cancelOrder": "注文をキャンセル",
+      "cancelTicket": "チケットをキャンセルする"
     },
     "reasonDialog": {
       "title": "注文をキャンセル",

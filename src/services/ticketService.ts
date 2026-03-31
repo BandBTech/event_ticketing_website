@@ -305,7 +305,7 @@ export const ticketService = {
       {
         requiresAuth: true,
         returnFullResponse: true,
-        showErrorToast: false, // Let the hook handle error toasts
+        showErrorToast: true, // Let apiClient handle error toasts
       },
     );
     return response;

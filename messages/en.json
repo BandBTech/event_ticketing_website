@@ -702,7 +702,8 @@
   "cancelTicket": {
     "button": {
       "cancel": "Cancel Ticket",
-      "cancelOrder": "Cancel Order"
+      "cancelOrder": "Cancel Order",
+      "cancelTicket": "Cancel Ticket"
     },
     "reasonDialog": {
       "title": "Cancel Order",

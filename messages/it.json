@@ -577,7 +577,8 @@
   "cancelTicket": {
     "button": {
       "cancel": "Annulla biglietto",
-      "cancelOrder": "Annulla ordine"
+      "cancelOrder": "Annulla ordine",
+      "cancelTicket": "Annulla biglietto"
     },
     "reasonDialog": {
       "title": "Annulla ordine",
