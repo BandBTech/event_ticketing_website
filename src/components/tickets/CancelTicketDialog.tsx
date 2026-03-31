@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -101,6 +101,14 @@ export function CancelTicketDialog({
   const { watch } = form;
   const reasonValue = watch("reason");
 
+  // Reset form and step when dialog is closed
+  useEffect(() => {
+    if (!open) {
+      form.reset();
+      setStep("reason");
+    }
+  }, [open]);
+
   const handleReasonSubmit = () => {
     setStep("confirmation");
   };
@@ -159,7 +167,7 @@ export function CancelTicketDialog({
 
         {/* Scrollable Content */}
         <div
-          className="overflow-y-auto px-6 py-4"
+          className="overflow-y-auto px-6 pt-6"
           style={{ maxHeight: "calc(90vh - 140px)" }}
         >
           {step === "reason" ? (
@@ -202,7 +210,7 @@ export function CancelTicketDialog({
                   )}
                 />
 
-                <DialogFooter className="sticky bottom-0 bg-white pt-4">
+                <DialogFooter className="sticky bottom-0 bg-white">
                   <Button
                     type="button"
                     variant="outline"
@@ -342,7 +350,7 @@ export function CancelTicketDialog({
                 </p>
               </div>
 
-              <DialogFooter className="sticky bottom-0 bg-white pt-4">
+              <DialogFooter className="sticky bottom-0 bg-white pt-4 pb-6">
                 <Button
                   type="button"
                   variant="outline"
