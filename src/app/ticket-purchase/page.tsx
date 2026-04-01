@@ -255,6 +255,7 @@ function GuestPurchaseContent() {
           customer_name: `${user?.firstName || ""} ${user?.lastName || ""}`,
           customer_phone: user?.phone || "",
           country_code: user?.countryCode || "",
+          language: locale,
         };
         userPurchaseMutation.mutate(userPayload, {
           onError: () => setIsRedirectingToPayment(false),
@@ -270,6 +271,7 @@ function GuestPurchaseContent() {
             event_id: eventData.id,
             payment_gateway: selectedGateway,
             tiers: tiersPayload,
+            language: locale,
           };
           guestPurchaseMutation.mutate(guestPayload, {
             onError: () => setIsRedirectingToPayment(false),

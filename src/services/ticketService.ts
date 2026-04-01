@@ -23,6 +23,7 @@ export interface GuestPurchasePayload {
   event_id: string;
   payment_gateway: string;
   tiers: PurchaseTierPayload[];
+  language?: string;
 }
 
 export interface GuestPurchaseResponse {
@@ -48,6 +49,7 @@ export interface UserPurchasePayload {
   customer_name: string;
   customer_phone: string;
   country_code: string;
+  language?: string;
 }
 
 export interface UserPurchaseResponse {
