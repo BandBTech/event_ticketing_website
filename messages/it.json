@@ -553,7 +553,7 @@
         "notickets": "Nessun biglietto trovato"
       },
       "transaction": {
-        "search": "Cerca per titolo dell'evento...",
+        "search": "Cerca transazioni",
         "title": "Transazioni",
         "subtitle": "Gestisci e visualizza tutte le tue transazioni.",
         "filter": "Filtri",

@@ -3,42 +3,67 @@ export interface TransactionUser {
   transaction_details: string;
 }
 
-export interface TransactionInvoice {
-  company_name: string;
-  company_address: string;
-  company_phone: string;
-  company_email: string;
+export interface InvoiceItem {
+  id: string;
+  name: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+}
+
+export interface InvoiceCompany {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
   tax_number: string;
+  logo: string;
+}
+
+export interface InvoiceOrganizer {
+  id: string;
+  name: string;
+  logo: string;
+}
+
+export interface TransactionInvoice {
+  organizer: InvoiceOrganizer;
+  company: InvoiceCompany;
   invoice_number: string;
-  transaction_ref: string;
-  payment_gateway: string;
-  currency: string;
+  total: number;
   subtotal: number;
-  tax_amount: number;
-  total_amount: number;
-  issue_date: string;
+  tax: number;
+  discount: number;
+  items: InvoiceItem[];
 }
 
 export interface Transaction {
-  id: string;
-  event:{
-    id: string,
-    title: string,
-    banner_image:string,
-  },
-  event_title: string;
-  tiers:{
-    id: string; 
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
-  price: number;
-  status: 'completed' | 'pending' | 'failed' | 'refunded';
-  date: string;
   payment_method: string;
-  user: TransactionUser;
-  // invoice: TransactionInvoice;
+id: string;
+  event: {
+    id: string;
+    title: string;
+    banner_image: string;
+    logo_url?: string; 
+  };
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  tiers: Tier[];
+  ticket_count: number;
+  payment_gateway: string;
+  amount: number;
+  price: number;
+  currency: string;
+  status: 'completed' | 'pending' | 'failed' | 'refunded';
+  created_at: string;
+  updated_at: string;
+  invoice_info: TransactionInvoice;
+  date: Date;
+
 }
 
 export interface PaginatedTransactions {
@@ -58,38 +83,47 @@ export interface PaginatedTransactions {
 }
 
 export interface InvoiceInfo {
-  company_name: string;
-  company_address: string;
-  company_phone: string;
-  company_email: string;
-  tax_number: string;
   invoice_number: string;
-  transaction_ref: string;
-  payment_gateway: string;
-  currency: string;
+  total: number;
   subtotal: number;
-  tax_amount: number;
-  total_amount: number;
-  issue_date: string;
+  tax: number;
+  discount: number;
+  items: Tier[]; 
+  company: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    tax_number: string;
+    logo: string;
+    logo_url?: string;
+  };
+  organizer: {
+    id: string;
+    name: string;
+    logo: string;
+    logo_url?: string;
+  };
 }
 
 export interface TransactionDetail {
-  transaction_status: string;
-  id: string;
-  event_id: string;
-  event_title: string;
-  tiers:Tier[];
-  tier_id: string;
-  tier_name: string;
-  user_id: string;
-  user_name: string;
-  customer_email: string;
+id: string;
+  event: {
+    id: string;
+    title: string;
+    banner_image: string;
+  };
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
   ticket_count: number;
   payment_gateway: string;
   amount: number;
   currency: string;
-  status: 'completed' | 'pending' | 'failed' | 'cancelled';
-  gateway_txn_id: string;
+  status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   processed_at: string;
   created_at: string;
   updated_at: string;
@@ -108,6 +142,8 @@ export interface Tier {
   id: string;
   name: string;
   quantity: number;
+  unit_price: number; 
+  total_price: number;
   price: number;
 }
 

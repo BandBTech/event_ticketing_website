@@ -678,7 +678,7 @@
         "notickets": "No Tickets Found"
       },
       "transaction": {
-        "search": "Search by event title...",
+        "search": "Search Transactions",
         "title": "Transactions",
         "subtitle": "Manage and view all your transactions.",
         "filter": "Filters",

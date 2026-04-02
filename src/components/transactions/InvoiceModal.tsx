@@ -28,6 +28,7 @@ import { InvoiceInfo, TransactionDetail } from "@/types/transaction";
 import { formatDate } from "@/lib/utils";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { InvoicePDF } from "./InvoicePDF";
+import { tr } from "date-fns/locale";
 
 interface InvoiceModalProps {
   open: boolean;
@@ -89,7 +90,7 @@ export function InvoiceModal({
           </h1>
           <div className="text-sm text-slate-500 mb-10">
             <span className="font-bold text-slate-900">Date:</span>{" "}
-            {formatDate(invoiceInfo.issue_date)}
+            {formatDate(transaction.updated_at)}
           </div>
 
           {/* Address Grid */}
@@ -99,10 +100,10 @@ export function InvoiceModal({
                 Billed to:
               </h3>
               <p className="font-bold text-slate-900">
-                {transaction.user_name}
+                {transaction.user.name}
               </p>
               <p className="text-sm text-slate-500">
-                {transaction.customer_email}
+                {transaction.user.email}
               </p>
             </div>
             <div>
@@ -110,13 +111,19 @@ export function InvoiceModal({
                 From:
               </h3>
               <p className="font-bold text-slate-900">
-                {invoiceInfo.company_name}
+                {invoiceInfo.company.name}
               </p>
               <p className="text-sm text-slate-500 leading-relaxed">
-                {invoiceInfo.company_address}
+                {invoiceInfo.company.address}
               </p>
               <p className="text-sm text-slate-500">
-                {invoiceInfo.company_email}
+                {invoiceInfo.company.email}
+              </p>
+                <p className="text-sm text-slate-500">
+                {invoiceInfo.company.phone}
+              </p>
+                <p className="text-sm text-slate-500">
+                {invoiceInfo.company.tax_number}
               </p>
             </div>
           </div>
@@ -129,24 +136,30 @@ export function InvoiceModal({
               <div className="col-span-2 text-right">Price</div>
               <div className="col-span-2 text-right">Amount</div>
             </div>
-            <div className="grid grid-cols-12 p-4 border-b border-slate-100 items-center">
-              <div className="col-span-6">
-                <p className="font-bold text-slate-900">
-                  {transaction.event_title}
-                </p>
-                <p className="text-xs text-slate-400">Standard Ticket Entry</p>
-              </div>
-              <div className="col-span-2 text-center text-sm">
-                {transaction.ticket_count}
-              </div>
-              <div className="col-span-2 text-right text-sm">
-                {invoiceInfo.currency}{" "}
-                {(invoiceInfo.subtotal / transaction.ticket_count).toFixed(2)}
-              </div>
-              <div className="col-span-2 text-right font-bold">
-                {invoiceInfo.currency} {invoiceInfo.subtotal.toFixed(2)}
-              </div>
-            </div>
+         {invoiceInfo.items.map((item) => (
+    <div 
+      key={item.id} 
+      className="grid grid-cols-12 p-4 border-b border-slate-100 items-center hover:bg-slate-50/50 transition-colors"
+    >
+      <div className="col-span-6">
+        <p className="font-bold text-slate-900">
+          {item.name} Ticket
+        </p>
+      </div>
+      
+      <div className="col-span-2 text-center text-sm text-slate-600">
+        {item.quantity}
+      </div>
+      
+      <div className="col-span-2 text-right text-sm text-slate-600">
+        {transaction.currency} {item.unit_price.toFixed(2)}
+      </div>
+      
+      <div className="col-span-2 text-right font-bold text-slate-900">
+        {transaction.currency} {item.total_price.toFixed(2)}
+      </div>
+    </div>
+  ))}
           </div>
 
           {/* Total Summary */}
@@ -154,14 +167,14 @@ export function InvoiceModal({
             <div className="w-48 border-t-2 border-blue-600 pt-4 flex justify-between items-center">
               <span className="font-bold text-slate-900">Total</span>
               <span className="text-xl font-bold text-blue-600">
-                {invoiceInfo.currency} {invoiceInfo.total_amount.toFixed(2)}
+                {transaction.currency} {invoiceInfo.total.toFixed(2)}
               </span>
             </div>
           </div>
 
           {/* Decorative Footer Mockup (Optional for Modal) */}
           <div className="mt-10 p-4 bg-blue-50 rounded-lg border border-blue-100 text-xs text-blue-800">
-            <strong>Payment method:</strong> {invoiceInfo.payment_gateway}
+            <strong>Payment method:</strong> {transaction.payment_gateway}
             <p>Note: Thank you for choosing Timro Ticket</p>
           </div>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">

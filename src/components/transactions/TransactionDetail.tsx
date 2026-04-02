@@ -9,7 +9,8 @@ import {
   Calendar,
   ArrowLeft,
   Receipt,
-  Eye
+  Eye,
+  Loader2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,8 +18,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/utils";
 import { TransactionDetailApiResponse } from "@/types/transaction";
 import { InvoiceModal } from "./InvoiceModal";
-
-
+import { InvoicePDF } from "./InvoicePDF";
+import { pdf } from "@react-pdf/renderer";
 
 interface TransactionDetailViewProps {
   data?: TransactionDetailApiResponse;
@@ -26,12 +27,31 @@ interface TransactionDetailViewProps {
   onBack: () => void;
 }
 
-
 export function TransactionDetail({ data, isLoading, onBack }: TransactionDetailViewProps) {
-
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const tx = data?.data;
   const inv = tx?.invoice_info;
+
+  const handleViewInvoice = async () => {
+    if (!inv || !tx) return;
+    
+    try {
+      setIsPdfGenerating(true);
+      // Generate PDF blob
+      const blob = await pdf(<InvoicePDF invoiceInfo={inv} transaction={tx} />).toBlob();
+      // Create URL for the blob
+      const url = URL.createObjectURL(blob);
+      // Open in new window
+      window.open(url, "_blank");
+      // Clean up URL after a delay to allow the window to load
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    } finally {
+      setIsPdfGenerating(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -73,7 +93,21 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
       </div>
 
       <h1 className="text-3xl font-bold text-gray-900">Transaction Detail</h1>
-
+      
+      {/* Event Hero Section */}
+      <div className="relative h-40 w-full rounded-2xl overflow-hidden border shadow-sm">
+        <img 
+          src={tx.event.banner_image} 
+          alt={tx.event.title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+          <h1 className="text-2xl font-bold text-white leading-tight">
+            {tx.event.title}
+          </h1>
+        </div>
+      </div>
+      
       {/* Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border p-6 shadow-sm">
@@ -82,12 +116,10 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
             <h3 className="font-bold">Buyer</h3>
           </div>
           <div className="space-y-4 text-sm">
-            <div className="flex justify-between"><span className="text-gray-500">User Name</span><span className="font-semibold">{tx.user_name}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-semibold">{tx.customer_email}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Event Name</span><span className="font-semibold">{tx.event_title}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">User Name</span><span className="font-semibold">{tx.user.name}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-semibold">{tx.user.email}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Event Name</span><span className="font-semibold">{tx.event.title}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Quantity</span><span className="font-semibold">{tx.ticket_count} {tx.ticket_count === 1 ? "ticket" : "tickets"}</span></div>
-            {/* <div className="flex justify-between"><span className="text-gray-500">Ticket</span><span className="font-semibold">{tx.tier_name} Ticket</span></div>
-          */}
           </div>
         </div>
 
@@ -107,17 +139,20 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
         </div>
       </div>
 
-<div className="flex justify-end gap-3">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsInvoiceModalOpen(true)}
-            className="gap-2"
-          >
+      <div className="flex justify-end gap-3">
+        <Button 
+          variant="outline" 
+          onClick={handleViewInvoice}
+          disabled={isPdfGenerating}
+          className="gap-2"
+        >
+          {isPdfGenerating ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
             <Eye className="h-4 w-4" />
-            View Invoice
-          </Button>
-
-        
+          )}
+          View Invoice
+        </Button>
       </div>
 
       {/* Invoice Modal */}
@@ -127,12 +162,6 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
         invoiceInfo={inv}
         transaction={tx}
       />
-    
-      {/* <div className="flex justify-end">
-        <Button className="gap-2 bg-[#635BFF] hover:bg-[#5249E0] px-8 h-12">
-          <Download className="h-4 w-4" /> Download PDF Invoice
-        </Button>
-      </div> */}
     </div>
   );
 }

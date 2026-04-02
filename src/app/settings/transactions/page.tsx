@@ -99,10 +99,17 @@ export default function BillingPage() {
 
   // 4. Accumulate Results
   useEffect(() => {
-    if (transactionsFromApi.length > 0) {
-      setAllTransactions((prev) =>
-        page === 1 ? transactionsFromApi : [...prev, ...transactionsFromApi],
-      );
+ if (transactionsFromApi.length > 0) {
+      setAllTransactions((prev) => {
+        
+        if (page === 1) return transactionsFromApi;
+        const existingIds = new Set(prev.map((tx) => tx.id));
+        const uniqueNewTransactions = transactionsFromApi.filter(
+          (tx) => !existingIds.has(tx.id)
+        );
+
+        return [...prev, ...uniqueNewTransactions];
+      });
       if (pagination) {
         setHasMore(pagination.has_next);
         setTotalTransactions(pagination.total);
@@ -326,7 +333,7 @@ export default function BillingPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-blue-700 truncate">
-                          {tx.event?.title || tx.event_title}
+                          {tx.event?.title || tx.event.title}
                         </h3>
                         {tx.tiers && tx.tiers.length > 0 && (
                           <div className="flex flex-wrap gap-2 py-1">
@@ -350,7 +357,7 @@ export default function BillingPage() {
                     </div>
                     <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-0 pt-2 sm:pt-0 border-gray-50">
                       <p className="text-base sm:text-lg font-black text-gray-900">
-                        ${tx.price.toLocaleString()}
+                        ${tx.price?.toLocaleString()}
                       </p>
                       <span
                         className={cn(
