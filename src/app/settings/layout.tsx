@@ -14,6 +14,7 @@ import {
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 
+
 export default function SettingsLayout({
   children,
 }: {
@@ -22,6 +23,7 @@ export default function SettingsLayout({
   const pathname = usePathname();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+
 
   const menuItems = [
     {

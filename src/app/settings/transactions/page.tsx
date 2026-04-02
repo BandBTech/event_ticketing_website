@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   Search,
   X,
@@ -34,6 +34,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { differenceInMonths, isBefore, startOfDay, format } from "date-fns";
 import { toast } from "sonner";
+import { useDebouncedCallback } from "@/hooks/useDebounce";
 
 export default function BillingPage() {
   const searchParams = useSearchParams();
@@ -42,18 +43,59 @@ export default function BillingPage() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
+
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
   const [page, setPage] = useState(1);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [totalTransactions, setTotalTransactions] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [appliedFilters, setAppliedFilters] =
     useState<TransactionFilters>(getDefaultFilters());
 
   const selectedId = searchParams.get("id");
+
+
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInput(value);
+  
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      console.log("API will be called with:", value); // Debug log
+      setDebouncedSearch(value);
+      setPage(1);
+      setAllTransactions([]);
+      setIsInitialLoad(true);
+    }, 500);
+  };
+
+   useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+  
+  // Clear search
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setDebouncedSearch("");
+    setPage(1);
+    setAllTransactions([]);
+    setIsInitialLoad(true);
+  };
 
   // 1. API Filters (Date only as requested)
   const apiFilters = useMemo((): TransactionApiFilters => {
@@ -65,27 +107,32 @@ export default function BillingPage() {
     return filters;
   }, [appliedFilters.start_date, appliedFilters.end_date]);
 
-  // 2. Fetch Data (Search and Date handled by API)
+  // 2. Fetch Data - Uses debouncedSearch state, NOT searchInput
   const {
     data: response,
     isLoading,
     isFetching,
-  } = useUserTransactions(page, 20, apiFilters, searchQuery);
+  } = useUserTransactions(page, 20, apiFilters, debouncedSearch);
+
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
   );
+  
+  // Show loading while typing (debounce in progress)
+  const isSearching = searchInput !== debouncedSearch && searchInput !== "";
+  const showLoading = (isLoading && page === 1 && isInitialLoad) || isSearching;
 
   const transactionsFromApi: Transaction[] = response?.data?.transactions || [];
   const pagination = response?.data?.pagination;
 
   // 3. Reset logic when API dependencies change
   const prevFiltersRef = useRef(apiFilters);
-  const prevSearchRef = useRef(searchQuery);
+  const prevSearchRef = useRef(debouncedSearch);
 
   useEffect(() => {
     const filtersChanged =
       JSON.stringify(prevFiltersRef.current) !== JSON.stringify(apiFilters);
-    const searchChanged = prevSearchRef.current !== searchQuery;
+    const searchChanged = prevSearchRef.current !== debouncedSearch;
 
     if (filtersChanged || searchChanged) {
       setPage(1);
@@ -93,21 +140,19 @@ export default function BillingPage() {
       setHasMore(true);
       setIsInitialLoad(true);
       prevFiltersRef.current = apiFilters;
-      prevSearchRef.current = searchQuery;
+      prevSearchRef.current = debouncedSearch;
     }
-  }, [apiFilters, searchQuery]);
+  }, [apiFilters, debouncedSearch]);
 
   // 4. Accumulate Results
   useEffect(() => {
- if (transactionsFromApi.length > 0) {
+    if (transactionsFromApi.length > 0) {
       setAllTransactions((prev) => {
-        
         if (page === 1) return transactionsFromApi;
         const existingIds = new Set(prev.map((tx) => tx.id));
         const uniqueNewTransactions = transactionsFromApi.filter(
           (tx) => !existingIds.has(tx.id)
         );
-
         return [...prev, ...uniqueNewTransactions];
       });
       if (pagination) {
@@ -127,12 +172,12 @@ export default function BillingPage() {
   // 5. Handlers
   const handleClearAll = () => {
     setAppliedFilters(getDefaultFilters());
-    setSearchQuery("");
+    handleClearSearch();
     toast.dismiss();
   };
 
   const handleLoadMore = () => {
-    if (!isFetching && hasMore) setPage((prev) => prev + 1);
+    if (!isFetching && hasMore && !isSearching) setPage((prev) => prev + 1);
   };
 
   const handleDateChange = (
@@ -156,7 +201,7 @@ export default function BillingPage() {
   };
 
   const hasActiveFilters =
-    searchQuery !== "" ||
+    searchInput !== "" ||
     !!appliedFilters.start_date ||
     !!appliedFilters.end_date;
 
@@ -201,19 +246,24 @@ export default function BillingPage() {
                     "Search transactions...",
                   )}
                   className="w-full h-[42px] pl-10 pr-10 text-sm bg-gray-50/50 border border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-gray-400"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchInput}
+                  onChange={handleSearchChange}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                 />
-                {searchQuery && (
+                {/* Show loader OR clear button, not both */}
+                {isSearching ? (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                  </div>
+                ) : searchInput ? (
                   <button
-                    onClick={() => setSearchQuery("")}
+                    onClick={handleClearSearch}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
-                )}
+                ) : null}
               </div>
 
               {/* Start Date */}
@@ -291,9 +341,12 @@ export default function BillingPage() {
             </div>
 
             {/* LIST SECTION */}
-            {isLoading && page === 1 && isInitialLoad ? (
+            {showLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="h-10 w-10 animate-spin text-gray-300" />
+                {isSearching && (
+                  <p className="text-sm text-gray-400 mt-2">Searching...</p>
+                )}
               </div>
             ) : hasLoaded && allTransactions.length === 0 ? (
               <div className="text-center py-20 px-4">
@@ -372,7 +425,7 @@ export default function BillingPage() {
                     </div>
                   </div>
                 ))}
-                {hasMore && !isFetching && (
+                {hasMore && !isFetching && !isSearching && (
                   <div className="flex justify-center pt-6">
                     <FigmaButton
                       onClick={handleLoadMore}

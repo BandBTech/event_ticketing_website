@@ -30,41 +30,41 @@ export function useDebounce<T>(value: T, delay: number = 300): T {
  * @param delay - Delay in milliseconds (default: 300ms)
  * @returns The debounced callback function
  */
+// In your useDebounce.ts file
 export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
-	callback: T,
-	delay: number = 300
+  callback: T,
+  delay: number = 300
 ): (...args: Parameters<T>) => void {
-	const callbackRef = useRef(callback);
-	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const callbackRef = useRef(callback);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-	// Update callback ref when callback changes
-	useEffect(() => {
-		callbackRef.current = callback;
-	}, [callback]);
+  // Update callback ref when callback changes
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
-	// Cleanup on unmount
-	useEffect(() => {
-		return () => {
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-			}
-		};
-	}, []);
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
-	return useCallback(
-		(...args: Parameters<T>) => {
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-			}
+  return useCallback(
+    (...args: Parameters<T>) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-			timeoutRef.current = setTimeout(() => {
-				callbackRef.current(...args);
-			}, delay);
-		},
-		[delay]
-	);
+      timeoutRef.current = setTimeout(() => {
+        callbackRef.current(...args);
+      }, delay);
+    },
+    [delay]
+  );
 }
-
 /**
  * useDebouncedState - Combines useState with debouncing
  * Returns both immediate value (for input) and debounced value (for API calls)

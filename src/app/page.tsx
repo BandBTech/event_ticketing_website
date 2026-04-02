@@ -276,10 +276,12 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
 import { HomeEvent } from "@/components/events/HomeEvent";
+import { useAuthStore } from "@/store/authStore";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const { user, isAuthenticated } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
@@ -596,6 +598,7 @@ export default function HomePage() {
   */}
 
       {/* CTA Section */}
+       {!isAuthenticated && !user && (
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="glass-strong rounded-2xl p-12">
@@ -617,6 +620,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 }
