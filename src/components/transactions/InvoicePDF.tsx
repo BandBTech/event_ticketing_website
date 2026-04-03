@@ -268,7 +268,7 @@ export const InvoicePDF = ({ invoiceInfo, transaction }: InvoicePDFProps) => {
     );
   }
 
-  const currency = transaction.currency || "USD";
+  const currency =  "$";
   
   // Get organizer and company info
   const organizerName = invoiceInfo.organizer?.name;

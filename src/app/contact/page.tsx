@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCompanyInfo } from "@/hooks/useCompany";
 
 const createContactSchema = () => {
   return z.object({
@@ -58,6 +59,8 @@ export default function ContactPage() {
     mode: "onBlur",
   });
 
+    const { data: company, isLoading } = useCompanyInfo();
+    
   const onSubmit = async (data: ContactFormData) => {
     try {
       toast.success(t("contact.toast.success"));
@@ -70,10 +73,14 @@ export default function ContactPage() {
   };
 
   const socialLinks = [
-    { name: "Facebook", icon: FacebookLogoIcon, href: "#facebook" },
-    { name: "Twitter", icon: TwitterLogoIcon, href: "#twitter" },
-    { name: "Instagram", icon: InstagramLogoIcon, href: "#instagram" },
-    { name: "LinkedIn", icon: LinkedinLogoIcon, href: "#linkedin" },
+    { name: "Facebook", icon: FacebookLogoIcon, href: company?.facebook_url },
+    { name: "Twitter", icon: TwitterLogoIcon, href: company?.twitter_url },
+    {
+      name: "Instagram",
+      icon: InstagramLogoIcon,
+      href: company?.instagram_url,
+    },
+    { name: "LinkedIn", icon: LinkedinLogoIcon, href: company?.linkedin_url },
   ];
   return (
     <div className="min-h-screen bg-background">
@@ -110,19 +117,20 @@ export default function ContactPage() {
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <EnvelopeSimpleIcon size={18} className="text-primary" />
                   <span>
-                    {t("footer.contact.email", "info@timroticket.com")}
+                    {company?.email}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <PhoneIcon size={18} className="text-primary" />
-                  <span>{t("footer.contact.phone", "+977-1-4567890")}</span>
+                  <span>{company?.phone}</span>
                 </div>
 
                 <div className="flex items-start gap-3 text-sm text-muted-foreground">
                   <MapPinIcon size={18} className="text-primary mt-0.5" />
                   <span className="leading-relaxed">
-                    {t("footer.contact.address", "Kathmadnu, Nepal")}
+                    {company?.address}
+                    {/* {t("footer.contact.address", "Kathmadnu, Nepal")} */}
                   </span>
                 </div>
               </div>

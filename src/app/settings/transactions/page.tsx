@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   X,
@@ -8,6 +8,9 @@ import {
   Eraser,
   TicketIcon,
   Calendar as CalendarIcon,
+  Filter,
+  ChevronDown,
+  CalendarRange,
 } from "lucide-react";
 import {
   useUserTransactions,
@@ -32,9 +35,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { differenceInMonths, isBefore, startOfDay, format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { differenceInMonths, isBefore, startOfDay, format, subMonths } from "date-fns";
 import { toast } from "sonner";
-import { useDebouncedCallback } from "@/hooks/useDebounce";
 
 export default function BillingPage() {
   const searchParams = useSearchParams();
@@ -43,61 +46,31 @@ export default function BillingPage() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
-
+  // State
   const [searchInput, setSearchInput] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
   const [page, setPage] = useState(1);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const [totalTransactions, setTotalTransactions] = useState(0);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [hasLoaded, setHasLoaded] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [appliedFilters, setAppliedFilters] =
     useState<TransactionFilters>(getDefaultFilters());
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: undefined,
+    to: undefined,
+  });
 
   const selectedId = searchParams.get("id");
 
+  // Update date range when filters change
+  useEffect(() => {
+    setDateRange({
+      from: appliedFilters.start_date,
+      to: appliedFilters.end_date,
+    });
+  }, [appliedFilters.start_date, appliedFilters.end_date]);
 
-
-  // Handle search input change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchInput(value);
-  
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
-      console.log("API will be called with:", value); // Debug log
-      setDebouncedSearch(value);
-      setPage(1);
-      setAllTransactions([]);
-      setIsInitialLoad(true);
-    }, 500);
-  };
-
-   useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
-  }, []);
-  
-  // Clear search
-  const handleClearSearch = () => {
-    setSearchInput("");
-    setDebouncedSearch("");
-    setPage(1);
-    setAllTransactions([]);
-    setIsInitialLoad(true);
-  };
-
-  // 1. API Filters (Date only as requested)
+  // API Filters
   const apiFilters = useMemo((): TransactionApiFilters => {
     const filters: TransactionApiFilters = {};
     if (appliedFilters.start_date)
@@ -107,103 +80,111 @@ export default function BillingPage() {
     return filters;
   }, [appliedFilters.start_date, appliedFilters.end_date]);
 
-  // 2. Fetch Data - Uses debouncedSearch state, NOT searchInput
+  // Fetch Data
   const {
     data: response,
     isLoading,
     isFetching,
-  } = useUserTransactions(page, 20, apiFilters, debouncedSearch);
+  } = useUserTransactions(page, 20, apiFilters, searchInput);
 
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
   );
-  
-  // Show loading while typing (debounce in progress)
-  const isSearching = searchInput !== debouncedSearch && searchInput !== "";
-  const showLoading = (isLoading && page === 1 && isInitialLoad) || isSearching;
 
-  const transactionsFromApi: Transaction[] = response?.data?.transactions || [];
-  const pagination = response?.data?.pagination;
-
-  // 3. Reset logic when API dependencies change
-  const prevFiltersRef = useRef(apiFilters);
-  const prevSearchRef = useRef(debouncedSearch);
-
+  // Reset pagination when search or filters change
   useEffect(() => {
-    const filtersChanged =
-      JSON.stringify(prevFiltersRef.current) !== JSON.stringify(apiFilters);
-    const searchChanged = prevSearchRef.current !== debouncedSearch;
+    setPage(1);
+    setAllTransactions([]);
+  }, [searchInput, apiFilters.date_from, apiFilters.date_to]);
 
-    if (filtersChanged || searchChanged) {
-      setPage(1);
-      setAllTransactions([]);
-      setHasMore(true);
-      setIsInitialLoad(true);
-      prevFiltersRef.current = apiFilters;
-      prevSearchRef.current = debouncedSearch;
-    }
-  }, [apiFilters, debouncedSearch]);
-
-  // 4. Accumulate Results
+  // Accumulate Results
   useEffect(() => {
-    if (transactionsFromApi.length > 0) {
+    const transactions = response?.data?.transactions || [];
+    const pagination = response?.data?.pagination;
+
+    if (transactions.length > 0) {
       setAllTransactions((prev) => {
-        if (page === 1) return transactionsFromApi;
+        if (page === 1) return transactions;
         const existingIds = new Set(prev.map((tx) => tx.id));
-        const uniqueNewTransactions = transactionsFromApi.filter(
-          (tx) => !existingIds.has(tx.id)
-        );
-        return [...prev, ...uniqueNewTransactions];
+        const newTransactions = transactions.filter((tx) => !existingIds.has(tx.id));
+        return [...prev, ...newTransactions];
       });
       if (pagination) {
         setHasMore(pagination.has_next);
-        setTotalTransactions(pagination.total);
       }
-      setIsInitialLoad(false);
-      setHasLoaded(true);
     } else if (page === 1 && !isFetching) {
       setAllTransactions([]);
       setHasMore(false);
-      setIsInitialLoad(false);
-      setHasLoaded(true);
     }
-  }, [transactionsFromApi, page, pagination, isFetching]);
+  }, [response?.data?.transactions, page, isFetching, response?.data?.pagination]);
 
-  // 5. Handlers
+  // Handlers
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setPage(1);
+    setAllTransactions([]);
+  };
+
   const handleClearAll = () => {
     setAppliedFilters(getDefaultFilters());
+    setDateRange({ from: undefined, to: undefined });
     handleClearSearch();
     toast.dismiss();
+    setIsFilterOpen(false);
   };
 
   const handleLoadMore = () => {
-    if (!isFetching && hasMore && !isSearching) setPage((prev) => prev + 1);
+    if (!isFetching && hasMore) {
+      setPage((prev) => prev + 1);
+    }
   };
 
-  const handleDateChange = (
-    field: "start_date" | "end_date",
-    date: Date | undefined,
-  ) => {
-    const updated = { ...appliedFilters, [field]: date };
-    if (updated.start_date && updated.end_date) {
-      if (
-        isBefore(startOfDay(updated.end_date), startOfDay(updated.start_date))
-      ) {
+  const handleDateRangeApply = () => {
+    if (dateRange?.from && dateRange?.to) {
+      if (isBefore(startOfDay(dateRange.to), startOfDay(dateRange.from))) {
         toast.error("End date cannot be before start date");
         return;
       }
-      if (differenceInMonths(updated.end_date, updated.start_date) > 3) {
+      if (differenceInMonths(dateRange.to, dateRange.from) > 3) {
         toast.error("Range cannot exceed 3 months");
         return;
       }
     }
-    setAppliedFilters(updated);
+
+    setAppliedFilters({
+      ...appliedFilters,
+      start_date: dateRange?.from,
+      end_date: dateRange?.to,
+    });
+    setPage(1);
+    setAllTransactions([]);
+    setIsFilterOpen(false);
+    toast.success("Filters applied");
   };
 
-  const hasActiveFilters =
-    searchInput !== "" ||
-    !!appliedFilters.start_date ||
-    !!appliedFilters.end_date;
+  const handleDateRangeClear = () => {
+    setDateRange({ from: undefined, to: undefined });
+  };
+
+  const handleQuickRange = (months: number) => {
+    const to = new Date();
+    const from = subMonths(to, months);
+    setDateRange({ from, to });
+  };
+
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (searchInput) count++;
+    if (appliedFilters.start_date || appliedFilters.end_date) count++;
+    return count;
+  };
+
+  const showLoading = isLoading && page === 1;
+  const hasActiveFilters = searchInput !== "" || !!appliedFilters.start_date || !!appliedFilters.end_date;
 
   return (
     <div className="space-y-4 px-2 sm:px-0">
@@ -220,6 +201,7 @@ export default function BillingPage() {
           </p>
         </div>
       )}
+
       <div className="glass-card rounded-xl p-6">
         {selectedId ? (
           <TransactionDetail
@@ -229,10 +211,10 @@ export default function BillingPage() {
           />
         ) : (
           <>
-            {/* Search Bar */}
+            {/* Search and Filters */}
             <div className="flex flex-col lg:flex-row gap-3 mb-6">
               {/* Search Bar */}
-              <div className="relative flex-[1.5]">
+              <div className="relative flex-[2]">
                 <Search
                   className={cn(
                     "absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
@@ -251,104 +233,189 @@ export default function BillingPage() {
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                 />
-                {/* Show loader OR clear button, not both */}
-                {isSearching ? (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-                  </div>
-                ) : searchInput ? (
+                
+                {searchInput && (
                   <button
                     onClick={handleClearSearch}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
-                ) : null}
+                )}
               </div>
 
-              {/* Start Date */}
-              <div className="flex flex-1 gap-2">
-                {/* Start Date */}
-                <div className="flex-1">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className="flex items-center w-full gap-2 px-3 h-[42px] bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-white hover:border-blue-300 transition-all">
-                        <CalendarIcon className="h-4 w-4 text-gray-400" />
-                        <span
-                          className={cn(
-                            "truncate",
-                            !appliedFilters.start_date && "text-gray-400",
-                          )}
-                        >
-                          {appliedFilters.start_date
-                            ? format(appliedFilters.start_date, "MMM dd, yyyy")
-                            : "Start Date"}
-                        </span>
+              {/* Filter Button */}
+              <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "relative flex items-center gap-2 px-4 h-[42px] border rounded-xl transition-all whitespace-nowrap",
+                      hasActiveFilters
+                        ? "bg-blue-50 border-blue-200 text-blue-700"
+                        : "bg-gray-50/50 border-gray-200 text-gray-700 hover:bg-white hover:border-blue-300"
+                    )}
+                  >
+                    <Filter className="h-4 w-4" />
+                    <span className="text-sm font-medium">Filters</span>
+                    {hasActiveFilters && (
+                      <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-blue-500 rounded-full">
+                        {getActiveFiltersCount()}
+                      </span>
+                    )}
+                    <ChevronDown className="h-3 w-3 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                
+                <PopoverContent 
+                  className="w-[95vw] sm:w-[500px] p-0" 
+                  align="end"
+                  sideOffset={5}
+                >
+                  <div className="p-3 sm:p-4 border-b">
+                    <h3 className="font-semibold text-gray-900">Filter Transactions</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Select date range to filter transactions</p>
+                  </div>
+                  
+                  <div className="p-3 sm:p-4 max-h-[80vh] overflow-y-auto">
+                    {/* Quick Range Buttons */}
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      <button
+                        onClick={() => handleQuickRange(1)}
+                        className="px-2 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                      >
+                        30 days
                       </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                      <button
+                        onClick={() => handleQuickRange(3)}
+                        className="px-2 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                      >
+                        3 months
+                      </button>
+                      <button
+                        onClick={() => handleQuickRange(6)}
+                        className="px-2 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                      >
+                        6 months
+                      </button>
+                    </div>
+                    
+                    {/* Date Range Calendar - Responsive */}
+                    <div className="border rounded-lg p-2 sm:p-3">
                       <Calendar
-                        mode="single"
-                        selected={appliedFilters.start_date}
-                        onSelect={(date) =>
-                          handleDateChange("start_date", date)
-                        }
+                        mode="range"
+                        selected={dateRange}
+                        onSelect={setDateRange}
+                        numberOfMonths={1}
                         disabled={{ after: new Date() }}
+                        className="rounded-md [&_.rdp-month]:w-full [&_.rdp-table]:w-full"
+                        classNames={{
+                          months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                          month: "space-y-4",
+                          caption: "flex justify-center pt-1 relative items-center",
+                          caption_label: "text-sm font-medium",
+                          nav: "space-x-1 flex items-center",
+                          nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+                          nav_button_previous: "absolute left-1",
+                          nav_button_next: "absolute right-1",
+                          table: "w-full border-collapse space-y-1",
+                          head_row: "flex",
+                          head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
+                          row: "flex w-full mt-2",
+                          cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent",
+                          day: "h-8 w-8 p-0 font-normal aria-selected:opacity-100",
+                          day_range_end: "day-range-end",
+                          day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                          day_today: "bg-accent text-accent-foreground",
+                          day_outside: "text-muted-foreground opacity-50",
+                          day_disabled: "text-muted-foreground opacity-50",
+                          day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                          day_hidden: "invisible",
+                        }}
                       />
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                    </div>
+                    
+                    {/* Selected Range Display */}
+                    {(dateRange?.from || dateRange?.to) && (
+                      <div className="mt-3 p-2 bg-gray-50 rounded-lg">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600">Selected range:</span>
+                          <button
+                            onClick={handleDateRangeClear}
+                            className="text-red-500 hover:text-red-600 text-xs"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1 text-sm font-medium text-gray-900">
+                          <CalendarRange className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">
+                            {dateRange?.from ? format(dateRange.from, "MMM dd, yyyy") : "Start"} -{" "}
+                            {dateRange?.to ? format(dateRange.to, "MMM dd, yyyy") : "End"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-2 p-3 sm:p-4 border-t bg-gray-50">
+                    <button
+                      onClick={handleDateRangeClear}
+                      className="order-2 sm:order-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      onClick={handleDateRangeApply}
+                      className="order-1 sm:order-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                </PopoverContent>
+              </Popover>
 
-                {/* End Date */}
-                <div className="flex-1">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className="flex items-center w-full gap-2 px-3 h-[42px] bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-white hover:border-blue-300 transition-all">
-                        <CalendarIcon className="h-4 w-4 text-gray-400" />
-                        <span
-                          className={cn(
-                            "truncate",
-                            !appliedFilters.end_date && "text-gray-400",
-                          )}
-                        >
-                          {appliedFilters.end_date
-                            ? format(appliedFilters.end_date, "MMM dd, yyyy")
-                            : "End Date"}
-                        </span>
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={appliedFilters.end_date}
-                        onSelect={(date) => handleDateChange("end_date", date)}
-                        disabled={{ after: new Date() }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-              {/* Clear Button */}
+              {/* Clear All Button */}
               {hasActiveFilters && (
                 <button
                   onClick={handleClearAll}
                   className="flex items-center justify-center gap-2 px-4 h-[42px] bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all font-medium text-red-600 text-sm active:scale-95"
                 >
                   <Eraser className="h-4 w-4" />
-                  <span className="hidden sm:inline">Clear</span>
+                  <span className="hidden sm:inline">Clear All</span>
                 </button>
               )}
             </div>
 
-            {/* LIST SECTION */}
+            {/* Active Filters Display */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap gap-2 mb-4 pb-4 border-b">
+                {searchInput && (
+                  <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs">
+                    <span className="max-w-[150px] sm:max-w-none truncate">Search: &quot;{searchInput}&quot;</span>
+                    <button onClick={handleClearSearch} className="hover:text-blue-900">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                )}
+                {(appliedFilters.start_date || appliedFilters.end_date) && (
+                  <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs">
+                    <CalendarRange className="h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">
+                      {appliedFilters.start_date && format(appliedFilters.start_date, "MMM dd, yyyy")}
+                      {appliedFilters.start_date && appliedFilters.end_date && " - "}
+                      {appliedFilters.end_date && format(appliedFilters.end_date, "MMM dd, yyyy")}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Results Section */}
             {showLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="h-10 w-10 animate-spin text-gray-300" />
-                {isSearching && (
-                  <p className="text-sm text-gray-400 mt-2">Searching...</p>
-                )}
               </div>
-            ) : hasLoaded && allTransactions.length === 0 ? (
+            ) : allTransactions.length === 0 ? (
               <div className="text-center py-20 px-4">
                 <TicketIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-gray-900 font-semibold">
@@ -357,75 +424,82 @@ export default function BillingPage() {
                 {hasActiveFilters && (
                   <button
                     onClick={handleClearAll}
-                    className="text-blue-600 text-sm mt-2"
+                    className="text-blue-600 text-sm mt-2 hover:underline"
                   >
-                    Clear filters
+                    Clear all filters
                   </button>
                 )}
               </div>
             ) : (
-              <div className="space-y-3">
-                {allTransactions.map((tx) => (
-                  <div
-                    key={tx.id}
-                    onClick={() => router.push(`${pathname}?id=${tx.id}`)}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-all cursor-pointer group gap-3"
-                  >
-                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                      <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
-                        {tx.event?.banner_image ? (
-                          <Image
-                            src={tx.event.banner_image}
-                            fill
-                            alt="Event"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <TicketIcon className="w-full h-full p-2 text-gray-300" />
-                        )}
+              <>
+                <div className="space-y-3">
+                  {allTransactions.map((tx) => (
+                    <div
+                      key={tx.id}
+                      onClick={() => router.push(`${pathname}?id=${tx.id}`)}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-all cursor-pointer group gap-3"
+                    >
+                      <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                        <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
+                          {tx.event?.banner_image ? (
+                            <Image
+                              src={tx.event.banner_image}
+                              fill
+                              alt="Event"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <TicketIcon className="w-full h-full p-2 text-gray-300" />
+                          )}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-blue-700 truncate">
+                            {tx.event?.title}
+                          </h3>
+                          
+                          {tx.tiers && tx.tiers.length > 0 && (
+                            <div className="flex flex-wrap gap-2 py-1">
+                              {tx.tiers.map((tier) => (
+                                <span
+                                  key={tier.id}
+                                  className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-100"
+                                >
+                                  {tier.name} × {tier.quantity}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          
+                          <p className="text-[10px] sm:text-xs text-gray-500">
+                            {formatDate(tx.date)} •{" "}
+                            <span className="capitalize">
+                              {tx.payment_method}
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-blue-700 truncate">
-                          {tx.event?.title || tx.event.title}
-                        </h3>
-                        {tx.tiers && tx.tiers.length > 0 && (
-                          <div className="flex flex-wrap gap-2 py-1">
-                            {tx.tiers.map((tier) => (
-                              <span
-                                key={tier.id}
-                                className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-100"
-                              >
-                                {tier.name} × {tier.quantity}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <p className="text-[10px] sm:text-xs text-gray-500">
-                          {formatDate(tx.date)} •{" "}
-                          <span className="capitalize">
-                            {tx.payment_method}
-                          </span>
+                      
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-0 pt-2 sm:pt-0 border-gray-50">
+                        <p className="text-base sm:text-lg font-black text-gray-900">
+                          ${tx.price?.toLocaleString()}
                         </p>
+                        <span
+                          className={cn(
+                            "text-[9px] sm:text-[10px] font-bold uppercase px-2 py-0.5 rounded",
+                            tx.status === "completed"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-amber-100 text-amber-700",
+                          )}
+                        >
+                          {tx.status}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-0 pt-2 sm:pt-0 border-gray-50">
-                      <p className="text-base sm:text-lg font-black text-gray-900">
-                        ${tx.price?.toLocaleString()}
-                      </p>
-                      <span
-                        className={cn(
-                          "text-[9px] sm:text-[10px] font-bold uppercase px-2 py-0.5 rounded",
-                          tx.status === "completed"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-amber-100 text-amber-700",
-                        )}
-                      >
-                        {tx.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-                {hasMore && !isFetching && !isSearching && (
+                  ))}
+                </div>
+                
+                {hasMore && !isFetching && (
                   <div className="flex justify-center pt-6">
                     <FigmaButton
                       onClick={handleLoadMore}
@@ -435,7 +509,7 @@ export default function BillingPage() {
                     </FigmaButton>
                   </div>
                 )}
-              </div>
+              </>
             )}
           </>
         )}

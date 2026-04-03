@@ -11,6 +11,8 @@ export const useUserTransactions = (
   return useQuery<PaginatedTransactions>({
     queryKey: ['transactions', 'user-list', page, limit, filters, search],
     queryFn: () => transactionService.getUserTransactions(page, limit, filters, search),
+       refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     placeholderData: (previousData) => previousData,
   });
 };

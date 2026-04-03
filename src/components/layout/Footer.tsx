@@ -18,12 +18,14 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useCompanyInfo } from "@/hooks/useCompany";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export function Footer() {
   const [mounted, setMounted] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const pathname = usePathname();
+  
   const authPaths = [
     "/login",
     "/signup",
@@ -38,6 +40,7 @@ export function Footer() {
     setMounted(true);
   }, []);
 
+  // Don't show footer on auth pages
   if (authPaths.some((path) => pathname?.startsWith(path))) {
     return null;
   }
@@ -48,24 +51,6 @@ export function Footer() {
       {
         name: t("footer.links.company.howItWorks", "How It Works"),
         href: "/static/how-it-works",
-      },
-    ],
-    organizers: [
-      {
-        name: t("footer.links.organizers.createEvent", "Create Event"),
-        href: "#create-event",
-      },
-      {
-        name: t("footer.links.organizers.pricing", "Pricing"),
-        href: "#pricing",
-      },
-      {
-        name: t("footer.links.organizers.eventManagement", "Event Management"),
-        href: "#management",
-      },
-      {
-        name: t("footer.links.organizers.analytics", "Analytics"),
-        href: "#analytics",
       },
     ],
     support: [
@@ -83,29 +68,28 @@ export function Footer() {
       },
     ],
     legal: [
-      { name: "Privacy Policy", href: "#privacy" },
-      { name: "Terms of Service", href: "#terms" },
-      { name: "Cookie Policy", href: "#cookies" },
-      { name: "Security", href: "#security" },
+      { name: t("footer.links.legal.privacyPolicy", "Privacy Policy"), href: "/static/privacy-policy" },
+      { name: t("footer.links.legal.termsOfService", "Terms of Service"), href: "/static/terms-of-service" },
+      { name: t("footer.links.legal.cookiePolicy", "Cookie Policy"), href: "/static/cookies-policy" },
     ],
   };
 
   const socialLinks = [
     { name: "Facebook", icon: FacebookLogoIcon, href: company?.facebook_url },
     { name: "Twitter", icon: TwitterLogoIcon, href: company?.twitter_url },
-    {
-      name: "Instagram",
-      icon: InstagramLogoIcon,
-      href: company?.instagram_url,
-    },
+    { name: "Instagram", icon: InstagramLogoIcon, href: company?.instagram_url },
     { name: "LinkedIn", icon: LinkedinLogoIcon, href: company?.linkedin_url },
-  ];
+  ].filter(social => social.href); // Only show social links that have URLs
 
+  // Loading state
   if (!mounted || (isLoading && !company)) {
     return (
-      <footer className="bg-white/80 border-t border-white/30 py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-400">
-          <div className="animate-pulse h-8 bg-gray-100 rounded w-1/4 mx-auto" />
+      <footer className="bg-white/80 backdrop-blur-[25px] border-t border-white/30 py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-48 mx-auto mb-4" />
+            <div className="h-4 bg-gray-200 rounded w-64 mx-auto" />
+          </div>
         </div>
       </footer>
     );
@@ -115,10 +99,12 @@ export function Footer() {
     <footer className="bg-white/80 backdrop-blur-[25px] border-t border-white/30 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="py-12">
+        <div className="py-12 lg:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-            {/* Company Info - Takes 4 columns */}
-            <div className="lg:col-span-4 space-y-6">
+            
+            {/* Left Section - Company Info (4 columns) */}
+            <div className="lg:col-span-5 space-y-6">
+              {/* Logo */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/10 border border-blue-600/20">
                   <TicketIcon size={24} className="text-blue-600" />
@@ -126,71 +112,85 @@ export function Footer() {
                     className="text-xl font-bold text-gray-900 font-poppins"
                     suppressHydrationWarning
                   >
-                    {company?.name}
+                    {company?.name || "Timro Ticket"}
                   </span>
                 </div>
               </div>
 
-              <p
-                className="text-gray-600 leading-relaxed"
+              {/* Description */}
+              <p 
+                className="text-gray-600 leading-relaxed text-sm"
                 suppressHydrationWarning
               >
-                {company?.description}
+                {company?.description || t("footer.description", "Your trusted platform for event tickets and memorable experiences.")}
               </p>
 
               {/* Contact Info */}
               <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <EnvelopeSimpleIcon size={16} className="text-blue-500 flex-shrink-0" />
-                  <span className="break-all" suppressHydrationWarning>
-                    {company?.email}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <PhoneIcon size={16} className="text-blue-500 flex-shrink-0" />
-                  <span suppressHydrationWarning>{company?.phone}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <MapPinIcon size={16} className="text-blue-500 flex-shrink-0" />
-                  <span suppressHydrationWarning>{company?.address}</span>
-                </div>
+                {company?.email && (
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <EnvelopeSimpleIcon size={16} className="text-blue-500 flex-shrink-0" />
+                    <a href={`mailto:${company.email}`} className="hover:text-blue-600 transition-colors break-all">
+                      {company.email}
+                    </a>
+                  </div>
+                )}
+                {company?.phone && (
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <PhoneIcon size={16} className="text-blue-500 flex-shrink-0" />
+                    <a href={`tel:${company.phone}`} className="hover:text-blue-600 transition-colors">
+                      {company.phone}
+                    </a>
+                  </div>
+                )}
+                {company?.address && (
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <MapPinIcon size={16} className="text-blue-500 flex-shrink-0" />
+                    <span suppressHydrationWarning>{company.address}</span>
+                  </div>
+                )}
               </div>
 
               {/* Social Links */}
-              <div className="flex items-center gap-3">
-                {socialLinks.map((social) => {
-                  const Icon = social.icon;
-                  return (
-                    <a
-                      key={social.name}
-                      href={mounted && social.href ? social.href : "#"}
-                      className="p-2 rounded-lg glass border hover:bg-white/90 transition-all duration-200"
-                      aria-label={social.name}
-                    >
-                      <Icon size={20} className="text-gray-600" />
-                    </a>
-                  );
-                })}
-              </div>
+              {socialLinks.length > 0 && (
+                <div className="flex items-center gap-3 pt-2">
+                  {socialLinks.map((social) => {
+                    const Icon = social.icon;
+                    return (
+                      <a
+                        key={social.name}
+                        href={social.href || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all duration-200 hover:scale-105"
+                        aria-label={social.name}
+                      >
+                        <Icon size={20} className="text-gray-600 hover:text-blue-600 transition-colors" />
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            {/* Links Section - Takes 8 columns */}
-            <div className="lg:col-span-8">
+            {/* Right Section - Links (8 columns) */}
+            <div className="lg:col-span-7">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                
                 {/* Company Links */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">
+                  <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wider">
                     {t("footer.links.company.title", "Company")}
                   </h3>
                   <ul className="space-y-3">
                     {footerLinks.company.map((link) => (
                       <li key={link.name}>
-                        <a
+                        <Link
                           href={link.href}
                           className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm"
                         >
                           {link.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -198,25 +198,43 @@ export function Footer() {
 
                 {/* Support Links */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">
+                  <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wider">
                     {t("footer.links.support.title", "Support")}
                   </h3>
                   <ul className="space-y-3">
                     {footerLinks.support.map((link) => (
                       <li key={link.name}>
-                        <a
+                        <Link
                           href={link.href}
                           className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm"
                         >
                           {link.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Newsletter Section */}
+                {/* Legal Links */}
                 <div>
+                  <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wider">
+                    {t("footer.links.legal.title", "Legal")}
+                  </h3>
+                  <ul className="space-y-3">
+                    {footerLinks.legal.map((link) => (
+                      <li key={link.name}>
+                        <Link
+                          href={link.href}
+                          className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm"
+                        >
+                          {link.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                  {/* Newsletter Section */}
+                {/* <div>
                   <h3 className="font-semibold text-gray-900 mb-4">
                     {t("newsletter.title", "Newsletter")}
                   </h3>
@@ -244,52 +262,54 @@ export function Footer() {
                       </Button>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/20 py-4">
+        <div className="border-t border-gray-200 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-gray-600 text-center md:text-left">
-              © {new Date().getFullYear()}{" "}
-              {t("footer.copyright", "Timro-Ticket. All rights reserved.")}
+            {/* Copyright */}
+            <div className="text-sm text-gray-500 text-center md:text-left">
+              © {new Date().getFullYear()} {company?.name || "Timro Ticket"}.{" "}
+              {t("footer.copyright", "All rights reserved.")}
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 text-sm text-gray-600">
-              <span className="text-center">
-                {t("footer.developedby", "Developed by")}{" "}
-                <a 
-                  href="https://thebandbtech.com/" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  B&B Tech Group.
-                </a>
-              </span>
-              <div className="flex items-center gap-4">
-                <a
-                  href="#privacy"
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  {t("footer.links.legal.privacyPolicy", "Privacy Policy")}
-                </a>
-                <a
-                  href="#terms"
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  {t("footer.links.legal.termsOfService", "Terms of Service")}
-                </a>
-                <a
-                  href="#cookies"
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  {t("footer.links.legal.cookiePolicy", "Cookies Policy")}
-                </a>
-              </div>
+            {/* Footer Links */}
+            {/* <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+              <Link
+                href="/static/privacy-policy"
+                className="text-gray-500 hover:text-blue-600 transition-colors"
+              >
+                {t("footer.links.legal.privacyPolicy", "Privacy Policy")}
+              </Link>
+              <Link
+                href="/static/terms-of-service"
+                className="text-gray-500 hover:text-blue-600 transition-colors"
+              >
+                {t("footer.links.legal.termsOfService", "Terms of Service")}
+              </Link>
+              <Link
+                href="/static/cookie-policy"
+                className="text-gray-500 hover:text-blue-600 transition-colors"
+              >
+                {t("footer.links.legal.cookiePolicy", "Cookies Policy")}
+              </Link>
+            </div> */}
+
+            {/* Development Credit */}
+            <div className="text-sm text-gray-500">
+              {t("footer.developedby", "Developed by")}{" "}
+              <a 
+                href="https://thebandbtech.com/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+              >
+                B&B Tech Group
+              </a>
             </div>
           </div>
         </div>

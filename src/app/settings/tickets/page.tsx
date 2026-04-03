@@ -408,18 +408,53 @@ export default function TicketsPage() {
 
           {/* Tickets list */}
           {isLoading ? (
-            <div className="flex flex-cols-1 md:flex-cols-2 lg:flex-cols-3 gap-4">
+            <div className="flex flex-col gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="overflow-hidden">
-                  <Skeleton className="h-40 w-full" />
-                  <CardContent className="p-4">
-                    <Skeleton className="h-5 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/2 mb-2" />
-                    <Skeleton className="h-4 w-2/3" />
-                  </CardContent>
-                </Card>
-              ))}
+             <Card
+        key={i}
+        className="w-full group overflow-hidden transition-all duration-300 bg-white/60 backdrop-blur-[20px] border border-white/10 shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05)] rounded-[10px]"
+      >
+        <CardContent className="p-0 flex flex-col md:flex-row">
+          {/* Image Skeleton */}
+          <div className="w-full h-48 md:w-48 md:h-auto shrink-0 bg-gray-200 animate-pulse" />
+          
+          {/* Content Skeleton */}
+          <div className="flex-1 flex flex-col sm:flex-row justify-between p-5 gap-6">
+            <div className="flex-1 min-w-0 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="h-7 w-48 bg-gray-200 rounded animate-pulse" />
+                <div className="h-5 w-16 bg-gray-200 rounded animate-pulse" />
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="flex items-center gap-2 col-span-full">
+                  <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
+                </div>
+              </div>
             </div>
+            
+            {/* Right Side Skeleton */}
+            <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4 sm:min-w-[150px] pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l sm:pl-6 border-gray-100">
+              <div className="sm:text-right space-y-1">
+                <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
+              </div>
+              <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
           ) : filteredTickets.length === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
