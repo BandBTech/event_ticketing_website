@@ -238,17 +238,27 @@ export function formatEventDateTime(
  * @param currency - The currency code (e.g. "USD", "EUR")
  * @returns Formatted currency string
  */
-export const formatCurrency = (amount: number, currency: string, locale: string) => {
-  // we have three languages japaneses english and italian if currency is not available use currency based on language
-  const currencyMap: Record<string, string> = {
-    ja: "JPY",
-    en: "USD",
-    it: "EUR",
-  };
-  const resolvedCurrency = currencyMap[locale] || currency;
+// export const formatCurrency = (amount: number, currency: string, locale: string) => {
+//   // we have three languages japaneses english and italian if currency is not available use currency based on language
+//   const currencyMap: Record<string, string> = {
+//     ja: "JPY",
+//     en: "USD",
+//     it: "EUR",
+//   };
+//   const resolvedCurrency = currencyMap[locale] || currency;
 
-  return new Intl.NumberFormat(locale, {
+//   return new Intl.NumberFormat(locale, {
+//     style: "currency",
+//     currency: resolvedCurrency,
+//   }).format(amount);
+// };
+
+export const formatCurrency = (amount: number, currency: string = "USD", locale: string = "en") => {
+  const hasFraction = amount % 1 !== 0;
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: resolvedCurrency,
+    currency: "USD",
+    minimumFractionDigits: hasFraction ? 2 : 0,
+    maximumFractionDigits: hasFraction ? 2 : 0,
   }).format(amount);
 };
