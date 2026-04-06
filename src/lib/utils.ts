@@ -250,7 +250,5 @@ export const formatCurrency = (amount: number, currency: string, locale: string)
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: resolvedCurrency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
   }).format(amount);
 };
