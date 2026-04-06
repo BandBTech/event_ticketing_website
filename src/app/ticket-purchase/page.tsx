@@ -92,12 +92,12 @@ function GuestPurchaseContent() {
   );
 
   // Payment gateway state
-  const CASH_GATEWAY = {
-    name: "cash",
-    display_name: "Cash",
-    description: "Pay with cash at the venue",
-    icon_url: "",
-  };
+  // const CASH_GATEWAY = {
+  //   name: "cash",
+  //   display_name: "Cash",
+  //   description: "Pay with cash at the venue",
+  //   icon_url: "",
+  // };
   const STRIPE_GATEWAY = {
     name: "stripe",
     display_name: "Stripe",
@@ -121,7 +121,8 @@ function GuestPurchaseContent() {
 
   // Gateway list (hardcoded while gateway API is disabled)
   // const { data: gateways, isLoading: isLoadingGateways } = useGateways();
-  const gateways = [STRIPE_GATEWAY, CASH_GATEWAY];
+  // const gateways = [STRIPE_GATEWAY, CASH_GATEWAY];
+  const gateways = [STRIPE_GATEWAY];
   const isLoadingGateways = false;
 
   const maxQuantity = isAuthenticated ? USER_MAX_QUANTITY : GUEST_MAX_QUANTITY;
