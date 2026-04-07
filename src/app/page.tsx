@@ -277,6 +277,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
 import { HomeEvent } from "@/components/events/HomeEvent";
 import { useAuthStore } from "@/store/authStore";
+import Link from "next/link";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -290,6 +291,9 @@ export default function HomePage() {
     category: selectedCategory,
     limit: 6,
   });
+  const { data: salesLiveData, isLoading: salesLoading } = useEvents({
+    limit: 6, 
+  });
 
   const { data: featuredEvents } = useFeaturedEvents();
   const { data: categories } = useEventCategories();
@@ -298,6 +302,7 @@ export default function HomePage() {
     useUpcomingEvents(3);
 
   const upcomingEvents = data?.pages.flatMap((page) => page.events) || [];
+  const salesLiveEvents = salesLiveData?.events || [];
   const totalItems = data?.pages[0]?.pagination.total;
 
   const handleSearch = (query: string) => {
@@ -307,6 +312,9 @@ export default function HomePage() {
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(selectedCategory === category ? "" : category);
   };
+  const handleOrganizeRedirect =() =>{
+    window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
+  }
 
   return (
     <div className="min-h-screen">
@@ -426,8 +434,39 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* SECTION 1: SALES LIVE */}
+      {salesLiveEvents && salesLiveEvents.length > 0 &&(
+
+     
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-gray-900 font-poppins">Sales Live</h2>
+              <p className="text-gray-500">Tickets available for purchase now</p>
+            </div>
+            <Badge className="bg-green-500 hover:bg-green-600 animate-pulse">Live Now</Badge>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {salesLoading ? (
+              <p>Loading Sales...</p> 
+            ) : salesLiveEvents.length > 0 ? (
+              salesLiveEvents.map((event) => (
+                <HomeEvent key={event.id} event={event} />
+              ))
+            ) : (
+              <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed">
+                <p className="text-gray-400">No events currently on sale.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+       )}
+
       {/* Featured Events Section */}
-      {featuredEvents && featuredEvents.length > 0 && (
+      {/* {featuredEvents && featuredEvents.length > 0 && (
         <section id="events" className="py-4 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-left mb-6">
@@ -445,7 +484,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Categories Section */}
       {categories && categories.length > 0 && (
@@ -609,13 +648,15 @@ export default function HomePage() {
               {t("sections.cta.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <FigmaButton variant="primary" size="xl" showGlow={true}>
+              <FigmaButton variant="primary" size="xl" showGlow={true} onClick={handleOrganizeRedirect}>
                 <UsersIcon weight="duotone" size={20} />
                 {t("sections.cta.organizeEvent")}
               </FigmaButton>
+              <Link href="/about">
               <FigmaButton variant="glass" size="xl">
                 {t("sections.cta.learnMore")}
               </FigmaButton>
+              </Link>
             </div>
           </div>
         </div>

@@ -29,7 +29,7 @@ export const useFeaturedEvents = () => {
   return useQuery({
     queryKey: ['featured-events'],
     queryFn: () => eventService.getFeaturedEvents(),
-    staleTime: 0, // 15 minutes
+    staleTime: 0, 
   });
 };
 

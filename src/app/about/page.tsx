@@ -28,6 +28,9 @@ export default function AboutPage() {
       label: t("about.stats.securePayments",'Secure Payments'),
     },
   ];
+    const handleOrganizeRedirect =() =>{
+    window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
+  }
 
   return (
     <div className="min-h-screen bg-white/40">
@@ -141,7 +144,7 @@ export default function AboutPage() {
               {t("about.cta.subtitle","Whether it's a small gathering or a large festival — we're here to help you create and grow unforgettable experiences.")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <FigmaButton variant="primary" size="xl" showGlow={true}>
+              <FigmaButton variant="primary" size="xl" showGlow={true} onClick={handleOrganizeRedirect}>
                 <UsersIcon weight="duotone" size={20} className="mr-2" />
                 {t("about.cta.becomeOrganizer", "Become an Organizer")}
               </FigmaButton>

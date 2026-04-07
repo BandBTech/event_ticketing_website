@@ -36,6 +36,9 @@ export function Header() {
     );
     router.push('/');
   };
+   const handleOrganizeRedirect =() =>{
+    window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
+  }
 
   const navigation = [
     { name: t('navigation.events','Events'), href: '/allevents' },
@@ -43,7 +46,7 @@ export function Header() {
     { name: t('navigation.about','About'), href: '/about' },
     { name: t('navigation.contact','Contact'), href: '/contact' },
   ];
-
+ 
   return (
     <header className="sticky top-0 z-50 w-full glass border-b border-white/20 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,13 +152,16 @@ export function Header() {
                       {t('navigation.signIn','Sign In')}
                     </Button>
                   </Link>
+                  
                   <FigmaButton
                     variant="primary"
                     size="md"
                     showGlow={true}
+                    onClick={handleOrganizeRedirect}
                   >
                     {t('navigation.organizeEvent','Organize Event')}
                   </FigmaButton>
+                  
                 </>
               )}
             </div>
@@ -235,6 +241,7 @@ export function Header() {
                         variant="primary"
                         size="md"
                         showGlow={true}
+                        onClick={handleOrganizeRedirect}
                       >
                         {t('navigation.organizeEvent','Organize Event')}
                       </FigmaButton>
