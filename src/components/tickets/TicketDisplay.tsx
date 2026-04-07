@@ -121,8 +121,8 @@ function SingleTicketCard({
           {/* QR Code + Details Side by Side */}
           <div className="flex flex-col items-center gap-4">
             {/* QR Code - Smaller */}
-            <div className="flex-shrink-0 px-4">
-              <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm min-h-[116px] min-w-[116px] flex items-center justify-center">
+            <div className="flex-shrink-0 px-4 flex flex-col items-center">
+              <div className="bg-white p-2 rounded-lg border border-gray-200 min-h-[116px] flex items-center justify-center">
                 <ClientQRCode value={ticket.qrData} />
               </div>
               <p className="font-mono text-[10px] text-gray-500 text-center mt-2 tracking-wider bg-gray-100 py-1 px-2 rounded-md border border-gray-20 ">

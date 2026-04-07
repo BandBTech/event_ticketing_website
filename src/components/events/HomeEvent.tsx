@@ -26,11 +26,12 @@ export function HomeEvent({ event }: EventCardProps) {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
           <div className="absolute top-2 left-2">
-            {event.status?.toLowerCase().replace(" ", "_") === "on_sale" && event.sales_status !== "active" ? (
+            {/* {event.status?.toLowerCase().replace(" ", "_") === "on_sale" && event.sales_status !== "active" ? (
               <SalesStatusBadge status={event.sales_status} />
             ) : (
               <EventStatusBadge status={event.status} />
-            )}
+            )} */}
+            <EventStatusBadge status={event.status} />
           </div>
       {/* Featured Badge - Positioned inside the image container */}
       {event.is_featured && (
