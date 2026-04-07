@@ -221,6 +221,7 @@ export const ticketService = {
           price: t.total_amount,
           qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,
           checkedIn: t.status === "used",
+          is_checked_in: t.status === "used",
         },
       ],
       totalAmount: t.total_amount,
@@ -259,6 +260,7 @@ export const ticketService = {
       price: t.price,
       qrData: t.qr_data,
       checkedIn: t.checked_in,
+      is_checked_in: t.checked_in
     }));
   },
 
@@ -293,6 +295,7 @@ export const ticketService = {
         },
         qrData: t.qr_data,
         checkedIn: false,
+        is_checked_in: false,
       })),
     };
   },
@@ -340,6 +343,7 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
       price: t.price,
       qrData: t.qr_data,
       checkedIn: t.checked_in,
+      is_checked_in: t.is_checked_in,
     })),
     ticketCount: apiResponse.ticket_count,
     transactionStatus: apiResponse.transaction_status,

@@ -100,13 +100,16 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
       <div className="relative z-10">
         <main className="max-w-7xl mx-auto px-4 py-12">
-          <h2 className="text-3xl font-semibold text-gray-900 mb-5">
-            {event.title}
-          </h2>
+       
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <EventHero event={event} />
+     <div className="border-l-4 border-primary pl-6">
+    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+      {event.title}
+    </h2>
+  </div>
               <EventDescription description={event.description} />
               <EventOrganizer event={event} />
               <EventLocation venue={event.venue} />

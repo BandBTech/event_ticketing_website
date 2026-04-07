@@ -44,6 +44,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { CancelTicketDialog } from "@/components/tickets/CancelTicketDialog";
 import { useCancelTicket } from "@/hooks/useTickets";
+import Image from 'next/image';
 
 // Check if event is upcoming (start date is in the future)
 const isUpcoming = (startDate: string) => {
@@ -171,7 +172,7 @@ export default function TicketsPage() {
         });
       } else if (selectedOrderForCancel && detailTickets) {
         // Cancel all active tickets in the order
-        const activeTickets = detailTickets.tickets.filter((t) => !t.checkedIn);
+        const activeTickets = detailTickets.tickets.filter((t) => !t.is_checked_in);
 
         for (const ticket of activeTickets) {
           await cancelMutation.mutateAsync({
@@ -619,12 +620,15 @@ export default function TicketsPage() {
               {/* Header with Event Summary */}
               <div className="p-6 bg-primary/5 rounded-xl border border-primary/10 flex flex-col md:flex-row gap-6">
                 {/* Event Image */}
-                <div className="relative shrink-0">
-                  <img
-                    src={detailTickets?.event.imageUrl}
-                    className="w-full md:w-40 h-40 object-cover rounded-lg shadow-md border-2 border-white"
-                    alt="banner"
-                  />
+                <div className="relative shrink-0 w-48 h-48">
+               
+                     <Image
+                                             src={detailTickets?.event.imageUrl}
+                                             fill
+                                             alt="Event"
+                                              sizes="(max-width: 768px) 100vw, 33vw"
+                                             className="w-full md:w-40 h-40 object-cover rounded-lg shadow-md border-2 border-white"
+                                           />
                   {/* {detailTickets.event.timezone && (
                     <Badge
                       variant="secondary"
@@ -733,12 +737,12 @@ export default function TicketsPage() {
                             </div>
                             <Badge
                               className={cn(
-                                ticket.checkedIn
+                                ticket.is_checked_in
                                   ? "bg-blue-100 text-blue-700"
                                   : "bg-green-100 text-green-700",
                               )}
                             >
-                              {ticket.checkedIn ? "Used" : "Active"}
+                              {ticket.is_checked_in ? "Used" : "Active"}
                             </Badge>
                           </div>
 
@@ -758,7 +762,7 @@ export default function TicketsPage() {
                             >
                               <QrCode className="h-3.5 w-3.5 mr-1" /> Share
                             </Button>
-                            {!ticket.checkedIn && (
+                            {!ticket.is_checked_in && (
                               <Button
                                 variant="outline"
                                 size="sm"

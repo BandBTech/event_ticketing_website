@@ -53,6 +53,7 @@ export const mockEvents: Event[] = [
       id: 'Org1',
       business_name: 'OrgName',
       business_logo: 'OrgLogo',
+      business_description: '',
     } ,
     maxTicketsPerOrder: 10,
     allowReEntry: true,

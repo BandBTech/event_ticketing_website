@@ -46,6 +46,7 @@ interface ApiOrganizer {
   id: string;
   business_name: string;
   business_logo_url: string;
+  business_description: string;
 }
 
 interface ApiEvent {
@@ -164,10 +165,12 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
       id: apiEvent.organizer.id,
       business_name: apiEvent.organizer.business_name,
       business_logo: apiEvent.organizer.business_logo_url,
+      business_description: apiEvent.organizer.business_description,
     } : {
       id: 'default',
       business_name: 'Organizer',
       business_logo: '',
+      business_description: '',
     },
     maxTicketsPerOrder: 10,
     allowReEntry: false,

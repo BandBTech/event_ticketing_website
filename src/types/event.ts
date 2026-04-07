@@ -25,6 +25,7 @@ export interface Organizer{
  id: string;
  business_name: string;
  business_logo: string; 
+ business_description: string;
 }
 
 export interface Venue {

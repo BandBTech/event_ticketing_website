@@ -36,7 +36,13 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
-import { differenceInMonths, isBefore, startOfDay, format, subMonths } from "date-fns";
+import {
+  differenceInMonths,
+  isBefore,
+  startOfDay,
+  format,
+  subMonths,
+} from "date-fns";
 import { toast } from "sonner";
 
 export default function BillingPage() {
@@ -106,7 +112,9 @@ export default function BillingPage() {
       setAllTransactions((prev) => {
         if (page === 1) return transactions;
         const existingIds = new Set(prev.map((tx) => tx.id));
-        const newTransactions = transactions.filter((tx) => !existingIds.has(tx.id));
+        const newTransactions = transactions.filter(
+          (tx) => !existingIds.has(tx.id),
+        );
         return [...prev, ...newTransactions];
       });
       if (pagination) {
@@ -116,7 +124,12 @@ export default function BillingPage() {
       setAllTransactions([]);
       setHasMore(false);
     }
-  }, [response?.data?.transactions, page, isFetching, response?.data?.pagination]);
+  }, [
+    response?.data?.transactions,
+    page,
+    isFetching,
+    response?.data?.pagination,
+  ]);
 
   // Handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,7 +197,10 @@ export default function BillingPage() {
   };
 
   const showLoading = isLoading && page === 1;
-  const hasActiveFilters = searchInput !== "" || !!appliedFilters.start_date || !!appliedFilters.end_date;
+  const hasActiveFilters =
+    searchInput !== "" ||
+    !!appliedFilters.start_date ||
+    !!appliedFilters.end_date;
 
   return (
     <div className="space-y-4 px-2 sm:px-0">
@@ -233,7 +249,7 @@ export default function BillingPage() {
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                 />
-                
+
                 {searchInput && (
                   <button
                     onClick={handleClearSearch}
@@ -252,7 +268,7 @@ export default function BillingPage() {
                       "relative flex items-center gap-2 px-4 h-[42px] border rounded-xl transition-all whitespace-nowrap",
                       hasActiveFilters
                         ? "bg-blue-50 border-blue-200 text-blue-700"
-                        : "bg-gray-50/50 border-gray-200 text-gray-700 hover:bg-white hover:border-blue-300"
+                        : "bg-gray-50/50 border-gray-200 text-gray-700 hover:bg-white hover:border-blue-300",
                     )}
                   >
                     <Filter className="h-4 w-4" />
@@ -265,20 +281,24 @@ export default function BillingPage() {
                     <ChevronDown className="h-3 w-3 opacity-50" />
                   </button>
                 </PopoverTrigger>
-                
-                <PopoverContent 
-                  className="w-[95vw] sm:w-[500px] p-0" 
+
+                <PopoverContent
+                  className="w-[95vw] sm:w-[500px] p-0"
                   align="end"
                   sideOffset={5}
                 >
                   <div className="p-3 sm:p-4 border-b">
-                    <h3 className="font-semibold text-gray-900">Filter Transactions</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">Select date range to filter transactions</p>
+                    <h3 className="font-semibold text-gray-900">
+                      Filter Transactions
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Select date range to filter transactions
+                    </p>
                   </div>
-                  
+
                   <div className="p-3 sm:p-4 max-h-[80vh] overflow-y-auto">
                     {/* Quick Range Buttons */}
-                    <div className="grid grid-cols-3 gap-2 mb-4">
+                    {/* <div className="grid grid-cols-3 gap-2 mb-4">
                       <button
                         onClick={() => handleQuickRange(1)}
                         className="px-2 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
@@ -291,49 +311,55 @@ export default function BillingPage() {
                       >
                         3 months
                       </button>
-                      <button
-                        onClick={() => handleQuickRange(6)}
-                        className="px-2 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                      >
-                        6 months
-                      </button>
-                    </div>
-                    
+              
+                    </div> */}
+
                     {/* Date Range Calendar - Responsive */}
-                    <div className="border rounded-lg p-2 sm:p-3">
+                    <div className="border rounded-lg sm:p-3">
                       <Calendar
                         mode="range"
                         selected={dateRange}
                         onSelect={setDateRange}
                         numberOfMonths={1}
                         disabled={{ after: new Date() }}
-                        className="rounded-md [&_.rdp-month]:w-full [&_.rdp-table]:w-full"
+                        // Force the internal rdp wrapper to be full width
+                        className="rounded-md w-full [&_.rdp]:w-full"
                         classNames={{
-                          months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                          month: "space-y-4",
-                          caption: "flex justify-center pt-1 relative items-center",
+                          months: "w-full",
+                          month: "space-y-4 w-full",
+                          // 1. Position relative so the nav can pin to its edges
+                          caption:
+                            "flex justify-center pt-1 relative items-center w-full",
                           caption_label: "text-sm font-medium",
-                          nav: "space-x-1 flex items-center",
-                          nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-                          nav_button_previous: "absolute left-1",
-                          nav_button_next: "absolute right-1",
-                          table: "w-full border-collapse space-y-1",
-                          head_row: "flex",
-                          head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
+
+                          nav: "flex items-center justify-between absolute inset-x-0 z-10 px-1",
+                          nav_button:
+                            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+                          nav_button_previous: "",
+                          nav_button_next: "",
+
+                          table: "w-full border-collapse",
+                          head_row: "flex w-full",
+
+                          head_cell:
+                            "text-muted-foreground rounded-md flex-1 font-normal text-[0.8rem] text-center",
                           row: "flex w-full mt-2",
-                          cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent",
-                          day: "h-8 w-8 p-0 font-normal aria-selected:opacity-100",
+                          cell: "relative p-0 text-center text-sm flex-1 focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent",
+
+                          day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 mx-auto flex items-center justify-center",
                           day_range_end: "day-range-end",
-                          day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                          day_selected:
+                            "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
                           day_today: "bg-accent text-accent-foreground",
                           day_outside: "text-muted-foreground opacity-50",
                           day_disabled: "text-muted-foreground opacity-50",
-                          day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                          day_range_middle:
+                            "aria-selected:bg-accent aria-selected:text-accent-foreground",
                           day_hidden: "invisible",
                         }}
                       />
                     </div>
-                    
+
                     {/* Selected Range Display */}
                     {(dateRange?.from || dateRange?.to) && (
                       <div className="mt-3 p-2 bg-gray-50 rounded-lg">
@@ -349,14 +375,19 @@ export default function BillingPage() {
                         <div className="flex items-center gap-2 mt-1 text-sm font-medium text-gray-900">
                           <CalendarRange className="h-3 w-3 flex-shrink-0" />
                           <span className="truncate">
-                            {dateRange?.from ? format(dateRange.from, "MMM dd, yyyy") : "Start"} -{" "}
-                            {dateRange?.to ? format(dateRange.to, "MMM dd, yyyy") : "End"}
+                            {dateRange?.from
+                              ? format(dateRange.from, "MMM dd, yyyy")
+                              : "Start"}{" "}
+                            -{" "}
+                            {dateRange?.to
+                              ? format(dateRange.to, "MMM dd, yyyy")
+                              : "End"}
                           </span>
                         </div>
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row gap-2 p-3 sm:p-4 border-t bg-gray-50">
                     <button
                       onClick={handleDateRangeClear}
@@ -391,8 +422,13 @@ export default function BillingPage() {
               <div className="flex flex-wrap gap-2 mb-4 pb-4 border-b">
                 {searchInput && (
                   <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs">
-                    <span className="max-w-[150px] sm:max-w-none truncate">Search: &quot;{searchInput}&quot;</span>
-                    <button onClick={handleClearSearch} className="hover:text-blue-900">
+                    <span className="max-w-[150px] sm:max-w-none truncate">
+                      Search: &quot;{searchInput}&quot;
+                    </span>
+                    <button
+                      onClick={handleClearSearch}
+                      className="hover:text-blue-900"
+                    >
                       <X className="h-3 w-3" />
                     </button>
                   </div>
@@ -401,9 +437,13 @@ export default function BillingPage() {
                   <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs">
                     <CalendarRange className="h-3 w-3 flex-shrink-0" />
                     <span className="truncate">
-                      {appliedFilters.start_date && format(appliedFilters.start_date, "MMM dd, yyyy")}
-                      {appliedFilters.start_date && appliedFilters.end_date && " - "}
-                      {appliedFilters.end_date && format(appliedFilters.end_date, "MMM dd, yyyy")}
+                      {appliedFilters.start_date &&
+                        format(appliedFilters.start_date, "MMM dd, yyyy")}
+                      {appliedFilters.start_date &&
+                        appliedFilters.end_date &&
+                        " - "}
+                      {appliedFilters.end_date &&
+                        format(appliedFilters.end_date, "MMM dd, yyyy")}
                     </span>
                   </div>
                 )}
@@ -452,12 +492,12 @@ export default function BillingPage() {
                             <TicketIcon className="w-full h-full p-2 text-gray-300" />
                           )}
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-blue-700 truncate">
                             {tx.event?.title}
                           </h3>
-                          
+
                           {tx.tiers && tx.tiers.length > 0 && (
                             <div className="flex flex-wrap gap-2 py-1">
                               {tx.tiers.map((tier) => (
@@ -470,7 +510,7 @@ export default function BillingPage() {
                               ))}
                             </div>
                           )}
-                          
+
                           <p className="text-[10px] sm:text-xs text-gray-500">
                             {formatDate(tx.date)} •{" "}
                             <span className="capitalize">
@@ -479,7 +519,7 @@ export default function BillingPage() {
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-0 pt-2 sm:pt-0 border-gray-50">
                         <p className="text-base sm:text-lg font-black text-gray-900">
                           ${tx.price?.toLocaleString()}
@@ -498,7 +538,7 @@ export default function BillingPage() {
                     </div>
                   ))}
                 </div>
-                
+
                 {hasMore && !isFetching && (
                   <div className="flex justify-center pt-6">
                     <FigmaButton

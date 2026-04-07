@@ -35,16 +35,18 @@ export const EventOrganizer = ({ event }: EventOrganizerProps) => {
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
               {event.organizer.business_name}
+           
             </h3>
             <p className="text-sm text-gray-600">Event organizer</p>
           </div>
         </div>
       </div>
       <p className="text-gray-700 mt-4">
-        {event.venue.name} is a premier venue located at{" "}
+        {/* {event.venue.name} is a premier venue located at{" "}
         {event.venue.address}, {event.venue.city}. With a capacity of{" "}
         {event.venue.capacity.toLocaleString()} guests, we host
-        amazing events.
+        amazing events. */}
+        {event.organizer.business_description}
       </p>
     </div>
   );

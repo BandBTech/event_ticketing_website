@@ -12,6 +12,7 @@ export interface ApiTicketItem {
   price: number;
   qr_data: string; // base64 encoded QR data
   checked_in: boolean;
+  is_checked_in: boolean;
 }
 
 export interface ApiTicketResponse {
@@ -61,6 +62,7 @@ export interface TicketItem {
   price: number;
   qrData: string;
   checkedIn: boolean;
+  is_checked_in: boolean;
 }
 
 export interface ViewTicketDetails {
@@ -117,6 +119,7 @@ export interface Ticket {
   transferable: boolean;
   transferHistory?: TransferRecord[];
   checkedIn: boolean;
+  is_checked_in : boolean;
   checkedInAt?: string;
   notes?: string;
 }
@@ -244,6 +247,7 @@ export interface ApiTransaction {
       name: string;
     };
     qr_data: string;
+    is_checked_in : boolean;
 
   }>;
   transaction_status: string;
@@ -279,5 +283,6 @@ export interface TicketItems {
   ticketNumber: string;
   tierName: { id: string; name: string };
   qrData: string;
-  checkedIn: boolean;
+  is_checked_in: boolean;
+  
 }

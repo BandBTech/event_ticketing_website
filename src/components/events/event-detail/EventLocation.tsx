@@ -12,7 +12,7 @@ interface EventLocationProps {
 }
 
 export const EventLocation = ({ venue }: EventLocationProps) => {
-  const [showMap, setShowMap] = useState(false);
+  const [showMap, setShowMap] = useState(true);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 

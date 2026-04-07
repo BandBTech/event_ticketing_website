@@ -285,12 +285,12 @@ export function CancelTicketDialog({
                       )}{" "}
                       {ticketId
                         ? "(1)"
-                        : `(${ticket.tickets.filter((t) => !t.checkedIn).length})`}
+                        : `(${ticket.tickets.filter((t) => !t.is_checked_in).length})`}
                     </h5>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {ticket.tickets
                         .filter((t) =>
-                          ticketId ? t.ticketId === ticketId : !t.checkedIn,
+                          ticketId ? t.ticketId === ticketId : !t.is_checked_in,
                         )
                         .map((ticketItem, idx) => (
                           <div
@@ -313,12 +313,12 @@ export function CancelTicketDialog({
                             </div>
                             <Badge
                               className={cn(
-                                ticketItem.checkedIn
+                                ticketItem.is_checked_in
                                   ? "bg-blue-100 text-blue-700"
                                   : "bg-green-100 text-green-700",
                               )}
                             >
-                              {ticketItem.checkedIn ? "Used" : "Active"}
+                              {ticketItem.is_checked_in ? "Used" : "Active"}
                             </Badge>
                           </div>
                         ))}
