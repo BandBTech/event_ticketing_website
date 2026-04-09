@@ -182,6 +182,7 @@
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_end": "Sales Ended",
+      "sales_upcoming": "Sales Upcoming",
       "live": "Live",
       "hold": "On Hold",
       "scheduled": "Scheduled"

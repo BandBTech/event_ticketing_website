@@ -154,6 +154,7 @@
       "stopped": "Vendite Interrotte",
       "sold_out": "Esaurito",
       "sales_end": "Vendite Terminate",
+      "sales_upcoming": "Vendite in Arrivo",
       "live": "Live",
       "scheduled": "Scheduled"
     },
