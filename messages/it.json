@@ -59,7 +59,7 @@
     "badge": "La Piattaforma Eventi Premier del Nepal",
     "title": "Scopri Eventi Fantastici in Nepal",
     "subtitle": "Dai festival musicali elettrizzanti alle conferenze ispiratrici, trova e prenota biglietti per gli eventi più emozionanti che si svolgono in tutto il Nepal.",
-    "searchPlaceholder": "Cerca eventi...",
+    "searchPlaceholder": "Cerca Eventi",
     "stats": {
       "events": "Eventi Elencati",
       "tickets": "Biglietti Venduti",
@@ -77,7 +77,7 @@
       "eventsFound": "eventi trovati",
       "clearFilters": "Cancella Filtri",
       "subtitle": "eventi entusiasmanti in arrivo.",
-      "clearSearch": "Cancella ricerca"
+      "clearSearch": "Cancella Ricerca"
     },
     "cta": {
       "title": "Pronto a Creare il Tuo Evento?",
@@ -537,7 +537,7 @@
       "tickets": {
         "title": "I miei biglietti",
         "subtitle": "Gestisci e visualizza tutti i biglietti degli eventi",
-        "search": "Cerca per nome dell'evento, luogo o numero del biglietto...",
+        "search": "Cerca per nome Dell'evento, Luogo o numero del Biglietto",
         "error": "Errore durante il caricamento dei biglietti",
         "messageError": "Impossibile caricare i biglietti. \nPer favore riprova.",
         "selectValue": {
@@ -553,7 +553,7 @@
         "notickets": "Nessun biglietto trovato"
       },
       "transaction": {
-        "search": "Cerca transazioni",
+        "search": "Cerca Transazioni",
         "title": "Transazioni",
         "subtitle": "Gestisci e visualizza tutte le tue transazioni.",
         "filter": "Filtri",

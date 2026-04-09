@@ -85,7 +85,7 @@
     "badge": "Nepal's Premier Event Platform",
     "title": "Discover Amazing Events in Nepal",
     "subtitle": "From electrifying music festivals to inspiring conferences, find and book tickets for the most exciting events happening across Nepal.",
-    "searchPlaceholder": "Search for events...",
+    "searchPlaceholder": "Search For Events",
     "stats": {
       "events": "Events Listed",
       "tickets": "Tickets Sold",
@@ -662,7 +662,7 @@
       "tickets": {
         "title": "My Tickets",
         "subtitle": "Manage and view all your event tickets",
-        "search": "Search by event name, location, or ticket number...",
+        "search": "Search By Event Name, Location, Or Ticket Number",
         "error": "Error loading tickets",
         "messageError": "Failed to load tickets. Please try again.",
         "selectValue": {
