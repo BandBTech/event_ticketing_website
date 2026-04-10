@@ -154,7 +154,7 @@
       "stopped": "Vendite Interrotte",
       "sold_out": "Esaurito",
       "sales_end": "Vendite Terminate",
-      "sales_upcoming": "Vendite in Arrivo",
+      "sales_upcoming": "Vendite Future",
       "live": "Live",
       "scheduled": "Scheduled"
     },
@@ -618,5 +618,8 @@
   },
   "upcomming": {
     "loadMore": "Carica altri in arrivo"
+  },
+  "status": {
+    "sales_upcoming": "Vendite Future"
   }
 }

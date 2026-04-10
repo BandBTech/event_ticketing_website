@@ -620,5 +620,8 @@
   },
   "upcomming": {
     "loadMore": "今後さらにロードする"
+  },
+  "status": {
+    "sales_upcoming": "販売予定"
   }
 }
