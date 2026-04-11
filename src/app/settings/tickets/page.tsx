@@ -44,7 +44,13 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { CancelTicketDialog } from "@/components/tickets/CancelTicketDialog";
 import { useCancelTicket } from "@/hooks/useTickets";
-import Image from 'next/image';
+import Image from "next/image";
+import Link from "next/link";
+import { toast } from "sonner";
+import { jsPDF } from "jspdf";
+import { toPng } from "html-to-image";
+import { TicketDisplay } from "@/components/tickets/TicketDisplay";
+import { ticketService } from "@/services/ticketService";
 
 // Check if event is upcoming (start date is in the future)
 const isUpcoming = (startDate: string) => {
@@ -72,6 +78,7 @@ export default function TicketsPage() {
   const [selectedTicketForCancel, setSelectedTicketForCancel] = useState<
     string | null
   >(null);
+  const [printData, setPrintData] = useState<ViewTicketDetails | null>(null);
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -172,7 +179,9 @@ export default function TicketsPage() {
         });
       } else if (selectedOrderForCancel && detailTickets) {
         // Cancel all active tickets in the order
-        const activeTickets = detailTickets.tickets.filter((t) => !t.is_checked_in);
+        const activeTickets = detailTickets.tickets.filter(
+          (t) => !t.is_checked_in,
+        );
 
         for (const ticket of activeTickets) {
           await cancelMutation.mutateAsync({
@@ -259,6 +268,214 @@ export default function TicketsPage() {
       </div>
     );
   }
+  const handleDownloadFromList = async (
+    transactionId: string,
+    ticketId: string,
+  ) => {
+    const loadingToastId = "download-ticket";
+
+    try {
+      toast.loading("Preparing ticket...", { id: loadingToastId });
+
+      const fullDetails = await ticketService.getTransactionById(transactionId);
+      const singleTicketDetails = {
+        ...fullDetails,
+        tickets: fullDetails.tickets.filter((t) => t.ticketId === ticketId),
+      };
+
+      setPrintData(singleTicketDetails);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const element = document.getElementById("pdf-hidden-container");
+      if (!element) throw new Error("PDF container not found");
+
+      // Generate PDF while skipping external images
+      const dataUrl = await toPng(element, {
+        backgroundColor: "white",
+        pixelRatio: 2,
+        quality: 0.95,
+        cacheBust: true,
+        filter: (node) => {
+          // Skip all external images to avoid CORS
+          if (node.tagName === "IMG") {
+            const src = node.getAttribute("src");
+            if (
+              src &&
+              (src.startsWith("http://") || src.startsWith("https://"))
+            ) {
+              console.log("Skipping external image due to CORS:", src);
+              return false;
+            }
+          }
+          return true;
+        },
+      });
+
+      const pdf = new jsPDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      });
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Ticket-${ticketId}.pdf`);
+
+      toast.success("Ticket downloaded successfully!", { id: loadingToastId });
+      setTimeout(() => setPrintData(null), 2000);
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Failed to generate ticket");
+      setPrintData(null);
+    }
+  };
+
+//   const handleDownloadFromList = async (transactionId: string, ticketId: string) => {
+//   const loadingToastId = "download-ticket";
+  
+//   try {
+//    
+  
+//     toast.loading("Preparing ticket...", { id: loadingToastId });
+    
+//     const fullDetails = await ticketService.getTransactionById(transactionId);
+//    
+    
+//     const singleTicketDetails = {
+//       ...fullDetails,
+//       tickets: fullDetails.tickets.filter(t => t.ticketId === ticketId)
+//     };
+    
+//     
+    
+//     setPrintData(singleTicketDetails);
+    
+//     // Wait for DOM update and images to load
+//     await new Promise(resolve => setTimeout(resolve, 500));
+    
+//     const element = document.getElementById("pdf-hidden-container");
+//     
+    
+//     if (!element) {
+//       throw new Error("PDF container not found");
+//     }
+    
+//     // Wait for all images to load properly
+//     const images = element.querySelectorAll('img');
+//     const imagePromises = Array.from(images).map((img) => {
+//       if (img.complete && img.naturalHeight !== 0) {
+//         return Promise.resolve();
+//       }
+//       return new Promise((resolve) => {
+//         const timeout = setTimeout(() => {
+//           console.warn('Image load timeout:', img.src);
+//           resolve(null);
+//         }, 10000);
+        
+//         img.addEventListener('load', () => {
+//           clearTimeout(timeout);
+//           console.log('Image loaded:', img.src);
+//           resolve(null);
+//         });
+//         img.addEventListener('error', (e) => {
+//           clearTimeout(timeout);
+//           console.error('Image failed to load:', img.src);
+//           resolve(null);
+//         });
+//       });
+//     });
+    
+//     await Promise.all(imagePromises);
+    
+//    
+//     await new Promise(resolve => setTimeout(resolve, 500));
+    
+//     // Generate PDF (CORS is handled by your API)
+//     const dataUrl = await toPng(element, { 
+//       backgroundColor: "white",
+//       pixelRatio: 2.5, // Higher quality
+//       quality: 0.95,
+//       cacheBust: true,
+//       // Include all images since CORS is handled
+//       filter: (node) => {
+//         return true; // Include everything
+//       }
+//     });
+    
+//     
+    
+//     // Create PDF with proper formatting
+//     const pdf = new jsPDF({
+//       unit: "mm",
+//       format: "a4",
+//       orientation: "portrait"
+//     });
+    
+//     const imgProps = pdf.getImageProperties(dataUrl);
+//     const pdfWidth = pdf.internal.pageSize.getWidth();
+//     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+//     // Add image to PDF
+//     pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+//     pdf.save(`Ticket-${ticketId}.pdf`);
+    
+//     toast.success("Ticket downloaded successfully!", { id: loadingToastId });
+    
+//     setTimeout(() => {
+//       setPrintData(null);
+//     }, 2000);
+    
+//   } catch (error) {
+//     console.error("Detailed error:", error);
+//     toast.error(`Failed to generate ticket: ${error instanceof Error ? error.message : "Unknown error"}`, { 
+//       id: loadingToastId 
+//     });
+//     setPrintData(null);
+//   }
+// };
+
+  const handleShareTicket = async (transactionId: string, ticketId: string) => {
+    const loadingToastId = "share-ticket";
+
+    try {
+      toast.loading("Preparing share...", { id: loadingToastId });
+      const order = detailTickets;
+      const ticket = order?.tickets.find((t) => t.ticketId === ticketId);
+
+      if (!order || !ticket) {
+        throw new Error("Ticket not found");
+      }
+
+      const shareText = `${order.event.title}\n📅 ${formatDate(order.event.startDate)} at ${formatTime(order.event.startDate)}\n📍 ${order.event.venueName}\n🎫 Ticket #: ${ticket.ticketNumber}\n\nView your ticket: ${window.location.origin}/tickets?id=${order.orderId}`;
+
+      if (navigator.share) {
+        await navigator.share({
+          title: order.event.title,
+          text: shareText,
+          url: `${window.location.origin}/tickets?id=${order.orderId}`,
+        });
+        // Only show success if share was completed (not cancelled)
+        toast.success("Shared successfully!", { id: loadingToastId });
+      } else {
+        await navigator.clipboard.writeText(shareText);
+        toast.success("Ticket details copied to clipboard!", {
+          id: loadingToastId,
+        });
+      }
+    } catch (error) {
+      if ((error as Error).name === "AbortError") {
+        toast.dismiss(loadingToastId);
+        return;
+      }
+
+      console.error("Share error:", error);
+      toast.error("Could not share. Please take a screenshot instead.", {
+        id: loadingToastId,
+      });
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -411,51 +628,51 @@ export default function TicketsPage() {
           {isLoading ? (
             <div className="flex flex-col gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
-             <Card
-        key={i}
-        className="w-full group overflow-hidden transition-all duration-300 bg-white/60 backdrop-blur-[20px] border border-white/10 shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05)] rounded-[10px]"
-      >
-        <CardContent className="p-0 flex flex-col md:flex-row">
-          {/* Image Skeleton */}
-          <div className="w-full h-48 md:w-48 md:h-auto shrink-0 bg-gray-200 animate-pulse" />
-          
-          {/* Content Skeleton */}
-          <div className="flex-1 flex flex-col sm:flex-row justify-between p-5 gap-6">
-            <div className="flex-1 min-w-0 space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="h-7 w-48 bg-gray-200 rounded animate-pulse" />
-                <div className="h-5 w-16 bg-gray-200 rounded animate-pulse" />
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
-                  <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
-                  <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-                </div>
-                <div className="flex items-center gap-2 col-span-full">
-                  <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
-                  <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
-                </div>
-              </div>
+                <Card
+                  key={i}
+                  className="w-full group overflow-hidden transition-all duration-300 bg-white/60 backdrop-blur-[20px] border border-white/10 shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05)] rounded-[10px]"
+                >
+                  <CardContent className="p-0 flex flex-col md:flex-row">
+                    {/* Image Skeleton */}
+                    <div className="w-full h-48 md:w-48 md:h-auto shrink-0 bg-gray-200 animate-pulse" />
+
+                    {/* Content Skeleton */}
+                    <div className="flex-1 flex flex-col sm:flex-row justify-between p-5 gap-6">
+                      <div className="flex-1 min-w-0 space-y-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <div className="h-7 w-48 bg-gray-200 rounded animate-pulse" />
+                          <div className="h-5 w-16 bg-gray-200 rounded animate-pulse" />
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-2">
+                          <div className="flex items-center gap-2">
+                            <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+                          </div>
+                          <div className="flex items-center gap-2 col-span-full">
+                            <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                            <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Side Skeleton */}
+                      <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4 sm:min-w-[150px] pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l sm:pl-6 border-gray-100">
+                        <div className="sm:text-right space-y-1">
+                          <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+                          <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
+                        </div>
+                        <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-            
-            {/* Right Side Skeleton */}
-            <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4 sm:min-w-[150px] pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l sm:pl-6 border-gray-100">
-              <div className="sm:text-right space-y-1">
-                <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
-                <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
-              </div>
-              <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    ))}
-  </div>
           ) : filteredTickets.length === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
@@ -621,14 +838,15 @@ export default function TicketsPage() {
               <div className="p-6 bg-primary/5 rounded-xl border border-primary/10 flex flex-col md:flex-row gap-6">
                 {/* Event Image */}
                 <div className="relative shrink-0 w-48 h-48">
-               
-                     <Image
-                                             src={detailTickets?.event.imageUrl}
-                                             fill
-                                             alt="Event"
-                                              sizes="(max-width: 768px) 100vw, 33vw"
-                                             className="w-full md:w-40 h-40 object-cover rounded-lg shadow-md border-2 border-white"
-                                           />
+                  <Image
+                    src={
+                      detailTickets?.event.imageUrl || "/placeholder-event.jpg"
+                    }
+                    fill
+                    alt="Event"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="w-full md:w-40 h-40 object-cover rounded-lg shadow-md border-2 border-white"
+                  />
                   {/* {detailTickets.event.timezone && (
                     <Badge
                       variant="secondary"
@@ -752,13 +970,26 @@ export default function TicketsPage() {
                               variant="outline"
                               size="sm"
                               className="h-8 text-xs"
+                              onClick={() =>
+                                handleDownloadFromList(
+                                  detailTickets.orderId,
+                                  ticket.ticketId,
+                                )
+                              }
                             >
                               <Download className="h-3.5 w-3.5 mr-1" /> Download
                             </Button>
+
                             <Button
                               variant="outline"
                               size="sm"
                               className="h-8 text-xs"
+                              onClick={() =>
+                                handleShareTicket(
+                                  detailTickets.orderId,
+                                  ticket.ticketId,
+                                )
+                              }
                             >
                               <QrCode className="h-3.5 w-3.5 mr-1" /> Share
                             </Button>
@@ -904,6 +1135,22 @@ export default function TicketsPage() {
         onCancelConfirm={handleCancelConfirm}
         isPending={cancelMutation.isPending}
       />
+
+      {/* PDF generation */}
+
+      <div className="fixed -left-[9999px] top-0 pointer-events-none">
+        <div
+          id="pdf-hidden-container"
+          style={{
+            width: "800px",
+            backgroundColor: "white",
+            padding: "20px",
+            margin: "0 auto",
+          }}
+        >
+          {printData && <TicketDisplay order={printData} isLoading={false} />}
+        </div>
+      </div>
     </div>
   );
 }

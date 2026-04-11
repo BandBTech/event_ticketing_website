@@ -445,7 +445,7 @@ export default function HomePage() {
               <h2 className="text-3xl font-bold text-gray-900 font-poppins">Sales Live</h2>
               <p className="text-gray-500">Tickets available for purchase now</p>
             </div>
-            <Badge className="bg-green-500 hover:bg-green-600 animate-pulse">Live Now</Badge>
+            {/* <Badge className="bg-green-500 hover:bg-green-600 animate-pulse">Live Now</Badge> */}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

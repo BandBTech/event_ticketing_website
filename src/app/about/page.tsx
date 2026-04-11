@@ -13,10 +13,12 @@ import {
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
 
 export default function AboutPage() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+    const { user, isAuthenticated } = useAuthStore();
 
   const stats = [
     { icon: TicketIcon, count: "500+", label: t("about.stats.eventsListed",'Events Listed') },
@@ -134,6 +136,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section - Identical to Home Page CTA */}
+        {!isAuthenticated && !user && (
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="glass-strong rounded-2xl p-12 border border-white/40 shadow-xl">
@@ -152,6 +155,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+        )}
     </div>
   );
 }

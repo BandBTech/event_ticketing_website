@@ -5,6 +5,10 @@ export interface ApiTicketItem {
   ticket_id: string;
   ticket_number: string;
   tier_name: string;
+  tierName:{
+  id: string;
+  name: string;
+  };
   // tier:{
   //   id: string;
   //   name: string;
@@ -54,12 +58,12 @@ export interface ApiTicketResponse {
 export interface TicketItem {
   ticketId: string;
   ticketNumber: string;
-  tierName: string;
-  // tierName:{
-  //   id: string;
-  //   name: string;
-  // };
-  price: number;
+  //tierName: string;
+  tierName:{
+  id: string;
+  name: string;
+  };
+  price?: number;
   qrData: string;
   checkedIn: boolean;
   is_checked_in: boolean;
@@ -171,7 +175,7 @@ export interface ApiUserTicket {
     organizer_id: string;
   };
   tickets: TicketItem[];
-  tier_name: string;
+ tier_name: string;
 }
 
 export interface UserTicketsApiResponse {

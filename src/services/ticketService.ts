@@ -217,13 +217,17 @@ export const ticketService = {
         {
           ticketId: t.id,
           ticketNumber: t.ticket_number,
-          tierName: t.tier_name,
           price: t.total_amount,
+          tierName: {
+          id: "",
+          name: t.tier_name,
+        },
           qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,
           checkedIn: t.status === "used",
           is_checked_in: t.status === "used",
         },
       ],
+       
       totalAmount: t.total_amount,
       currency: "NPR",
     }));
@@ -256,7 +260,10 @@ export const ticketService = {
     return response.data.tickets.map((t) => ({
       ticketId: t.ticket_id,
       ticketNumber: t.ticket_number,
-      tierName: t.tier_name,
+       tierName: {
+          id: t.tierName.id,
+          name: t.tierName.name,
+        },
       price: t.price,
       qrData: t.qr_data,
       checkedIn: t.checked_in,
@@ -264,7 +271,7 @@ export const ticketService = {
     }));
   },
 
-  getTransactionById: async (id: string): Promise<ViewTicketDetail> => {
+  getTransactionById: async (id: string): Promise<ViewTicketDetails> => {
     const response = await api.get<TransactionDetailApiResponse>(
       `/user/tickets/${id}`,
       { requiresAuth: true },
@@ -277,6 +284,8 @@ export const ticketService = {
       ticketCount: d.tickets.length,
       transactionStatus: d.transaction_status,
       purchaseDate: d.created_at,
+      totalAmount: 0,
+      currency: 'NPR',
       event: {
         id: d.event.id,
         title: d.event.title,
@@ -289,6 +298,7 @@ export const ticketService = {
       tickets: d.tickets.map((t) => ({
         ticketId: t.id,
         ticketNumber: t.ticket_number,
+        price: 0,
         tierName: {
           id: t.tier.id,
           name: t.tier.name,
@@ -296,6 +306,8 @@ export const ticketService = {
         qrData: t.qr_data,
         checkedIn: false,
         is_checked_in: false,
+        
+      
       })),
     };
   },
@@ -335,11 +347,11 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
     tickets: apiResponse.tickets.map((t) => ({
       ticketId: t.ticket_id,
       ticketNumber: t.ticket_number,
-      tierName: t.tier_name,
-      // tierName: {
-      //   id: t.tier.id,
-      //   name: t.tier.name,
-      // },
+      //tierName: t.tier_name,
+       tierName: {
+         id: t.tierName.id,
+         name: t.tierName.name,
+       },
       price: t.price,
       qrData: t.qr_data,
       checkedIn: t.checked_in,

@@ -103,7 +103,7 @@ function SingleTicketCard({
             <div className="flex items-center gap-1.5">
               <Ticket className="w-3 h-3 text-primary-foreground" />
               <span className="text-xs font-bold text-primary-foreground uppercase tracking-wide">
-                {ticket.tierName}
+                {ticket.tierName.name}
               </span>
             </div>
           </div>
