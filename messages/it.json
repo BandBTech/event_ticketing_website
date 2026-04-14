@@ -538,7 +538,7 @@
       "tickets": {
         "title": "I miei biglietti",
         "subtitle": "Gestisci e visualizza tutti i biglietti degli eventi",
-        "search": "Cerca per nome Dell'evento, Luogo o numero del Biglietto",
+        "search": "Ticket di ricerca",
         "error": "Errore durante il caricamento dei biglietti",
         "messageError": "Impossibile caricare i biglietti. \nPer favore riprova.",
         "selectValue": {

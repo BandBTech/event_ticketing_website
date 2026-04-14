@@ -663,7 +663,7 @@
       "tickets": {
         "title": "My Tickets",
         "subtitle": "Manage and view all your event tickets",
-        "search": "Search By Event Name, Location, Or Ticket Number",
+        "search": "Search Ticket",
         "error": "Error loading tickets",
         "messageError": "Failed to load tickets. Please try again.",
         "selectValue": {

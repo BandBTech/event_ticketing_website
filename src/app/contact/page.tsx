@@ -59,8 +59,8 @@ export default function ContactPage() {
     mode: "onBlur",
   });
 
-    const { data: company, isLoading } = useCompanyInfo();
-    
+  const { data: company, isLoading } = useCompanyInfo();
+
   const onSubmit = async (data: ContactFormData) => {
     try {
       toast.success(t("contact.toast.success"));
@@ -116,9 +116,7 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <EnvelopeSimpleIcon size={18} className="text-primary" />
-                  <span>
-                    {company?.email}
-                  </span>
+                  <span>{company?.email}</span>
                 </div>
 
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -152,6 +150,8 @@ export default function ContactPage() {
                         key={social.name}
                         href={social.href}
                         aria-label={social.name}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="p-2 rounded-lg border border-border bg-background
                        hover:bg-primary hover:text-primary-foreground
                        transition-all duration-200"
@@ -327,7 +327,7 @@ export default function ContactPage() {
                       "Write your message...",
                     )}
                     {...register("message")}
-                      onChange={(e) => setMessage(e.target.value)}
+                    onChange={(e) => setMessage(e.target.value)}
                   />
                   <div className="flex justify-between items-center mt-1 min-h-5">
                     {errors.message && (
