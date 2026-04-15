@@ -42,6 +42,7 @@ import {
   startOfDay,
   format,
   subMonths,
+  endOfDay,
 } from "date-fns";
 import { toast } from "sonner";
 
@@ -156,28 +157,39 @@ export default function BillingPage() {
     }
   };
 
-  const handleDateRangeApply = () => {
-    if (dateRange?.from && dateRange?.to) {
-      if (isBefore(startOfDay(dateRange.to), startOfDay(dateRange.from))) {
-        toast.error("End date cannot be before start date");
-        return;
-      }
-      if (differenceInMonths(dateRange.to, dateRange.from) > 3) {
-        toast.error("Range cannot exceed 3 months");
-        return;
-      }
-    }
+const handleDateRangeApply = () => {
+  if (!dateRange?.from) {
+    toast.error("Please select a date range");
+    return;
+  }
+  if (dateRange.from && dateRange.to) {
 
-    setAppliedFilters({
-      ...appliedFilters,
-      start_date: dateRange?.from,
-      end_date: dateRange?.to,
-    });
-    setPage(1);
-    setAllTransactions([]);
-    setIsFilterOpen(false);
-    toast.success("Filters applied");
-  };
+    if (isBefore(startOfDay(dateRange.to), startOfDay(dateRange.from))) {
+      toast.error("End date cannot be before start date");
+      return;
+    }
+    if (differenceInMonths(dateRange.to, dateRange.from) > 3) {
+      toast.error("Range cannot exceed 3 months");
+      return;
+    }
+  }
+  const normalizedStart = startOfDay(dateRange.from);
+  const normalizedEnd = dateRange.to 
+    ? endOfDay(dateRange.to) 
+    : endOfDay(dateRange.from);
+
+  setAppliedFilters({
+    ...appliedFilters,
+    start_date: normalizedStart,
+    end_date: normalizedEnd,
+  });
+
+  setPage(1);
+  setAllTransactions([]);
+  setIsFilterOpen(false);
+  toast.success("Filters applied");
+
+};
 
   const handleDateRangeClear = () => {
     setDateRange({ from: undefined, to: undefined });
@@ -283,11 +295,11 @@ export default function BillingPage() {
                 </PopoverTrigger>
 
                 <PopoverContent
-                  className="w-[95vw] sm:w-[500px] p-0"
+                  className="w-fit min-w-[300px] p-0"
                   align="end"
                   sideOffset={5}
                 >
-                  <div className="p-3 sm:p-4 border-b">
+                  <div className="p-1 sm:p-4 border-b">
                     <h3 className="font-semibold text-gray-900">
                       Filter Transactions
                     </h3>
@@ -296,7 +308,7 @@ export default function BillingPage() {
                     </p>
                   </div>
 
-                  <div className="p-3 sm:p-4 max-h-[80vh] overflow-y-auto">
+                  <div className="p-2 sm:p-2 max-h-[80vh] overflow-y-auto">
                     {/* Quick Range Buttons */}
                     {/* <div className="grid grid-cols-3 gap-2 mb-4">
                       <button
@@ -315,26 +327,25 @@ export default function BillingPage() {
                     </div> */}
 
                     {/* Date Range Calendar - Responsive */}
-                    <div className="border rounded-lg sm:p-3">
+                    <div className="border rounded-lg sm:p-2">
                       <Calendar
                         mode="range"
                         selected={dateRange}
                         onSelect={setDateRange}
                         numberOfMonths={1}
                         disabled={{ after: new Date() }}
-                        // Force the internal rdp wrapper to be full width
-                        className="rounded-md w-full [&_.rdp]:w-full"
+                       
                         classNames={{
                           months: "w-full",
-                          month: "space-y-4 w-full",
-                          // 1. Position relative so the nav can pin to its edges
+                          month: "space-y-2 w-full",
+                         
                           caption:
-                            "flex justify-center pt-1 relative items-center w-full",
+                            "flex justify-center relative items-center w-full",
                           caption_label: "text-sm font-medium",
 
-                          nav: "flex items-center justify-between absolute inset-x-0 z-10 px-1",
+                          nav: "flex items-center justify-between absolute inset-x-0  px-1",
                           nav_button:
-                            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+                            "h-4 w-4 bg-transparent p-0 opacity-50 hover:opacity-100",
                           nav_button_previous: "",
                           nav_button_next: "",
 
@@ -346,7 +357,7 @@ export default function BillingPage() {
                           row: "flex w-full mt-2",
                           cell: "relative p-0 text-center text-sm flex-1 focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent",
 
-                          day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 mx-auto flex items-center justify-center",
+                          day: "h-8 w-8 p-0 font-normal aria-selected:opacity-100 mx-auto flex items-center justify-center",
                           day_range_end: "day-range-end",
                           day_selected:
                             "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
