@@ -182,7 +182,7 @@
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_end": "Sales Ended",
-      "sales_upcoming": "Upcoming Sales",
+      "sales_upcoming": "Sales Upcoming",
       "live": "Live",
       "hold": "On Hold",
       "scheduled": "Scheduled"
@@ -745,6 +745,6 @@
     "loadMore": "Load More Upcoming"
   },
   "status": {
-    "sales_upcoming": "Upcoming Sales"
+    "sales_upcoming": "Sales Upcoming"
   }
 }
