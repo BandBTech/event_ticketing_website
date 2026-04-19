@@ -44,6 +44,7 @@ import {
   subMonths,
   endOfDay,
 } from "date-fns";
+import { fromZonedTime } from 'date-fns-tz';
 import { toast } from "sonner";
 
 export default function BillingPage() {
@@ -69,40 +70,119 @@ export default function BillingPage() {
 
   const selectedId = searchParams.get("id");
 
-  // Update date range when filters change
-  useEffect(() => {
-    setDateRange({
-      from: appliedFilters.start_date,
-      to: appliedFilters.end_date,
-    });
-  }, [appliedFilters.start_date, appliedFilters.end_date]);
+const handleDateRangeApply = () => {
+  if (!dateRange?.from) {
+    toast.error("Please select a date range");
+    return;
+  }
+  
+  // Store dates in LOCAL time (not UTC)
+  const normalizedStart = new Date(dateRange.from);
+  normalizedStart.setHours(0, 0, 0, 0);
+  
+  const normalizedEnd = dateRange.to 
+    ? new Date(dateRange.to)
+    : new Date(dateRange.from);
+  normalizedEnd.setHours(23, 59, 59, 999);
+  
+  // Validation
+  if (normalizedEnd < normalizedStart) {
+    toast.error("End date cannot be before start date");
+    return;
+  }
+  
+  const monthDiff = (normalizedEnd.getFullYear() - normalizedStart.getFullYear()) * 12 +
+                   (normalizedEnd.getMonth() - normalizedStart.getMonth());
+  if (monthDiff > 3) {
+    toast.error("Range cannot exceed 3 months");
+    return;
+  }
+  
+  console.log('=== STORING LOCAL DATES ===');
+  console.log('Start (local):', normalizedStart);
+  console.log('End (local):', normalizedEnd);
+  
+  // Store the normalized local dates
+  setAppliedFilters({
+    ...appliedFilters,
+    start_date: normalizedStart,
+    end_date: normalizedEnd,
+  });
+  
+  setPage(1);
+  setAllTransactions([]);
+  setIsFilterOpen(false);
+  toast.success("Filters applied");
+};
 
-  // API Filters
-  const apiFilters = useMemo((): TransactionApiFilters => {
-    const filters: TransactionApiFilters = {};
-    if (appliedFilters.start_date)
-      filters.date_from = format(appliedFilters.start_date, "yyyy-MM-dd");
-    if (appliedFilters.end_date)
-      filters.date_to = format(appliedFilters.end_date, "yyyy-MM-dd");
-    return filters;
-  }, [appliedFilters.start_date, appliedFilters.end_date]);
+// Update date range when filters change
+useEffect(() => {
+  setDateRange({
+    from: appliedFilters.start_date,
+    to: appliedFilters.end_date,
+  });
+}, [appliedFilters.start_date, appliedFilters.end_date]);
+
+// API Filters - Universal Solution (Works for ALL Timezones)
+const apiFilters = useMemo((): TransactionApiFilters => {
+  const filters: TransactionApiFilters = {};
+  
+  if (!appliedFilters.start_date) return filters;
+  
+  const isSingleDay = !appliedFilters.end_date || 
+    (appliedFilters.start_date.getDate() === appliedFilters.end_date.getDate() &&
+     appliedFilters.start_date.getMonth() === appliedFilters.end_date.getMonth() &&
+     appliedFilters.start_date.getFullYear() === appliedFilters.end_date.getFullYear());
+  
+  if (isSingleDay) {
+ const localDate = new Date(appliedFilters.start_date);
+    
+    const startLocal = new Date(localDate);
+    startLocal.setHours(0, 0, 0, 0);
+    const startUTC = new Date(startLocal.toISOString());
+   
+    const endLocal = new Date(localDate);
+    endLocal.setHours(23, 59, 59, 999);
+    const endUTC = new Date(endLocal.toISOString());
+    
+    filters.date_from = startUTC.toISOString().split('T')[0];
+    filters.date_to = endUTC.toISOString().split('T')[0];
+} else {
+    // Date range
+    const startLocal = new Date(appliedFilters.start_date);
+    startLocal.setHours(0, 0, 0, 0);
+    const startUTC = new Date(startLocal.toISOString());
+    
+    const endLocal = new Date(appliedFilters.end_date as Date);
+    endLocal.setHours(23, 59, 59, 999);
+    const endUTC = new Date(endLocal.toISOString());
+    
+    filters.date_from = startUTC.toISOString().split('T')[0];
+    filters.date_to = endUTC.toISOString().split('T')[0];
+  }
+  
+  return filters;
+}, [appliedFilters.start_date, appliedFilters.end_date]);
+
 
   // Fetch Data
   const {
     data: response,
     isLoading,
     isFetching,
+
   } = useUserTransactions(page, 20, apiFilters, searchInput);
+
 
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
   );
 
   // Reset pagination when search or filters change
-  useEffect(() => {
-    setPage(1);
-    setAllTransactions([]);
-  }, [searchInput, apiFilters.date_from, apiFilters.date_to]);
+  // useEffect(() => {
+  //   setPage(1);
+  //   setAllTransactions([]);
+  // }, [searchInput, apiFilters.date_from, apiFilters.date_to]);
 
   // Accumulate Results
   useEffect(() => {
@@ -132,6 +212,7 @@ export default function BillingPage() {
     response?.data?.pagination,
   ]);
 
+
   // Handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -157,39 +238,6 @@ export default function BillingPage() {
     }
   };
 
-const handleDateRangeApply = () => {
-  if (!dateRange?.from) {
-    toast.error("Please select a date range");
-    return;
-  }
-  if (dateRange.from && dateRange.to) {
-
-    if (isBefore(startOfDay(dateRange.to), startOfDay(dateRange.from))) {
-      toast.error("End date cannot be before start date");
-      return;
-    }
-    if (differenceInMonths(dateRange.to, dateRange.from) > 3) {
-      toast.error("Range cannot exceed 3 months");
-      return;
-    }
-  }
-  const normalizedStart = startOfDay(dateRange.from);
-  const normalizedEnd = dateRange.to 
-    ? endOfDay(dateRange.to) 
-    : endOfDay(dateRange.from);
-
-  setAppliedFilters({
-    ...appliedFilters,
-    start_date: normalizedStart,
-    end_date: normalizedEnd,
-  });
-
-  setPage(1);
-  setAllTransactions([]);
-  setIsFilterOpen(false);
-  toast.success("Filters applied");
-
-};
 
   const handleDateRangeClear = () => {
     setDateRange({ from: undefined, to: undefined });

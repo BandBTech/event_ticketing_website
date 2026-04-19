@@ -51,6 +51,7 @@ import { jsPDF } from "jspdf";
 import { toPng } from "html-to-image";
 import { TicketDisplay } from "@/components/tickets/TicketDisplay";
 import { ticketService } from "@/services/ticketService";
+import { TicketPDFDownload } from "@/components/tickets/TicketPDFDownload";
 
 // Check if event is upcoming (start date is in the future)
 const isUpcoming = (startDate: string) => {
@@ -376,35 +377,66 @@ export default function TicketsPage() {
 
 
 // Reusable PDF generation function
+// const generateTicketPDF = async (order: ViewTicketDetails, ticketId: string): Promise<Blob> => {
+//   const ticket = order.tickets.find(t => t.ticketId === ticketId);
+//   if (!ticket) throw new Error("Ticket not found");
+  
+//   const singleTicketDetails = {
+//     ...order,
+//     tickets: [ticket]
+//   };
+  
+//   setPrintData(singleTicketDetails);
+//   await new Promise(resolve => setTimeout(resolve, 1000));
+  
+//   const element = document.getElementById("pdf-hidden-container");
+//   if (!element) throw new Error("Container not found");
+  
+//   const dataUrl = await toPng(element, { 
+//     backgroundColor: "white",
+//     pixelRatio: 2,
+//     quality: 0.95,
+//     cacheBust: true,
+//     filter: (node) => {
+//       if (node.tagName === 'IMG') {
+//         const src = node.getAttribute('src');
+//         if (src && (src.startsWith('http') && !src.startsWith(window.location.origin))) {
+//           return false;
+//         }
+//       }
+//       return true;
+//     }
+//   });
+  
+//   const pdf = new jsPDF({
+//     unit: "mm",
+//     format: "a4",
+//     orientation: "portrait"
+//   });
+  
+//   const imgProps = pdf.getImageProperties(dataUrl);
+//   const pdfWidth = pdf.internal.pageSize.getWidth();
+//   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  
+//   pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+//   return pdf.output('blob');
+// };
 const generateTicketPDF = async (order: ViewTicketDetails, ticketId: string): Promise<Blob> => {
   const ticket = order.tickets.find(t => t.ticketId === ticketId);
   if (!ticket) throw new Error("Ticket not found");
-  
+ 
   const singleTicketDetails = {
     ...order,
     tickets: [ticket]
   };
-  
   setPrintData(singleTicketDetails);
   await new Promise(resolve => setTimeout(resolve, 1000));
-  
   const element = document.getElementById("pdf-hidden-container");
   if (!element) throw new Error("Container not found");
-  
   const dataUrl = await toPng(element, { 
     backgroundColor: "white",
     pixelRatio: 2,
-    quality: 0.95,
     cacheBust: true,
-    filter: (node) => {
-      if (node.tagName === 'IMG') {
-        const src = node.getAttribute('src');
-        if (src && (src.startsWith('http') && !src.startsWith(window.location.origin))) {
-          return false;
-        }
-      }
-      return true;
-    }
   });
   
   const pdf = new jsPDF({
@@ -417,7 +449,8 @@ const generateTicketPDF = async (order: ViewTicketDetails, ticketId: string): Pr
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
   
-  pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+  pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+  
   return pdf.output('blob');
 };
 
@@ -1191,19 +1224,24 @@ const handleShareTicket = async (order: ViewTicketDetails, ticketId: string) => 
 
       {/* PDF generation */}
 
-      <div className="fixed -left-[9999px] top-0 pointer-events-none">
-        <div
-          id="pdf-hidden-container"
-          style={{
-            width: "800px",
-            backgroundColor: "white",
-            padding: "20px",
-            margin: "0 auto",
-          }}
-        >
-          {printData && <TicketDisplay order={printData} isLoading={false} />}
-        </div>
-      </div>
+      <div
+  style={{
+    position: "fixed",
+    left: "-9999px",
+    top: "0",
+    pointerEvents: "none",
+    visibility: "hidden",
+  }}
+>
+  <div id="pdf-hidden-container">
+    {printData && (
+      <TicketPDFDownload
+        ticket={printData.tickets[0]}
+        detailTickets={printData}
+      />
+    )}
+  </div>
+</div>
     </div>
   );
 }

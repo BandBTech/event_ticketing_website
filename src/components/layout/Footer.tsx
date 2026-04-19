@@ -19,13 +19,15 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useCompanyInfo } from "@/hooks/useCompany";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { CompanyInfo } from "@/services/companyService";
+import { MapModal } from "./MapModal";
 
 export function Footer() {
   const [mounted, setMounted] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const pathname = usePathname();
-  
+
   const authPaths = [
     "/login",
     "/signup",
@@ -35,6 +37,8 @@ export function Footer() {
   ];
 
   const { data: company, isLoading } = useCompanyInfo();
+  const [mapOpen, setMapOpen] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState<CompanyInfo | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -44,7 +48,7 @@ export function Footer() {
   if (authPaths.some((path) => pathname?.startsWith(path))) {
     return null;
   }
-  
+
   const footerLinks = {
     company: [
       { name: t("footer.links.company.aboutUs", "About Us"), href: "/about" },
@@ -68,18 +72,31 @@ export function Footer() {
       },
     ],
     legal: [
-      { name: t("footer.links.legal.privacyPolicy", "Privacy Policy"), href: "/static/privacy-policy" },
-      { name: t("footer.links.legal.termsOfService", "Terms of Service"), href: "/static/terms-of-service" },
-      { name: t("footer.links.legal.cookiePolicy", "Cookie Policy"), href: "/static/cookies-policy" },
+      {
+        name: t("footer.links.legal.privacyPolicy", "Privacy Policy"),
+        href: "/static/privacy-policy",
+      },
+      {
+        name: t("footer.links.legal.termsOfService", "Terms of Service"),
+        href: "/static/terms-of-service",
+      },
+      {
+        name: t("footer.links.legal.cookiePolicy", "Cookie Policy"),
+        href: "/static/cookies-policy",
+      },
     ],
   };
 
   const socialLinks = [
     { name: "Facebook", icon: FacebookLogoIcon, href: company?.facebook_url },
     { name: "Twitter", icon: TwitterLogoIcon, href: company?.twitter_url },
-    { name: "Instagram", icon: InstagramLogoIcon, href: company?.instagram_url },
+    {
+      name: "Instagram",
+      icon: InstagramLogoIcon,
+      href: company?.instagram_url,
+    },
     { name: "LinkedIn", icon: LinkedinLogoIcon, href: company?.linkedin_url },
-  ].filter(social => social.href); // Only show social links that have URLs
+  ].filter((social) => social.href); // Only show social links that have URLs
 
   // Loading state
   if (!mounted || (isLoading && !company)) {
@@ -101,12 +118,11 @@ export function Footer() {
         {/* Main Footer Content */}
         <div className="py-12 lg:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-            
             {/* Left Section - Company Info (4 columns) */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="lg:col-span-5 space-y-3">
               {/* Logo */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/10 border border-blue-600/20">
+              <div className="flex items-center ">
+                <div className="flex items-center gap-2 px-3  rounded-lg bg-blue-600/10 border border-blue-600/20">
                   <TicketIcon size={24} className="text-blue-600" />
                   <span
                     className="text-xl font-bold text-gray-900 font-poppins"
@@ -118,36 +134,68 @@ export function Footer() {
               </div>
 
               {/* Description */}
-              <p 
+              <p
                 className="text-gray-600 leading-relaxed text-sm"
                 suppressHydrationWarning
               >
-                {company?.description || t("footer.description", "Your trusted platform for event tickets and memorable experiences.")}
+                {company?.description ||
+                  t(
+                    "footer.description",
+                    "Your trusted platform for event tickets and memorable experiences.",
+                  )}
               </p>
 
               {/* Contact Info */}
               <div className="space-y-3">
                 {company?.email && (
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <EnvelopeSimpleIcon size={16} className="text-blue-500 flex-shrink-0" />
-                    <a href={`mailto:${company.email}`} className="hover:text-blue-600 transition-colors break-all">
+                    <EnvelopeSimpleIcon
+                      size={16}
+                      className="text-blue-500 flex-shrink-0"
+                    />
+                    <a
+                      href={`mailto:${company.email}`}
+                      className="hover:text-blue-600 transition-colors break-all"
+                    >
                       {company.email}
                     </a>
                   </div>
                 )}
                 {company?.phone && (
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <PhoneIcon size={16} className="text-blue-500 flex-shrink-0" />
-                    <a href={`tel:${company.phone}`} className="hover:text-blue-600 transition-colors">
+                    <PhoneIcon
+                      size={16}
+                      className="text-blue-500 flex-shrink-0"
+                    />
+                    <a
+                      href={`tel:${company.phone}`}
+                      className="hover:text-blue-600 transition-colors"
+                    >
                       {company.phone}
                     </a>
                   </div>
                 )}
                 {company?.address && (
-                  <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <MapPinIcon size={16} className="text-blue-500 flex-shrink-0" />
+                  <div
+                    className="flex items-center gap-3 text-sm text-gray-600 cursor-pointer hover:text-blue-600 transition-colors"
+                    onClick={() => {
+                      setSelectedVenue(company);
+                      setMapOpen(true);
+                    }}
+                  >
+                    <MapPinIcon
+                      size={16}
+                      className="text-blue-500 flex-shrink-0"
+                    />
                     <span suppressHydrationWarning>{company.address}</span>
                   </div>
+                )}
+                {selectedVenue && (
+                  <MapModal
+                    isOpen={mapOpen}
+                    onClose={() => setMapOpen(false)}
+                    venue={selectedVenue}
+                  />
                 )}
               </div>
 
@@ -165,7 +213,10 @@ export function Footer() {
                         className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all duration-200 hover:scale-105"
                         aria-label={social.name}
                       >
-                        <Icon size={20} className="text-gray-600 hover:text-blue-600 transition-colors" />
+                        <Icon
+                          size={20}
+                          className="text-gray-600 hover:text-blue-600 transition-colors"
+                        />
                       </a>
                     );
                   })}
@@ -176,10 +227,9 @@ export function Footer() {
             {/* Right Section - Links (8 columns) */}
             <div className="lg:col-span-7">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                
                 {/* Company Links */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wider">
+                  <h3 className="font-semibold text-gray-900 mb-4  uppercase tracking-wider">
                     {t("footer.links.company.title", "Company")}
                   </h3>
                   <ul className="space-y-3">
@@ -198,7 +248,7 @@ export function Footer() {
 
                 {/* Support Links */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wider">
+                  <h3 className="font-semibold text-gray-900 mb-4  uppercase tracking-wider">
                     {t("footer.links.support.title", "Support")}
                   </h3>
                   <ul className="space-y-3">
@@ -217,7 +267,7 @@ export function Footer() {
 
                 {/* Legal Links */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wider">
+                  <h3 className="font-semibold text-gray-900 mb-4  uppercase tracking-wider">
                     {t("footer.links.legal.title", "Legal")}
                   </h3>
                   <ul className="space-y-3">
@@ -233,7 +283,7 @@ export function Footer() {
                     ))}
                   </ul>
                 </div>
-                  {/* Newsletter Section */}
+                {/* Newsletter Section */}
                 {/* <div>
                   <h3 className="font-semibold text-gray-900 mb-4">
                     {t("newsletter.title", "Newsletter")}
@@ -302,8 +352,8 @@ export function Footer() {
             {/* Development Credit */}
             <div className="text-sm text-gray-500">
               {t("footer.developedby", "Developed by")}{" "}
-              <a 
-                href="https://thebandbtech.com/" 
+              <a
+                href="https://thebandbtech.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-700 hover:underline transition-colors"

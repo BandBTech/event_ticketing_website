@@ -8,8 +8,11 @@ export const useUserTransactions = (
   filters?: TransactionApiFilters,
   search?: string
 ) => {
+
+  const filtersKey = filters ? JSON.stringify(filters) : 'no-filters';
+
   return useQuery<PaginatedTransactions>({
-    queryKey: ['transactions', 'user-list', page, limit, filters, search],
+    queryKey: ['transactions', 'user-list', page, limit, filtersKey, search],
     queryFn: () => transactionService.getUserTransactions(page, limit, filters, search),
        refetchOnWindowFocus: false,
     refetchOnReconnect: false,
