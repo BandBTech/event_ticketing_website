@@ -219,15 +219,15 @@ export const ticketService = {
           ticketNumber: t.ticket_number,
           price: t.total_amount,
           tierName: {
-          id: "",
-          name: t.tier_name,
-        },
+            id: "",
+            name: t.tier_name,
+          },
           qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,
           checkedIn: t.status === "used",
           is_checked_in: t.status === "used",
         },
       ],
-       
+
       totalAmount: t.total_amount,
       currency: "NPR",
     }));
@@ -282,7 +282,7 @@ export const ticketService = {
       transactionStatus: d.transaction_status,
       purchaseDate: d.created_at,
       totalAmount: 0,
-      currency: 'NPR',
+      currency: "NPR",
       event: {
         id: d.event.id,
         title: d.event.title,
@@ -303,8 +303,6 @@ export const ticketService = {
         qrData: t.qr_data,
         checkedIn: false,
         is_checked_in: false,
-        
-      
       })),
     };
   },

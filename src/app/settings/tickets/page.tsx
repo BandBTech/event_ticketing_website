@@ -305,7 +305,7 @@ export default function TicketsPage() {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-    pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+    pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, "FAST");
     return pdf.output("blob");
   };
 
@@ -1042,7 +1042,8 @@ export default function TicketsPage() {
                 <QRCodeSVG
                   value={selectedTicketForQR.qrData}
                   size={240}
-                  level="H"
+                  level="M"
+                  minVersion={2}
                   includeMargin={true}
                   fgColor="#0f172a"
                 />
@@ -1078,23 +1079,23 @@ export default function TicketsPage() {
       {/* PDF generation */}
 
       <div
-  style={{
-    position: "fixed",
-    left: "-9999px",
-    top: "0",
-    pointerEvents: "none",
-    visibility: "hidden",
-  }}
->
-  <div id="pdf-hidden-container">
-    {printData && (
-      <TicketPDFDownload
-        ticket={printData.tickets[0]}
-        detailTickets={printData}
-      />
-    )}
-  </div>
-</div>
+        style={{
+          position: "fixed",
+          left: "-9999px",
+          top: "0",
+          pointerEvents: "none",
+          visibility: "hidden",
+        }}
+      >
+        <div id="pdf-hidden-container">
+          {printData && (
+            <TicketPDFDownload
+              ticket={printData.tickets[0]}
+              detailTickets={printData}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

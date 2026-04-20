@@ -34,7 +34,7 @@ function ClientQRCode({ value }: { value: string }) {
       size={100}
       level="M"
       includeMargin={false}
-      minVersion={1}
+      minVersion={2}
       fgColor="#0f172a"
     />
   );
