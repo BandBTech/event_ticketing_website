@@ -79,43 +79,16 @@ useEffect(() => {
   });
 }, [appliedFilters.start_date, appliedFilters.end_date]);
 
-// API Filters - Universal Solution (Works for ALL Timezones)
+//Api Filters
 const apiFilters = useMemo((): TransactionApiFilters => {
   const filters: TransactionApiFilters = {};
   
   if (!appliedFilters.start_date) return filters;
-  
-  const isSingleDay = !appliedFilters.end_date || 
-    (appliedFilters.start_date.getDate() === appliedFilters.end_date.getDate() &&
-     appliedFilters.start_date.getMonth() === appliedFilters.end_date.getMonth() &&
-     appliedFilters.start_date.getFullYear() === appliedFilters.end_date.getFullYear());
-  
-  if (isSingleDay) {
- const localDate = new Date(appliedFilters.start_date);
-    
-    const startLocal = new Date(localDate);
-    startLocal.setHours(0, 0, 0, 0);
-    const startUTC = new Date(startLocal.toISOString());
-   
-    const endLocal = new Date(localDate);
-    endLocal.setHours(23, 59, 59, 999);
-    const endUTC = new Date(endLocal.toISOString());
-    
-    filters.date_from = startUTC.toISOString().split('T')[0];
-    filters.date_to = endUTC.toISOString().split('T')[0];
-} else {
-    // Date range
-    const startLocal = new Date(appliedFilters.start_date);
-    startLocal.setHours(0, 0, 0, 0);
-    const startUTC = new Date(startLocal.toISOString());
-    
-    const endLocal = new Date(appliedFilters.end_date as Date);
-    endLocal.setHours(23, 59, 59, 999);
-    const endUTC = new Date(endLocal.toISOString());
-    
-    filters.date_from = startUTC.toISOString().split('T')[0];
-    filters.date_to = endUTC.toISOString().split('T')[0];
-  }
+ 
+  filters.date_from = appliedFilters.start_date.toISOString().split('T')[0];
+  filters.date_to = appliedFilters.end_date 
+    ? appliedFilters.end_date.toISOString().split('T')[0]
+    : filters.date_from;
   
   return filters;
 }, [appliedFilters.start_date, appliedFilters.end_date]);
