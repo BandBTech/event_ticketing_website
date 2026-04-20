@@ -70,50 +70,6 @@ export default function BillingPage() {
 
   const selectedId = searchParams.get("id");
 
-const handleDateRangeApply = () => {
-  if (!dateRange?.from) {
-    toast.error("Please select a date range");
-    return;
-  }
-  
-  // Store dates in LOCAL time (not UTC)
-  const normalizedStart = new Date(dateRange.from);
-  normalizedStart.setHours(0, 0, 0, 0);
-  
-  const normalizedEnd = dateRange.to 
-    ? new Date(dateRange.to)
-    : new Date(dateRange.from);
-  normalizedEnd.setHours(23, 59, 59, 999);
-  
-  // Validation
-  if (normalizedEnd < normalizedStart) {
-    toast.error("End date cannot be before start date");
-    return;
-  }
-  
-  const monthDiff = (normalizedEnd.getFullYear() - normalizedStart.getFullYear()) * 12 +
-                   (normalizedEnd.getMonth() - normalizedStart.getMonth());
-  if (monthDiff > 3) {
-    toast.error("Range cannot exceed 3 months");
-    return;
-  }
-  
-  console.log('=== STORING LOCAL DATES ===');
-  console.log('Start (local):', normalizedStart);
-  console.log('End (local):', normalizedEnd);
-  
-  // Store the normalized local dates
-  setAppliedFilters({
-    ...appliedFilters,
-    start_date: normalizedStart,
-    end_date: normalizedEnd,
-  });
-  
-  setPage(1);
-  setAllTransactions([]);
-  setIsFilterOpen(false);
-  toast.success("Filters applied");
-};
 
 // Update date range when filters change
 useEffect(() => {
@@ -249,12 +205,54 @@ const apiFilters = useMemo((): TransactionApiFilters => {
     setDateRange({ from, to });
   };
 
-  const getActiveFiltersCount = () => {
-    let count = 0;
-    if (searchInput) count++;
-    if (appliedFilters.start_date || appliedFilters.end_date) count++;
-    return count;
-  };
+  // const getActiveFiltersCount = () => {
+  //   let count = 0;
+  //   if (searchInput) count++;
+  //   if (appliedFilters.start_date || appliedFilters.end_date) count++;
+  //   return count;
+  // };
+
+  const handleDateRangeApply = () => {
+  if (!dateRange?.from) {
+    toast.error("Please select a date range");
+    return;
+  }
+  
+  // Store dates in LOCAL time (not UTC)
+  const normalizedStart = new Date(dateRange.from);
+  normalizedStart.setHours(0, 0, 0, 0);
+  
+  const normalizedEnd = dateRange.to 
+    ? new Date(dateRange.to)
+    : new Date(dateRange.from);
+  normalizedEnd.setHours(23, 59, 59, 999);
+  
+  // Validation
+  if (normalizedEnd < normalizedStart) {
+    toast.error("End date cannot be before start date");
+    return;
+  }
+  
+  const monthDiff = (normalizedEnd.getFullYear() - normalizedStart.getFullYear()) * 12 +
+                   (normalizedEnd.getMonth() - normalizedStart.getMonth());
+  if (monthDiff > 3) {
+    toast.error("Range cannot exceed 3 months");
+    return;
+  }
+  
+  // Store the normalized local dates
+  setAppliedFilters({
+    ...appliedFilters,
+    start_date: normalizedStart,
+    end_date: normalizedEnd,
+  });
+  
+  setPage(1);
+  setAllTransactions([]);
+  setIsFilterOpen(false);
+  toast.success("Filters applied");
+};
+
 
   const showLoading = isLoading && page === 1;
   const hasActiveFilters =
@@ -333,11 +331,12 @@ const apiFilters = useMemo((): TransactionApiFilters => {
                   >
                     <Filter className="h-4 w-4" />
                     <span className="text-sm font-medium">Filters</span>
-                    {hasActiveFilters && (
+                  {/*  {hasActiveFilters && (
                       <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-blue-500 rounded-full">
                         {getActiveFiltersCount()}
                       </span>
                     )}
+                      */} 
                     <ChevronDown className="h-3 w-3 opacity-50" />
                   </button>
                 </PopoverTrigger>
