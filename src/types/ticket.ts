@@ -4,19 +4,19 @@ export type TicketStatus = 'active' | 'used' | 'cancelled' | 'expired' | 'transf
 export interface ApiTicketItem {
   ticket_id: string;
   ticket_number: string;
-  tier_name: string;
-  tierName:{
-  id: string;
-  name: string;
+  tier_name?: string;
+  tierName?: {
+    id: string;
+    name: string;
   };
-  // tier:{
-  //   id: string;
-  //   name: string;
-  // };
+  tier?: {
+    id: string;
+    name: string;
+  };
   price: number;
   qr_data: string; // base64 encoded QR data
   checked_in: boolean;
-  is_checked_in: boolean;
+  is_checked_in?: boolean;
 }
 
 export interface ApiTicketResponse {

@@ -260,14 +260,11 @@ export const ticketService = {
     return response.data.tickets.map((t) => ({
       ticketId: t.ticket_id,
       ticketNumber: t.ticket_number,
-       tierName: {
-          id: t.tierName.id,
-          name: t.tierName.name,
-        },
+      tierName: normalizeTierName(t),
       price: t.price,
       qrData: t.qr_data,
-      checkedIn: t.checked_in,
-      is_checked_in: t.checked_in
+      checkedIn: Boolean(t.checked_in ?? t.is_checked_in),
+      is_checked_in: Boolean(t.is_checked_in ?? t.checked_in),
     }));
   },
 
@@ -348,14 +345,11 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
       ticketId: t.ticket_id,
       ticketNumber: t.ticket_number,
       //tierName: t.tier_name,
-       tierName: {
-         id: t.tierName.id,
-         name: t.tierName.name,
-       },
+      tierName: normalizeTierName(t),
       price: t.price,
       qrData: t.qr_data,
-      checkedIn: t.checked_in,
-      is_checked_in: t.is_checked_in,
+      checkedIn: Boolean(t.checked_in ?? t.is_checked_in),
+      is_checked_in: Boolean(t.is_checked_in ?? t.checked_in),
     })),
     ticketCount: apiResponse.ticket_count,
     transactionStatus: apiResponse.transaction_status,
@@ -369,4 +363,18 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
         }
       : undefined,
   };
+};
+
+const normalizeTierName = (t: {
+  tier_name?: string;
+  tierName?: { id: string; name: string };
+  tier?: { id: string; name: string };
+}): { id: string; name: string } => {
+  if (t.tierName?.id || t.tierName?.name) {
+    return { id: t.tierName?.id ?? "", name: t.tierName?.name ?? "" };
+  }
+  if (t.tier?.id || t.tier?.name) {
+    return { id: t.tier?.id ?? "", name: t.tier?.name ?? "" };
+  }
+  return { id: "", name: t.tier_name ?? "" };
 };

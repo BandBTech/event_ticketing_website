@@ -68,12 +68,40 @@ function TicketVerification() {
     if (!element) return;
 
     try {
-      // Use html-to-image (better support for modern CSS) + jsPDF
-      const dataUrl = await toPng(element, {
-        cacheBust: true,
-        backgroundColor: "white",
-        pixelRatio: 2 // Higher quality
-      });
+      const waitForImages = async (root: HTMLElement, timeoutMs = 3000) => {
+        const images = Array.from(root.querySelectorAll("img"));
+        if (images.length === 0) return;
+
+        await Promise.race([
+          Promise.all(
+            images.map(
+              (img) =>
+                new Promise<void>((resolve) => {
+                  if (img.complete) return resolve();
+                  const cleanup = () => {
+                    img.removeEventListener("load", cleanup);
+                    img.removeEventListener("error", cleanup);
+                    resolve();
+                  };
+                  img.addEventListener("load", cleanup);
+                  img.addEventListener("error", cleanup);
+                }),
+            ),
+          ),
+          new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
+        ]);
+      };
+
+      const describeError = (err: unknown) => {
+        if (err instanceof Error) return `${err.name}: ${err.message}`;
+        try {
+          return JSON.stringify(err);
+        } catch {
+          return String(err);
+        }
+      };
+
+      await waitForImages(element);
 
       // A4 dimensions in mm
       const pdf = new jsPDF({
@@ -82,16 +110,79 @@ function TicketVerification() {
         format: "a4",
       });
 
-      const imgWidth = 210; // A4 width
-      const imgProps = pdf.getImageProperties(dataUrl);
-      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10; // mm
+      const maxWidth = pageWidth - margin * 2;
+      const maxHeight = pageHeight - margin * 2;
 
-      pdf.addImage(dataUrl, "PNG", 0, 0, imgWidth, imgHeight);
-      pdf.save(`tickets-${token}.pdf`);
+      const ticketNodes = Array.from(
+        element.querySelectorAll<HTMLElement>('[data-ticket-card="true"]'),
+      );
+      const nodesToExport = ticketNodes.length > 0 ? ticketNodes : [element];
+
+      let exportedWithoutImages = false;
+
+      const renderPng = async (
+        node: HTMLElement,
+        opts?: Parameters<typeof toPng>[1],
+      ) =>
+        toPng(node, {
+          cacheBust: true,
+          backgroundColor: "white",
+          pixelRatio: 2, // Higher quality
+          ...opts,
+        });
+
+      for (let i = 0; i < nodesToExport.length; i++) {
+        const node = nodesToExport[i]!;
+        await waitForImages(node);
+
+        let dataUrl: string;
+        try {
+          dataUrl = await renderPng(node);
+        } catch (err) {
+          // Common cause: remote images without CORS taint the canvas.
+          console.warn(
+            "Ticket export failed (retrying without <img> tags):",
+            describeError(err),
+          );
+          exportedWithoutImages = true;
+          dataUrl = await renderPng(node, {
+            filter: (n) => (n as Element).tagName !== "IMG",
+          });
+        }
+
+        if (i > 0) pdf.addPage();
+
+        const imgProps = pdf.getImageProperties(dataUrl);
+        const scale = Math.min(
+          maxWidth / imgProps.width,
+          maxHeight / imgProps.height,
+        );
+        const drawWidth = imgProps.width * scale;
+        const drawHeight = imgProps.height * scale;
+        const x = Math.max(margin, (pageWidth - drawWidth) / 2);
+        const y = Math.max(margin, (pageHeight - drawHeight) / 2);
+
+        pdf.addImage(dataUrl, "PNG", x, y, drawWidth, drawHeight);
+      }
+
+      if (exportedWithoutImages) {
+        toast.message(
+          "Exported without some images due to CORS restrictions (banner/logo).",
+        );
+      }
+
+      const orderId = ticketDetails?.orderId;
+      const shortId = orderId ? orderId.split("-")[0] : "tickets";
+      pdf.save(`tickets-${shortId}.pdf`);
 
       toast.success("Ticket exported successfully!");
     } catch (err) {
-      console.error("Failed to generate PDF:", err);
+      const message =
+        err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+      console.error("Failed to generate PDF:", message, err);
       toast.error("Failed to generate PDF. Please try printing explicitly.");
     }
   };
