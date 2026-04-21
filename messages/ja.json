@@ -425,6 +425,8 @@
       "loginToBuy": "ログインしてチケットを購入する",
       "share": "イベントを共有する",
       "findTickets": "チケットを購入する",
+      "soldOut": "売り切れ",
+      "soldOutNote": "このイベントのチケットはすべて売り切れました。",
       "ticketSalesPaused": "チケット販売一時停止中",
       "ticketSalesStopped": "チケット販売終了",
       "ticketSalesPausedNote": "チケット販売は一時的に中止とさせていただきます。\n後でもう一度確認してください。",

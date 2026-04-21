@@ -96,26 +96,39 @@ export const EventSidebar = ({ event, onShare, onFindTickets }: EventSidebarProp
       const availableTickets = event.ticketTypes.filter(
         (t) => t.available > 0 && t.sales_start <= now && t.sales_end >= now && t.isActive
       );
-      const lowestAvailablePrice = availableTickets.length > 0
-        ? Math.min(...availableTickets.map((t) => t.price))
-        : null;
+
+      if (availableTickets.length === 0) {
+        return (
+          <div className="bg-gray-100 border flex items-start gap-2 border-gray-200 rounded-xl p-4 animate-in fade-in slide-in-from-top-2">
+            <InfoIcon size={24} weight="duotone" className="text-gray-500 mt-1 shrink-0" />
+            <div className="text-gray-800">
+              <span className="font-bold leading-8">
+                {t("eventDetails.button.soldOut", "Sold Out")}
+              </span>
+              <p className="text-sm text-gray-700">
+                {t("eventDetails.button.soldOutNote", "All tickets for this event have been sold out.")}
+              </p>
+            </div>
+          </div>
+        );
+      }
+
+      const lowestAvailablePrice = Math.min(...availableTickets.map((t) => t.price));
 
       return (
         <>
-          {lowestAvailablePrice !== null && (
-            <div className="mb-4">
-              <p className="text-sm text-gray-500 font-medium">
-                {t("events.startingFrom", "Tickets starting from")}
-              </p>
-              <p className="text-2xl font-bold text-blue-600">
-                {new Intl.NumberFormat("en-NP", {
-                  style: "currency",
-                  currency: availableTickets[0].currency,
-                  minimumFractionDigits: 0,
-                }).format(lowestAvailablePrice)}
-              </p>
-            </div>
-          )}
+          <div className="mb-4">
+            <p className="text-sm text-gray-500 font-medium">
+              {t("events.startingFrom", "Tickets starting from")}
+            </p>
+            <p className="text-2xl font-bold text-blue-600">
+              {new Intl.NumberFormat("en-NP", {
+                style: "currency",
+                currency: availableTickets[0].currency,
+                minimumFractionDigits: 0,
+              }).format(lowestAvailablePrice)}
+            </p>
+          </div>
           <Button
             onClick={onFindTickets}
             className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"

@@ -423,6 +423,8 @@
       "loginToBuy": "Accedi per acquistare i biglietti",
       "share": "Condividi evento",
       "findTickets": "Acquista i biglietti",
+      "soldOut": "Esaurito",
+      "soldOutNote": "Tutti i biglietti per questo evento sono esauriti.",
       "ticketSalesPaused": "Vendita biglietti sospesa",
       "ticketSalesStopped": "La vendita dei biglietti è stata interrotta",
       "ticketSalesPausedNote": "La vendita dei biglietti è momentaneamente sospesa. \nRicontrolla più tardi.",

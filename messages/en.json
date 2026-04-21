@@ -544,6 +544,8 @@
       "loginToBuy": "Login to Buy Tickets",
       "share": "Share Event",
       "findTickets": "Buy Tickets",
+      "soldOut": "Sold Out",
+      "soldOutNote": "All tickets for this event have been sold out.",
       "ticketSalesEnded": "Ticket Sales Ended",
       "ticketSalesNotStarted": "Ticket Sales Not Started",
       "ticketSalesPaused": "Ticket Sales Paused",
