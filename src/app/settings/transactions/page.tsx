@@ -44,7 +44,7 @@ import {
   subMonths,
   endOfDay,
 } from "date-fns";
-import { fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime } from "date-fns-tz";
 import { toast } from "sonner";
 
 export default function BillingPage() {
@@ -70,48 +70,46 @@ export default function BillingPage() {
 
   const selectedId = searchParams.get("id");
 
+  // Update date range when filters change
+  useEffect(() => {
+    setDateRange({
+      from: appliedFilters.start_date,
+      to: appliedFilters.end_date,
+    });
+  }, [appliedFilters.start_date, appliedFilters.end_date]);
 
-// Update date range when filters change
-useEffect(() => {
-  setDateRange({
-    from: appliedFilters.start_date,
-    to: appliedFilters.end_date,
-  });
-}, [appliedFilters.start_date, appliedFilters.end_date]);
+  //Api Filters
+  const apiFilters = useMemo((): TransactionApiFilters => {
+    const filters: TransactionApiFilters = {};
 
-//Api Filters
-const apiFilters = useMemo((): TransactionApiFilters => {
-  const filters: TransactionApiFilters = {};
-  
-  if (!appliedFilters.start_date) return filters;
- 
-  filters.date_from = appliedFilters.start_date.toISOString().split('T')[0];
-  filters.date_to = appliedFilters.end_date 
-    ? appliedFilters.end_date.toISOString().split('T')[0]
-    : filters.date_from;
-  
-  return filters;
-}, [appliedFilters.start_date, appliedFilters.end_date]);
+    if (!appliedFilters.start_date) return filters;
 
+    filters.date_from = appliedFilters.start_date.toISOString().split("T")[0];
+    filters.date_to = appliedFilters.end_date
+      ? appliedFilters.end_date.toISOString().split("T")[0]
+      : filters.date_from;
+
+    return filters;
+  }, [appliedFilters.start_date, appliedFilters.end_date]);
 
   // Fetch Data
   const {
     data: response,
     isLoading,
     isFetching,
-
+    refetch,
   } = useUserTransactions(page, 20, apiFilters, searchInput);
-
 
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
   );
 
   // Reset pagination when search or filters change
-  // useEffect(() => {
-  //   setPage(1);
-  //   setAllTransactions([]);
-  // }, [searchInput, apiFilters.date_from, apiFilters.date_to]);
+  useEffect(() => {
+    setPage(1);
+    setAllTransactions([]);
+    refetch();
+  }, [searchInput, apiFilters.date_from, apiFilters.date_to, refetch]);
 
   // Accumulate Results
   useEffect(() => {
@@ -141,7 +139,6 @@ const apiFilters = useMemo((): TransactionApiFilters => {
     response?.data?.pagination,
   ]);
 
-
   // Handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -167,7 +164,6 @@ const apiFilters = useMemo((): TransactionApiFilters => {
     }
   };
 
-
   const handleDateRangeClear = () => {
     setDateRange({ from: undefined, to: undefined });
   };
@@ -178,6 +174,43 @@ const apiFilters = useMemo((): TransactionApiFilters => {
     setDateRange({ from, to });
   };
 
+  const handleClear = () => {
+    if (dateRange?.from || dateRange?.to) {
+      setDateRange({ from: undefined, to: undefined });
+      toast.info("Date selection cleared");
+      return;
+    }
+
+    if (hasActiveFilters) {
+      handleClearAll();
+      toast.success("All filters cleared");
+      return;
+    }
+
+    toast.info("Nothing to clear");
+  };
+  const getClearButtonStyle = () => {
+    if (dateRange?.from || dateRange?.to) {
+      return "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100";
+    }
+    if (hasActiveFilters) {
+      return "bg-red-50 border-red-100 text-red-600 hover:bg-red-100";
+    }
+    return "bg-gray-50 border-gray-200 text-gray-400 hover:bg-gray-100 cursor-not-allowed";
+  };
+const getClearButtonText = () => {
+  if (dateRange?.from || dateRange?.to) {
+    return "Clear Dates";
+  }
+  if (hasActiveFilters) {
+    return "Clear Filters";
+  }
+  return "Clear";
+};
+
+const getClearButtonIcon = () => {
+  return <Eraser className="h-4 w-4" />;
+};
   // const getActiveFiltersCount = () => {
   //   let count = 0;
   //   if (searchInput) count++;
@@ -186,46 +219,54 @@ const apiFilters = useMemo((): TransactionApiFilters => {
   // };
 
   const handleDateRangeApply = () => {
-  if (!dateRange?.from) {
-    toast.error("Please select a date range");
-    return;
-  }
-  
-  // Store dates in LOCAL time (not UTC)
-  const normalizedStart = new Date(dateRange.from);
-  normalizedStart.setHours(0, 0, 0, 0);
-  
-  const normalizedEnd = dateRange.to 
-    ? new Date(dateRange.to)
-    : new Date(dateRange.from);
-  normalizedEnd.setHours(23, 59, 59, 999);
-  
-  // Validation
-  if (normalizedEnd < normalizedStart) {
-    toast.error("End date cannot be before start date");
-    return;
-  }
-  
-  const monthDiff = (normalizedEnd.getFullYear() - normalizedStart.getFullYear()) * 12 +
-                   (normalizedEnd.getMonth() - normalizedStart.getMonth());
-  if (monthDiff > 3) {
-    toast.error("Range cannot exceed 3 months");
-    return;
-  }
-  
-  // Store the normalized local dates
-  setAppliedFilters({
-    ...appliedFilters,
-    start_date: normalizedStart,
-    end_date: normalizedEnd,
-  });
-  
-  setPage(1);
-  setAllTransactions([]);
-  setIsFilterOpen(false);
-  toast.success("Filters applied");
-};
+    if (!dateRange?.from) {
+      toast.error("Please select a date range");
+      return;
+    }
 
+    const normalizedStart = new Date(dateRange.from);
+    normalizedStart.setHours(0, 0, 0, 0);
+
+    const normalizedEnd = dateRange.to
+      ? new Date(dateRange.to)
+      : new Date(dateRange.from);
+    normalizedEnd.setHours(23, 59, 59, 999);
+
+    // Validation
+    if (normalizedEnd < normalizedStart) {
+      toast.error("End date cannot be before start date");
+      return;
+    }
+
+    const monthDiff =
+      (normalizedEnd.getFullYear() - normalizedStart.getFullYear()) * 12 +
+      (normalizedEnd.getMonth() - normalizedStart.getMonth());
+    if (monthDiff > 3) {
+      toast.error("Range cannot exceed 3 months");
+      return;
+    }
+
+    // Clear existing data immediately
+    setAllTransactions([]);
+    setPage(1);
+
+    // Update filters
+    setAppliedFilters({
+      ...appliedFilters,
+      start_date: normalizedStart,
+      end_date: normalizedEnd,
+    });
+
+    setIsFilterOpen(false);
+    toast.success("Filters applied");
+  };
+
+  // Add this useEffect to refetch when filters change
+  useEffect(() => {
+    if (apiFilters.date_from || apiFilters.date_to) {
+      refetch();
+    }
+  }, [apiFilters, refetch]);
 
   const showLoading = isLoading && page === 1;
   const hasActiveFilters =
@@ -304,12 +345,12 @@ const apiFilters = useMemo((): TransactionApiFilters => {
                   >
                     <Filter className="h-4 w-4" />
                     <span className="text-sm font-medium">Filters</span>
-                  {/*  {hasActiveFilters && (
+                    {/*  {hasActiveFilters && (
                       <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-blue-500 rounded-full">
                         {getActiveFiltersCount()}
                       </span>
                     )}
-                      */} 
+                      */}
                     <ChevronDown className="h-3 w-3 opacity-50" />
                   </button>
                 </PopoverTrigger>
@@ -354,11 +395,10 @@ const apiFilters = useMemo((): TransactionApiFilters => {
                         onSelect={setDateRange}
                         numberOfMonths={1}
                         disabled={{ after: new Date() }}
-                       
                         classNames={{
                           months: "w-full",
                           month: "space-y-2 w-full",
-                         
+
                           caption:
                             "flex justify-center relative items-center w-full",
                           caption_label: "text-sm font-medium",
@@ -396,12 +436,12 @@ const apiFilters = useMemo((): TransactionApiFilters => {
                       <div className="mt-3 p-2 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-gray-600">Selected range:</span>
-                          <button
+                          {/* <button
                             onClick={handleDateRangeClear}
                             className="text-red-500 hover:text-red-600 text-xs"
                           >
                             Clear
-                          </button>
+                          </button> */}
                         </div>
                         <div className="flex items-center gap-2 mt-1 text-sm font-medium text-gray-900">
                           <CalendarRange className="h-3 w-3 flex-shrink-0" />
@@ -421,11 +461,25 @@ const apiFilters = useMemo((): TransactionApiFilters => {
 
                   <div className="flex flex-col sm:flex-row gap-2 p-3 sm:p-4 border-t bg-gray-50">
                     <button
-                      onClick={handleDateRangeClear}
-                      className="order-2 sm:order-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      onClick={handleClear}
+                      disabled={
+                        !dateRange?.from && !dateRange?.to && !hasActiveFilters
+                      }
+                      className={cn(
+                        "flex items-center justify-center gap-2 px-4 h-[42px] border rounded-xl transition-all font-medium text-sm active:scale-95",
+                        getClearButtonStyle(),
+                      )}
                     >
-                      Clear
+                      {getClearButtonIcon()}
+                      <span className="hidden sm:inline">
+                        {getClearButtonText()}
+                      </span>
+                      {/* Optional: Show badge for what will be cleared */}
+                      {dateRange?.from && !hasActiveFilters && (
+                        <span className="ml-1 text-xs"></span>
+                      )}
                     </button>
+
                     <button
                       onClick={handleDateRangeApply}
                       className="order-1 sm:order-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
