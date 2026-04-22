@@ -11,6 +11,7 @@ export interface PublicEventsParams {
   min_price?: number;
   max_price?: number;
   sort?: string;
+  status?: string;
 }
 
 export interface FeaturedEventsParams {
@@ -195,6 +196,7 @@ export const eventService = {
     if (params.min_price) queryParams.append('min_price', params.min_price.toString());
     if (params.max_price) queryParams.append('max_price', params.max_price.toString());
     if (params.sort) queryParams.append('sort', params.sort);
+    if (params.status) queryParams.append('status', params.status);
 
     const response = await api.get<ApiEventsResponse>(`/public/events?${queryParams.toString()}`);
     return {

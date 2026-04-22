@@ -97,6 +97,12 @@
       "title": "Featured Events",
       "subtitle": "Don't miss out on these popular events"
     },
+    "salesLive": {
+      "title": "Sales Live",
+      "subtitle": "Tickets available for purchase now",
+      "loading": "Loading Sales...",
+      "noEvents": "No events currently on sale."
+    },
     "upcomingEvents": {
       "title": "Upcoming Events",
       "searchResults": "Search Results",

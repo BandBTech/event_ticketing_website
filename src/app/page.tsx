@@ -290,9 +290,10 @@ export default function HomePage() {
     search: searchQuery,
     category: selectedCategory,
     limit: 6,
-  });
+  }, { enabled: !!(searchQuery || selectedCategory) });
   const { data: salesLiveData, isLoading: salesLoading } = useEvents({
-    limit: 6, 
+    limit: 6,
+    status: "on_sale",
   });
 
   const { data: featuredEvents } = useFeaturedEvents();
@@ -312,9 +313,9 @@ export default function HomePage() {
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(selectedCategory === category ? "" : category);
   };
-  const handleOrganizeRedirect =() =>{
+  const handleOrganizeRedirect = () => {
     window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
-  }
+  };
 
   return (
     <div className="min-h-screen">
@@ -353,7 +354,7 @@ export default function HomePage() {
                 className="w-full"
               />
             </div>
-     
+
             {/* Only show when searching or filtering */}
             {(searchQuery || selectedCategory) && (
               <section className="py-16 px-4 sm:px-6 lg:px-8">
@@ -435,35 +436,37 @@ export default function HomePage() {
       </section>
 
       {/* SECTION 1: SALES LIVE */}
-      {salesLiveEvents && salesLiveEvents.length > 0 &&(
-
-     
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div className="space-y-1">
-              <h2 className="text-3xl font-bold text-gray-900 font-poppins">Sales Live</h2>
-              <p className="text-gray-500">Tickets available for purchase now</p>
-            </div>
-            {/* <Badge className="bg-green-500 hover:bg-green-600 animate-pulse">Live Now</Badge> */}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {salesLoading ? (
-              <p>Loading Sales...</p> 
-            ) : salesLiveEvents.length > 0 ? (
-              salesLiveEvents.map((event) => (
-                <HomeEvent key={event.id} event={event} />
-              ))
-            ) : (
-              <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed">
-                <p className="text-gray-400">No events currently on sale.</p>
+      {salesLiveEvents && salesLiveEvents.length > 0 && (
+        <section className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-8">
+              <div className="space-y-1">
+                <h2 className="text-3xl font-bold text-gray-900 font-poppins">
+                  {t("sections.salesLive.title")}
+                </h2>
+                <p className="text-gray-500">
+                  {t("sections.salesLive.subtitle")}
+                </p>
               </div>
-            )}
+              {/* <Badge className="bg-green-500 hover:bg-green-600 animate-pulse">Live Now</Badge> */}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {salesLoading ? (
+                <p>{t("sections.salesLive.loading")}</p>
+              ) : salesLiveEvents.length > 0 ? (
+                salesLiveEvents.map((event) => (
+                  <HomeEvent key={event.id} event={event} />
+                ))
+              ) : (
+                <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed">
+                  <p className="text-gray-400">{t("sections.salesLive.noEvents")}</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
-       )}
+        </section>
+      )}
 
       {/* Featured Events Section */}
       {/* {featuredEvents && featuredEvents.length > 0 && (
@@ -520,7 +523,8 @@ export default function HomePage() {
                 {t("sections.upcomingEvents.title")}
               </h2>
               <p className="text-gray-600 text-lg">
-                Showing {upcomingEvents.length} of {totalItems} {t("sections.upcomingEvents.subtitle")}
+                {t("common.pagination.showing")} {upcomingEvents.length} {t("common.pagination.of")} {totalItems}{" "}
+                {t("sections.upcomingEvents.subtitle")}
               </p>
             </div>
 
@@ -572,7 +576,7 @@ export default function HomePage() {
               isLoading={upcomingLoading}
             />
 
-           
+
             {upcomingPagination && upcomingPagination.total > 3 && (
               <div className="text-center mt-8">
                 <Link
@@ -600,7 +604,7 @@ export default function HomePage() {
                 {eventsData?.pagination.total || 0} {t('sections.upcomingEvents.eventsFound')}
               </p>
             </div>
-            
+
             {(searchQuery || selectedCategory) && (
               <Button
                 variant="outline"
@@ -620,7 +624,7 @@ export default function HomePage() {
             isLoading={eventsLoading}
           />
 
-        
+
           {eventsData && eventsData.pagination.page < eventsData.pagination.totalPages && (
             <div className="text-center mt-12">
               <FigmaButton
@@ -633,34 +637,39 @@ export default function HomePage() {
             </div>
           )}
         </div>
-      </section> 
+      </section>
   */}
 
       {/* CTA Section */}
-       {!isAuthenticated && !user && (
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="glass-strong rounded-2xl p-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4 font-poppins">
-              {t("sections.cta.title")}
-            </h2>
-            <p className="text-gray-600 text-lg mb-8">
-              {t("sections.cta.subtitle")}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <FigmaButton variant="primary" size="xl" showGlow={true} onClick={handleOrganizeRedirect}>
-                <UsersIcon weight="duotone" size={20} />
-                {t("sections.cta.organizeEvent")}
-              </FigmaButton>
-              <Link href="/about">
-              <FigmaButton variant="glass" size="xl">
-                {t("sections.cta.learnMore")}
-              </FigmaButton>
-              </Link>
+      {!isAuthenticated && !user && (
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="glass-strong rounded-2xl p-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4 font-poppins">
+                {t("sections.cta.title")}
+              </h2>
+              <p className="text-gray-600 text-lg mb-8">
+                {t("sections.cta.subtitle")}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <FigmaButton
+                  variant="primary"
+                  size="xl"
+                  showGlow={true}
+                  onClick={handleOrganizeRedirect}
+                >
+                  <UsersIcon weight="duotone" size={20} />
+                  {t("sections.cta.organizeEvent")}
+                </FigmaButton>
+                <Link href="/about">
+                  <FigmaButton variant="glass" size="xl">
+                    {t("sections.cta.learnMore")}
+                  </FigmaButton>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
     </div>
   );

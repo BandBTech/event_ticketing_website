@@ -6,12 +6,12 @@ import { queryKeys } from '@/lib/queryKeys';
 
 
 
-export const useEvents = (params: QueryParams = {}) => {
+export const useEvents = (params: QueryParams = {}, options: { enabled?: boolean } = {}) => {
   return useQuery({
     queryKey: ['events', params],
     queryFn: () => eventService.getPublicEvents(params),
-    staleTime: 0, // 5 minutes
-
+    staleTime: 0,
+    ...options,
   });
 };
 

@@ -71,6 +71,12 @@
       "title": "Eventi in Evidenza",
       "subtitle": "Non perdere questi eventi popolari"
     },
+    "salesLive": {
+      "title": "Vendite Live",
+      "subtitle": "Biglietti disponibili per l'acquisto ora",
+      "loading": "Caricamento vendite...",
+      "noEvents": "Nessun evento attualmente in vendita."
+    },
     "upcomingEvents": {
       "title": "Eventi Prossimi",
       "searchResults": "Risultati di Ricerca",
