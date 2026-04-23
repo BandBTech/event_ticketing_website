@@ -292,7 +292,9 @@ export default function TicketsPage() {
     ]);
   };
 
-  const generateTicketsPdf = async (order: ViewTicketDetails): Promise<Blob> => {
+  const generateTicketsPdf = async (
+    order: ViewTicketDetails,
+  ): Promise<Blob> => {
     setIsGeneratingPdf(true);
     try {
       // Give React time to render TicketDisplay and QR codes to mount
@@ -302,7 +304,11 @@ export default function TicketsPage() {
       if (!container) throw new Error("Ticket container not found");
       await waitForImages(container);
 
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 10;
@@ -342,7 +348,10 @@ export default function TicketsPage() {
 
         if (i > 0) pdf.addPage();
         const imgProps = pdf.getImageProperties(dataUrl);
-        const scale = Math.min(maxWidth / imgProps.width, maxHeight / imgProps.height);
+        const scale = Math.min(
+          maxWidth / imgProps.width,
+          maxHeight / imgProps.height,
+        );
         const drawWidth = imgProps.width * scale;
         const drawHeight = imgProps.height * scale;
         const x = Math.max(margin, (pageWidth - drawWidth) / 2);
@@ -371,7 +380,9 @@ export default function TicketsPage() {
       toast.success("Tickets downloaded!", { id: loadingToastId });
     } catch (error) {
       console.error("Download error:", error);
-      toast.error("Failed to generate PDF. Please try again.", { id: loadingToastId });
+      toast.error("Failed to generate PDF. Please try again.", {
+        id: loadingToastId,
+      });
     }
   };
 
@@ -383,7 +394,9 @@ export default function TicketsPage() {
       const shortId = order.orderId.split("-")[0];
       const fileName = `tickets-${shortId}.pdf`;
 
-      const pdfFile = new File([pdfBlob], fileName, { type: "application/pdf" });
+      const pdfFile = new File([pdfBlob], fileName, {
+        type: "application/pdf",
+      });
       const canShareFiles =
         typeof navigator !== "undefined" &&
         typeof navigator.canShare === "function" &&
@@ -404,14 +417,19 @@ export default function TicketsPage() {
         link.download = fileName;
         link.click();
         URL.revokeObjectURL(url);
-        toast.success("PDF downloaded (sharing not supported in this browser)", {
-          id: loadingToastId,
-        });
+        toast.success(
+          "PDF downloaded (sharing not supported in this browser)",
+          {
+            id: loadingToastId,
+          },
+        );
       }
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
         console.error("Share error:", error);
-        toast.error("Could not share tickets. Please try again.", { id: loadingToastId });
+        toast.error("Could not share tickets. Please try again.", {
+          id: loadingToastId,
+        });
       } else {
         toast.dismiss(loadingToastId);
       }
@@ -914,30 +932,40 @@ export default function TicketsPage() {
                             </div>
                             <Badge
                               className={cn(
-                                ticket.is_checked_in
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-green-100 text-green-700",
+                                "text-xs font-medium",
+                                ticket.status === "expired" &&
+                                  "bg-red-100 text-red-700",
+                                ticket.status === "active" &&
+                                  "bg-green-100 text-green-700",
+                                ticket.status === "used" &&
+                                  "bg-blue-100 text-blue-700",
+                                ticket.status === "refunded" &&
+                                  "bg-amber-100 text-amber-700",
                               )}
                             >
-                              {ticket.is_checked_in ? "Used" : "Active"}
+                              {ticket.status === "expired" && "Expired"}
+                              {ticket.status === "active" && "Active"}
+                              {ticket.status === "used" && "Used"}
+                              {ticket.status === "refunded" && "Refunded"}
                             </Badge>
                           </div>
 
                           {/* Actions */}
                           <div className="flex gap-2 flex-wrap">
-                            {!ticket.is_checked_in && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 text-xs text-destructive hover:text-destructive hover:bg-red-50 border-destructive/20"
-                                onClick={() =>
-                                  handleCancelTicket(ticket.ticketId)
-                                }
-                                disabled={cancelMutation.isPending}
-                              >
-                                <X className="h-3.5 w-3.5 mr-1" /> Cancel
-                              </Button>
-                            )}
+                            {ticket.status === "active" &&
+                              !ticket.is_checked_in && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 text-xs text-destructive hover:text-destructive hover:bg-red-50 border-destructive/20"
+                                  onClick={() =>
+                                    handleCancelTicket(ticket.ticketId)
+                                  }
+                                  disabled={cancelMutation.isPending}
+                                >
+                                  <X className="h-3.5 w-3.5 mr-1" /> Cancel
+                                </Button>
+                              )}
                           </div>
                         </div>
 

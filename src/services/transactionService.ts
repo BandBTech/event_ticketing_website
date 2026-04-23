@@ -35,6 +35,12 @@ export const transactionService = {
       if (filters.date_to) {
         params.append("date_to", filters.date_to);
       }
+      if (filters.datetime_from) {
+        params.append('datetime_from', filters.datetime_from);
+      }
+      if (filters.datetime_to) {
+        params.append('datetime_to', filters.datetime_to);
+      }
     }
 
     return api.get<PaginatedTransactions>(

@@ -218,6 +218,7 @@ export const ticketService = {
           ticketId: t.id,
           ticketNumber: t.ticket_number,
           price: t.total_amount,
+          status: t.status,
           tierName: {
             id: "",
             name: t.tier_name,
@@ -263,6 +264,7 @@ export const ticketService = {
       tierName: normalizeTierName(t),
       price: t.price,
       qrData: t.qr_data,
+      status: t.status,
       checkedIn: Boolean(t.checked_in ?? t.is_checked_in),
       is_checked_in: Boolean(t.is_checked_in ?? t.checked_in),
     }));
@@ -294,6 +296,7 @@ export const ticketService = {
       },
       tickets: d.tickets.map((t) => ({
         ticketId: t.id,
+        status: t.status,
         ticketNumber: t.ticket_number,
         price: 0,
         tierName: {
@@ -342,6 +345,7 @@ const mapTicketView = (apiResponse: ApiTicketResponse): ViewTicketDetails => {
     tickets: apiResponse.tickets.map((t) => ({
       ticketId: t.ticket_id,
       ticketNumber: t.ticket_number,
+      status: t.status,
       //tierName: t.tier_name,
       tierName: normalizeTierName(t),
       price: t.price,

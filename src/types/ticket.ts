@@ -1,4 +1,3 @@
-export type TicketStatus = 'active' | 'used' | 'cancelled' | 'expired' | 'transferred' | 'valid';
 
 // API Response Types (snake_case) - matches actual /public/tickets/view response
 export interface ApiTicketItem {
@@ -17,6 +16,7 @@ export interface ApiTicketItem {
   qr_data: string; // base64 encoded QR data
   checked_in: boolean;
   is_checked_in?: boolean;
+  status: string;
 }
 
 export interface ApiTicketResponse {
@@ -58,6 +58,7 @@ export interface ApiTicketResponse {
 export interface TicketItem {
   ticketId: string;
   ticketNumber: string;
+  status: string;
   //tierName: string;
   tierName:{
   id: string;
@@ -67,6 +68,7 @@ export interface TicketItem {
   qrData: string;
   checkedIn: boolean;
   is_checked_in: boolean;
+  
 }
 
 export interface ViewTicketDetails {
@@ -92,6 +94,7 @@ export interface ViewTicketDetails {
   };
   tickets: TicketItem[];
   totalAmount: number;
+
   currency: string;
   purchaseDate: string;
   company?: {
@@ -160,7 +163,7 @@ export interface ApiUserTicket {
   ticket_count: number;
   total_amount: number;
   payment_gateway: string;
-  status: 'active' | 'used' | 'cancelled' | 'expired';
+  status: string;
   created_at: string;
   transaction_status: string;
   event: {
@@ -246,6 +249,7 @@ export interface ApiTransaction {
   tickets: Array<{
     id: string;
     ticket_number: string;
+    status: string;
     tier: {
       id: string;
       name: string;
@@ -285,6 +289,7 @@ export interface ViewTicketDetail {
 export interface TicketItems {
   ticketId: string;
   ticketNumber: string;
+  status: string;
   tierName: { id: string; name: string };
   qrData: string;
   is_checked_in: boolean;

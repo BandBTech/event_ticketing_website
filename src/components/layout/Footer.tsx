@@ -138,11 +138,7 @@ export function Footer() {
                 className="text-gray-600 leading-relaxed text-sm"
                 suppressHydrationWarning
               >
-                {company?.description ||
-                  t(
-                    "footer.description",
-                    "Your trusted platform for event tickets and memorable experiences.",
-                  )}
+                {company?.description}
               </p>
 
               {/* Contact Info */}
