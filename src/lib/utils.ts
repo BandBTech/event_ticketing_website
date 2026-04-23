@@ -262,3 +262,4 @@ export const formatCurrency = (amount: number, currency: string = "USD", locale:
     maximumFractionDigits: hasFraction ? 2 : 0,
   }).format(amount);
 };
+

@@ -22,7 +22,7 @@ import {
   TransactionFilters,
   getDefaultFilters,
 } from "@/types/transaction";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate,} from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TransactionDetail } from "@/components/transactions/TransactionDetail";
 import { FigmaButton } from "@/components/ui/figma-button";
@@ -44,7 +44,6 @@ import {
   subMonths,
   endOfDay,
 } from "date-fns";
-import { fromZonedTime } from "date-fns-tz";
 import { toast } from "sonner";
 
 export default function BillingPage() {
@@ -79,18 +78,34 @@ export default function BillingPage() {
   }, [appliedFilters.start_date, appliedFilters.end_date]);
 
   //Api Filters
-  const apiFilters = useMemo((): TransactionApiFilters => {
-    const filters: TransactionApiFilters = {};
+const apiFilters = useMemo((): TransactionApiFilters => {
+  const filters: TransactionApiFilters = {};
+  
+  if (!appliedFilters.start_date) return filters;
+  
+  const localToUTC = (localDate: Date): string => {
+    
+    const year = localDate.getFullYear();
+    const month = localDate.getMonth();
+    const day = localDate.getDate();
+    const tzOffsetHours = -localDate.getTimezoneOffset() / 60;
+  
+    const utcDate = new Date(Date.UTC(year, month, day));
+    if (tzOffsetHours >= 5) {
+      utcDate.setUTCDate(utcDate.getUTCDate() - 1);
+    }
+    return `${utcDate.getUTCFullYear()}-${String(utcDate.getUTCMonth() + 1).padStart(2, '0')}-${String(utcDate.getUTCDate()).padStart(2, '0')}`;
+  };
+  
+  const endDate = appliedFilters.end_date || appliedFilters.start_date;
+  
+  filters.date_from = localToUTC(appliedFilters.start_date);
+  filters.date_to = localToUTC(endDate);
+  
 
-    if (!appliedFilters.start_date) return filters;
-
-    filters.date_from = appliedFilters.start_date.toISOString().split("T")[0];
-    filters.date_to = appliedFilters.end_date
-      ? appliedFilters.end_date.toISOString().split("T")[0]
-      : filters.date_from;
-
-    return filters;
-  }, [appliedFilters.start_date, appliedFilters.end_date]);
+  
+  return filters;
+}, [appliedFilters.start_date, appliedFilters.end_date]);
 
   // Fetch Data
   const {
