@@ -1,44 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import en from '../../messages/en.json';
+import ja from '../../messages/ja.json';
+import it from '../../messages/it.json';
 
 type Locale = 'en' | 'ja' | 'it';
 
 interface TranslationMessages {
-  [key: string]: string | TranslationMessages;
+  [key: string]: any;
 }
 
-const translations: Record<Locale, () => Promise<TranslationMessages>> = {
-  en: () => import('../../messages/en.json').then(m => m.default),
-  ja: () => import('../../messages/ja.json').then(m => m.default),
-  it: () => import('../../messages/it.json').then(m => m.default),
+const messagesMap: Record<Locale, TranslationMessages> = {
+  en,
+  ja,
+  it,
 };
 
 export function useTranslation(locale: Locale = 'ja') {
-  const [messages, setMessages] = useState<TranslationMessages>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadMessages = async () => {
-      setIsLoading(true);
-      try {
-        const msgs = await translations[locale]();
-        setMessages(msgs);
-      } catch (error) {
-        console.error(error);
-        const fallback = await translations.en();
-        setMessages(fallback);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadMessages();
-  }, [locale]);
+  const messages = messagesMap[locale] || messagesMap['en'];
 
   const t = (key: string, fallback?: string, variables?: Record<string, string | number>): string => {
     const keys = key.split('.');
-    let value: string | TranslationMessages = messages;
+    let value: any = messages;
     
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
@@ -60,7 +43,7 @@ export function useTranslation(locale: Locale = 'ja') {
     return result;
   };
 
-  return { t, isLoading, locale };
+  return { t, isLoading: false, locale };
 }
 
 export const locales: Locale[] = ['en', 'ja', 'it'];
