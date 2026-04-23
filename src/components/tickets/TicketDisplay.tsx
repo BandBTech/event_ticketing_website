@@ -82,6 +82,7 @@ function SingleTicketCard({
               <img
                 src={event.imageUrl}
                 alt={event.title}
+                crossOrigin="anonymous"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
@@ -177,6 +178,7 @@ function SingleTicketCard({
                     <img
                       src={event.organizer.business_logo_url}
                       alt={event.organizer.business_name}
+                      crossOrigin="anonymous"
                       className="h-6 max-w-[32px] object-contain"
                     />
                   )}
@@ -198,6 +200,7 @@ function SingleTicketCard({
                     <img
                       src={company.logoUrl}
                       alt={company.name}
+                      crossOrigin="anonymous"
                       className="h-6 max-w-[32px] object-contain"
                     />
                   ) : (

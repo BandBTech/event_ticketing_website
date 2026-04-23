@@ -5,6 +5,7 @@ import {
   Ticket as TicketIcon,
   QrCode,
   Download,
+  Share,
   Calendar,
   MapPin,
   Clock,
@@ -50,8 +51,6 @@ import { toast } from "sonner";
 import { jsPDF } from "jspdf";
 import { toPng } from "html-to-image";
 import { TicketDisplay } from "@/components/tickets/TicketDisplay";
-import { ticketService } from "@/services/ticketService";
-import { TicketPDFDownload } from "@/components/tickets/TicketPDFDownload";
 
 // Check if event is upcoming (start date is in the future)
 const isUpcoming = (startDate: string) => {
@@ -79,7 +78,7 @@ export default function TicketsPage() {
   const [selectedTicketForCancel, setSelectedTicketForCancel] = useState<
     string | null
   >(null);
-  const [printData, setPrintData] = useState<ViewTicketDetails | null>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -270,149 +269,152 @@ export default function TicketsPage() {
     );
   }
 
-  // Reusable PDF generation function
-  const generateTicketPDF = async (
-    order: ViewTicketDetails,
-    ticketId: string,
-  ): Promise<Blob> => {
-    const ticket = order.tickets.find((t) => t.ticketId === ticketId);
-    if (!ticket) throw new Error("Ticket not found");
-
-    const singleTicketDetails = {
-      ...order,
-      tickets: [ticket],
-    };
-
-    setPrintData(singleTicketDetails);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const element = document.getElementById("pdf-hidden-container");
-    if (!element) throw new Error("Container not found");
-
-    const dataUrl = await toPng(element, {
-      backgroundColor: "white",
-      pixelRatio: 2,
-      quality: 0.95,
-      cacheBust: true,
-    });
-    const pdf = new jsPDF({
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait",
-    });
-
-    const imgProps = pdf.getImageProperties(dataUrl);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, "FAST");
-    return pdf.output("blob");
+  const waitForImages = async (root: HTMLElement, timeoutMs = 3000) => {
+    const images = Array.from(root.querySelectorAll("img"));
+    if (images.length === 0) return;
+    await Promise.race([
+      Promise.all(
+        images.map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete) return resolve();
+              const cleanup = () => {
+                img.removeEventListener("load", cleanup);
+                img.removeEventListener("error", cleanup);
+                resolve();
+              };
+              img.addEventListener("load", cleanup);
+              img.addEventListener("error", cleanup);
+            }),
+        ),
+      ),
+      new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
+    ]);
   };
 
-  const handleDownloadFromList = async (
-    transactionId: string,
-    ticketId: string,
-  ) => {
-    const loadingToastId = "download-ticket";
-
+  const generateTicketsPdf = async (order: ViewTicketDetails): Promise<Blob> => {
+    setIsGeneratingPdf(true);
     try {
-      toast.loading("Generating PDF...", { id: loadingToastId });
+      // Give React time to render TicketDisplay and QR codes to mount
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
-      const fullDetails = await ticketService.getTransactionById(transactionId);
-      const pdfBlob = await generateTicketPDF(fullDetails, ticketId);
+      const container = document.getElementById("ticket-container");
+      if (!container) throw new Error("Ticket container not found");
+      await waitForImages(container);
 
-      // Download the PDF
-      const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `Ticket-${ticketId}.pdf`;
-      link.click();
-      URL.revokeObjectURL(url);
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const maxWidth = pageWidth - margin * 2;
+      const maxHeight = pageHeight - margin * 2;
 
-      toast.success("PDF downloaded successfully!", { id: loadingToastId });
+      const ticketNodes = Array.from(
+        container.querySelectorAll<HTMLElement>('[data-ticket-card="true"]'),
+      );
+      const nodesToExport = ticketNodes.length > 0 ? ticketNodes : [container];
 
-      setTimeout(() => setPrintData(null), 2000);
-    } catch (error) {
-      console.error("Download error:", error);
-      toast.error("Failed to generate PDF", { id: loadingToastId });
-      setPrintData(null);
+      const renderPng = async (
+        node: HTMLElement,
+        opts?: Parameters<typeof toPng>[1],
+      ) =>
+        toPng(node, {
+          cacheBust: true,
+          backgroundColor: "white",
+          pixelRatio: 2,
+          ...opts,
+        });
+
+      for (let i = 0; i < nodesToExport.length; i++) {
+        const node = nodesToExport[i]!;
+        await waitForImages(node);
+
+        let dataUrl: string;
+        try {
+          dataUrl = await renderPng(node);
+        } catch (err) {
+          // CORS fallback: retry without <img> tags (banner/logo may taint canvas)
+          console.warn("Ticket export failed, retrying without images:", err);
+          dataUrl = await renderPng(node, {
+            filter: (n) => (n as Element).tagName !== "IMG",
+          });
+        }
+
+        if (i > 0) pdf.addPage();
+        const imgProps = pdf.getImageProperties(dataUrl);
+        const scale = Math.min(maxWidth / imgProps.width, maxHeight / imgProps.height);
+        const drawWidth = imgProps.width * scale;
+        const drawHeight = imgProps.height * scale;
+        const x = Math.max(margin, (pageWidth - drawWidth) / 2);
+        const y = Math.max(margin, (pageHeight - drawHeight) / 2);
+        pdf.addImage(dataUrl, "PNG", x, y, drawWidth, drawHeight);
+      }
+
+      return pdf.output("blob");
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
-  const handleShareTicket = async (
-    order: ViewTicketDetails,
-    ticketId: string,
-  ) => {
-    const loadingToastId = "share-ticket";
-
+  const handleDownloadAllTickets = async (order: ViewTicketDetails) => {
+    const loadingToastId = "download-tickets";
     try {
-      toast.loading("Preparing ticket for sharing...", { id: loadingToastId });
+      toast.loading("Generating PDF...", { id: loadingToastId });
+      const pdfBlob = await generateTicketsPdf(order);
+      const shortId = order.orderId.split("-")[0];
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `tickets-${shortId}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success("Tickets downloaded!", { id: loadingToastId });
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Failed to generate PDF. Please try again.", { id: loadingToastId });
+    }
+  };
 
-      const ticket = order.tickets.find((t) => t.ticketId === ticketId);
-      if (!ticket) throw new Error("Ticket not found");
+  const handleShareAllTickets = async (order: ViewTicketDetails) => {
+    const loadingToastId = "share-tickets";
+    try {
+      toast.loading("Preparing tickets for sharing...", { id: loadingToastId });
+      const pdfBlob = await generateTicketsPdf(order);
+      const shortId = order.orderId.split("-")[0];
+      const fileName = `tickets-${shortId}.pdf`;
 
-      // Create a single ticket version
-      const singleTicketDetails = {
-        ...order,
-        tickets: [ticket],
-      };
+      const pdfFile = new File([pdfBlob], fileName, { type: "application/pdf" });
+      const canShareFiles =
+        typeof navigator !== "undefined" &&
+        typeof navigator.canShare === "function" &&
+        navigator.canShare({ files: [pdfFile] });
 
-      setPrintData(singleTicketDetails);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const element = document.getElementById("pdf-hidden-container");
-      if (!element) throw new Error("Container not found");
-
-      // Generate PDF as blob
-      const dataUrl = await toPng(element, {
-        backgroundColor: "white",
-        pixelRatio: 2,
-        quality: 0.95,
-        cacheBust: true,
-      });
-      const pdf = new jsPDF({
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait",
-      });
-
-      const imgProps = pdf.getImageProperties(dataUrl);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-      const pdfBlob = pdf.output("blob");
-      const pdfFile = new File([pdfBlob], `Ticket-${ticket.ticketNumber}.pdf`, {
-        type: "application/pdf",
-      });
-
-      if (navigator.share) {
+      if (canShareFiles) {
         await navigator.share({
-          title: `${order.event.title} Ticket`,
-          text: `My ticket for ${order.event.title} on ${formatDate(order.event.startDate)}`,
+          title: `${order.event.title} Tickets`,
+          text: `My tickets for ${order.event.title} on ${formatDate(order.event.startDate)}`,
           files: [pdfFile],
         });
-        toast.success("Ticket shared successfully!", { id: loadingToastId });
+        toast.success("Tickets shared!", { id: loadingToastId });
       } else {
-        toast.error(
-          "Your browser doesn't support sharing. Please download and share manually.",
-          {
-            id: loadingToastId,
-          },
-        );
+        // Fallback: download when Web Share API (with files) is unavailable
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+        toast.success("PDF downloaded (sharing not supported in this browser)", {
+          id: loadingToastId,
+        });
       }
-
-      setTimeout(() => setPrintData(null), 2000);
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
         console.error("Share error:", error);
-        toast.error("Could not share ticket. Please try again.", {
-          id: loadingToastId,
-        });
+        toast.error("Could not share tickets. Please try again.", { id: loadingToastId });
       } else {
         toast.dismiss(loadingToastId);
       }
-      setPrintData(null);
     }
   };
 
@@ -864,6 +866,24 @@ export default function TicketsPage() {
                       {formatTime(detailTickets.purchaseDate)}
                     </Badge>
                   </div>
+
+                  {/* Download & Share All Tickets */}
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDownloadAllTickets(detailTickets)}
+                    >
+                      <Download className="h-3.5 w-3.5 mr-1.5" /> Download All
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleShareAllTickets(detailTickets)}
+                    >
+                      <Share className="h-3.5 w-3.5 mr-1.5" /> Share All
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -905,33 +925,6 @@ export default function TicketsPage() {
 
                           {/* Actions */}
                           <div className="flex gap-2 flex-wrap">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-8 text-xs"
-                              onClick={() =>
-                                handleDownloadFromList(
-                                  detailTickets.orderId,
-                                  ticket.ticketId,
-                                )
-                              }
-                            >
-                              <Download className="h-3.5 w-3.5 mr-1" /> Download
-                            </Button>
-
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-8 text-xs"
-                              onClick={() =>
-                                handleShareTicket(
-                                  detailTickets,
-                                  ticket.ticketId,
-                                )
-                              }
-                            >
-                              <QrCode className="h-3.5 w-3.5 mr-1" /> Share
-                            </Button>
                             {!ticket.is_checked_in && (
                               <Button
                                 variant="outline"
@@ -1076,26 +1069,22 @@ export default function TicketsPage() {
         isPending={cancelMutation.isPending}
       />
 
-      {/* PDF generation */}
-
-      <div
-        style={{
-          position: "fixed",
-          left: "-9999px",
-          top: "0",
-          pointerEvents: "none",
-          visibility: "hidden",
-        }}
-      >
-        <div id="pdf-hidden-container">
-          {printData && (
-            <TicketPDFDownload
-              ticket={printData.tickets[0]}
-              detailTickets={printData}
-            />
-          )}
+      {/* Hidden render target for PDF export — off-screen but NOT visibility:hidden
+          so html-to-image can capture it correctly */}
+      {isGeneratingPdf && detailTickets && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            left: "-10000px",
+            top: "0",
+            width: "1200px",
+            pointerEvents: "none",
+          }}
+        >
+          <TicketDisplay order={detailTickets} />
         </div>
-      </div>
+      )}
     </div>
   );
 }
