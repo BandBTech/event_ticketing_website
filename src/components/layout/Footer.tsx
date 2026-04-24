@@ -135,7 +135,7 @@ export function Footer() {
 
               {/* Description */}
               <p
-                className="text-gray-600 leading-relaxed text-sm"
+                className="text-gray-600 leading-relaxed text-sm wrap-anywhere"
                 suppressHydrationWarning
               >
                 {company?.description}
