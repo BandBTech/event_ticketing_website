@@ -930,24 +930,38 @@ export default function TicketsPage() {
                                 Ticket Number : {ticket.ticketNumber}
                               </p>
                             </div>
-                            <Badge
-                              className={cn(
-                                "text-xs font-medium",
-                                ticket.status === "expired" &&
-                                  "bg-red-100 text-red-700",
-                                ticket.status === "active" &&
-                                  "bg-green-100 text-green-700",
-                                ticket.status === "used" &&
-                                  "bg-blue-100 text-blue-700",
-                                ticket.status === "refunded" &&
-                                  "bg-amber-100 text-amber-700",
-                              )}
-                            >
-                              {ticket.status === "expired" && "Expired"}
-                              {ticket.status === "active" && "Active"}
-                              {ticket.status === "used" && "Used"}
-                              {ticket.status === "refunded" && "Refunded"}
-                            </Badge>
+                            {ticket.is_checked_in ? (
+                              <Badge className="text-xs font-medium bg-primary-100 text-primary-700">
+                                Checked In
+                              </Badge>
+                            ) : (
+                              <Badge
+                                className={cn(
+                                  "text-xs font-medium",
+                                  ticket.status === "expired" &&
+                                    "bg-red-100 text-red-700",
+                                  ticket.status === "active" &&
+                                    "bg-green-100 text-green-700",
+                                  ticket.status === "used" &&
+                                    "bg-blue-100 text-blue-700",
+                                  ticket.status === "pending_refund" &&
+                                    "bg-amber-100 text-amber-700",
+                                  ticket.status === "refunded" &&
+                                    "bg-indigo-100 text-indigo-700",
+                                  ticket.status === "checked_in" &&
+                                    "bg-rose-100 text-rose-700",
+                                )}
+                              >
+                                {ticket.status === "expired" && "Expired"}
+                                {ticket.status === "active" && "Active"}
+                                {ticket.status === "used" && "Used"}
+                                {ticket.status === "pending_refund" &&
+                                  "Pending Refund"}
+                                {ticket.status === "refunded" && "Refunded"}
+                                {ticket.status === "cancelled" && "Cancelled"}
+                                {ticket.status === "checked_in" && "Checked In"}
+                              </Badge>
+                            )}
                           </div>
 
                           {/* Actions */}
