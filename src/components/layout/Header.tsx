@@ -1,10 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { TicketIcon, List, X, User, SignOut, UserCircle } from '@phosphor-icons/react/dist/ssr';
-import { Button } from '@/components/ui/button';
-import { FigmaButton } from '@/components/ui/figma-button';
-import { LanguageSelector } from '@/components/common/LanguageSelector';
+import { useState } from "react";
+import {
+  TicketIcon,
+  List,
+  X,
+  User,
+  SignOut,
+  UserCircle,
+} from "@phosphor-icons/react/dist/ssr";
+import { Button } from "@/components/ui/button";
+import { FigmaButton } from "@/components/ui/figma-button";
+import { LanguageSelector } from "@/components/common/LanguageSelector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,14 +19,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useLanguageStore } from '@/store/languageStore';
-import { useAuthStore } from '@/store/authStore';
-import { useTranslation } from '@/hooks/useTranslation';
-import { toast } from '@/lib/toast';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { BellIcon, CreditCardIcon } from '@phosphor-icons/react';
+} from "@/components/ui/dropdown-menu";
+import { useLanguageStore } from "@/store/languageStore";
+import { useAuthStore } from "@/store/authStore";
+import { useTranslation } from "@/hooks/useTranslation";
+import { toast } from "@/lib/toast";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { BellIcon, CreditCardIcon } from "@phosphor-icons/react";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -31,22 +38,20 @@ export function Header() {
   const handleLogout = async () => {
     const result = await logout();
     // [TODO: Translate Setup]
-    toast.success(
-      "", result?.message || 'Logout Successful'
-    );
-    router.push('/');
+    toast.success("", result?.message || "Logout Successful");
+    router.push("/");
   };
-   const handleOrganizeRedirect =() =>{
+  const handleOrganizeRedirect = () => {
     window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
-  }
+  };
 
   const navigation = [
-    { name: t('navigation.events','Events'), href: '/allevents' },
+    { name: t("navigation.events", "Events"), href: "/allevents" },
     // { name: t('navigation.categories'), href: '#categories' },
-    { name: t('navigation.about','About'), href: '/about' },
-    { name: t('navigation.contact','Contact'), href: '/contact' },
+    { name: t("navigation.about", "About"), href: "/about" },
+    { name: t("navigation.contact", "Contact"), href: "/contact" },
   ];
- 
+
   return (
     <header className="sticky top-0 z-50 w-full glass border-b border-white/20 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,10 +59,15 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="flex items-center gap-2 py-1.5 cursor-pointer hover:opacity-80 transition-opacity">
-              <TicketIcon weight='fill' size={24} className="text-blue-600" />
+              {/*<TicketIcon weight='fill' size={24} className="text-blue-600" />
               <span className="text-xl font-bold text-gray-900 font-poppins">
                 Timro-Ticket
-              </span>
+              </span>*/}
+              <img
+                src="/timro-ticket-logo.png"
+                alt="Timro-Ticket"
+                className="h-11"
+              />
             </div>
           </Link>
 
@@ -97,30 +107,44 @@ export function Header() {
                         </div>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 glass-strong border border-white/50 shadow-xl">
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-56 glass-strong border border-white/50 shadow-xl"
+                    >
                       <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
+                          <p className="text-sm font-medium">
+                            {user.firstName} {user.lastName}
+                          </p>
                           <p className="text-xs text-gray-500">{user.email}</p>
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href="/settings/profile" className="cursor-pointer flex items-center">
+                        <Link
+                          href="/settings/profile"
+                          className="cursor-pointer flex items-center"
+                        >
                           <UserCircle size={16} className="mr-2" />
-                          {t('navigation.profile', 'My Profile')}
+                          {t("navigation.profile", "My Profile")}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/settings/tickets" className="cursor-pointer flex items-center">
+                        <Link
+                          href="/settings/tickets"
+                          className="cursor-pointer flex items-center"
+                        >
                           <TicketIcon size={16} className="mr-2" />
-                          {t('navigation.myTickets', 'My Tickets')}
+                          {t("navigation.myTickets", "My Tickets")}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/settings/transactions" className="cursor-pointer flex items-center">
+                        <Link
+                          href="/settings/transactions"
+                          className="cursor-pointer flex items-center"
+                        >
                           <CreditCardIcon size={16} className="mr-2" />
-                          {t('navigation.transactions', 'Transactions')}
+                          {t("navigation.transactions", "Transactions")}
                         </Link>
                       </DropdownMenuItem>
                       {/* <DropdownMenuItem asChild>
@@ -135,7 +159,7 @@ export function Header() {
                         className="cursor-pointer text-destructive focus:text-destructive focus:bg-red-50"
                       >
                         <SignOut size={16} className="mr-2" />
-                        {t('navigation.logout', 'Logout')}
+                        {t("navigation.logout", "Logout")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -149,19 +173,18 @@ export function Header() {
                       className="text-gray-700 hover:text-blue-600 hover:bg-blue-50"
                     >
                       <User size={16} className="mr-1" />
-                      {t('navigation.signIn','Sign In')}
+                      {t("navigation.signIn", "Sign In")}
                     </Button>
                   </Link>
-                  
+
                   <FigmaButton
                     variant="primary"
                     size="md"
                     showGlow={true}
                     onClick={handleOrganizeRedirect}
                   >
-                    {t('navigation.organizeEvent','Organize Event')}
+                    {t("navigation.organizeEvent", "Organize Event")}
                   </FigmaButton>
-                  
                 </>
               )}
             </div>
@@ -196,14 +219,17 @@ export function Header() {
                   {item.name}
                 </a>
               ))}
-              
+
               <div className="pt-4 border-t border-white/20 space-y-3">
                 <LanguageSelector />
-                
+
                 <div className="flex flex-col gap-2">
                   {isAuthenticated && user ? (
                     <>
-                      <Link href="/settings/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Link
+                        href="/settings/profile"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 border border-blue-100 cursor-pointer hover:bg-blue-100 transition-colors">
                           <User size={16} className="text-blue-600" />
                           <span className="text-sm font-medium text-gray-900">
@@ -221,7 +247,7 @@ export function Header() {
                         className="text-gray-700 hover:text-destructive hover:bg-red-50 justify-start w-full"
                       >
                         <SignOut size={16} className="mr-2" />
-                        {t('navigation.logout', 'Logout')}
+                        {t("navigation.logout", "Logout")}
                       </Button>
                     </>
                   ) : (
@@ -234,7 +260,7 @@ export function Header() {
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <User size={16} className="mr-2" />
-                          {t('navigation.signIn','Sign In')}
+                          {t("navigation.signIn", "Sign In")}
                         </Button>
                       </Link>
                       <FigmaButton
@@ -243,7 +269,7 @@ export function Header() {
                         showGlow={true}
                         onClick={handleOrganizeRedirect}
                       >
-                        {t('navigation.organizeEvent','Organize Event')}
+                        {t("navigation.organizeEvent", "Organize Event")}
                       </FigmaButton>
                     </>
                   )}
