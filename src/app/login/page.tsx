@@ -103,10 +103,14 @@ export default function LoginPage() {
               "Network error. Please check your connection."
             );
             break;
+          case "INTERNAL_SERVER_ERROR":
+            toast.error("", "Login failed.", error.details);
+            break;
           default:
             toast.error(
-              "auth.toast.loginError",
-              error.message || "Login failed. Please try again."
+              "",
+              error.message || "Login failed. Please try again.",
+              error.details,
             );
         }
       } else {

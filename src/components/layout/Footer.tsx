@@ -123,7 +123,14 @@ export function Footer() {
               {/* Logo */}
               <div className="flex items-center ">
                 <div className="flex items-center gap-2 px-3  rounded-lg bg-blue-600/10 border border-blue-600/20">
-                  <TicketIcon size={24} className="text-blue-600" />
+                  {/*<TicketIcon size={24} className="text-blue-600" />*/}
+                  <Link href="/">
+                    <img
+                      src={company?.logo_url}
+                      alt={company?.name}
+                      className="h-10 py-1"
+                    />
+                  </Link>
                   <span
                     className="text-xl font-bold text-gray-900 font-poppins"
                     suppressHydrationWarning
