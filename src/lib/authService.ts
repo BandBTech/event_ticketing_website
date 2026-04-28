@@ -87,6 +87,7 @@ class AuthService {
     const tokens = await apiRequest<TokenResponse>('/auth/user/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
+      showErrorToast: false,
     });
 
     // Store tokens with remember me preference
@@ -191,6 +192,7 @@ class AuthService {
         phone: userData.country_code && userData.phone ? userData.country_code + userData.phone : userData.phone,
         country_code: userData.country_code
       }),
+      showErrorToast: false,
     });
 
     return {
@@ -238,6 +240,7 @@ class AuthService {
         confirm_password: data.confirm_password,
         role: data.role || 'user'
       }),
+      showErrorToast: false,
     });
   }
 
@@ -289,6 +292,7 @@ class AuthService {
         identifier: data.identifier,
         otp_type: data.otp_type,
       }),
+      showErrorToast: false,
     });
   }
 
@@ -309,7 +313,8 @@ class AuthService {
         otp_code: data.otp_code,
         otp_type: data.otp_type,
         role: data.role || 'user'
-      })
+      }),
+      showErrorToast: false,
     });
   }
 
@@ -324,6 +329,7 @@ class AuthService {
     const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/user/set-password', {
       method: 'POST',
       body: JSON.stringify(data),
+      showErrorToast: false,
     });
 
     return {
