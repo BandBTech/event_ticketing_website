@@ -941,12 +941,15 @@ export default function TicketsPage() {
                                   "bg-blue-100 text-blue-700",
                                 ticket.status === "refunded" &&
                                   "bg-amber-100 text-amber-700",
+                                   ticket.status === "cancelled" &&
+                                  "bg-red-100 text-red-700",
                               )}
                             >
                               {ticket.status === "expired" && "Expired"}
                               {ticket.status === "active" && "Active"}
                               {ticket.status === "used" && "Used"}
                               {ticket.status === "refunded" && "Refunded"}
+                              {ticket.status === "cancelled" && "Cancelled"}
                             </Badge>
                           </div>
 

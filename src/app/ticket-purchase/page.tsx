@@ -19,7 +19,7 @@ import {
   GuestPurchasePayload,
   UserPurchasePayload,
 } from "@/services/ticketService";
-import { ShieldCheckIcon } from "lucide-react";
+import { ClockIcon, ShieldCheckIcon } from "lucide-react";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createValidationHelpers } from "@/lib/validation";
@@ -424,100 +424,125 @@ function GuestPurchaseContent() {
                     if (!isSalesActive) return null;
 
                     return (
-                      <div
-                        key={ticketType.id}
-                        className={cn(
-                          "relative flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border-2 transition-all",
-                          qty > 0
-                            ? "border-primary bg-blue-50/50"
-                            : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30",
-                        )}
-                      >
-                        {/* Tier Info */}
-                        <div className="flex-1 min-w-0 mb-3 sm:mb-0">
-                          <div className="flex items-center flex-wrap gap-2">
-                            <Label className="font-bold text-gray-900 text-lg">
-                              {ticketType.tier_name}
-                            </Label>
-                            {qty > 0 && (
-                              <span className="text-xs font-bold bg-primary text-white px-2 py-0.5 rounded-full">
-                                {qty}×
-                              </span>
-                            )}
-                            {ticketType.available === 0 && (
-                              <span className="text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                {t("events.soldOut", "Sold out")}
-                              </span>
-                            )}
-                            {ticketType.available > 0 &&
-                              ticketType.available < 10 && (
-                                <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                  {t(
-                                    "ticketPurchase.onlyTicketsLeft",
-                                    `Only ${ticketType.available} left!`,
-                                    { count: ticketType.available },
-                                  )}
-                                </span>
-                              )}
-                          </div>
-                          {ticketType.description && (
-                            <p className="text-sm text-gray-500 mt-1 pr-4">
-                              {ticketType.description}
-                            </p>
-                          )}
-                          <p className="font-bold text-lg text-primary mt-1">
-                            {formatCurrency(
-                              ticketType.price,
-                              ticketType.currency,
-                              locale,
-                            )}
-                          </p>
-                        </div>
+                     <div
+  key={ticketType.id}
+  className={cn(
+    "relative flex flex-col md:flex-row md:items-start justify-between gap-4 p-4 rounded-xl border-2 transition-all",
+    qty > 0
+      ? "border-primary bg-blue-50/50"
+      : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30",
+  )}
+>
+  {/* Left Column: Tier Info + Sale Schedule */}
+  <div className="flex-1 space-y-4">
+    {/* Tier Info */}
+    <div>
+      <div className="flex items-center flex-wrap gap-2">
+        <Label className="font-bold text-gray-900 text-lg">
+          {ticketType.tier_name}
+        </Label>
+        {qty > 0 && (
+          <span className="text-xs font-bold bg-primary text-white px-2 py-0.5 rounded-full">
+            {qty}×
+          </span>
+        )}
+        {ticketType.available === 0 && (
+          <span className="text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+            {t("events.soldOut", "Sold out")}
+          </span>
+        )}
+        {ticketType.available > 0 && ticketType.available < 10 && (
+          <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+            {t(
+              "ticketPurchase.onlyTicketsLeft",
+              `Only ${ticketType.available} left!`,
+              { count: ticketType.available },
+            )}
+          </span>
+        )}
+      </div>
+      
+      {ticketType.description && (
+        <p className="text-sm text-gray-500 mt-1 pr-4">
+          {ticketType.description}
+        </p>
+      )}
+      
+      <p className="font-bold text-lg text-primary mt-1">
+        {formatCurrency(ticketType.price, ticketType.currency, locale)}
+      </p>
+    </div>
 
-                        {/* Quantity Controls */}
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() =>
-                              handleTierQuantityChange(ticketType.id, -1)
-                            }
-                            disabled={qty <= 0 || isPending}
-                            className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
-                          >
-                            <MinusIcon
-                              size={18}
-                              className="group-hover:text-primary group-hover:scale-110 transition-transform"
-                            />
-                          </Button>
-                          <span
-                            className={cn(
-                              "text-xl font-bold w-8 text-center transition-colors",
-                              qty > 0 ? "text-primary" : "text-gray-300",
-                            )}
-                          >
-                            {qty}
-                          </span>
-                          <Button
-                            onClick={() =>
-                              handleTierQuantityChange(ticketType.id, 1)
-                            }
-                            variant="outline"
-                            size="icon"
-                            disabled={
-                              isAtMaxTotal ||
-                              isPending ||
-                              qty >= ticketType.available
-                            }
-                            className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
-                          >
-                            <PlusIcon
-                              size={18}
-                              className="group-hover:text-primary group-hover:scale-110 transition-transform"
-                            />
-                          </Button>
-                        </div>
-                      </div>
+    {/* Sale Schedule - Now grouped with Tier Info */}
+    <div>
+      <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide flex items-center gap-1">
+        <ClockIcon size={12} />
+        {t("eventDetails.schedule", "Sale Schedule")}
+      </p>
+
+      <div className="space-y-2">
+        {/* Sales Start */}
+        <div className="flex items-center justify-between text-xs gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+            <span className="text-gray-600 font-medium">
+              {t("eventDetails.starts", "Starts")}:
+            </span>
+          </div>
+          <span className="font-mono text-gray-800 bg-gray-50 px-2 py-0.5 rounded whitespace-nowrap">
+            {format(new Date(ticketType.sales_start), "MMM dd, yyyy")}
+            <span className="text-gray-400 ml-1">
+              {format(new Date(ticketType.sales_start), "hh:mm a")}
+            </span>
+          </span>
+        </div>
+
+        {/* Sales End */}
+        <div className="flex items-center justify-between text-xs gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+            <span className="text-gray-600 font-medium">
+              {t("eventDetails.end", "Ends")}:
+            </span>
+          </div>
+          <span className="font-mono text-gray-800 bg-gray-50 px-2 py-0.5 rounded whitespace-nowrap">
+            {format(new Date(ticketType.sales_end), "MMM dd, yyyy")}
+            <span className="text-gray-400 ml-1">
+              {format(new Date(ticketType.sales_end), "hh:mm a")}
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Right Column: Quantity Controls - Aligned to top */}
+  <div className="flex items-center gap-3 flex-shrink-0 md:self-start">
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => handleTierQuantityChange(ticketType.id, -1)}
+      disabled={qty <= 0 || isPending}
+      className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
+    >
+      <MinusIcon size={18} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
+    </Button>
+    
+    <span className={cn("text-xl font-bold w-8 text-center transition-colors", qty > 0 ? "text-primary" : "text-gray-300")}>
+      {qty}
+    </span>
+    
+    <Button
+      onClick={() => handleTierQuantityChange(ticketType.id, 1)}
+      variant="outline"
+      size="icon"
+      disabled={isAtMaxTotal || isPending || qty >= ticketType.available}
+      className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
+    >
+      <PlusIcon size={18} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
+    </Button>
+  </div>
+</div>
                     );
                   })}
 

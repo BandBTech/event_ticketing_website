@@ -281,6 +281,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
+   const [searchInput, setSearchInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const { user, isAuthenticated } = useAuthStore();
   const { locale } = useLanguageStore();
@@ -308,6 +309,7 @@ export default function HomePage() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    setSearchInput(query); 
   };
 
   const handleCategorySelect = (category: string) => {
@@ -315,6 +317,14 @@ export default function HomePage() {
   };
   const handleOrganizeRedirect = () => {
     window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
+  };
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+  const handleClearAll = () => {
+    setSearchInput("");
+    setSearchQuery("");
+    setSelectedCategory("");
   };
 
   return (
@@ -350,6 +360,7 @@ export default function HomePage() {
             <div className="max-w-2xl mx-auto">
               <EventSearch
                 onSearch={handleSearch}
+                value={searchInput}
                 placeholder={t("hero.searchPlaceholder")}
                 className="w-full"
               />
@@ -373,10 +384,7 @@ export default function HomePage() {
                     {(searchQuery || selectedCategory) && (
                       <Button
                         variant="outline"
-                        onClick={() => {
-                          setSearchQuery("");
-                          setSelectedCategory("");
-                        }}
+                        onClick={handleClearAll} 
                         className="glass border text-gray-700 hover:bg-white/90"
                       >
                         {t("sections.upcomingEvents.clearSearch")}
@@ -384,10 +392,31 @@ export default function HomePage() {
                     )}
                   </div>
 
-                  <EventGrid
+                  {/* <EventGrid
                     events={eventsData?.events || []}
                     isLoading={eventsLoading}
-                  />
+                  /> */}
+                     {eventsLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 rounded-xl h-48 mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          ))}
+        </div>
+      ) : eventsData?.events && eventsData?.events?.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {eventsData?.events?.map((event) => (
+            <HomeEvent key={event.id} event={event} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No events found</p>
+        </div>
+      )}
 
                   {/* Load More Button */}
                   {eventsData &&
@@ -398,6 +427,7 @@ export default function HomePage() {
                           variant="primary"
                           size="lg"
                           showGlow={true}
+                          
                         >
                           {t("common.loadMore")}
                         </FigmaButton>

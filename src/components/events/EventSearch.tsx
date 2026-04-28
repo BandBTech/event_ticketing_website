@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import {  MagnifyingGlassIcon } from '@phosphor-icons/react';
@@ -9,15 +9,23 @@ interface EventSearchProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   className?: string;
+  value?: string;
 }
 
 export function EventSearch({ 
   onSearch, 
+  value,
   placeholder = "Search events...", 
   className 
 }: EventSearchProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(value ||'');
 
+  useEffect(() => {
+    if (value !== undefined) {
+      setQuery(value);
+    }
+  }, [value]);
+   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(query);

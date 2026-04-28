@@ -45,6 +45,7 @@ import {
   endOfDay,
 } from "date-fns";
 import { toast } from "sonner";
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 
 export default function BillingPage() {
   const searchParams = useSearchParams();
@@ -78,36 +79,65 @@ export default function BillingPage() {
   }, [appliedFilters.start_date, appliedFilters.end_date]);
 
   //Api Filters
+// const apiFilters = useMemo((): TransactionApiFilters => {
+//   const filters: TransactionApiFilters = {};
+  
+//   if (!appliedFilters.start_date) return filters;
+  
+//   const localToUTC = (localDate: Date): string => {
+    
+//     const year = localDate.getFullYear();
+//     const month = localDate.getMonth();
+//     const day = localDate.getDate();
+//     const tzOffsetHours = -localDate.getTimezoneOffset() / 60;
+  
+//     const utcDate = new Date(Date.UTC(year, month, day));
+//     if (tzOffsetHours >= 5) {
+//       utcDate.setUTCDate(utcDate.getUTCDate() - 1);
+//     }
+//     return `${utcDate.getUTCFullYear()}-${String(utcDate.getUTCMonth() + 1).padStart(2, '0')}-${String(utcDate.getUTCDate()).padStart(2, '0')}`;
+//   };
+  
+//   const endDate = appliedFilters.end_date || appliedFilters.start_date;
+  
+//   filters.date_from = localToUTC(appliedFilters.start_date);
+//   filters.date_to = localToUTC(endDate);
+  
+
+  
+//   return filters;
+// }, [appliedFilters.start_date, appliedFilters.end_date]);
+
+
+
 const apiFilters = useMemo((): TransactionApiFilters => {
   const filters: TransactionApiFilters = {};
   
   if (!appliedFilters.start_date) return filters;
   
-  const localToUTC = (localDate: Date): string => {
-    
-    const year = localDate.getFullYear();
-    const month = localDate.getMonth();
-    const day = localDate.getDate();
-    const tzOffsetHours = -localDate.getTimezoneOffset() / 60;
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   
-    const utcDate = new Date(Date.UTC(year, month, day));
-    if (tzOffsetHours >= 5) {
-      utcDate.setUTCDate(utcDate.getUTCDate() - 1);
-    }
-    return `${utcDate.getUTCFullYear()}-${String(utcDate.getUTCMonth() + 1).padStart(2, '0')}-${String(utcDate.getUTCDate()).padStart(2, '0')}`;
-  };
+  // Convert local date to UTC
+  const startDate = new Date(appliedFilters.start_date);
+  startDate.setHours(0, 0, 0, 0);
+  const utcStart = fromZonedTime(startDate, timeZone);
   
-  const endDate = appliedFilters.end_date || appliedFilters.start_date;
+  let utcEnd: Date;
+  if (appliedFilters.end_date) {
+    const endDate = new Date(appliedFilters.end_date);
+    endDate.setHours(23, 59, 59, 999);
+    utcEnd = fromZonedTime(endDate, timeZone);
+  } else {
+    const endDate = new Date(appliedFilters.start_date);
+    endDate.setHours(23, 59, 59, 999);
+    utcEnd = fromZonedTime(endDate, timeZone);
+  }
   
-  filters.date_from = localToUTC(appliedFilters.start_date);
-  filters.date_to = localToUTC(endDate);
-  
-
+  filters.datetime_from = utcStart.toISOString();
+  filters.datetime_to = utcEnd.toISOString();
   
   return filters;
 }, [appliedFilters.start_date, appliedFilters.end_date]);
-
-
 
   // Fetch Data
   const {

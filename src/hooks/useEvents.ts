@@ -67,3 +67,4 @@ const { page, totalPages } = lastPage.pagination;
     },
   });
 };
+
