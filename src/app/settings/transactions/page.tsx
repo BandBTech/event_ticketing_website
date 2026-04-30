@@ -51,6 +51,7 @@ export default function BillingPage() {
   // State
   const [searchInput, debouncedSearch, setSearchInput] = useDebouncedState("", 400);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [appliedFilters, setAppliedFilters] =
@@ -88,7 +89,7 @@ export default function BillingPage() {
   const {
     data: response,
     isFetching,
-  } = useUserTransactions(page, 20, apiFilters, debouncedSearch);
+  } = useUserTransactions(page, limit, apiFilters, debouncedSearch);
 
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
@@ -198,8 +199,6 @@ const getClearButtonIcon = () => {
       return;
     }
 
-    // Clear existing data immediately
-    setAllTransactions([]);
     setPage(1);
 
     // Update filters
@@ -590,13 +589,17 @@ const getClearButtonIcon = () => {
                   ))}
                 </div>
 
-                {pagination && pagination.total_pages > 1 && (
+                {pagination && (
                   <TablePagination
                     currentPage={page}
                     totalPages={pagination.total_pages}
                     total={pagination.total}
-                    limit={20}
+                    limit={limit}
                     onPageChange={setPage}
+                    onLimitChange={(newLimit) => {
+                      setLimit(newLimit);
+                      setPage(1);
+                    }}
                   />
                 )}
               </>
