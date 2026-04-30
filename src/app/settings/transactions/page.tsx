@@ -4,7 +4,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   X,
-  Loader2,
   Eraser,
   TicketIcon,
   Calendar as CalendarIcon,
@@ -16,6 +15,7 @@ import {
   useUserTransactions,
   useTransactionDetail,
 } from "@/hooks/useTransactions";
+import { useDebouncedState } from "@/hooks/useDebounce";
 import {
   Transaction,
   TransactionApiFilters,
@@ -45,7 +45,6 @@ import {
   endOfDay,
 } from "date-fns";
 import { toast } from "sonner";
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 
 export default function BillingPage() {
   const searchParams = useSearchParams();
@@ -55,7 +54,7 @@ export default function BillingPage() {
   const { t } = useTranslation(locale);
 
   // State
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, debouncedSearch, setSearchInput] = useDebouncedState("", 400);
   const [page, setPage] = useState(1);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -78,74 +77,26 @@ export default function BillingPage() {
     });
   }, [appliedFilters.start_date, appliedFilters.end_date]);
 
-  //Api Filters
-// const apiFilters = useMemo((): TransactionApiFilters => {
-//   const filters: TransactionApiFilters = {};
-  
-//   if (!appliedFilters.start_date) return filters;
-  
-//   const localToUTC = (localDate: Date): string => {
-    
-//     const year = localDate.getFullYear();
-//     const month = localDate.getMonth();
-//     const day = localDate.getDate();
-//     const tzOffsetHours = -localDate.getTimezoneOffset() / 60;
-  
-//     const utcDate = new Date(Date.UTC(year, month, day));
-//     if (tzOffsetHours >= 5) {
-//       utcDate.setUTCDate(utcDate.getUTCDate() - 1);
-//     }
-//     return `${utcDate.getUTCFullYear()}-${String(utcDate.getUTCMonth() + 1).padStart(2, '0')}-${String(utcDate.getUTCDate()).padStart(2, '0')}`;
-//   };
-  
-//   const endDate = appliedFilters.end_date || appliedFilters.start_date;
-  
-//   filters.date_from = localToUTC(appliedFilters.start_date);
-//   filters.date_to = localToUTC(endDate);
-  
+  const apiFilters = useMemo((): TransactionApiFilters => {
+    const filters: TransactionApiFilters = {};
 
-  
-//   return filters;
-// }, [appliedFilters.start_date, appliedFilters.end_date]);
+    if (!appliedFilters.start_date) return filters;
 
+    filters.date_from = format(appliedFilters.start_date, "yyyy-MM-dd");
+    filters.date_to = format(
+      appliedFilters.end_date ?? appliedFilters.start_date,
+      "yyyy-MM-dd",
+    );
 
-
-const apiFilters = useMemo((): TransactionApiFilters => {
-  const filters: TransactionApiFilters = {};
-  
-  if (!appliedFilters.start_date) return filters;
-  
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  
-  // Convert local date to UTC
-  const startDate = new Date(appliedFilters.start_date);
-  startDate.setHours(0, 0, 0, 0);
-  const utcStart = fromZonedTime(startDate, timeZone);
-  
-  let utcEnd: Date;
-  if (appliedFilters.end_date) {
-    const endDate = new Date(appliedFilters.end_date);
-    endDate.setHours(23, 59, 59, 999);
-    utcEnd = fromZonedTime(endDate, timeZone);
-  } else {
-    const endDate = new Date(appliedFilters.start_date);
-    endDate.setHours(23, 59, 59, 999);
-    utcEnd = fromZonedTime(endDate, timeZone);
-  }
-  
-  filters.datetime_from = utcStart.toISOString();
-  filters.datetime_to = utcEnd.toISOString();
-  
-  return filters;
-}, [appliedFilters.start_date, appliedFilters.end_date]);
+    return filters;
+  }, [appliedFilters.start_date, appliedFilters.end_date]);
 
   // Fetch Data
   const {
     data: response,
-    isLoading,
     isFetching,
     refetch,
-  } = useUserTransactions(page, 20, apiFilters, searchInput);
+  } = useUserTransactions(page, 20, apiFilters, debouncedSearch);
 
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
@@ -156,7 +107,7 @@ const apiFilters = useMemo((): TransactionApiFilters => {
     setPage(1);
     setAllTransactions([]);
     refetch();
-  }, [searchInput, apiFilters.date_from, apiFilters.date_to, refetch]);
+  }, [debouncedSearch, apiFilters.date_from, apiFilters.date_to, refetch]);
 
   // Accumulate Results
   useEffect(() => {
@@ -308,14 +259,10 @@ const getClearButtonIcon = () => {
     toast.success("Filters applied");
   };
 
-  // Add this useEffect to refetch when filters change
-  useEffect(() => {
-    if (apiFilters.date_from || apiFilters.date_to) {
-      refetch();
-    }
-  }, [apiFilters, refetch]);
 
-  const showLoading = isLoading && page === 1;
+  const showLoading =
+    (isFetching && page === 1 && allTransactions.length === 0) ||
+    searchInput !== debouncedSearch;
   const hasActiveFilters =
     searchInput !== "" ||
     !!appliedFilters.start_date ||
@@ -584,8 +531,26 @@ const getClearButtonIcon = () => {
 
             {/* Results Section */}
             {showLoading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <Loader2 className="h-10 w-10 animate-spin text-gray-300" />
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white border border-gray-100 rounded-xl gap-3 animate-pulse"
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gray-200 flex-shrink-0" />
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-3/4" />
+                        <div className="h-3 bg-gray-200 rounded w-1/4" />
+                        <div className="h-3 bg-gray-200 rounded w-1/2" />
+                      </div>
+                    </div>
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-0 pt-2 sm:pt-0 border-gray-50 gap-2">
+                      <div className="h-5 bg-gray-200 rounded w-16" />
+                      <div className="h-4 bg-gray-200 rounded w-14" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : allTransactions.length === 0 ? (
               <div className="text-center py-20 px-4">
