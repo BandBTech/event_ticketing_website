@@ -27,6 +27,7 @@ import { toast } from "@/lib/toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BellIcon, CreditCardIcon } from "@phosphor-icons/react";
+import { useCompanyInfo } from "@/hooks/useCompany";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -35,6 +36,7 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
 
+    const { data: company, isLoading } = useCompanyInfo();
   const handleLogout = async () => {
     const result = await logout();
     // [TODO: Translate Setup]
@@ -63,11 +65,17 @@ export function Header() {
               <span className="text-xl font-bold text-gray-900 font-poppins">
                 Timro-Ticket
               </span>*/}
-              <img
-                src="/timro-ticket-logo.png"
-                alt="Timro-Ticket"
-                className="h-11"
-              />
+           <img
+                      src={company?.logo_url}
+                      alt={company?.name}
+                      className="h-10 py-1"
+                    />
+                    <span
+                    className="text-xl font-bold text-gray-900 font-poppins"
+                    suppressHydrationWarning
+                  >
+                    {company?.name || "Timro Ticket"}
+                  </span>
             </div>
           </Link>
 
