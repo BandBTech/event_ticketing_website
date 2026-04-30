@@ -17,15 +17,14 @@ import {
 } from "@/hooks/useTransactions";
 import { useDebouncedState } from "@/hooks/useDebounce";
 import {
-  Transaction,
   TransactionApiFilters,
   TransactionFilters,
   getDefaultFilters,
 } from "@/types/transaction";
+import TablePagination from "@/components/ui/TablePagination";
 import { cn, formatDate,} from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TransactionDetail } from "@/components/transactions/TransactionDetail";
-import { FigmaButton } from "@/components/ui/figma-button";
 import Image from "next/image";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -37,12 +36,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import {
-  differenceInMonths,
-  isBefore,
-  startOfDay,
   format,
   subMonths,
-  endOfDay,
 } from "date-fns";
 import { toast } from "sonner";
 
@@ -56,8 +51,6 @@ export default function BillingPage() {
   // State
   const [searchInput, debouncedSearch, setSearchInput] = useDebouncedState("", 400);
   const [page, setPage] = useState(1);
-  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
-  const [hasMore, setHasMore] = useState(true);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [appliedFilters, setAppliedFilters] =
@@ -95,47 +88,19 @@ export default function BillingPage() {
   const {
     data: response,
     isFetching,
-    refetch,
   } = useUserTransactions(page, 20, apiFilters, debouncedSearch);
 
   const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
     selectedId ?? undefined,
   );
 
-  // Reset pagination when search or filters change
+  const transactions = response?.data?.transactions || [];
+  const pagination = response?.data?.pagination;
+
+  // Reset to page 1 when search or filters change
   useEffect(() => {
     setPage(1);
-    setAllTransactions([]);
-    refetch();
-  }, [debouncedSearch, apiFilters.date_from, apiFilters.date_to, refetch]);
-
-  // Accumulate Results
-  useEffect(() => {
-    const transactions = response?.data?.transactions || [];
-    const pagination = response?.data?.pagination;
-
-    if (transactions.length > 0) {
-      setAllTransactions((prev) => {
-        if (page === 1) return transactions;
-        const existingIds = new Set(prev.map((tx) => tx.id));
-        const newTransactions = transactions.filter(
-          (tx) => !existingIds.has(tx.id),
-        );
-        return [...prev, ...newTransactions];
-      });
-      if (pagination) {
-        setHasMore(pagination.has_next);
-      }
-    } else if (page === 1 && !isFetching) {
-      setAllTransactions([]);
-      setHasMore(false);
-    }
-  }, [
-    response?.data?.transactions,
-    page,
-    isFetching,
-    response?.data?.pagination,
-  ]);
+  }, [debouncedSearch, apiFilters.date_from, apiFilters.date_to]);
 
   // Handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,7 +110,6 @@ export default function BillingPage() {
   const handleClearSearch = () => {
     setSearchInput("");
     setPage(1);
-    setAllTransactions([]);
   };
 
   const handleClearAll = () => {
@@ -154,16 +118,6 @@ export default function BillingPage() {
     handleClearSearch();
     toast.dismiss();
     setIsFilterOpen(false);
-  };
-
-  const handleLoadMore = () => {
-    if (!isFetching && hasMore) {
-      setPage((prev) => prev + 1);
-    }
-  };
-
-  const handleDateRangeClear = () => {
-    setDateRange({ from: undefined, to: undefined });
   };
 
   const handleQuickRange = (months: number) => {
@@ -261,7 +215,7 @@ const getClearButtonIcon = () => {
 
 
   const showLoading =
-    (isFetching && page === 1 && allTransactions.length === 0) ||
+    (isFetching && transactions.length === 0) ||
     searchInput !== debouncedSearch;
   const hasActiveFilters =
     searchInput !== "" ||
@@ -552,7 +506,7 @@ const getClearButtonIcon = () => {
                   </div>
                 ))}
               </div>
-            ) : allTransactions.length === 0 ? (
+            ) : transactions.length === 0 ? (
               <div className="text-center py-20 px-4">
                 <TicketIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-gray-900 font-semibold">
@@ -570,7 +524,7 @@ const getClearButtonIcon = () => {
             ) : (
               <>
                 <div className="space-y-3">
-                  {allTransactions.map((tx) => (
+                  {transactions.map((tx) => (
                     <div
                       key={tx.id}
                       onClick={() => router.push(`${pathname}?id=${tx.id}`)}
@@ -636,15 +590,14 @@ const getClearButtonIcon = () => {
                   ))}
                 </div>
 
-                {hasMore && !isFetching && (
-                  <div className="flex justify-center pt-6">
-                    <FigmaButton
-                      onClick={handleLoadMore}
-                      className="w-full sm:w-auto"
-                    >
-                      Load More
-                    </FigmaButton>
-                  </div>
+                {pagination && pagination.total_pages > 1 && (
+                  <TablePagination
+                    currentPage={page}
+                    totalPages={pagination.total_pages}
+                    total={pagination.total}
+                    limit={20}
+                    onPageChange={setPage}
+                  />
                 )}
               </>
             )}
