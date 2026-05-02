@@ -474,14 +474,14 @@ function GuestPurchaseContent() {
     </div>
 
     {/* Sale Schedule - Now grouped with Tier Info */}
-    <div>
+    {/* <div>
       <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide flex items-center gap-1">
         <ClockIcon size={12} />
         {t("eventDetails.schedule", "Sale Schedule")}
       </p>
 
       <div className="space-y-2">
-        {/* Sales Start */}
+   
         <div className="flex items-center justify-between text-xs gap-4">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
@@ -497,7 +497,7 @@ function GuestPurchaseContent() {
           </span>
         </div>
 
-        {/* Sales End */}
+        
         <div className="flex items-center justify-between text-xs gap-4">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
@@ -513,7 +513,7 @@ function GuestPurchaseContent() {
           </span>
         </div>
       </div>
-    </div>
+    </div> */}
   </div>
 
   {/* Right Column: Quantity Controls - Aligned to top */}

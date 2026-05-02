@@ -7,6 +7,7 @@ import {
   HeartIcon,
   InfoIcon,
   BroadcastIcon,
+  ClockIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { Event } from "@/types/event";
 import { SalesCountdown } from "./SalesCountdown";
 import { ShareButton } from "@/components/ui/ShareButton";
+import { format } from "date-fns";
 
 interface EventSidebarProps {
   event: Event;
@@ -245,7 +247,8 @@ export const EventSidebar = ({
     <div className="glass-card rounded-2xl p-6 sticky top-24">
       <div className="space-y-4">
         {/* Action Buttons */}
-        <div className="pt-2">
+        <div className="space-y-3">
+         
           <div className="space-y-3">
             {renderSalesAction()}
 
@@ -258,9 +261,52 @@ export const EventSidebar = ({
               onShare={onShare}
             />
           </div>
-        </div>
+           <div className="space-y-3">
+             <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide flex items-center gap-1">
+        <ClockIcon size={12} />
+        {t("eventDetails.schedule", "Sale Schedule")}
+      </p>
+            {event.ticketTypes.map((type) => (
+              <div key={type.id} className="border-b pb-2 last:border-0">
+                <p className="text-[10px] font-bold text-primary uppercase mb-1">
+                  {type.tier_name}
+                </p>
 
-        
+                {/* Sales Start */}
+                <div className="flex items-center justify-between text-xs gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                    <span className="text-gray-600 font-medium">
+                      {t("eventDetails.starts", "Starts")}:
+                    </span>
+                  </div>
+                  <span className="font-mono text-gray-800 bg-gray-50 px-2 py-0.5 rounded whitespace-nowrap">
+                    {format(new Date(type.sales_start), "MMM dd, yyyy")}
+                    <span className="text-gray-400 ml-1">
+                      {format(new Date(type.sales_start), "hh:mm a")}
+                    </span>
+                  </span>
+                </div>
+
+                {/* Sales End */}
+                <div className="flex items-center justify-between text-xs gap-4 mt-1">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                    <span className="text-gray-600 font-medium">
+                      {t("eventDetails.end", "Ends")}:
+                    </span>
+                  </div>
+                  <span className="font-mono text-gray-800 bg-gray-50 px-2 py-0.5 rounded whitespace-nowrap">
+                    {format(new Date(type.sales_end), "MMM dd, yyyy")}
+                    <span className="text-gray-400 ml-1">
+                      {format(new Date(type.sales_end), "hh:mm a")}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Place */}
         <div className="pt-4 border-t border-gray-200">
