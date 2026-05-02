@@ -99,6 +99,7 @@ export default function TicketsPage() {
     data: detailTickets,
     isLoading: isDetailLoading,
     isError: isDetailError,
+    
   } = useTransactionDetails(selectedOrderId ?? undefined);
   // Use the existing query hook
   const {
@@ -155,18 +156,18 @@ export default function TicketsPage() {
     router.push(pathname);
   };
 
-const isRefundAllowed = useMemo(() => {
-  const startDate = detailTickets?.event?.startDate;
-  
-  // If there's no date, don't allow refund by default
-  if (!startDate) return false;
+  const isRefundAllowed = useMemo(() => {
+    const startDate = detailTickets?.event?.startDate;
 
-  const eventStartTime = new Date(startDate).getTime();
-  const currentTime = new Date().getTime();
-  const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+    // If there's no date, don't allow refund by default
+    if (!startDate) return false;
 
-  return (eventStartTime - currentTime) > twentyFourHoursInMs;
-}, [detailTickets?.event?.startDate]);
+    const eventStartTime = new Date(startDate).getTime();
+    const currentTime = new Date().getTime();
+    const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+
+    return eventStartTime - currentTime > twentyFourHoursInMs;
+  }, [detailTickets?.event?.startDate]);
 
   const handleCancelOrder = (orderId: string) => {
     setSelectedOrderForCancel(orderId);
@@ -203,6 +204,7 @@ const isRefundAllowed = useMemo(() => {
           });
         }
       }
+     // await refetchTransaction();
 
       // Close dialog on success
       setShowCancelDialog(false);
@@ -953,7 +955,7 @@ const isRefundAllowed = useMemo(() => {
                                   "text-xs font-medium",
                                   ticket.status === "expired" &&
                                     "bg-red-100 text-red-700",
-                                     ticket.status === "cancelled" &&
+                                  ticket.status === "cancelled" &&
                                     "bg-red-100 text-red-700",
                                   ticket.status === "active" &&
                                     "bg-green-100 text-green-700",
@@ -978,49 +980,55 @@ const isRefundAllowed = useMemo(() => {
                               </Badge>
                             )}
                           </div>
-
                           {/* Actions */}
-                         <div className="flex gap-2 flex-wrap">
-  {/* Cancel button - only when all conditions met */}
-  {ticket.status === "active" && 
-   !ticket.is_checked_in && 
-   isRefundAllowed && (
-    <Button
-      variant="outline"
-      size="sm"
-      className="h-8 text-xs text-destructive hover:text-destructive hover:bg-red-50 border-destructive/20"
-      onClick={() => handleCancelTicket(ticket.ticketId)}
-      disabled={cancelMutation.isPending}
-    >
-      <X className="h-3.5 w-3.5 mr-1" /> Cancel Ticket
-    </Button>
-  )}
-  
-  {/* Status messages for non-cancellable tickets */}
-  {ticket.status === "active" && !ticket.is_checked_in && !isRefundAllowed && (
-    <span className="text-xs text-amber-600 italic">
-      ⏰ Cancellation unavailable (within 24 hours of event)
-    </span>
-  )}
-  
-  {ticket.status === "expired" && (
-    <span className="text-xs text-red-400 italic">
-      ✕ Ticket expired
-    </span>
-  )}
-  
-  {ticket.status === "used" && (
-    <span className="text-xs text-blue-400 italic">
-      ✓ Ticket already used
-    </span>
-  )}
-  
-  {ticket.status === "refunded" && (
-    <span className="text-xs text-gray-400 italic">
-      ↺ Ticket refunded
-    </span>
-  )}
-</div>                        </div>
+                          <div className="flex gap-2 flex-wrap">
+                            {/* Cancel button - only when all conditions met */}
+                            {ticket.status === "active" &&
+                              !ticket.is_checked_in &&
+                              isRefundAllowed && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 text-xs text-destructive hover:text-destructive hover:bg-red-50 border-destructive/20"
+                                  onClick={() =>
+                                    handleCancelTicket(ticket.ticketId)
+                                  }
+                                  disabled={cancelMutation.isPending}
+                                >
+                                  <X className="h-3.5 w-3.5 mr-1" /> Cancel
+                                  Ticket
+                                </Button>
+                              )}
+
+                            {/* Status messages for non-cancellable tickets */}
+                            {ticket.status === "active" &&
+                              !ticket.is_checked_in &&
+                              !isRefundAllowed && (
+                                <span className="text-xs text-amber-600 italic">
+                                  ⏰ Cancellation unavailable (within 24 hours
+                                  of event)
+                                </span>
+                              )}
+
+                            {ticket.status === "expired" && (
+                              <span className="text-xs text-red-400 italic">
+                                ✕ Ticket expired
+                              </span>
+                            )}
+
+                            {ticket.status === "used" && (
+                              <span className="text-xs text-blue-400 italic">
+                                ✓ Ticket already used
+                              </span>
+                            )}
+
+                            {ticket.status === "refunded" && (
+                              <span className="text-xs text-gray-400 italic">
+                                ↺ Ticket refunded
+                              </span>
+                            )}
+                          </div>{" "}
+                        </div>
 
                         {/* QR/Barcode Side */}
                         <div className="w-full md:w-48 bg-gray-50 p-6 flex flex-col items-center justify-center gap-3">

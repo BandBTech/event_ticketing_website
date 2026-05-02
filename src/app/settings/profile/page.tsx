@@ -82,6 +82,7 @@ export default function ProfileSettingsPage() {
     handleSubmit,
     control,
     reset,
+    watch,
     formState: { errors, isDirty },
   } = form;
 
@@ -154,6 +155,8 @@ export default function ProfileSettingsPage() {
     setIsEditing(false);
   };
 
+    const firstNameValue = watch("firstName");
+  const lastNameValue = watch("lastName");
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -245,7 +248,7 @@ export default function ProfileSettingsPage() {
                 )}
                 {isEditing && (
                   <div className="text-xs text-muted-foreground ml-auto">
-                    {user?.firstName?.length || 0}/{50}{" "}
+                    {firstNameValue?.length || 0}/{50}{" "}
                     {t("common.characters", "characters")}
                   </div>
                 )}
@@ -291,7 +294,7 @@ export default function ProfileSettingsPage() {
                 )}
                 {isEditing && (
                   <div className="text-xs text-muted-foreground ml-auto">
-                    {user?.firstName?.length || 0}/{50}{" "}
+                    {lastNameValue?.length || 0}/{50}{" "}
                     {t("common.characters", "characters")}
                   </div>
                 )}
