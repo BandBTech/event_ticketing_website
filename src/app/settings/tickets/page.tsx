@@ -511,16 +511,16 @@ export default function TicketsPage() {
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">
+                      <SelectItem value="all" className="cursor-pointer">
                         {t(
                           "setting.menu.tickets.selectValue.allStatus",
                           "All Status",
                         )}
                       </SelectItem>
-                      <SelectItem value="active">
+                      <SelectItem value="active" className="cursor-pointer">
                         {t("setting.menu.tickets.selectValue.active", "Active")}
                       </SelectItem>
-                      <SelectItem value="used">
+                      <SelectItem value="used" className="cursor-pointer">
                         {t("setting.menu.tickets.selectValue.used", "Used")}
                       </SelectItem>
                     </SelectContent>
