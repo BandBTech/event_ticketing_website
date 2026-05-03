@@ -196,11 +196,11 @@ export default function ContactPage() {
                       <SelectValue placeholder="Select an issue" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ticket">Ticket Booking Issue</SelectItem>
-                      <SelectItem value="event">Event Publishing</SelectItem>
-                      <SelectItem value="payment">Payments & Refund</SelectItem>
-                      <SelectItem value="tech">Technical Support</SelectItem>
-                      <SelectItem value="partner">Partner/Business Inquiry</SelectItem>
+                      <SelectItem value="ticket" className="cursor-pointer">Ticket Booking Issue</SelectItem>
+                      <SelectItem value="event" className="cursor-pointer">Event Publishing</SelectItem>
+                      <SelectItem value="payment" className="cursor-pointer">Payments & Refund</SelectItem>
+                      <SelectItem value="tech" className="cursor-pointer">Technical Support</SelectItem>
+                      <SelectItem value="partner" className="cursor-pointer">Partner/Business Inquiry</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
