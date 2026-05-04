@@ -99,7 +99,7 @@ export default function TicketsPage() {
     data: detailTickets,
     isLoading: isDetailLoading,
     isError: isDetailError,
-    
+   
   } = useTransactionDetails(selectedOrderId ?? undefined);
   // Use the existing query hook
   const {
@@ -107,6 +107,7 @@ export default function TicketsPage() {
     isLoading,
     isFetching,
     error,
+    
   } = useUserTickets(currentPage, statusFilter, searchQuery);
   const ticketsArray = responseData?.tickets || [];
   const pagination = responseData?.pagination;
@@ -179,6 +180,7 @@ export default function TicketsPage() {
     setSelectedTicketForCancel(ticketId);
     setSelectedOrderForCancel(null);
     setShowCancelDialog(true);
+    
   };
 
   const handleCancelConfirm = async (reason: string) => {
@@ -210,6 +212,7 @@ export default function TicketsPage() {
       setShowCancelDialog(false);
       setSelectedOrderForCancel(null);
       setSelectedTicketForCancel(null);
+     
     } catch (error) {
       // Error toast is shown by apiClient, just close the dialog
       setShowCancelDialog(false);
@@ -946,7 +949,7 @@ export default function TicketsPage() {
                               </p>
                             </div>
                             {ticket.is_checked_in ? (
-                              <Badge className="text-xs font-medium bg-primary-100 text-primary-700">
+                              <Badge className="text-xs bg-green-100 text-green-700">
                                 Checked In
                               </Badge>
                             ) : (
@@ -1004,27 +1007,26 @@ export default function TicketsPage() {
                             {ticket.status === "active" &&
                               !ticket.is_checked_in &&
                               !isRefundAllowed && (
-                                <span className="text-xs text-amber-600 italic">
-                                  ⏰ Cancellation unavailable (within 24 hours
-                                  of event)
+                                <span className="text-xs font-semibold  text-amber-600 ">
+                                  Cancellations are not allowed within 24 hours of the event.
                                 </span>
                               )}
 
                             {ticket.status === "expired" && (
-                              <span className="text-xs text-red-400 italic">
-                                ✕ Ticket expired
+                              <span className="text-xs font-semibold text-red-400">
+                                The Ticket has expired.
                               </span>
                             )}
 
                             {ticket.status === "used" && (
-                              <span className="text-xs text-blue-400 italic">
-                                ✓ Ticket already used
+                              <span className="text-xs font-semibold text-blue-400 ">
+                                Ticket already used.
                               </span>
                             )}
 
                             {ticket.status === "refunded" && (
-                              <span className="text-xs text-gray-400 italic">
-                                ↺ Ticket refunded
+                              <span className="text-xs font-semibold  text-gray-400 ">
+                                The Ticket has been refunded.
                               </span>
                             )}
                           </div>{" "}

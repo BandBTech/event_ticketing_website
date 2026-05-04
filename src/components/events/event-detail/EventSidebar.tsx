@@ -261,44 +261,44 @@ export const EventSidebar = ({
               onShare={onShare}
             />
           </div>
-           <div className="space-y-3">
-             <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide flex items-center gap-1">
-        <ClockIcon size={12} />
+           <div className="space-y-3 border-t pt-4">
+             <p className=" font-semibold text-gray-900 mb-2 tracking-wide flex items-center gap-1">
+        
         {t("eventDetails.schedule", "Sale Schedule")}
       </p>
             {event.ticketTypes.map((type) => (
-              <div key={type.id} className="border-b pb-2 last:border-0">
-                <p className="text-[10px] font-bold text-primary uppercase mb-1">
+              <div key={type.id} className="border-b pb-1 last:border-0">
+                <p className="text-[12px] font-medium text-primary mb-1">
                   {type.tier_name}
                 </p>
 
                 {/* Sales Start */}
-                <div className="flex items-center justify-between text-xs gap-4">
+                <div className="flex items-center justify-between text-sm font-medium gap-4">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                    <span className="text-gray-600 font-medium">
+                    <span className="text-gray-900 font-medium">
                       {t("eventDetails.starts", "Starts")}:
                     </span>
                   </div>
-                  <span className="font-mono text-gray-800 bg-gray-50 px-2 py-0.5 rounded whitespace-nowrap">
+                  <span className=" text-gray-900 bg-gray-50 rounded whitespace-nowrap">
                     {format(new Date(type.sales_start), "MMM dd, yyyy")}
-                    <span className="text-gray-400 ml-1">
+                    <span className="text-gray-900 ml-1">
                       {format(new Date(type.sales_start), "hh:mm a")}
                     </span>
                   </span>
                 </div>
 
                 {/* Sales End */}
-                <div className="flex items-center justify-between text-xs gap-4 mt-1">
+                <div className="flex items-center justify-between text-sm font-medium gap-4 mt-1">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                    <span className="text-gray-600 font-medium">
+                    <span className="text-gray-900 font-medium">
                       {t("eventDetails.end", "Ends")}:
                     </span>
                   </div>
-                  <span className="font-mono text-gray-800 bg-gray-50 px-2 py-0.5 rounded whitespace-nowrap">
+                  <span className="text-gray-900 bg-gray-50  rounded whitespace-nowrap">
                     {format(new Date(type.sales_end), "MMM dd, yyyy")}
-                    <span className="text-gray-400 ml-1">
+                    <span className="text-gray-900 ml-1">
                       {format(new Date(type.sales_end), "hh:mm a")}
                     </span>
                   </span>

@@ -150,6 +150,7 @@ export const useCancelTicket = () => {
         // Invalidate user tickets query to refetch updated list
         queryClient.invalidateQueries({
           queryKey: queryKeys.tickets.userTickets(1, "all", ""),
+      
         });
 
         // Also invalidate any detail queries for this ticket
@@ -157,6 +158,7 @@ export const useCancelTicket = () => {
           queryKey: ["tickets", "user-purchases"],
         });
       }
+      
     },
   });
 };
