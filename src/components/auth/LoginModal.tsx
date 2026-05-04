@@ -143,6 +143,7 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
                 id="modal-email"
                 type="email"
                 autoComplete="email"
+                disabled={isLoading}
                 placeholder={t("auth.login.emailPlaceholder", "Enter your email")}
                 className={cn(
                   "h-11 pl-10 pr-4",
@@ -177,6 +178,7 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
                 id="modal-password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
+                disabled={isLoading}
                 placeholder={t("auth.login.passwordPlaceholder", "Enter your password")}
                 className={cn(
                   "h-11 pl-10 pr-12",
@@ -187,8 +189,9 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed"
               >
                 {showPassword ? (
                   <EyeIcon weight="duotone" size={20} />
@@ -211,6 +214,7 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
                 id="modal-remember-me"
                 checked={rememberMe}
                 onCheckedChange={(checked) => setValue("rememberMe", !!checked)}
+                disabled={isLoading}
                 className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
               />
               <label

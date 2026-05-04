@@ -164,7 +164,8 @@ function VerifyOTPContent() {
                     router.push('/signup');
                   }
                 }}
-                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
+                disabled={isLoading || isResending}
+                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ArrowLeftIcon size={16} />
                 {t("auth.verifyOTP.back", "Back")}
@@ -200,7 +201,7 @@ function VerifyOTPContent() {
               {/* OTP Form */}
               <form onSubmit={handleVerify} className="space-y-6">
                 <div className="flex justify-center">
-                  <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                  <InputOTP maxLength={6} value={otp} onChange={setOtp} disabled={isLoading || isResending}>
                     <InputOTPGroup>
                       <InputOTPSlot
                         index={0}

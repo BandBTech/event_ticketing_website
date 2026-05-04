@@ -229,10 +229,10 @@ export default function ProfileSettingsPage() {
                 <Input
                   id="firstName"
                   type="text"
-                  disabled={!isEditing}
+                  disabled={!isEditing || isLoading}
                   className={cn(
                     "h-11 pl-11 pr-4",
-                    !isEditing && "bg-gray-50 cursor-not-allowed",
+                    (!isEditing || isLoading) && "bg-gray-50 cursor-not-allowed",
                     errors.firstName && "border-destructive",
                   )}
                   {...register("firstName")}
@@ -275,10 +275,10 @@ export default function ProfileSettingsPage() {
                 <Input
                   id="lastName"
                   type="text"
-                  disabled={!isEditing}
+                  disabled={!isEditing || isLoading}
                   className={cn(
                     "h-11 pl-11 pr-4",
-                    !isEditing && "bg-gray-50 cursor-not-allowed",
+                    (!isEditing || isLoading) && "bg-gray-50 cursor-not-allowed",
                     errors.lastName && "border-destructive",
                   )}
                   {...register("lastName")}
@@ -347,10 +347,10 @@ export default function ProfileSettingsPage() {
                 <PhoneInput
                   value={field.value || ""}
                   onChange={(value) => field.onChange(value || "")}
-                  disabled={!isEditing}
+                  disabled={!isEditing || isLoading}
                   defaultCountry="NP"
                   className={cn(
-                    !isEditing && "opacity-50 cursor-not-allowed",
+                    (!isEditing || isLoading) && "opacity-50 cursor-not-allowed",
                     errors.phone && "border-destructive",
                   )}
                 />

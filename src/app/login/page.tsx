@@ -176,6 +176,7 @@ export default function LoginPage() {
                         id="email"
                         type="email"
                         autoComplete="email"
+                        disabled={isLoading}
                         placeholder={t("auth.login.emailPlaceholder")}
                         className={cn(
                           "h-12 pl-16 pr-4 login-input",
@@ -217,6 +218,7 @@ export default function LoginPage() {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         autoComplete="current-password"
+                        disabled={isLoading}
                         placeholder={t("auth.login.passwordPlaceholder")}
                         className={cn(
                           "h-12 pl-16 pr-16 login-input",
@@ -227,12 +229,13 @@ export default function LoginPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
+                        disabled={isLoading}
                         aria-label={
                           showPassword
                             ? t("auth.login.hidePassword")
                             : t("auth.login.showPassword")
                         }
-                        className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
                       >
                         {showPassword ? (
                           <EyeIcon
@@ -268,6 +271,7 @@ export default function LoginPage() {
                         onCheckedChange={(checked) =>
                           setValue("rememberMe", !!checked)
                         }
+                        disabled={isLoading}
                         className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
                       <label

@@ -457,6 +457,7 @@ export default function MultiStepRegister() {
                           <Input
                             id="firstName"
                             type="text"
+                            disabled={isLoading}
                             placeholder={t(
                               "auth.signup.firstNamePlaceholder",
                               "John"
@@ -497,6 +498,7 @@ export default function MultiStepRegister() {
                           <Input
                             id="lastName"
                             type="text"
+                            disabled={isLoading}
                             placeholder={t(
                               "auth.signup.lastNamePlaceholder",
                               "Doe"
@@ -539,6 +541,7 @@ export default function MultiStepRegister() {
                         <Input
                           id="email"
                           type="email"
+                          disabled={isLoading}
                           placeholder={t(
                             "auth.signup.emailPlaceholder",
                             "Enter email address"
@@ -574,6 +577,7 @@ export default function MultiStepRegister() {
                             value={field.value}
                             onChange={field.onChange}
                             defaultCountry={defaultCountry}
+                            disabled={isLoading}
                             placeholder={t(
                               "auth.signup.phonePlaceholder",
                               "981-234-5678"
@@ -644,6 +648,7 @@ export default function MultiStepRegister() {
                               maxLength={6}
                               value={field.value}
                               onChange={field.onChange}
+                              disabled={isLoading}
                             >
                               <InputOTPGroup>
                                 <InputOTPSlot
@@ -756,6 +761,7 @@ export default function MultiStepRegister() {
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
+                          disabled={isLoading}
                           placeholder={t(
                             "auth.signup.passwordPlaceholder",
                             "••••••••••••"
@@ -770,7 +776,8 @@ export default function MultiStepRegister() {
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2"
+                          disabled={isLoading}
+                          className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 disabled:cursor-not-allowed"
                         >
                           {showPassword ? (
                             <EyeIcon
@@ -817,6 +824,7 @@ export default function MultiStepRegister() {
                         <Input
                           id="confirmPassword"
                           type={showConfirmPassword ? "text" : "password"}
+                          disabled={isLoading}
                           placeholder={t(
                             "auth.signup.confirmPasswordPlaceholder",
                             "••••••••••••"
@@ -833,7 +841,8 @@ export default function MultiStepRegister() {
                           onClick={() =>
                             setShowConfirmPassword(!showConfirmPassword)
                           }
-                          className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2"
+                          disabled={isLoading}
+                          className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 disabled:cursor-not-allowed"
                         >
                           {showConfirmPassword ? (
                             <EyeIcon

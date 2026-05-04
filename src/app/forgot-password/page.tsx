@@ -154,6 +154,7 @@ export default function ForgotPasswordPage() {
                             id="email"
                             type="email"
                             autoComplete="email"
+                            disabled={isLoading}
                             placeholder={t(
                               "auth.forgotPassword.emailPlaceholder",
                               "Enter your email address"

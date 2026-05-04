@@ -148,6 +148,7 @@ export default function SecuritySettingsPage() {
                 id="currentPassword"
                 type={showCurrentPassword ? "text" : "password"}
                 autoComplete="current-password"
+                disabled={isLoading}
                 placeholder={t('settings.security.currentPasswordPlaceholder', 'Enter current password')}
                 className={cn(
                   "h-11 pl-11 pr-12",
@@ -158,7 +159,8 @@ export default function SecuritySettingsPage() {
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                disabled={isLoading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer disabled:cursor-not-allowed"
               >
                 {showCurrentPassword ? (
                   <EyeIcon size={18} className="text-gray-600" weight="duotone" />
@@ -185,6 +187,7 @@ export default function SecuritySettingsPage() {
                 id="newPassword"
                 type={showNewPassword ? "text" : "password"}
                 autoComplete="new-password"
+                disabled={isLoading}
                 placeholder={t('settings.security.newPasswordPlaceholder', 'Enter new password')}
                 className={cn(
                   "h-11 pl-11 pr-12",
@@ -195,7 +198,8 @@ export default function SecuritySettingsPage() {
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                disabled={isLoading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer disabled:cursor-not-allowed"
               >
                 {showNewPassword ? (
                   <EyeIcon size={18} className="text-gray-600" weight="duotone" />
@@ -223,6 +227,7 @@ export default function SecuritySettingsPage() {
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 autoComplete="new-password"
+                disabled={isLoading}
                 placeholder={t('settings.security.confirmPasswordPlaceholder', 'Enter new password again')}
                 className={cn(
                   "h-11 pl-11 pr-12",
@@ -233,7 +238,8 @@ export default function SecuritySettingsPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                disabled={isLoading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer disabled:cursor-not-allowed"
               >
                 {showConfirmPassword ? (
                   <EyeIcon size={18} className="text-gray-600" weight="duotone" />
