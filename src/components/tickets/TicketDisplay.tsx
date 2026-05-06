@@ -101,10 +101,10 @@ function SingleTicketCard({
           )}
 
           {/* Ticket Badge */}
-          <div className="absolute top-2 right-2 bg-primary shadow-md rounded-full px-3 py-1">
+          <div className="absolute top-2 right-2 bg-primary shadow-md rounded-xl px-3 py-1 max-w-[60%]">
             <div className="flex items-center gap-1.5">
-              <Ticket className="w-3 h-3 text-primary-foreground" />
-              <span className="text-xs font-bold text-primary-foreground uppercase tracking-wide">
+              <Ticket className="w-3 h-3 text-primary-foreground shrink-0" />
+              <span className="text-xs font-bold text-pretty text-primary-foreground uppercase tracking-wide wrap-anywhere">
                 {ticket.tierName.name}
               </span>
             </div>
@@ -154,7 +154,7 @@ function SingleTicketCard({
                   <p className="text-[10px] text-black/50 font-medium uppercase tracking-wider">
                     {t("ticketView.venue", "Venue")}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-x-2 gap-y-1">
                     <p className="text-sm font-semibold">{event.venueName}</p>
                     {event.address && !isCoordinates(event.address) && (
                       <p className="text-sm text-black/60">{event.address}</p>
@@ -166,7 +166,7 @@ function SingleTicketCard({
           </div>
 
           {/* Organizer & Supported By Section - Compact Row */}
-          <div className="pt-3 px-4 flex justify-around gap-4">
+          <div className="pt-3 px-4 grid grid-cols-2 gap-4">
             {/* Organizer */}
             {event.organizer && (
               <div className="flex flex-col items-start gap-1">
@@ -182,7 +182,7 @@ function SingleTicketCard({
                       className="h-6 max-w-[32px] object-contain"
                     />
                   )}
-                  <span className="text-xs text-gray-600 font-medium line-clamp-1">
+                  <span className="text-xs text-gray-600 font-medium wrap-anywhere">
                     {event.organizer.business_name}
                   </span>
                 </div>
@@ -206,7 +206,7 @@ function SingleTicketCard({
                   ) : (
                     <Building2 className="w-3 h-3 text-gray-400" />
                   )}
-                  <span className="text-xs text-gray-600 font-medium line-clamp-1">
+                  <span className="text-xs text-gray-600 font-medium wrap-anywhere">
                     {company.name}
                   </span>
                 </div>

@@ -100,7 +100,6 @@ export default function TicketsPage() {
     data: detailTickets,
     isLoading: isDetailLoading,
     isError: isDetailError,
-   
   } = useTransactionDetails(selectedOrderId ?? undefined);
   // Use the existing query hook
   const {
@@ -108,7 +107,6 @@ export default function TicketsPage() {
     isLoading,
     isFetching,
     error,
-    
   } = useUserTickets(currentPage, statusFilter, searchQuery);
   const ticketsArray = responseData?.tickets || [];
   const pagination = responseData?.pagination;
@@ -181,7 +179,6 @@ export default function TicketsPage() {
     setSelectedTicketForCancel(ticketId);
     setSelectedOrderForCancel(null);
     setShowCancelDialog(true);
-    
   };
 
   const handleCancelConfirm = async (reason: string) => {
@@ -207,13 +204,12 @@ export default function TicketsPage() {
           });
         }
       }
-     // await refetchTransaction();
+      // await refetchTransaction();
 
       // Close dialog on success
       setShowCancelDialog(false);
       setSelectedOrderForCancel(null);
       setSelectedTicketForCancel(null);
-     
     } catch (error) {
       // Error toast is shown by apiClient, just close the dialog
       setShowCancelDialog(false);
@@ -1010,7 +1006,10 @@ export default function TicketsPage() {
                               !ticket.is_checked_in &&
                               !isRefundAllowed && (
                                 <span className="text-xs font-semibold  text-amber-600 ">
-                                  Cancellations are not allowed within 24 hours of the event.
+                                  {t(
+                                    "ticket.cancelNotAllowed",
+                                    "Cancellations are not allowed within 24 hours of the event.",
+                                  )}
                                 </span>
                               )}
 
