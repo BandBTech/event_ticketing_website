@@ -40,6 +40,7 @@ import {
   subMonths,
 } from "date-fns";
 import { toast } from "sonner";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 export default function BillingPage() {
   const searchParams = useSearchParams();
@@ -222,7 +223,10 @@ const getClearButtonIcon = () => {
     !!appliedFilters.end_date;
 
   return (
+    <>
+     <PageTitle title="My Transactions" />
     <div className="space-y-4 px-2 sm:px-0">
+     
       {!selectedId && (
         <div className="space-y-1">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 font-poppins">
@@ -608,5 +612,6 @@ const getClearButtonIcon = () => {
         )}
       </div>
     </div>
+    </>
   );
 }

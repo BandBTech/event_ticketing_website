@@ -51,6 +51,7 @@ import { toast } from "sonner";
 import { jsPDF } from "jspdf";
 import { toPng } from "html-to-image";
 import { TicketDisplay } from "@/components/tickets/TicketDisplay";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 // Check if event is upcoming (start date is in the future)
 const isUpcoming = (startDate: string) => {
@@ -456,6 +457,7 @@ export default function TicketsPage() {
 
   return (
     <div className="space-y-4">
+      <PageTitle title="My Tickets" />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">

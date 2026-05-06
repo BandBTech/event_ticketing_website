@@ -23,7 +23,7 @@
     "faq": "よくある質問",
     "location": "位置",
     "organizer": "主催者",
-    "place": "場所",
+    "place": "会場",
     "date": "日付",
     "tags": "タグ",
     "allEventsLoaded": "すべてのイベントがロードされました",
@@ -39,7 +39,10 @@
     },
     "cancel": "キャンセル",
     "characters": "キャラクター",
-    "back": "戻る"
+    "back": "戻る",
+    "Event": {
+      "date": "イベント日"
+    }
   },
   "navigation": {
     "events": "イベント",
@@ -446,7 +449,8 @@
       "readLess": "もっと読む",
       "readMore": "続きを読む"
     },
-    "noEventId": "URL にイベント ID が指定されていません。"
+    "noEventId": "URL にイベント ID が指定されていません。",
+    "schedule": "発売日"
   },
   "profile": {
     "title": "私のプロフィール",

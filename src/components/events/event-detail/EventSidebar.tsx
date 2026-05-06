@@ -264,7 +264,7 @@ export const EventSidebar = ({
            <div className="space-y-3 border-t pt-4">
              <p className=" font-semibold text-gray-900 mb-2 tracking-wide flex items-center gap-1">
         
-        {t("eventDetails.schedule", "Sale Schedule")}
+        {t("eventDetails.schedule", "Sales Date")}
       </p>
             {event.ticketTypes.map((type) => (
               <div key={type.id} className="border-b pb-1 last:border-0">
@@ -280,7 +280,7 @@ export const EventSidebar = ({
                       {t("eventDetails.starts", "Starts")}:
                     </span>
                   </div>
-                  <span className=" text-gray-900 bg-gray-50 rounded whitespace-nowrap">
+                  <span className="font-medium text-gray-900 bg-gray-50 rounded whitespace-nowrap">
                     {format(new Date(type.sales_start), "MMM dd, yyyy")}
                     <span className="text-gray-900 ml-1">
                       {format(new Date(type.sales_start), "hh:mm a")}
@@ -289,7 +289,7 @@ export const EventSidebar = ({
                 </div>
 
                 {/* Sales End */}
-                <div className="flex items-center justify-between text-sm font-medium gap-4 mt-1">
+                <div className="flex items-center justify-between text-sm font-medium gap-4 ">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
                     <span className="text-gray-900 font-medium">
@@ -311,7 +311,7 @@ export const EventSidebar = ({
         {/* Place */}
         <div className="pt-4 border-t border-gray-200">
           <h3 className="font-semibold text-gray-900 mb-2">
-            {t("common.place")}
+            {t("common.place","Venue")}
           </h3>
           <p className="text-gray-900 font-medium">{event.venue.name}</p>
           {!/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
@@ -322,7 +322,7 @@ export const EventSidebar = ({
         {/* Date */}
         <div className="pt-4 border-t border-gray-200">
           <h3 className="font-semibold text-gray-900 mb-2">
-            {t("common.date")}
+            {t("common.Event.date","Event Date")}
           </h3>
           <div className="flex items-start gap-2 text-gray-900">
             <CalendarIcon size={20} className="flex-shrink-0 mt-0.5" />

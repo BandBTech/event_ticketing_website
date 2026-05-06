@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 import { createValidationHelpers } from "@/lib/validation";
 
 import { isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
+
 
 // Validation schema
 const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
@@ -158,6 +160,8 @@ export default function ProfileSettingsPage() {
     const firstNameValue = watch("firstName");
   const lastNameValue = watch("lastName");
   return (
+    <>
+    <PageTitle title="My Profile" />
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -385,5 +389,6 @@ export default function ProfileSettingsPage() {
         </form>
       </div>
     </div>
+    </>
   );
 }

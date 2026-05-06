@@ -23,7 +23,7 @@
     "faq": "Domande frequenti",
     "location": "Posizione",
     "organizer": "Organizzatore",
-    "place": "Posto",
+    "place": "Luogo",
     "date": "Data",
     "tags": "Tag",
     "allEventsLoaded": "Tutti gli eventi caricati",
@@ -39,7 +39,10 @@
     },
     "cancel": "Cancellare",
     "characters": "caratteri",
-    "back": "Indietro"
+    "back": "Indietro",
+    "Event": {
+      "date": "Data dell'evento"
+    }
   },
   "navigation": {
     "events": "Eventi",
@@ -444,7 +447,8 @@
       "readLess": "Leggi meno",
       "readMore": "Per saperne di più"
     },
-    "noEventId": "Nessun ID evento fornito nell'URL."
+    "noEventId": "Nessun ID evento fornito nell'URL.",
+    "schedule": "Data di vendita"
   },
   "profile": {
     "title": "Il mio profilo",

@@ -24,7 +24,7 @@
     "faq": "FAQ",
     "location": "Location",
     "organizer": "Organizer",
-    "place": "Place",
+    "place": "Venue",
     "date": "Date",
     "tags": "Tags",
     "allEventsLoaded": "All Events Loaded",
@@ -40,7 +40,10 @@
     },
     "cancel": "Cancel",
     "characters": "characters",
-    "back": "Back"
+    "back": "Back",
+    "Event": {
+      "date": "Event Date"
+    }
   },
   "navigation": {
     "events": "Events",
@@ -575,7 +578,8 @@
       "comingSoon": "Coming Soon",
       "unavailable": "Unavailable"
     },
-    "noEventId": "No event ID provided in the URL."
+    "noEventId": "No event ID provided in the URL.",
+    "schedule": "Sales Date"
   },
   "ticketPurchase": {
     "selectTierError": "Please select a ticket type.",

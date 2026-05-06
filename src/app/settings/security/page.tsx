@@ -16,6 +16,7 @@ import { createValidationHelpers } from '@/lib/validation';
 import { PasswordRequirements } from '@/components/auth/PasswordRequirements';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
+import { PageTitle } from '@/components/pagetitle/PageTitle';
 
 // Validation schema
 const createChangePasswordSchema = (
@@ -111,6 +112,7 @@ export default function SecuritySettingsPage() {
 
   return (
     <div className="space-y-4">
+      <PageTitle title="Security" />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
