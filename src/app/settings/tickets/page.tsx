@@ -39,7 +39,7 @@ import { useTransactionDetails, useUserTickets } from "@/hooks/useTickets";
 import { QRCodeSVG } from "qrcode.react";
 import { cn, formatDate, formatTime } from "@/lib/utils";
 
-import { ArrowLeftIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, CheckCircleIcon } from "@phosphor-icons/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -947,7 +947,11 @@ export default function TicketsPage() {
                               </p>
                             </div>
                             {ticket.is_checked_in ? (
-                              <Badge className="text-xs bg-green-100 text-green-700">
+                              <Badge className="bg-emerald-100 text-emerald-700">
+                                <CheckCircleIcon
+                                  weight="fill"
+                                  className="h-6"
+                                />
                                 Checked In
                               </Badge>
                             ) : (
@@ -971,7 +975,12 @@ export default function TicketsPage() {
                                 )}
                               >
                                 {ticket.status === "expired" && "Expired"}
-                                {ticket.status === "active" && "Active"}
+                                {ticket.status === "active" &&
+                                  !ticket.is_checked_in &&
+                                  "Active"}
+                                {ticket.status === "active" &&
+                                  ticket.is_checked_in &&
+                                  "Checked In"}
                                 {ticket.status === "used" && "Used"}
                                 {ticket.status === "pending_refund" &&
                                   "Pending Refund"}

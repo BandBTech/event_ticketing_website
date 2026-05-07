@@ -304,8 +304,8 @@ export const ticketService = {
           name: t.tier.name,
         },
         qrData: t.qr_data,
-        checkedIn: false,
-        is_checked_in: false,
+        checkedIn: t.is_checked_in,
+        is_checked_in: t.is_checked_in,
       })),
     };
   },
