@@ -102,8 +102,8 @@ function SingleTicketCard({
 
           {/* Ticket Badge */}
           <div className="absolute top-2 right-2 bg-primary shadow-md rounded-xl px-3 py-1 max-w-[60%]">
-            <div className="flex items-center gap-1.5">
-              <Ticket className="w-3 h-3 text-primary-foreground shrink-0" />
+            <div className="flex items-start gap-1.5">
+              <Ticket className="w-3 h-4 text-primary-foreground shrink-0" />
               <span className="text-xs font-bold text-pretty text-primary-foreground uppercase tracking-wide wrap-anywhere">
                 {ticket.tierName.name}
               </span>
