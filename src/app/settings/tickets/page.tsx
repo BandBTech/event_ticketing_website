@@ -963,9 +963,9 @@ export default function TicketsPage() {
                                   ticket.status === "cancelled" &&
                                     "bg-red-100 text-red-700",
                                   ticket.status === "active" &&
-                                    "bg-green-100 text-green-700",
+                                    "bg-blue-100 text-blue-600",
                                   ticket.status === "used" &&
-                                    "bg-blue-100 text-blue-700",
+                                    "bg-purple-100 text-purple-700",
                                   ticket.status === "pending_refund" &&
                                     "bg-amber-100 text-amber-700",
                                   ticket.status === "refunded" &&
