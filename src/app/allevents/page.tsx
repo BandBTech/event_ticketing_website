@@ -9,6 +9,7 @@ import { useEventCategories, useInfiniteEvents } from '@/hooks/useEvents';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
+import { PageTitle } from '@/components/pagetitle/PageTitle';
 
 export default function EventsPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,6 +50,9 @@ export default function EventsPage() {
   };
 
   return (
+    <>
+      <PageTitle title="Events" />
+   
     <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-16 max-w-7xl mx-auto">
       {/* Page Header */}
       <div className="text-center mb-12">
@@ -131,5 +135,6 @@ export default function EventsPage() {
         </div>
       )} */}
     </div>
+    </>
   );
 }

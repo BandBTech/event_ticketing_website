@@ -219,10 +219,10 @@ export function formatEventDateTime(
   const endDate = new Date(end);
   const sameDay = isSameDay(startDate, endDate);
 
-  const startStr = format(startDate, "MMM dd yyyy, hh:mm a");
+  const startStr = format(startDate, "MMM dd, yyyy hh:mm a");
   const endStr = sameDay
     ? format(endDate, "hh:mm a")
-    : format(endDate, "MMM dd yyyy, hh:mm a");
+    : format(endDate, "MMM dd, yyyy hh:mm a");
 
   return {
     isSameDay: sameDay,

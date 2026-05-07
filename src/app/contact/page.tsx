@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCompanyInfo } from "@/hooks/useCompany";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 const createContactSchema = () => {
   return z.object({
@@ -118,6 +119,9 @@ export default function ContactPage() {
   if (!isMounted) return null;
 
   return (
+    <>
+      <PageTitle title="Contact" />
+   
     <div className="min-h-screen bg-background">
       <section className="py-20">
         <div className="container mx-auto px-4">
@@ -221,5 +225,6 @@ export default function ContactPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

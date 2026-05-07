@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 export default function AboutPage() {
   const { locale } = useLanguageStore();
@@ -35,6 +36,9 @@ export default function AboutPage() {
   }
 
   return (
+    <>
+      <PageTitle title="About" />
+   
     <div className="min-h-screen bg-white/40">
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center space-y-8">
@@ -157,5 +161,6 @@ export default function AboutPage() {
       </section>
         )}
     </div>
+     </>
   );
 }

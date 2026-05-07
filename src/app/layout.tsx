@@ -18,14 +18,14 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
-// export const metadata: Metadata = {
-// title: {
-//     default: "Timro-Ticket - Event Ticketing Platform",
-//     template: "%s | Timro-Ticket",
-//   },
-//   description:
-//     "Discover and book tickets for amazing events in Nepal. From music festivals to conferences, find your next experience.",
-// };
+export const metadata: Metadata = {
+title: {
+    default: "Timro-Ticket - Event Ticketing Platform",
+    template: "%s | Timro-Ticket",
+  },
+  description:
+    "Discover and book tickets for amazing events in Nepal. From music festivals to conferences, find your next experience.",
+};
 
 export default function RootLayout({
   children,

@@ -274,35 +274,39 @@ export const EventSidebar = ({
 
                 {/* Sales Start */}
                 <div className="flex items-center justify-between text-sm font-medium gap-4">
+                   
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                   {/*  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
                     <span className="text-gray-900 font-medium">
                       {t("eventDetails.starts", "Starts")}:
-                    </span>
-                  </div>
-                  <span className="font-medium text-gray-900 bg-gray-50 rounded whitespace-nowrap">
+                    </span> */}
+                         <span className="text-gray-900 bg-gray-50">
                     {format(new Date(type.sales_start), "MMM dd, yyyy")}
                     <span className="text-gray-900 ml-1">
                       {format(new Date(type.sales_start), "hh:mm a")}
                     </span>
-                  </span>
-                </div>
-
-                {/* Sales End */}
-                <div className="flex items-center justify-between text-sm font-medium gap-4 ">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                    <span className="text-gray-900 font-medium">
-                      {t("eventDetails.end", "Ends")}:
-                    </span>
-                  </div>
-                  <span className="text-gray-900 bg-gray-50  rounded whitespace-nowrap">
+                  </span>-
+                  <span className="text-gray-900 bg-gray-50 ">
                     {format(new Date(type.sales_end), "MMM dd, yyyy")}
                     <span className="text-gray-900 ml-1">
                       {format(new Date(type.sales_end), "hh:mm a")}
                     </span>
                   </span>
+
+                  </div>
+             
                 </div>
+
+                {/* Sales End 
+                <div className="flex items-center justify-between text-sm font-medium gap-4 ">
+                  <div className="flex items-center gap-2">
+                    {/* <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                    <span className="text-gray-900 font-medium">
+                      {t("eventDetails.end", "Ends")}:
+                    </span> 
+                  </div>
+            
+                </div>*/}
               </div>
             ))}
           </div>
@@ -325,8 +329,6 @@ export const EventSidebar = ({
             {t("common.Event.date","Event Date")}
           </h3>
           <div className="flex items-start gap-2 text-gray-900">
-            <CalendarIcon size={20} className="flex-shrink-0 mt-0.5" />
-            <div className="flex flex-col">
               <span className="text-sm font-medium">
                 {dateDisplay.start}{" "}
                 {dateDisplay.isSameDay ? `- ${dateDisplay.end}` : "-"}
@@ -334,7 +336,7 @@ export const EventSidebar = ({
               {!dateDisplay.isSameDay && (
                 <span className="text-sm font-medium">{dateDisplay.end}</span>
               )}
-            </div>
+            
           </div>
         </div>
 
