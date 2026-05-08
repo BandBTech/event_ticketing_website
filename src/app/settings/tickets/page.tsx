@@ -1136,8 +1136,8 @@ export default function TicketsPage() {
                 <QRCodeSVG
                   value={selectedTicketForQR.qrData}
                   size={240}
-                  level="M"
-                  minVersion={2}
+                  level="L"
+                  minVersion={1}
                   includeMargin={true}
                   fgColor="#0f172a"
                 />

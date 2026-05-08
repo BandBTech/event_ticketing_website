@@ -137,7 +137,7 @@ export const TicketPDFDownload = ({
             <QRCodeSVG
               value={ticket.qrData}
               size={180}
-              level="M"
+              level="L"
               includeMargin={true}
             />
           </div>

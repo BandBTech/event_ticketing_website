@@ -32,9 +32,9 @@ function ClientQRCode({ value }: { value: string }) {
     <QRCodeSVG
       value={value}
       size={100}
-      level="M"
+      level="L"
       includeMargin={false}
-      minVersion={2}
+      minVersion={1}
       fgColor="#0f172a"
     />
   );
