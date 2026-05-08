@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,7 +22,8 @@ import { createValidationHelpers } from "@/lib/validation";
 
 import { isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
 import { PageTitle } from "@/components/pagetitle/PageTitle";
-
+import { UnsavedChangesDialog } from "@/components/modals/UnsavedChangesDialog";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 
 // Validation schema
 const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
@@ -87,6 +88,18 @@ export default function ProfileSettingsPage() {
     watch,
     formState: { errors, isDirty },
   } = form;
+
+  const hasUnsavedChanges = useCallback(() => {
+    return isDirty;
+  }, [isDirty]);
+
+  const { showLeaveDialog, setShowLeaveDialog, confirmLeave, cancelLeave } =
+    useNavigationGuard({
+      hasUnsavedChanges,
+      onBeforeLeave: () => {
+        reset();
+      },
+    });
 
   // Update form when user data changes (e.g., after profile fetch)
   useEffect(() => {
@@ -157,238 +170,253 @@ export default function ProfileSettingsPage() {
     setIsEditing(false);
   };
 
-    const firstNameValue = watch("firstName");
+  const firstNameValue = watch("firstName");
   const lastNameValue = watch("lastName");
   return (
     <>
-    <PageTitle title="My Profile" />
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-            {t("settings.profile.title", "Profile Settings")}
-          </h1>
-          <p className="text-sm text-gray-600">
-            {t("settings.profile.subtitle", "Manage your personal information")}
-          </p>
-        </div>
-        {!isEditing && (
-          <Button
-            onClick={() => setIsEditing(true)}
-            variant="outline"
-            className="flex items-center gap-2 px-4 py-1.5 rounded-lg border-blue-600 text-blue-600 hover:bg-blue-50 shadow-sm"
-            style={{
-              background: "rgba(255, 255, 255, 0.6)",
-              backdropFilter: "blur(20px)",
-            }}
-          >
-            <PencilIcon size={16} weight="duotone" />
-            {t("settings.profile.editButton", "Edit Profile")}
-          </Button>
-        )}
-      </div>
-
-      {/* Profile Form */}
-      <div className="glass-card rounded-xl p-6">
-        {/* Avatar Section */}
-        <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-            {user?.firstName?.charAt(0)}
-            {user?.lastName?.charAt(0)}
-          </div>
+      <PageTitle title="My Profile" />
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">
-              {user?.firstName} {user?.lastName}
-            </h3>
-            <p className="text-sm text-gray-600">{user?.email}</p>
-            {user?.isEmailVerified && (
-              <span className="inline-flex items-center px-2 py-0.5 mt-2 text-xs font-medium text-green-700 bg-green-100 rounded-full">
-                ✓ Verified
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* First Name */}
-            <div className="space-y-2">
-              <label
-                htmlFor="firstName"
-                className="text-sm font-medium text-gray-900 block"
-              >
-                {t("settings.profile.firstName", "First Name")}{" "}
-                <span className="text-destructive">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <UserIcon
-                    weight="duotone"
-                    size={18}
-                    className="text-gray-600"
-                  />
-                </div>
-                <Input
-                  id="firstName"
-                  type="text"
-                  disabled={!isEditing || isLoading}
-                  className={cn(
-                    "h-11 pl-11 pr-4",
-                    (!isEditing || isLoading) && "bg-gray-50 cursor-not-allowed",
-                    errors.firstName && "border-destructive",
-                  )}
-                  {...register("firstName")}
-                  maxLength={50}
-                />
-              </div>
-
-              <div className="flex justify-between items-center mt-1 min-h-5">
-                {errors.firstName && (
-                  <p className="text-xs text-destructive">
-                    {errors.firstName.message}
-                  </p>
-                )}
-                {isEditing && (
-                  <div className="text-xs text-muted-foreground ml-auto">
-                    {firstNameValue?.length || 0}/{50}{" "}
-                    {t("common.characters", "characters")}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Last Name */}
-            <div className="space-y-2">
-              <label
-                htmlFor="lastName"
-                className="text-sm font-medium text-gray-900 block"
-              >
-                {t("settings.profile.lastName", "Last Name")}{" "}
-                <span className="text-destructive">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <UserIcon
-                    weight="duotone"
-                    size={18}
-                    className="text-gray-600"
-                  />
-                </div>
-                <Input
-                  id="lastName"
-                  type="text"
-                  disabled={!isEditing || isLoading}
-                  className={cn(
-                    "h-11 pl-11 pr-4",
-                    (!isEditing || isLoading) && "bg-gray-50 cursor-not-allowed",
-                    errors.lastName && "border-destructive",
-                  )}
-                  {...register("lastName")}
-                  maxLength={50}
-                />
-              </div>
-
-              <div className="flex justify-between items-center mt-1 min-h-5">
-                {errors.lastName && (
-                  <p className="text-xs text-destructive">
-                    {errors.lastName.message}
-                  </p>
-                )}
-                {isEditing && (
-                  <div className="text-xs text-muted-foreground ml-auto">
-                    {lastNameValue?.length || 0}/{50}{" "}
-                    {t("common.characters", "characters")}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Email (Read-only) */}
-          <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="text-sm font-medium text-gray-900 block"
-            >
-              {t("settings.profile.email", "Email Address")}
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <EnvelopeIcon
-                  weight="duotone"
-                  size={18}
-                  className="text-gray-600"
-                />
-              </div>
-              <Input
-                id="email"
-                type="email"
-                value={user?.email || ""}
-                disabled
-                className="h-11 pl-11 pr-4 bg-gray-50 cursor-not-allowed"
-              />
-            </div>
-            <p className="text-xs text-gray-500">
-              {t("settings.profile.emailNote", "Email cannot be changed")}
+            <h1 className="text-2xl font-bold text-gray-900 font-poppins">
+              {t("settings.profile.title", "Profile Settings")}
+            </h1>
+            <p className="text-sm text-gray-600">
+              {t(
+                "settings.profile.subtitle",
+                "Manage your personal information",
+              )}
             </p>
           </div>
-
-          {/* Phone */}
-          <div className="space-y-2">
-            <label
-              htmlFor="phone"
-              className="text-sm font-medium text-gray-900 flex items-center gap-1"
+          {!isEditing && (
+            <Button
+              onClick={() => setIsEditing(true)}
+              variant="outline"
+              className="flex items-center gap-2 px-4 py-1.5 rounded-lg border-blue-600 text-blue-600 hover:bg-blue-50 shadow-sm"
+              style={{
+                background: "rgba(255, 255, 255, 0.6)",
+                backdropFilter: "blur(20px)",
+              }}
             >
-              {t("settings.profile.phone", "Phone Number")}
-              <span className="text-destructive">*</span>
-            </label>
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <PhoneInput
-                  value={field.value || ""}
-                  onChange={(value) => field.onChange(value || "")}
-                  disabled={!isEditing || isLoading}
-                  defaultCountry="NP"
-                  className={cn(
-                    (!isEditing || isLoading) && "opacity-50 cursor-not-allowed",
-                    errors.phone && "border-destructive",
-                  )}
-                />
+              <PencilIcon size={16} weight="duotone" />
+              {t("settings.profile.editButton", "Edit Profile")}
+            </Button>
+          )}
+        </div>
+
+        {/* Profile Form */}
+        <div className="glass-card rounded-xl p-6">
+          {/* Avatar Section */}
+          <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+              {user?.firstName?.charAt(0)}
+              {user?.lastName?.charAt(0)}
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900">
+                {user?.firstName} {user?.lastName}
+              </h3>
+              <p className="text-sm text-gray-600">{user?.email}</p>
+              {user?.isEmailVerified && (
+                <span className="inline-flex items-center px-2 py-0.5 mt-2 text-xs font-medium text-green-700 bg-green-100 rounded-full">
+                  ✓ Verified
+                </span>
               )}
-            />
-            {errors.phone && (
-              <p className="text-xs text-destructive">{errors.phone.message}</p>
-            )}
+            </div>
           </div>
 
-          {/* Action Buttons */}
-          {isEditing && (
-            <div className="flex gap-3 pt-4 border-t border-gray-200">
-              <Button
-                type="submit"
-                disabled={isLoading || !isDirty}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isLoading
-                  ? t("settings.profile.saving", "Saving...")
-                  : t("settings.profile.saveButton", "Save Changes")}
-              </Button>
-              <Button
-                type="button"
-                onClick={handleCancel}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-600"
-              >
-                {t("settings.profile.cancelButton", "Cancel")}
-              </Button>
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* First Name */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="firstName"
+                  className="text-sm font-medium text-gray-900 block"
+                >
+                  {t("settings.profile.firstName", "First Name")}{" "}
+                  <span className="text-destructive">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <UserIcon
+                      weight="duotone"
+                      size={18}
+                      className="text-gray-600"
+                    />
+                  </div>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    disabled={!isEditing || isLoading}
+                    className={cn(
+                      "h-11 pl-11 pr-4",
+                      (!isEditing || isLoading) &&
+                        "bg-gray-50 cursor-not-allowed",
+                      errors.firstName && "border-destructive",
+                    )}
+                    {...register("firstName")}
+                    maxLength={50}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center mt-1 min-h-5">
+                  {errors.firstName && (
+                    <p className="text-xs text-destructive">
+                      {errors.firstName.message}
+                    </p>
+                  )}
+                  {isEditing && (
+                    <div className="text-xs text-muted-foreground ml-auto">
+                      {firstNameValue?.length || 0}/{50}{" "}
+                      {t("common.characters", "characters")}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Last Name */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="lastName"
+                  className="text-sm font-medium text-gray-900 block"
+                >
+                  {t("settings.profile.lastName", "Last Name")}{" "}
+                  <span className="text-destructive">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <UserIcon
+                      weight="duotone"
+                      size={18}
+                      className="text-gray-600"
+                    />
+                  </div>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    disabled={!isEditing || isLoading}
+                    className={cn(
+                      "h-11 pl-11 pr-4",
+                      (!isEditing || isLoading) &&
+                        "bg-gray-50 cursor-not-allowed",
+                      errors.lastName && "border-destructive",
+                    )}
+                    {...register("lastName")}
+                    maxLength={50}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center mt-1 min-h-5">
+                  {errors.lastName && (
+                    <p className="text-xs text-destructive">
+                      {errors.lastName.message}
+                    </p>
+                  )}
+                  {isEditing && (
+                    <div className="text-xs text-muted-foreground ml-auto">
+                      {lastNameValue?.length || 0}/{50}{" "}
+                      {t("common.characters", "characters")}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          )}
-        </form>
+
+            {/* Email (Read-only) */}
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-900 block"
+              >
+                {t("settings.profile.email", "Email Address")}
+              </label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                  <EnvelopeIcon
+                    weight="duotone"
+                    size={18}
+                    className="text-gray-600"
+                  />
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  value={user?.email || ""}
+                  disabled
+                  className="h-11 pl-11 pr-4 bg-gray-50 cursor-not-allowed"
+                />
+              </div>
+              <p className="text-xs text-gray-500">
+                {t("settings.profile.emailNote", "Email cannot be changed")}
+              </p>
+            </div>
+
+            {/* Phone */}
+            <div className="space-y-2">
+              <label
+                htmlFor="phone"
+                className="text-sm font-medium text-gray-900 flex items-center gap-1"
+              >
+                {t("settings.profile.phone", "Phone Number")}
+                <span className="text-destructive">*</span>
+              </label>
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput
+                    value={field.value || ""}
+                    onChange={(value) => field.onChange(value || "")}
+                    disabled={!isEditing || isLoading}
+                    defaultCountry="NP"
+                    className={cn(
+                      (!isEditing || isLoading) &&
+                        "opacity-50 cursor-not-allowed",
+                      errors.phone && "border-destructive",
+                    )}
+                  />
+                )}
+              />
+              {errors.phone && (
+                <p className="text-xs text-destructive">
+                  {errors.phone.message}
+                </p>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            {isEditing && (
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <Button
+                  type="submit"
+                  disabled={isLoading || !isDirty}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isLoading
+                    ? t("settings.profile.saving", "Saving...")
+                    : t("settings.profile.saveButton", "Save Changes")}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleCancel}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-600"
+                >
+                  {t("settings.profile.cancelButton", "Cancel")}
+                </Button>
+              </div>
+            )}
+          </form>
+
+          <UnsavedChangesDialog
+            open={showLeaveDialog}
+            onOpenChange={setShowLeaveDialog}
+            onConfirm={confirmLeave}
+            onCancel={cancelLeave}
+          />
+        </div>
       </div>
-    </div>
     </>
   );
 }
