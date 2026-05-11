@@ -45,6 +45,14 @@
     "back": "Back",
     "Event": {
       "date": "Event Date"
+    },
+    "dialog": {
+      "unsavedChanges": {
+        "title": "Unsaved Changes",
+        "description": "You have unsaved changes. Are you sure you want to leave? All your progress will be lost.",
+        "stay": "Stay on Page",
+        "leave": "Leave Page"
+      }
     }
   },
   "navigation": {

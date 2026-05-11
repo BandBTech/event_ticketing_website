@@ -44,6 +44,14 @@
     "back": "Indietro",
     "Event": {
       "date": "Data dell'evento"
+    },
+    "dialog": {
+      "unsavedChanges": {
+        "title": "Modifiche non salvate",
+        "description": "Sono presenti modifiche non salvate. \nSei sicuro di voler partire? \nTutti i tuoi progressi andranno persi.",
+        "stay": "Rimani sulla pagina",
+        "leave": "Lascia la pagina"
+      }
     }
   },
   "navigation": {
