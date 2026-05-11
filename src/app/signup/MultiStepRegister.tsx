@@ -37,7 +37,7 @@ import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 
 // Step 1: Basic Info Schema
 const createBasicInfoSchema = (
-  t: (key: string, fallback?: string) => string
+  t: (key: string, fallback?: string) => string,
 ) => {
   const v = createValidationHelpers(t);
 
@@ -69,7 +69,7 @@ const createOTPSchema = () => {
 
 // Step 3: Password Schema
 const createPasswordSchema = (
-  t: (key: string, fallback?: string) => string
+  t: (key: string, fallback?: string) => string,
 ) => {
   const v = createValidationHelpers(t);
 
@@ -134,7 +134,7 @@ export default function MultiStepRegister() {
     window.history.replaceState(
       {},
       "",
-      `${window.location.pathname}?${params.toString()}`
+      `${window.location.pathname}?${params.toString()}`,
     );
   }, [currentStep]);
 
@@ -143,7 +143,7 @@ export default function MultiStepRegister() {
     if (registrationData) {
       sessionStorage.setItem(
         "registration_data",
-        JSON.stringify(registrationData)
+        JSON.stringify(registrationData),
       );
     }
   }, [registrationData]);
@@ -228,7 +228,7 @@ export default function MultiStepRegister() {
 
       toast.success(
         "auth.toast.otpSent",
-        "Verification code sent to your email"
+        "Verification code sent to your email",
       );
 
       // Start 1-minute resend timer
@@ -241,13 +241,10 @@ export default function MultiStepRegister() {
         toast.error(
           "",
           error.message || "Registration failed. Please try again.",
-          error.details
+          error.details,
         );
       } else {
-        toast.error(
-          "",
-          "Registration failed. Please try again."
-        );
+        toast.error("", "Registration failed. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -288,12 +285,12 @@ export default function MultiStepRegister() {
         toast.error(
           "auth.toast.verificationFailed",
           error.message || "Invalid OTP. Please try again.",
-          error.details
+          error.details,
         );
       } else {
         toast.error(
           "auth.toast.verificationFailed",
-          "Verification failed. Please try again."
+          "Verification failed. Please try again.",
         );
       }
     } finally {
@@ -314,7 +311,7 @@ export default function MultiStepRegister() {
 
       toast.success(
         "auth.toast.otpResent",
-        "New verification code sent to your email"
+        "New verification code sent to your email",
       );
 
       // Restart 1-minute timer
@@ -351,7 +348,7 @@ export default function MultiStepRegister() {
 
       toast.success(
         "auth.toast.signupSuccess",
-        result.message || "Account created successfully!"
+        result.message || "Account created successfully!",
       );
 
       // Clear sessionStorage on successful registration
@@ -364,12 +361,12 @@ export default function MultiStepRegister() {
         toast.error(
           "",
           error.message || "Failed to set password. Please try again.",
-          error.details
+          error.details,
         );
       } else {
         toast.error(
           "auth.toast.signupError",
-          "Failed to complete registration."
+          "Failed to complete registration.",
         );
       }
     } finally {
@@ -382,6 +379,24 @@ export default function MultiStepRegister() {
       <div className="min-h-[calc(100vh-66px)] relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
         <div className="w-full max-w-[480px] relative z-10">
           <div className="relative">
+            {(isLoading ||
+              (isLoading) ||
+              isLoading) && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                  <p className="text-sm font-medium text-gray-700">
+                    {isLoading && (currentStep === 1)
+                      ? t("auth.forgotPassword.sendingVerificationCode", "Sending verification code ...")
+                      : (isLoading && (currentStep === 2))
+                        ? t("auth.verifyOTP.verifying", "Verifying OTP")
+                        : isLoading && (currentStep === 3)
+                          ? t("auth.signup.signingUp", "Creating account...")
+                          : null}
+                  </p>
+                </div>
+              </div>
+            )}
             <div className="glass-login-card rounded-2xl p-4 sm:p-6">
               <div className="space-y-6 p-2 sm:p-3">
                 {/* Back Button for Step 2 */}
@@ -414,9 +429,7 @@ export default function MultiStepRegister() {
                         key={step}
                         className={cn(
                           "flex-1 h-1 rounded-full transition-colors",
-                          step <= currentStep
-                            ? "bg-blue-600"
-                            : "bg-gray-200"
+                          step <= currentStep ? "bg-blue-600" : "bg-gray-200",
                         )}
                       />
                     ))}
@@ -460,22 +473,19 @@ export default function MultiStepRegister() {
                             disabled={isLoading}
                             placeholder={t(
                               "auth.signup.firstNamePlaceholder",
-                              "John"
+                              "John",
                             )}
                             className={cn(
                               "h-12 pl-14 pr-4 login-input",
                               basicInfoForm.formState.errors.firstName &&
-                              "border-destructive"
+                                "border-destructive",
                             )}
                             {...basicInfoForm.register("firstName")}
                           />
                         </div>
                         {basicInfoForm.formState.errors.firstName && (
                           <p className="text-sm text-destructive">
-                            {
-                              basicInfoForm.formState.errors.firstName
-                                .message
-                            }
+                            {basicInfoForm.formState.errors.firstName.message}
                           </p>
                         )}
                       </div>
@@ -501,22 +511,19 @@ export default function MultiStepRegister() {
                             disabled={isLoading}
                             placeholder={t(
                               "auth.signup.lastNamePlaceholder",
-                              "Doe"
+                              "Doe",
                             )}
                             className={cn(
                               "h-12 login-input pl-14 pr-4",
                               basicInfoForm.formState.errors.lastName &&
-                              "border-destructive"
+                                "border-destructive",
                             )}
                             {...basicInfoForm.register("lastName")}
                           />
                         </div>
                         {basicInfoForm.formState.errors.lastName && (
                           <p className="text-sm text-destructive">
-                            {
-                              basicInfoForm.formState.errors.lastName
-                                .message
-                            }
+                            {basicInfoForm.formState.errors.lastName.message}
                           </p>
                         )}
                       </div>
@@ -544,12 +551,12 @@ export default function MultiStepRegister() {
                           disabled={isLoading}
                           placeholder={t(
                             "auth.signup.emailPlaceholder",
-                            "Enter email address"
+                            "Enter email address",
                           )}
                           className={cn(
                             "h-12 pl-14 pr-4 login-input",
                             basicInfoForm.formState.errors.email &&
-                            "border-destructive"
+                              "border-destructive",
                           )}
                           {...basicInfoForm.register("email")}
                         />
@@ -580,11 +587,11 @@ export default function MultiStepRegister() {
                             disabled={isLoading}
                             placeholder={t(
                               "auth.signup.phonePlaceholder",
-                              "981-234-5678"
+                              "981-234-5678",
                             )}
                             className={cn(
                               basicInfoForm.formState.errors.phone &&
-                              "border-destructive"
+                                "border-destructive",
                             )}
                           />
                         )}
@@ -602,7 +609,7 @@ export default function MultiStepRegister() {
                       className={cn(
                         "w-full h-12 rounded-lg font-medium",
                         "bg-blue-600 hover:bg-blue-700 text-white",
-                        "shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+                        "shadow-lg hover:shadow-xl flex items-center justify-center gap-3",
                       )}
                     >
                       {isLoading ? (
@@ -627,13 +634,11 @@ export default function MultiStepRegister() {
                       <p className="text-gray-600">
                         Enter the 6-digit code sent to
                       </p>
-                      <p className="font-medium">
-                        {registrationData.email}
-                      </p>
+                      <p className="font-medium">{registrationData.email}</p>
                       <p className="text-gray-600">
                         {t(
                           "auth.verifyOTP.otpValidity",
-                          "The code will automaticaly expire after 10 minutes."
+                          "The code will automaticaly expire after 10 minutes.",
                         )}
                       </p>
                     </div>
@@ -699,9 +704,7 @@ export default function MultiStepRegister() {
                       </Button> */}
                       <Button
                         type="submit"
-                        disabled={
-                          isLoading || otpForm.watch("otp").length < 6
-                        }
+                        disabled={isLoading || otpForm.watch("otp").length < 6}
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                       >
                         {isLoading ? "Verifying..." : "Verify OTP"}
@@ -734,7 +737,7 @@ export default function MultiStepRegister() {
                       <p className="text-sm text-gray-600">
                         {t(
                           "auth.signup.setPassword",
-                          "Create a secure password for"
+                          "Create a secure password for",
                         )}
                       </p>
                       <p className="font-medium text-gray-900">
@@ -764,12 +767,12 @@ export default function MultiStepRegister() {
                           disabled={isLoading}
                           placeholder={t(
                             "auth.signup.passwordPlaceholder",
-                            "••••••••••••"
+                            "••••••••••••",
                           )}
                           className={cn(
                             "h-12 pl-14 pr-16 login-input",
                             passwordForm.formState.errors.password &&
-                            "border-destructive"
+                              "border-destructive",
                           )}
                           {...passwordForm.register("password")}
                         />
@@ -794,12 +797,16 @@ export default function MultiStepRegister() {
                           )}
                         </button>
                       </div>
-                      {passwordForm.formState.errors.password && passwordForm.formState.errors.password.message !== "Invalid input" && (
-                        <p className="text-sm text-destructive">
-                          {passwordForm.formState.errors.password.message}
-                        </p>
-                      )}
-                      <PasswordRequirements password={passwordForm.watch("password")} />
+                      {passwordForm.formState.errors.password &&
+                        passwordForm.formState.errors.password.message !==
+                          "Invalid input" && (
+                          <p className="text-sm text-destructive">
+                            {passwordForm.formState.errors.password.message}
+                          </p>
+                        )}
+                      <PasswordRequirements
+                        password={passwordForm.watch("password")}
+                      />
                     </div>
 
                     {/* Confirm Password Field */}
@@ -808,10 +815,7 @@ export default function MultiStepRegister() {
                         htmlFor="confirmPassword"
                         className="text-sm font-medium text-gray-900 block"
                       >
-                        {t(
-                          "auth.signup.confirmPassword",
-                          "Confirm Password"
-                        )}
+                        {t("auth.signup.confirmPassword", "Confirm Password")}
                       </label>
                       <div className="relative">
                         <div className="absolute left-4 top-1/2 -translate-y-1/2">
@@ -827,12 +831,12 @@ export default function MultiStepRegister() {
                           disabled={isLoading}
                           placeholder={t(
                             "auth.signup.confirmPasswordPlaceholder",
-                            "••••••••••••"
+                            "••••••••••••",
                           )}
                           className={cn(
                             "h-12 pl-14 pr-16 login-input",
                             passwordForm.formState.errors.confirmPassword &&
-                            "border-destructive"
+                              "border-destructive",
                           )}
                           {...passwordForm.register("confirmPassword")}
                         />
@@ -876,8 +880,14 @@ export default function MultiStepRegister() {
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                       >
                         {isLoading
-                          ? t("auth.signup.creatingAccount", "Creating Account...")
-                          : t("auth.signup.completeRegistration", "Complete Registration")}
+                          ? t(
+                              "auth.signup.creatingAccount",
+                              "Creating Account...",
+                            )
+                          : t(
+                              "auth.signup.completeRegistration",
+                              "Complete Registration",
+                            )}
                       </Button>
                     </div>
                   </form>
@@ -890,16 +900,13 @@ export default function MultiStepRegister() {
                       <p className="text-sm text-gray-600">
                         {t(
                           "auth.signup.haveAccount",
-                          "Already have an account?"
+                          "Already have an account?",
                         )}{" "}
                         <Link
                           href="/login"
                           className="cursor-pointer font-medium text-blue-600 hover:text-blue-700"
                         >
-                          {t(
-                            "auth.signup.loginHere",
-                            "Sign in as Attendee."
-                          )}
+                          {t("auth.signup.loginHere", "Sign in as Attendee.")}
                         </Link>
                       </p>
                     </div>
@@ -914,7 +921,7 @@ export default function MultiStepRegister() {
                       <p className="text-xs text-gray-600 leading-relaxed">
                         {t(
                           "auth.signup.termsPrefix",
-                          "By continuing, you consent to the fact that you have read and understood our"
+                          "By continuing, you consent to the fact that you have read and understood our",
                         )}{" "}
                         <Link
                           href="/terms"

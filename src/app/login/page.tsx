@@ -23,13 +23,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-
 // Create validation schema with translations
 const createLoginSchema = () => {
-
   return z.object({
     email: z.string().min(1, "auth.login.validation.emailRequired"),
-    password: z.string().min(1,"auth.login.validation.passwordRequired"),
+    password: z.string().min(1, "auth.login.validation.passwordRequired"),
     rememberMe: z.boolean(),
   });
 };
@@ -43,7 +41,7 @@ export default function LoginPage() {
 
   const [loginError, setLoginError] = useState("");
 
-  const loginSchema = useMemo(()=> createLoginSchema(), []);
+  const loginSchema = useMemo(() => createLoginSchema(), []);
   type LoginFormData = z.infer<typeof loginSchema>;
 
   const form = useForm<LoginFormData>({
@@ -77,10 +75,8 @@ export default function LoginPage() {
           email: data.email,
           password: data.password,
         },
-        data.rememberMe
+        data.rememberMe,
       );
-
-
 
       // Show success toast
       toast.success("auth.toast.loginSuccess", "Welcome back!");
@@ -92,15 +88,12 @@ export default function LoginPage() {
       if (error instanceof AuthError) {
         switch (error.code) {
           case "UNAUTHORIZED":
-            toast.error(
-              "",
-              error.message || "Invalid email or password"
-            );
+            toast.error("", error.message || "Invalid email or password");
             break;
           case "NETWORK_ERROR":
             toast.error(
               "auth.toast.networkError",
-              "Network error. Please check your connection."
+              "Network error. Please check your connection.",
             );
             break;
           case "INTERNAL_SERVER_ERROR":
@@ -149,10 +142,17 @@ export default function LoginPage() {
                 )}
 
                 {/* Form */}
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="space-y-8"
-                >
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                  {isLoading && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                        <p className="text-sm font-medium text-gray-700">
+                          {t("auth.login.signingIn", "Signing in ...")}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   {/* Email Field */}
                   <div className="space-y-2">
                     <label
@@ -180,7 +180,7 @@ export default function LoginPage() {
                         placeholder={t("auth.login.emailPlaceholder")}
                         className={cn(
                           "h-12 pl-16 pr-4 login-input",
-                          errors.email && "border-destructive"
+                          errors.email && "border-destructive",
                         )}
                         {...register("email")}
                       />
@@ -222,7 +222,7 @@ export default function LoginPage() {
                         placeholder={t("auth.login.passwordPlaceholder")}
                         className={cn(
                           "h-12 pl-16 pr-16 login-input",
-                          errors.password && "border-destructive"
+                          errors.password && "border-destructive",
                         )}
                         {...register("password")}
                       />
@@ -300,7 +300,7 @@ export default function LoginPage() {
                         "bg-blue-600 hover:bg-blue-700 text-white",
                         "shadow-lg hover:shadow-xl",
                         "disabled:opacity-50 disabled:cursor-not-allowed",
-                        isLoading && "animate-pulse"
+                        isLoading && "animate-pulse",
                       )}
                     >
                       {isLoading

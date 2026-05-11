@@ -213,7 +213,17 @@ export default function ContactPage() {
               </div>
 
               {/* Form */}
-              <div className="bg-card border rounded-2xl shadow-lg p-8">
+              <div className="bg-card border rounded-2xl shadow-lg p-8 relative">
+                {isSubmitting && (
+                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                      <p className="text-sm font-medium text-gray-700">
+                        {t("auth.forgotPassword.sending", "Sending ...")}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 <h2 className="text-2xl font-bold mb-6">
                   {t("contact.form.title", "Send us a message")}
                 </h2>

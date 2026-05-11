@@ -11,6 +11,8 @@
     "noResults": "Nessun evento trovato",
     "tryAgain": "Prova ad aggiustare i criteri di ricerca o controlla più tardi per nuovi eventi.",
     "cancelButton": "Cancellare",
+    "updating": "Aggiornamento...",
+    "creating": "Creazione...",
     "validation": {
       "min": "{field} deve essere almeno {value}.",
       "required": "{campo} è obbligatorio.",
@@ -246,6 +248,7 @@
       "email": "Indirizzo e-mail",
       "emailPlaceholder": "Inserisci il tuo indirizzo email",
       "sending": "Invio...",
+      "sendingVerificationCode": "Invio del codice di verifica ...",
       "sendResetCode": "Invia codice di ripristino",
       "rememberPassword": "Ricordi la tua password?",
       "loginHere": "Accedi qui"

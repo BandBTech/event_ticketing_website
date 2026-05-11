@@ -141,6 +141,16 @@ function ResetPasswordContent() {
         <div className="relative">
           <div className="glass-login-card rounded-2xl p-4 sm:p-6">
             <div className="space-y-6 p-2 sm:p-3">
+                                                      {isLoading && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                        <p className="text-sm font-medium text-gray-700">
+                          {t("auth.resetPassword.resetting", "Resetting  ...")}
+                        </p>
+                      </div>
+                    </div>
+                  )}
               {/* Back Button */}
               {/* <Link
                 href="/forgot-password"

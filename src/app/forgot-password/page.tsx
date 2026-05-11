@@ -19,13 +19,13 @@ import { createValidationHelpers } from "@/lib/validation";
 
 // Create validation schema
 const createForgotPasswordSchema = (
-  t: (key: string, fallback?: string) => string
+  t: (key: string, fallback?: string) => string,
 ) => {
   const v = createValidationHelpers(t);
   return z.object({
-    email: z.string().min(1, v.required("Email")).email(v.email("Email"))
+    email: z.string().min(1, v.required("Email")).email(v.email("Email")),
   });
-}
+};
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -54,11 +54,11 @@ export default function ForgotPasswordPage() {
 
   // Populate email from sessionStorage if user navigated back
   useEffect(() => {
-    const savedEmail = sessionStorage.getItem('password_reset_email');
+    const savedEmail = sessionStorage.getItem("password_reset_email");
     if (savedEmail) {
-      setValue('email', savedEmail);
+      setValue("email", savedEmail);
       // Clear it after reading to avoid stale data
-      sessionStorage.removeItem('password_reset_email');
+      sessionStorage.removeItem("password_reset_email");
     }
   }, [setValue]);
 
@@ -69,24 +69,25 @@ export default function ForgotPasswordPage() {
       const result = await authService.requestPasswordReset(data.email);
 
       // Save email to sessionStorage for potential back navigation
-      sessionStorage.setItem('password_reset_email', data.email);
+      sessionStorage.setItem("password_reset_email", data.email);
 
       // Show success toast
-      toast.success(
-        "",
-        result.message
-      );
+      toast.success("", result.message);
 
       // Redirect immediately to OTP verification page
       router.push(
         `/verify-otp?email=${encodeURIComponent(
-          data.email
-        )}&type=password_reset`
+          data.email,
+        )}&type=password_reset`,
       );
     } catch (err) {
       // Show error toast
       if (err instanceof AuthError) {
-        toast.error("", err.message || "Failed to send reset email. Please try again later.", err.details);
+        toast.error(
+          "",
+          err.message || "Failed to send reset email. Please try again later.",
+          err.details,
+        );
       } else {
         toast.error("", "Failed to send reset email. Please try again later.");
       }
@@ -102,6 +103,19 @@ export default function ForgotPasswordPage() {
           <div className="relative">
             <div className="glass-login-card rounded-2xl p-4 sm:p-6">
               <div className="space-y-8 p-2 sm:p-3">
+                {isLoading && (
+                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                      <p className="text-sm font-medium text-gray-700">
+                        {t(
+                          "auth.forgotPassword.sendingVerificationCode",
+                          "Sending verification code ...",
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 {/* Back Button */}
                 {/* <Link
                   href="/login"
@@ -119,7 +133,7 @@ export default function ForgotPasswordPage() {
                   <p className="text-sm text-gray-600">
                     {t(
                       "auth.forgotPassword.subtitle",
-                      "Enter your email to receive a password reset code"
+                      "Enter your email to receive a password reset code",
                     )}
                   </p>
                 </div>
@@ -157,11 +171,11 @@ export default function ForgotPasswordPage() {
                             disabled={isLoading}
                             placeholder={t(
                               "auth.forgotPassword.emailPlaceholder",
-                              "Enter your email address"
+                              "Enter your email address",
                             )}
                             className={cn(
                               "h-12 pl-16 pr-4 login-input",
-                              errors.email && "border-destructive"
+                              errors.email && "border-destructive",
                             )}
                             {...register("email")}
                           />
@@ -186,15 +200,15 @@ export default function ForgotPasswordPage() {
                             "bg-blue-600 hover:bg-blue-700 text-white",
                             "shadow-lg hover:shadow-xl",
                             "disabled:opacity-50 disabled:cursor-not-allowed",
-                            isLoading && "animate-pulse"
+                            isLoading && "animate-pulse",
                           )}
                         >
                           {isLoading
                             ? t("auth.forgotPassword.sending", "Sending...")
                             : t(
-                              "auth.forgotPassword.sendResetCode",
-                              "Send Reset Code"
-                            )}
+                                "auth.forgotPassword.sendResetCode",
+                                "Send Reset Code",
+                              )}
                         </Button>
                       </div>
                     </form>
@@ -204,7 +218,7 @@ export default function ForgotPasswordPage() {
                       <p className="text-sm text-gray-600">
                         {t(
                           "auth.forgotPassword.rememberPassword",
-                          "Remember your password?"
+                          "Remember your password?",
                         )}{" "}
                         <Link
                           href="/login"

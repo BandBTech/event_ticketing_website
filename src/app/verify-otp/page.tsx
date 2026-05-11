@@ -61,8 +61,8 @@ function VerifyOTPContent() {
       setError(
         t(
           "auth.verifyOTP.errors.otpIncomplete",
-          "Please enter the complete 6-digit code"
-        )
+          "Please enter the complete 6-digit code",
+        ),
       );
       return;
     }
@@ -87,8 +87,8 @@ function VerifyOTPContent() {
         // For password reset, redirect to reset password page
         router.push(
           `/reset-password?email=${encodeURIComponent(
-            email
-          )}&otp=${encodeURIComponent(otp)}`
+            email,
+          )}&otp=${encodeURIComponent(otp)}`,
         );
       } else if (password) {
         // For registration, auto-login
@@ -102,18 +102,16 @@ function VerifyOTPContent() {
         router.push("/");
       }
     } catch (err) {
-
       // Show error toast
       if (err instanceof AuthError) {
         toast.error(
           "",
           err.message || "Invalid OTP. Please try again.",
-          err.details
+          err.details,
         );
       } else {
         toast.error("auth.toast.serverError", "Invalid OTP. Please try again.");
       }
-
     } finally {
       setIsLoading(false);
     }
@@ -138,7 +136,11 @@ function VerifyOTPContent() {
     } catch (err) {
       // Show error toast
       if (err instanceof AuthError) {
-        toast.error("", err.message || "Failed to resend OTP. Please try again.", err.details);
+        toast.error(
+          "",
+          err.message || "Failed to resend OTP. Please try again.",
+          err.details,
+        );
       } else {
         toast.error("", "Failed to resend OTP. Please try again.");
       }
@@ -153,15 +155,25 @@ function VerifyOTPContent() {
         <div className="relative">
           <div className="glass-login-card rounded-2xl p-4 sm:p-6">
             <div className="space-y-6 p-2 sm:p-3">
+              {isLoading && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                    <p className="text-sm font-medium text-gray-700">
+                      {t("auth.verifyOTP.verifying", "Verifying ...")}
+                    </p>
+                  </div>
+                </div>
+              )}
               {/* Back Button */}
               <button
                 onClick={() => {
-                  if (otpType === 'password_reset') {
+                  if (otpType === "password_reset") {
                     // Save email to sessionStorage for forgot-password page
-                    sessionStorage.setItem('password_reset_email', email);
-                    router.push('/forgot-password');
+                    sessionStorage.setItem("password_reset_email", email);
+                    router.push("/forgot-password");
                   } else {
-                    router.push('/signup');
+                    router.push("/signup");
                   }
                 }}
                 disabled={isLoading || isResending}
@@ -179,14 +191,14 @@ function VerifyOTPContent() {
                 <p className="text-sm text-gray-600">
                   {t(
                     "auth.verifyOTP.subtitle",
-                    "Enter the 6-digit code sent to"
+                    "Enter the 6-digit code sent to",
                   )}
                   <br />
                   <strong>{email}</strong>
                   <br />
                   {t(
                     "auth.verifyOTP.otpValidity",
-                    "The code will expire in 10 minutes."
+                    "The code will expire in 10 minutes.",
                   )}
                 </p>
               </div>
@@ -201,32 +213,19 @@ function VerifyOTPContent() {
               {/* OTP Form */}
               <form onSubmit={handleVerify} className="space-y-6">
                 <div className="flex justify-center">
-                  <InputOTP maxLength={6} value={otp} onChange={setOtp} disabled={isLoading || isResending}>
+                  <InputOTP
+                    maxLength={6}
+                    value={otp}
+                    onChange={setOtp}
+                    disabled={isLoading || isResending}
+                  >
                     <InputOTPGroup>
-                      <InputOTPSlot
-                        index={0}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={1}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={2}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={3}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={4}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={5}
-                        className="h-14 w-14 text-lg"
-                      />
+                      <InputOTPSlot index={0} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={1} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={2} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={3} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={4} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={5} className="h-14 w-14 text-lg" />
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
@@ -240,7 +239,7 @@ function VerifyOTPContent() {
                     "bg-blue-600 hover:bg-blue-700 text-white",
                     "shadow-lg hover:shadow-xl",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    isLoading && "animate-pulse"
+                    isLoading && "animate-pulse",
                   )}
                 >
                   {isLoading
@@ -252,10 +251,7 @@ function VerifyOTPContent() {
               {/* Resend OTP */}
               <div className="text-center space-y-2">
                 <p className="text-sm text-gray-600">
-                  {t(
-                    "auth.verifyOTP.didntReceive",
-                    "Didn't receive the code?"
-                  )}{" "}
+                  {t("auth.verifyOTP.didntReceive", "Didn't receive the code?")}{" "}
                   <button
                     type="button"
                     onClick={handleResendOTP}
@@ -272,7 +268,7 @@ function VerifyOTPContent() {
                 <p className="text-xs text-gray-500">
                   {t(
                     "auth.verifyOTP.checkSpam",
-                    "Check your spam folder if you don't see the email"
+                    "Check your spam folder if you don't see the email",
                   )}
                 </p>
               </div>
@@ -280,7 +276,7 @@ function VerifyOTPContent() {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 

@@ -11,6 +11,8 @@
     "noResults": "No events found",
     "tryAgain": "Try adjusting your search criteria or check back later for new events.",
     "optional": "(Optional)",
+    "updating": "Updating...",
+    "creating": "Creating...",
     "validation": {
       "required": "{field} is required.",
       "invalid": "{field} is invalid.",
@@ -291,6 +293,7 @@
       "emailPlaceholder": "Enter your email address",
       "sendResetCode": "Send Reset Code",
       "sending": "Sending...",
+      "sendingVerificationCode": "Sending Verification Code ...",
       "backToLogin": "Back to login",
       "rememberPassword": "Remember your password?",
       "loginHere": "Login here",

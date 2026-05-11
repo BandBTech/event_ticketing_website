@@ -11,6 +11,8 @@
     "noResults": "イベントが見つかりません",
     "tryAgain": "検索条件を調整するか、後でもう一度確認してください。",
     "cancelButton": "キャンセル",
+    "updating": "更新中...",
+    "creating": "作成...",
     "validation": {
       "min": "{field} は少なくとも {value} でなければなりません。",
       "required": "{フィールド}は必須です。",
@@ -247,6 +249,7 @@
       "email": "電子メールアドレス",
       "emailPlaceholder": "メールアドレスを入力してください",
       "sending": "送信中...",
+      "sendingVerificationCode": "確認コードを送信しています ...",
       "sendResetCode": "リセットコードを送信する",
       "rememberPassword": "パスワードを覚えていますか?",
       "loginHere": "ここからログインしてください"
