@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { format, isSameDay } from "date-fns";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -253,7 +253,11 @@ export function formatEventDateTime(
 //   }).format(amount);
 // };
 
-export const formatCurrency = (amount: number, currency: string = "USD", locale: string = "en") => {
+export const formatCurrency = (
+  amount: number,
+  currency: string = "USD",
+  locale: string = "en",
+) => {
   const hasFraction = amount % 1 !== 0;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -263,3 +267,12 @@ export const formatCurrency = (amount: number, currency: string = "USD", locale:
   }).format(amount);
 };
 
+/**
+ * Generate a unique idempotency key for API requests
+ * @returns A unique string suitable for use as an idempotency key
+ */
+export function generateIdempotencyKey(): string {
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).substring(2);
+  return `${timestamp}-${random}`;
+}
