@@ -48,7 +48,7 @@ export const useInfiniteEvents = (params: Omit<QueryParams, "page"> = {}) => {
   });
 };
 
-export const useUpcomingEvents = (limit: number = 3) => {
+export const useUpcomingEvents = (limit: number = 10) => {
   return useInfiniteQuery({
     queryKey: ["upcoming-events-infinite", limit],
     queryFn: ({ pageParam = 1 }) =>

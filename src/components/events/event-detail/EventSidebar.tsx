@@ -316,7 +316,27 @@ export const EventSidebar = ({
           <h3 className="font-semibold text-gray-900 mb-2">
             {t("common.Event.date", "Event Date")}
           </h3>
-          <div className="flex items-start gap-2 text-gray-900">
+             <div className="flex items-center justify-between text-sm font-medium gap-4">
+                   
+                  <div className="flex items-center gap-2">
+              
+                         <span className="text-gray-900 bg-gray-50">
+                    {format(new Date(event.startDate), "MMM dd, yyyy")}
+                    <span className="text-gray-900 ml-1">
+                      {format(new Date(event.startDate), "hh:mm a")}
+                    </span>
+                  </span>-
+                  <span className="text-gray-900 bg-gray-50 ">
+                    {format(new Date(event.endDate), "MMM dd, yyyy")}
+                    <span className="text-gray-900 ml-1">
+                      {format(new Date(event.endDate), "hh:mm a")}
+                    </span>
+                  </span>
+
+                  </div>
+             
+                </div>
+          {/* <div className="flex items-start gap-2 text-gray-900">
             <span className="text-sm font-medium">
               {dateDisplay.start}{" "}
               {dateDisplay.isSameDay ? `- ${dateDisplay.end}` : "-"}
@@ -324,7 +344,7 @@ export const EventSidebar = ({
             {!dateDisplay.isSameDay && (
               <span className="text-sm font-medium">{dateDisplay.end}</span>
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* Tags */}

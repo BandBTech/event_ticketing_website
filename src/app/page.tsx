@@ -281,22 +281,27 @@ export default function HomePage() {
     {
       search: searchQuery,
       category: selectedCategory,
-      limit: 6,
+      limit: 10,
     },
     { enabled: !!(searchQuery || selectedCategory) },
   );
   const { data: salesLiveData, isLoading: salesLoading } = useEvents({
-    limit: 6,
+    limit: 10,
     status: "on_sale",
   });
 
   const { data: featuredEvents } = useFeaturedEvents();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useUpcomingEvents(3);
+    useUpcomingEvents(10);
 
-  const upcomingEvents = data?.pages.flatMap((page) => page.events) || [];
-  const salesLiveEvents = salesLiveData?.events || [];
+const upcomingEvents = (data?.pages.flatMap((page) => page.events) || []).filter(
+  (event) => event.status === "scheduled" || event.status === "sales_upcoming"
+);
+const salesLiveEvents = (salesLiveData?.events || []).filter(
+  (event) => event.status === "on_sale"
+);
+
   const totalItems = data?.pages[0]?.pagination.total;
 
   const handleSearch = (query: string) => {
@@ -522,9 +527,9 @@ export default function HomePage() {
               </h2>
               <p className="text-gray-600 text-lg">
                 {t("common.pagination.showing")} {upcomingEvents.length}{" "}
-                {t("common.pagination.of")} {totalItems}{" "}
+                {/* {t("common.pagination.of")} {totalItems}{" "} */}
                 {t("sections.upcomingEvents.subtitle")}
-              </p>
+              </p> 
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
