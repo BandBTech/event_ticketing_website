@@ -1,14 +1,15 @@
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
-import { QueryParams } from '@/types';
-import { eventService } from '@/services/eventService';
-import { queryKeys } from '@/lib/queryKeys';
+import { queryKeys } from "@/lib/queryKeys";
+import { eventService } from "@/services/eventService";
+import { QueryParams } from "@/types";
 
-
-
-export const useEvents = (params: QueryParams = {}, options: { enabled?: boolean } = {}) => {
+export const useEvents = (
+  params: QueryParams = {},
+  options: { enabled?: boolean } = {},
+) => {
   return useQuery({
-    queryKey: ['events', params],
+    queryKey: ["events", params],
     queryFn: () => eventService.getPublicEvents(params),
     staleTime: 0,
     ...options,
@@ -27,23 +28,15 @@ export const useEventById = (id: string) => {
 
 export const useFeaturedEvents = () => {
   return useQuery({
-    queryKey: ['featured-events'],
+    queryKey: ["featured-events"],
     queryFn: () => eventService.getFeaturedEvents(),
-    staleTime: 0, 
+    staleTime: 0,
   });
 };
 
-export const useEventCategories = () => {
-  return useQuery({
-    queryKey: ['event-categories'],
-    queryFn: () => eventService.getEventCategories(),
-    staleTime: 0, // 30 minutes
-  });
-};
-
-export const useInfiniteEvents = (params: Omit<QueryParams, 'page'> = {}) => {
+export const useInfiniteEvents = (params: Omit<QueryParams, "page"> = {}) => {
   return useInfiniteQuery({
-    queryKey: ['infinite-events', params],
+    queryKey: ["infinite-events", params],
     queryFn: ({ pageParam = 1 }) =>
       eventService.getPublicEvents({ ...params, page: pageParam }),
     getNextPageParam: (lastPage) => {
@@ -57,14 +50,13 @@ export const useInfiniteEvents = (params: Omit<QueryParams, 'page'> = {}) => {
 
 export const useUpcomingEvents = (limit: number = 3) => {
   return useInfiniteQuery({
-    queryKey: ['upcoming-events-infinite', limit],
-    queryFn: ({ pageParam = 1 }) => 
+    queryKey: ["upcoming-events-infinite", limit],
+    queryFn: ({ pageParam = 1 }) =>
       eventService.getUpcomingEvents({ page: pageParam, limit }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-const { page, totalPages } = lastPage.pagination;
+      const { page, totalPages } = lastPage.pagination;
       return page < totalPages ? page + 1 : undefined;
     },
   });
 };
-
