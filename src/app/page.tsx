@@ -253,63 +253,60 @@
 
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import {
-  TicketIcon,
-  CalendarDotsIcon,
-  MapPinIcon,
-  UsersIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { EventSearch } from "@/components/events/EventSearch";
+import { HomeEvent } from "@/components/events/HomeEvent";
 import { Button } from "@/components/ui/button";
 import { FigmaButton } from "@/components/ui/figma-button";
-import { EventSearch } from "@/components/events/EventSearch";
-import { EventGrid } from "@/components/events/EventGrid";
-import { Badge } from "@/components/ui/badge";
 import {
   useEvents,
   useFeaturedEvents,
-  useEventCategories,
   useUpcomingEvents,
 } from "@/hooks/useEvents";
-import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { cn } from "@/lib/utils";
-import { HomeEvent } from "@/components/events/HomeEvent";
 import { useAuthStore } from "@/store/authStore";
+import { useLanguageStore } from "@/store/languageStore";
+import { TicketIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
-   const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const { user, isAuthenticated } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
-  const { data: eventsData, isLoading: eventsLoading } = useEvents({
-    search: searchQuery,
-    category: selectedCategory,
-    limit: 6,
-  }, { enabled: !!(searchQuery || selectedCategory) });
+  const { data: eventsData, isLoading: eventsLoading } = useEvents(
+    {
+      search: searchQuery,
+      category: selectedCategory,
+      limit: 10,
+    },
+    { enabled: !!(searchQuery || selectedCategory) },
+  );
   const { data: salesLiveData, isLoading: salesLoading } = useEvents({
-    limit: 6,
+    limit: 10,
     status: "on_sale",
   });
 
   const { data: featuredEvents } = useFeaturedEvents();
-  const { data: categories } = useEventCategories();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useUpcomingEvents(3);
+    useUpcomingEvents(10);
 
-  const upcomingEvents = data?.pages.flatMap((page) => page.events) || [];
-  const salesLiveEvents = salesLiveData?.events || [];
+const upcomingEvents = (data?.pages.flatMap((page) => page.events) || []).filter(
+  (event) => event.status === "scheduled" || event.status === "sales_upcoming"
+);
+const salesLiveEvents = (salesLiveData?.events || []).filter(
+  (event) => event.status === "on_sale"
+);
+
   const totalItems = data?.pages[0]?.pagination.total;
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    setSearchInput(query); 
+    setSearchInput(query);
   };
 
   const handleCategorySelect = (category: string) => {
@@ -318,7 +315,7 @@ export default function HomePage() {
   const handleOrganizeRedirect = () => {
     window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
   };
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
   };
   const handleClearAll = () => {
@@ -384,7 +381,7 @@ export default function HomePage() {
                     {(searchQuery || selectedCategory) && (
                       <Button
                         variant="outline"
-                        onClick={handleClearAll} 
+                        onClick={handleClearAll}
                         className="glass border text-gray-700 hover:bg-white/90"
                       >
                         {t("sections.upcomingEvents.clearSearch")}
@@ -396,27 +393,27 @@ export default function HomePage() {
                     events={eventsData?.events || []}
                     isLoading={eventsLoading}
                   /> */}
-                     {eventsLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 rounded-xl h-48 mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            </div>
-          ))}
-        </div>
-      ) : eventsData?.events && eventsData?.events?.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {eventsData?.events?.map((event) => (
-            <HomeEvent key={event.id} event={event} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No events found</p>
-        </div>
-      )}
+                  {eventsLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="bg-gray-200 rounded-xl h-48 mb-4"></div>
+                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : eventsData?.events && eventsData?.events?.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {eventsData?.events?.map((event) => (
+                        <HomeEvent key={event.id} event={event} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-gray-500">No events found</p>
+                    </div>
+                  )}
 
                   {/* Load More Button */}
                   {eventsData &&
@@ -427,7 +424,6 @@ export default function HomePage() {
                           variant="primary"
                           size="lg"
                           showGlow={true}
-                          
                         >
                           {t("common.loadMore")}
                         </FigmaButton>
@@ -490,7 +486,9 @@ export default function HomePage() {
                 ))
               ) : (
                 <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed">
-                  <p className="text-gray-400">{t("sections.salesLive.noEvents")}</p>
+                  <p className="text-gray-400">
+                    {t("sections.salesLive.noEvents")}
+                  </p>
                 </div>
               )}
             </div>
@@ -519,31 +517,6 @@ export default function HomePage() {
         </section>
       )} */}
 
-      {/* Categories Section */}
-      {categories && categories.length > 0 && (
-        <section id="categories" className="py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-wrap justify-center gap-3">
-              {categories.map((category) => (
-                <Badge
-                  key={category.id}
-                  variant="outline"
-                  className={cn(
-                    "px-4 py-2 cursor-pointer transition-all duration-300",
-                    "glass border text-gray-700 hover:bg-white/90",
-                    selectedCategory === category.name &&
-                      "bg-primary/20 border-blue-400/50 text-primary",
-                  )}
-                  onClick={() => handleCategorySelect(category.name)}
-                >
-                  {category.name}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {upcomingEvents && upcomingEvents.length > 0 && (
         <section id="upcoming-events" className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
@@ -553,9 +526,10 @@ export default function HomePage() {
                 {t("sections.upcomingEvents.title")}
               </h2>
               <p className="text-gray-600 text-lg">
-                {t("common.pagination.showing")} {upcomingEvents.length} {t("common.pagination.of")} {totalItems}{" "}
+                {t("common.pagination.showing")} {upcomingEvents.length}{" "}
+                {/* {t("common.pagination.of")} {totalItems}{" "} */}
                 {t("sections.upcomingEvents.subtitle")}
-              </p>
+              </p> 
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

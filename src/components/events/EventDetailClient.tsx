@@ -1,19 +1,25 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useLanguageStore } from "@/store/languageStore";
-import { useTranslation } from "@/hooks/useTranslation";
 import { useEventById } from "@/hooks/useEvents";
-import { EventHero } from "./event-detail/EventHero";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
+import { useRouter } from "next/navigation";
 import { EventDescription } from "./event-detail/EventDescription";
-import { EventOrganizer } from "./event-detail/EventOrganizer";
-import { EventLocation } from "./event-detail/EventLocation";
 import { EventFAQ } from "./event-detail/EventFAQ";
+import { EventHero } from "./event-detail/EventHero";
+import { EventLocation } from "./event-detail/EventLocation";
+import { EventOrganizer } from "./event-detail/EventOrganizer";
 import { EventSidebar } from "./event-detail/EventSidebar";
 import { EventNotFound } from "./EventNotFound";
 
-const RESTRICTED_STATUSES = ["pending", "live", "completed", "rejected", "cancelled"];
+const RESTRICTED_STATUSES = [
+  "pending",
+  "live",
+  "completed",
+  "rejected",
+  "cancelled",
+];
 
 interface EventDetailClientProps {
   eventId: string;
@@ -70,14 +76,14 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     return <EventNotFound reason="api_error" />;
   }
 
-  const isRestricted =
-    RESTRICTED_STATUSES.includes(event.status?.toLowerCase()) ||
-    event.sales_status === "stopped" ||
-    event.is_cancelled;
+  // const isRestricted =
+  //   RESTRICTED_STATUSES.includes(event.status?.toLowerCase()) ||
+  //   event.sales_status === "stopped" ||
+  //   event.is_cancelled;
 
-  if (isRestricted) {
-    return <EventNotFound reason="restricted_status" />;
-  }
+  // if (isRestricted) {
+  //   return <EventNotFound reason="restricted_status" />;
+  // }
 
   return (
     <div className="min-h-screen relative">
@@ -100,16 +106,15 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
       <div className="relative z-10">
         <main className="max-w-7xl mx-auto px-4 py-12">
-       
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <EventHero event={event} />
-     <div className="border-l-4 border-primary pl-6">
-    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-      {event.title}
-    </h2>
-  </div>
+              <div className="border-l-4 border-primary pl-6">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                  {event.title}
+                </h2>
+              </div>
               <EventDescription description={event.description} />
               <EventOrganizer event={event} />
               <EventLocation venue={event.venue} />

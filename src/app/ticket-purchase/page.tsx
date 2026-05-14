@@ -1,40 +1,29 @@
 "use client";
+"use client";
 
-import { useState, useMemo, Suspense, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
-  EnvelopeIcon,
-  UserIcon,
-  CalendarIcon,
-  MapPinIcon,
   ArrowLeftIcon,
+  CalendarIcon,
+  EnvelopeIcon,
+  MapPinIcon,
   MinusIcon,
   PlusIcon,
   TicketIcon,
+  UserIcon,
 } from "@phosphor-icons/react";
 import cn from "clsx";
 import {
-  GuestPurchasePayload,
-  UserPurchasePayload,
-} from "@/services/ticketService";
-import { ClockIcon, ShieldCheckIcon } from "lucide-react";
-import { useLanguageStore } from "@/store/languageStore";
-import { useTranslation } from "@/hooks/useTranslation";
-import { createValidationHelpers } from "@/lib/validation";
-// Payment gateways are currently hardcoded (gateway API is disabled).
-// When the gateway API is enabled, uncomment:
-// import { useGateways } from "@/hooks/usePayments";
-// import type { GatewayInfo } from "@/types/payment";
-import { format, isSameDay } from "date-fns";
-import { formatCurrency, formatEventDateTime } from "@/lib/utils";
-import { useSearchParams, useRouter } from "next/navigation";
-import { toast } from "sonner";
+  ChevronRightIcon,
+  CreditCardIcon,
+  ShieldCheckIcon,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { useEventById } from "@/hooks/useEvents";
-import { useAuthStore } from "@/store/authStore";
 import {
   Form,
   FormControl,
@@ -44,14 +33,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ChevronRightIcon } from "lucide-react";
-import { LoginModal } from "@/components/auth/LoginModal";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator-extended";
+
+import { LoginModal } from "@/components/auth/LoginModal";
+
+import { useEventById } from "@/hooks/useEvents";
 import {
   useGuestPurchaseMutation,
   useUserPurchaseMutation,
 } from "@/hooks/useTickets";
-import { CreditCardIcon } from "lucide-react";
+
+import { useTranslation } from "@/hooks/useTranslation";
+import { useAuthStore } from "@/store/authStore";
+import { useLanguageStore } from "@/store/languageStore";
+
+import { formatCurrency, formatEventDateTime } from "@/lib/utils";
+import { createValidationHelpers } from "@/lib/validation";
+
+import { PurchasePayload } from "@/services/ticketService";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 // Max total tickets allowed
 const GUEST_MAX_QUANTITY = 6;
@@ -104,7 +106,14 @@ function GuestPurchaseContent() {
     description: "Secure online payment via Stripe",
     icon_url: "/images/stripe.svg",
   };
+  const KONBINI_GATEWAY = {
+    name: "konbini",
+    display_name: "Konbini",
+    description: "Pay at a convenience store in Japan",
+    icon_url: "",
+  };
   const [selectedGateway, setSelectedGateway] = useState<string>("stripe");
+  const [isJapanLocation, setIsJapanLocation] = useState(false);
 
   // Form for Guest Details (email only)
   const guestForm = useForm<GuestFormData>({
@@ -129,12 +138,28 @@ function GuestPurchaseContent() {
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const locale = window.navigator.language || "";
+    const isJapan =
+      timeZone === "Asia/Tokyo" ||
+      locale.toLowerCase().startsWith("ja") ||
+      locale.toLowerCase().includes("jp");
+
+    setIsJapanLocation(isJapan);
+  }, []);
+
   const { isAuthenticated } = useAuthStore();
 
   // Gateway list (hardcoded while gateway API is disabled)
   // const { data: gateways, isLoading: isLoadingGateways } = useGateways();
   // const gateways = [STRIPE_GATEWAY, CASH_GATEWAY];
-  const gateways = [STRIPE_GATEWAY];
+  const gateways = useMemo(
+    () =>
+      isJapanLocation ? [STRIPE_GATEWAY, KONBINI_GATEWAY] : [STRIPE_GATEWAY],
+    [isJapanLocation],
+  );
   const isLoadingGateways = false;
 
   const maxQuantity = isAuthenticated ? USER_MAX_QUANTITY : GUEST_MAX_QUANTITY;
@@ -260,15 +285,13 @@ function GuestPurchaseContent() {
 
         const user = useAuthStore.getState().user;
 
-        const userPayload: UserPurchasePayload = {
+        const userPayload: PurchasePayload = {
           event_id: eventData.id,
           payment_gateway: selectedGateway,
           tiers: tiersPayload,
+          currency: defaultCurrency,
           customer_email: user?.email || "",
-          customer_name: `${user?.firstName || ""} ${user?.lastName || ""}`,
-          customer_phone: user?.phone || "",
-          country_code: user?.countryCode || "",
-          language: locale,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         };
         userPurchaseMutation.mutate(userPayload, {
           onError: () => setIsRedirectingToPayment(false),
@@ -279,12 +302,13 @@ function GuestPurchaseContent() {
       } else {
         // Guest purchase
         guestForm.handleSubmit((data) => {
-          const guestPayload: GuestPurchasePayload = {
-            email: data.email || "",
+          const guestPayload: PurchasePayload = {
             event_id: eventData.id,
             payment_gateway: selectedGateway,
             tiers: tiersPayload,
-            language: locale,
+            currency: defaultCurrency,
+            customer_email: data.email || "",
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           };
           guestPurchaseMutation.mutate(guestPayload, {
             onError: () => setIsRedirectingToPayment(false),
@@ -424,57 +448,62 @@ function GuestPurchaseContent() {
                     if (!isSalesActive) return null;
 
                     return (
-                     <div
-  key={ticketType.id}
-  className={cn(
-    "relative flex flex-col md:flex-row md:items-start justify-between gap-4 p-4 rounded-xl border-2 transition-all",
-    qty > 0
-      ? "border-primary bg-blue-50/50"
-      : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30",
-  )}
->
-  {/* Left Column: Tier Info + Sale Schedule */}
-  <div className="flex-1 space-y-4">
-    {/* Tier Info */}
-    <div>
-      <div className="flex items-center flex-wrap gap-2">
-        <Label className="font-bold text-gray-900 text-lg">
-          {ticketType.tier_name}
-        </Label>
-        {qty > 0 && (
-          <span className="text-xs font-bold bg-primary text-white px-2 py-0.5 rounded-full">
-            {qty}×
-          </span>
-        )}
-        {ticketType.available === 0 && (
-          <span className="text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full whitespace-nowrap">
-            {t("events.soldOut", "Sold out")}
-          </span>
-        )}
-        {ticketType.available > 0 && ticketType.available < 10 && (
-          <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">
-            {t(
-              "ticketPurchase.onlyTicketsLeft",
-              `Only ${ticketType.available} left!`,
-              { count: ticketType.available },
-            )}
-          </span>
-        )}
-      </div>
-      
-      {ticketType.description && (
-        <p className="text-sm text-gray-500 mt-1 pr-4">
-          {ticketType.description}
-        </p>
-      )}
-      
-      <p className="font-bold text-lg text-primary mt-1">
-        {formatCurrency(ticketType.price, ticketType.currency, locale)}
-      </p>
-    </div>
+                      <div
+                        key={ticketType.id}
+                        className={cn(
+                          "relative flex flex-col md:flex-row md:items-start justify-between gap-4 p-4 rounded-xl border-2 transition-all",
+                          qty > 0
+                            ? "border-primary bg-blue-50/50"
+                            : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30",
+                        )}
+                      >
+                        {/* Left Column: Tier Info + Sale Schedule */}
+                        <div className="flex-1 space-y-4">
+                          {/* Tier Info */}
+                          <div>
+                            <div className="flex items-center flex-wrap gap-2">
+                              <Label className="font-bold text-gray-900 text-lg">
+                                {ticketType.tier_name}
+                              </Label>
+                              {qty > 0 && (
+                                <span className="text-xs font-bold bg-primary text-white px-2 py-0.5 rounded-full">
+                                  {qty}×
+                                </span>
+                              )}
+                              {ticketType.available === 0 && (
+                                <span className="text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                  {t("events.soldOut", "Sold out")}
+                                </span>
+                              )}
+                              {ticketType.available > 0 &&
+                                ticketType.available < 10 && (
+                                  <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                    {t(
+                                      "ticketPurchase.onlyTicketsLeft",
+                                      `Only ${ticketType.available} left!`,
+                                      { count: ticketType.available },
+                                    )}
+                                  </span>
+                                )}
+                            </div>
 
-    {/* Sale Schedule - Now grouped with Tier Info */}
-    {/* <div>
+                            {ticketType.description && (
+                              <p className="text-sm text-gray-500 mt-1 pr-4">
+                                {ticketType.description}
+                              </p>
+                            )}
+
+                            <p className="font-bold text-lg text-primary mt-1">
+                              {formatCurrency(
+                                ticketType.price,
+                                ticketType.currency,
+                                locale,
+                              )}
+                            </p>
+                          </div>
+
+                          {/* Sale Schedule - Now grouped with Tier Info */}
+                          {/* <div>
       <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide flex items-center gap-1">
         <ClockIcon size={12} />
         {t("eventDetails.schedule", "Sale Schedule")}
@@ -514,35 +543,54 @@ function GuestPurchaseContent() {
         </div>
       </div>
     </div> */}
-  </div>
+                        </div>
 
-  {/* Right Column: Quantity Controls - Aligned to top */}
-  <div className="flex items-center gap-3 flex-shrink-0 md:self-start">
-    <Button
-      variant="outline"
-      size="icon"
-      onClick={() => handleTierQuantityChange(ticketType.id, -1)}
-      disabled={qty <= 0 || isPending}
-      className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
-    >
-      <MinusIcon size={18} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
-    </Button>
-    
-    <span className={cn("text-xl font-bold w-8 text-center transition-colors", qty > 0 ? "text-primary" : "text-gray-300")}>
-      {qty}
-    </span>
-    
-    <Button
-      onClick={() => handleTierQuantityChange(ticketType.id, 1)}
-      variant="outline"
-      size="icon"
-      disabled={isAtMaxTotal || isPending || qty >= ticketType.available}
-      className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
-    >
-      <PlusIcon size={18} className="group-hover:text-primary group-hover:scale-110 transition-transform" />
-    </Button>
-  </div>
-</div>
+                        {/* Right Column: Quantity Controls - Aligned to top */}
+                        <div className="flex items-center gap-3 flex-shrink-0 md:self-start">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() =>
+                              handleTierQuantityChange(ticketType.id, -1)
+                            }
+                            disabled={qty <= 0 || isPending}
+                            className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
+                          >
+                            <MinusIcon
+                              size={18}
+                              className="group-hover:text-primary group-hover:scale-110 transition-transform"
+                            />
+                          </Button>
+
+                          <span
+                            className={cn(
+                              "text-xl font-bold w-8 text-center transition-colors",
+                              qty > 0 ? "text-primary" : "text-gray-300",
+                            )}
+                          >
+                            {qty}
+                          </span>
+
+                          <Button
+                            onClick={() =>
+                              handleTierQuantityChange(ticketType.id, 1)
+                            }
+                            variant="outline"
+                            size="icon"
+                            disabled={
+                              isAtMaxTotal ||
+                              isPending ||
+                              qty >= ticketType.available
+                            }
+                            className="size-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 cursor-pointer active:scale-95 transition-all group disabled:cursor-not-allowed"
+                          >
+                            <PlusIcon
+                              size={18}
+                              className="group-hover:text-primary group-hover:scale-110 transition-transform"
+                            />
+                          </Button>
+                        </div>
+                      </div>
                     );
                   })}
 

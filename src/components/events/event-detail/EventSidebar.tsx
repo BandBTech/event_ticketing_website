@@ -1,23 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import {
-  CalendarIcon,
-  HeartIcon,
-  InfoIcon,
-  BroadcastIcon,
-  ClockIcon,
-} from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { cn, formatEventDateTime } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { useTranslation } from "@/hooks/useTranslation";
+import { formatEventDateTime } from "@/lib/utils";
 import { useLanguageStore } from "@/store/languageStore";
 import { Event } from "@/types/event";
-import { SalesCountdown } from "./SalesCountdown";
-import { ShareButton } from "@/components/ui/ShareButton";
+import { BroadcastIcon, InfoIcon } from "@phosphor-icons/react";
 import { format } from "date-fns";
+import Image from "next/image";
+import { SalesCountdown } from "./SalesCountdown";
 
 interface EventSidebarProps {
   event: Event;
@@ -30,7 +23,6 @@ export const EventSidebar = ({
   onShare,
   onFindTickets,
 }: EventSidebarProps) => {
-  const [isFavorite, setIsFavorite] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const dateDisplay = formatEventDateTime(event.startDate, event.endDate);
@@ -248,7 +240,6 @@ export const EventSidebar = ({
       <div className="space-y-4">
         {/* Action Buttons */}
         <div className="space-y-3">
-         
           <div className="space-y-3">
             {renderSalesAction()}
 
@@ -261,11 +252,10 @@ export const EventSidebar = ({
               onShare={onShare}
             />
           </div>
-           <div className="space-y-3 border-t pt-4">
-             <p className=" font-semibold text-gray-900 mb-2 tracking-wide flex items-center gap-1">
-        
-        {t("eventDetails.schedule", "Sales Date")}
-      </p>
+          <div className="space-y-3 border-t pt-4">
+            <p className=" font-semibold text-gray-900 mb-2 tracking-wide flex items-center gap-1">
+              {t("eventDetails.schedule", "Sales Date")}
+            </p>
             {event.ticketTypes.map((type) => (
               <div key={type.id} className="border-b pb-1 last:border-0">
                 <p className="text-[12px] font-medium text-primary mb-1">
@@ -274,27 +264,25 @@ export const EventSidebar = ({
 
                 {/* Sales Start */}
                 <div className="flex items-center justify-between text-sm font-medium gap-4">
-                   
                   <div className="flex items-center gap-2">
-                   {/*  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                    {/*  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
                     <span className="text-gray-900 font-medium">
                       {t("eventDetails.starts", "Starts")}:
                     </span> */}
-                         <span className="text-gray-900 bg-gray-50">
-                    {format(new Date(type.sales_start), "MMM dd, yyyy")}
-                    <span className="text-gray-900 ml-1">
-                      {format(new Date(type.sales_start), "hh:mm a")}
+                    <span className="text-gray-900 bg-gray-50">
+                      {format(new Date(type.sales_start), "MMM dd, yyyy")}
+                      <span className="text-gray-900 ml-1">
+                        {format(new Date(type.sales_start), "hh:mm a")}
+                      </span>
                     </span>
-                  </span>-
-                  <span className="text-gray-900 bg-gray-50 ">
-                    {format(new Date(type.sales_end), "MMM dd, yyyy")}
-                    <span className="text-gray-900 ml-1">
-                      {format(new Date(type.sales_end), "hh:mm a")}
+                    -
+                    <span className="text-gray-900 bg-gray-50 ">
+                      {format(new Date(type.sales_end), "MMM dd, yyyy")}
+                      <span className="text-gray-900 ml-1">
+                        {format(new Date(type.sales_end), "hh:mm a")}
+                      </span>
                     </span>
-                  </span>
-
                   </div>
-             
                 </div>
 
                 {/* Sales End 
@@ -315,7 +303,7 @@ export const EventSidebar = ({
         {/* Place */}
         <div className="pt-4 border-t border-gray-200">
           <h3 className="font-semibold text-gray-900 mb-2">
-            {t("common.place","Venue")}
+            {t("common.place", "Venue")}
           </h3>
           <p className="text-gray-900 font-medium">{event.venue.name}</p>
           {!/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
@@ -326,18 +314,37 @@ export const EventSidebar = ({
         {/* Date */}
         <div className="pt-4 border-t border-gray-200">
           <h3 className="font-semibold text-gray-900 mb-2">
-            {t("common.Event.date","Event Date")}
+            {t("common.Event.date", "Event Date")}
           </h3>
-          <div className="flex items-start gap-2 text-gray-900">
-              <span className="text-sm font-medium">
-                {dateDisplay.start}{" "}
-                {dateDisplay.isSameDay ? `- ${dateDisplay.end}` : "-"}
-              </span>
-              {!dateDisplay.isSameDay && (
-                <span className="text-sm font-medium">{dateDisplay.end}</span>
-              )}
-            
-          </div>
+             <div className="flex items-center justify-between text-sm font-medium gap-4">
+                   
+                  <div className="flex items-center gap-2">
+              
+                         <span className="text-gray-900 bg-gray-50">
+                    {format(new Date(event.startDate), "MMM dd, yyyy")}
+                    <span className="text-gray-900 ml-1">
+                      {format(new Date(event.startDate), "hh:mm a")}
+                    </span>
+                  </span>-
+                  <span className="text-gray-900 bg-gray-50 ">
+                    {format(new Date(event.endDate), "MMM dd, yyyy")}
+                    <span className="text-gray-900 ml-1">
+                      {format(new Date(event.endDate), "hh:mm a")}
+                    </span>
+                  </span>
+
+                  </div>
+             
+                </div>
+          {/* <div className="flex items-start gap-2 text-gray-900">
+            <span className="text-sm font-medium">
+              {dateDisplay.start}{" "}
+              {dateDisplay.isSameDay ? `- ${dateDisplay.end}` : "-"}
+            </span>
+            {!dateDisplay.isSameDay && (
+              <span className="text-sm font-medium">{dateDisplay.end}</span>
+            )}
+          </div> */}
         </div>
 
         {/* Tags */}

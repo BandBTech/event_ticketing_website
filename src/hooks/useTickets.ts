@@ -1,34 +1,26 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ticketService,
-  GuestPurchasePayload,
-  UserPurchasePayload,
-  GuestPurchaseResponse,
-  UserPurchaseResponse,
-  PaginatedUserTickets,
-  CancelTicketRequest,
-  CancelTicketResponse,
-} from "@/services/ticketService";
-import { useRouter } from "next/navigation";
-import { toast } from "@/lib/toast";
 import { queryKeys } from "@/lib/queryKeys";
+import { toast } from "@/lib/toast";
+import {
+  CancelTicketRequest,
+  PaginatedUserTickets,
+  PurchasePayload,
+  PurchaseResponse,
+  ticketService,
+} from "@/services/ticketService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export const useGuestPurchaseMutation = () => {
   const router = useRouter();
   return useMutation({
-    mutationFn: (data: GuestPurchasePayload) =>
-      ticketService.guestPurchase(data),
-    onSuccess: (res: GuestPurchaseResponse, variables) => {
+    mutationFn: (data: PurchasePayload) => ticketService.purchase(data, false),
+    onSuccess: (res: PurchaseResponse, variables) => {
       if (res.success) {
         // Stripe flow: redirect to Stripe Checkout URL
-        const gatewayData = res.data?.gateway_data;
-        if (gatewayData?.url) {
+        const gatewayData = res.data;
+        if (gatewayData?.redirect_url) {
           toast.message("Redirecting to payment...", "success");
-          window.location.href = gatewayData.url;
-          return;
-        } else if (res.data?.payment_url) {
-          toast.message("Redirecting to payment...", "success");
-          window.location.href = res.data.payment_url;
+          window.location.href = gatewayData.redirect_url;
           return;
         }
 
@@ -41,14 +33,14 @@ export const useGuestPurchaseMutation = () => {
           0,
         );
         query.append("quantity", totalQuantity.toString());
-        query.append("email", variables.email);
+        query.append("email", variables.customer_email);
 
-        const token = res.data?.token || res.data?.id;
+        const token = res.data?.checkout_token;
         if (token) {
           query.append("token", token);
         }
 
-        router.push(`/ticket-purchase/success?${query.toString()}`);
+        router.push(`/payment/success?${query.toString()}`);
       } else {
         toast.message(res.message || "Purchase failed", "error");
       }
@@ -59,14 +51,14 @@ export const useGuestPurchaseMutation = () => {
 export const useUserPurchaseMutation = () => {
   const router = useRouter();
   return useMutation({
-    mutationFn: (data: UserPurchasePayload) => ticketService.userPurchase(data),
-    onSuccess: (res: UserPurchaseResponse, variables) => {
+    mutationFn: (data: PurchasePayload) => ticketService.purchase(data, true),
+    onSuccess: (res: PurchaseResponse, variables) => {
       if (res.success) {
         // Stripe flow: redirect to Stripe Checkout URL
-        const gatewayData = res.data?.gateway_data;
-        if (gatewayData?.url) {
+        const gatewayData = res.data;
+        if (gatewayData?.redirect_url) {
           toast.message("Redirecting to payment...", "success");
-          window.location.href = gatewayData.url;
+          window.location.href = gatewayData.redirect_url;
           return;
         }
 
@@ -80,12 +72,12 @@ export const useUserPurchaseMutation = () => {
         );
         query.append("quantity", totalQuantity.toString());
 
-        const token = res.data?.order_id || res.data?.id;
+        const token = res.data?.checkout_token;
         if (token) {
           query.append("token", token);
         }
 
-        router.push(`/ticket-purchase/success?${query.toString()}`);
+        router.push(`/payment/success?${query.toString()}`);
       } else {
         toast.message(res.message || "Purchase failed", "error");
       }
@@ -150,7 +142,6 @@ export const useCancelTicket = () => {
         // Invalidate user tickets query to refetch updated list
         queryClient.invalidateQueries({
           queryKey: queryKeys.tickets.userTickets(1, "all", ""),
-      
         });
 
         // Also invalidate any detail queries for this ticket
@@ -158,7 +149,6 @@ export const useCancelTicket = () => {
           queryKey: ["tickets", "user-purchases"],
         });
       }
-      
     },
   });
 };

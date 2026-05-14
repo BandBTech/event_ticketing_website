@@ -1,77 +1,44 @@
 import { api } from "@/lib/apiClient";
+import { generateIdempotencyKey } from "@/lib/utils";
 import {
-  type ViewTicketDetails,
   type ApiTicketResponse,
-  UserTicketsApiResponse,
   ApiUserTicket,
-  TicketItem,
   EventTicketsApiResponse,
-  ViewTicketDetail,
+  TicketItem,
   TransactionDetailApiResponse,
+  UserTicketsApiResponse,
+  type ViewTicketDetails,
 } from "@/types/ticket";
 
 export interface PurchaseTierPayload {
   quantity: number;
   tier_id: string;
 }
-export interface GuestPurchasePayload {
-  // first_name: string;
-  // last_name: string;
-  email: string;
-  // phone: string;
-  // country_code: string;
-  event_id: string;
-  payment_gateway: string;
-  tiers: PurchaseTierPayload[];
-  language?: string;
-}
 
-export interface GuestPurchaseResponse {
-  success: boolean;
-  message: string;
-  data: {
-    id: string;
-    token: string;
-    payment_url?: string;
-    gateway_data?: {
-      session_id?: string;
-      url?: string;
-    };
-  };
-}
-
-// For logged-in user ticket purchase
-export interface UserPurchasePayload {
+export interface PurchasePayload {
   event_id: string;
   tiers: PurchaseTierPayload[];
   payment_gateway: string;
+  currency: string;
   customer_email: string;
-  customer_name: string;
-  customer_phone: string;
-  country_code: string;
-  language?: string;
+  timezone?: string;
 }
 
-export interface UserPurchaseResponse {
+export interface PurchaseResponse {
   success: boolean;
   message: string;
-  data?: {
-    id?: string;
-    order_id?: string;
+
+  data: {
     checkout_token: string;
-    payment_gateway: string;
-    amount: number;
+    amount_total: number;
     currency: string;
-    status: string;
-    gateway_data: {
-      cancel_url: string;
-      session_id: string;
-      success_url: string;
-      url?: string;
-    };
     expires_at: string;
-    created_at: string;
+    redirect_url: string;
+    gateway_session_id: string;
   };
+
+  timestamp: string;
+  request_id: string;
 }
 
 export interface CancelTicketRequest {
@@ -99,24 +66,16 @@ export interface PaginatedUserTickets {
   };
 }
 export const ticketService = {
-  guestPurchase: async (data: GuestPurchasePayload) => {
-    const response = await api.post<GuestPurchaseResponse>(
-      "/public/tickets/guest-purchase",
+  purchase: async (data: PurchasePayload, isAuthenticated: boolean = false) => {
+    const headers: Record<string, string> = {};
+    headers["Idempotency-Key"] = generateIdempotencyKey();
+    const response = await api.post<PurchaseResponse>(
+      "/public/purchase",
       data,
       {
+        requiresAuth: isAuthenticated,
         returnFullResponse: true,
-      },
-    );
-    return response;
-  },
-
-  userPurchase: async (data: UserPurchasePayload) => {
-    const response = await api.post<UserPurchaseResponse>(
-      "/user/tickets/purchase",
-      data,
-      {
-        requiresAuth: true,
-        returnFullResponse: true,
+        headers,
       },
     );
     return response;

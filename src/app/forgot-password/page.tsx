@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createValidationHelpers } from "@/lib/validation";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 // Create validation schema
 const createForgotPasswordSchema = (
@@ -97,6 +98,8 @@ export default function ForgotPasswordPage() {
   };
 
   return (
+      <>
+        <PageTitle title="Forgot Password" />
     <GuestRoute>
       <div className="min-h-[calc(100vh-66px)] relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
         <div className="w-full max-w-[480px] relative z-10">
@@ -236,5 +239,6 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </GuestRoute>
+    </>
   );
 }

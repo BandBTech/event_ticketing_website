@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TicketIcon,
   List,
@@ -31,6 +31,10 @@ import { useCompanyInfo } from "@/hooks/useCompany";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+
+  
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -53,42 +57,47 @@ export function Header() {
     { name: t("navigation.about", "About"), href: "/about" },
     { name: t("navigation.contact", "Contact"), href: "/contact" },
   ];
-
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <header className="sticky top-0 z-50 w-full glass border-b border-white/20 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center gap-2 py-1.5 cursor-pointer hover:opacity-80 transition-opacity">
-              {/*<TicketIcon weight='fill' size={24} className="text-blue-600" />
+   <Link href="/" className="flex items-center gap-2 py-1.5 hover:opacity-80 transition-opacity">
+       
+            {mounted ? (
+              <>
+                {company?.logo_url && (
+                  <img
+                    src={company.logo_url}
+                    alt={company.name || "Company Logo"}
+                    className="h-10 py-1"
+                  />
+                )}
+                <span className="text-xl font-bold text-gray-900 font-poppins">
+                  {company?.name || "Timro Ticket"}
+                </span>
+              </>
+            ) : (
+              /* Fallback/Skeleton to prevent layout shift during hydration */
               <span className="text-xl font-bold text-gray-900 font-poppins">
-                Timro-Ticket
-              </span>*/}
-           <img
-                      src={company?.logo_url}
-                      alt={company?.name}
-                      className="h-10 py-1"
-                    />
-                    <span
-                    className="text-xl font-bold text-gray-900 font-poppins"
-                    suppressHydrationWarning
-                  >
-                    {company?.name || "Timro Ticket"}
-                  </span>
-            </div>
+                Timro Ticket
+              </span>
+            )}
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             {navigation.map((item) => (
-              <a
+              <Link
                 key={item.name}
                 href={item.href}
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </nav>
 

@@ -1,5 +1,5 @@
-import { api } from '@/lib/apiClient';
-import { Event, EventStatus, TicketType } from '@/types/event';
+import { api } from "@/lib/apiClient";
+import { Event, TicketType } from "@/types/event";
 
 export interface PublicEventsParams {
   page?: number;
@@ -88,7 +88,7 @@ interface ApiEventsResponse {
     total: number;
     total_pages: number;
   };
-};
+}
 
 interface ApiUpcomingEventsResponse {
   has_next: boolean;
@@ -101,15 +101,17 @@ interface ApiUpcomingEventsResponse {
     total: number;
     total_pages: number;
   };
-
 }
 
 const parseCategoryString = (categoryStr: string): string[] => {
   if (!categoryStr) return [];
 
   try {
-    const cleanStr = categoryStr.replace(/[{}"]/g, '');
-    return cleanStr.split(',').filter(cat => cat.trim() !== '').map(cat => cat.trim());
+    const cleanStr = categoryStr.replace(/[{}"]/g, "");
+    return cleanStr
+      .split(",")
+      .filter((cat) => cat.trim() !== "")
+      .map((cat) => cat.trim());
   } catch {
     return [];
   }
@@ -127,7 +129,6 @@ const mapTier = (tier: ApiEventTier): TicketType => ({
   sales_end: tier.sales_end,
   available: tier.available,
   isActive: tier.is_active ?? true,
-
 });
 
 const mapEvent = (apiEvent: ApiEvent): Event => {
@@ -135,44 +136,46 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
   const categories = parseCategoryString(apiEvent.category);
 
   // Use address if location is empty
-  const location = apiEvent.location || apiEvent.address || 'Unknown Location';
-  const city = location.split(',')[0]?.trim() || 'Unknown City';
+  const location = apiEvent.location || apiEvent.address || "Unknown Location";
+  const city = location.split(",")[0]?.trim() || "Unknown City";
 
   return {
     id: apiEvent.id,
     title: apiEvent.title,
     description: apiEvent.description,
-    imageUrl: apiEvent.banner_image || '/images/placeholder-event.jpg',
+    imageUrl: apiEvent.banner_image || "/images/placeholder-event.jpg",
     bannerImageUrl: apiEvent.banner_image,
     venue: {
-      id: 'venue-' + apiEvent.id,
-      name: apiEvent.venue_name || 'Unknown Venue',
+      id: "venue-" + apiEvent.id,
+      name: apiEvent.venue_name || "Unknown Venue",
       address: location,
       city: city,
-      country: 'Nepal',
+      country: "Nepal",
       capacity: apiEvent.capacity || 0,
-      timezone: apiEvent.timezone || 'Asia/Kathmandu',
+      timezone: apiEvent.timezone || "Asia/Kathmandu",
     },
     startDate: apiEvent.start_date,
     endDate: apiEvent.end_date,
     categories: categories.map((cat, index) => ({
       id: `cat-${index}`,
       name: cat,
-      color: 'blue',
+      color: "blue",
     })),
     ticketTypes: (apiEvent.tiers || []).map(mapTier),
     status: apiEvent.status,
-    organizer: apiEvent.organizer ? {
-      id: apiEvent.organizer.id,
-      business_name: apiEvent.organizer.business_name,
-      business_logo: apiEvent.organizer.business_logo_url,
-      business_description: apiEvent.organizer.business_description,
-    } : {
-      id: 'default',
-      business_name: 'Organizer',
-      business_logo: '',
-      business_description: '',
-    },
+    organizer: apiEvent.organizer
+      ? {
+          id: apiEvent.organizer.id,
+          business_name: apiEvent.organizer.business_name,
+          business_logo: apiEvent.organizer.business_logo_url,
+          business_description: apiEvent.organizer.business_description,
+        }
+      : {
+          id: "default",
+          business_name: "Organizer",
+          business_logo: "",
+          business_description: "",
+        },
     maxTicketsPerOrder: 10,
     allowReEntry: false,
     available: apiEvent.available || 0,
@@ -184,21 +187,23 @@ const mapEvent = (apiEvent: ApiEvent): Event => {
   };
 };
 export const eventService = {
-
   getPublicEvents: async (params: PublicEventsParams = {}) => {
     const queryParams = new URLSearchParams();
-    if (params.page) queryParams.append('page', params.page.toString());
-    if (params.limit) queryParams.append('limit', params.limit.toString());
-    if (params.search) queryParams.append('search', params.search);
-    if (params.location) queryParams.append('location', params.location);
-    if (params.start_date) queryParams.append('start_date', params.start_date);
-    if (params.end_date) queryParams.append('end_date', params.end_date);
-    if (params.min_price) queryParams.append('min_price', params.min_price.toString());
-    if (params.max_price) queryParams.append('max_price', params.max_price.toString());
-    if (params.sort) queryParams.append('sort', params.sort);
-    if (params.status) queryParams.append('status', params.status);
+    if (params.page) queryParams.append("page", params.page.toString());
+    if (params.limit) queryParams.append("limit", params.limit.toString());
+    if (params.search) queryParams.append("search", params.search);
+    if (params.location) queryParams.append("location", params.location);
+    if (params.start_date) queryParams.append("start_date", params.start_date);
+    if (params.end_date) queryParams.append("end_date", params.end_date);
+    if (params.min_price)
+      queryParams.append("min_price", params.min_price.toString());
+    if (params.max_price)
+      queryParams.append("max_price", params.max_price.toString());
+    if (params.sort) queryParams.append("sort", params.sort);
 
-    const response = await api.get<ApiEventsResponse>(`/public/events?${queryParams.toString()}`);
+    const response = await api.get<ApiEventsResponse>(
+      `/public/events?${queryParams.toString()}`,
+    );
     return {
       events: (response.events || []).map(mapEvent),
       pagination: {
@@ -210,42 +215,48 @@ export const eventService = {
     };
   },
 
-
   getFeaturedEvents: async (params: FeaturedEventsParams = {}) => {
     const queryParams = new URLSearchParams();
-    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.limit) queryParams.append("limit", params.limit.toString());
 
-    const response = await api.get<ApiEventsResponse>(`/public/events/featured?${queryParams.toString()}`);
-     const eventsArray = Array.isArray(response) ? response : [];
+    const response = await api.get<ApiEventsResponse>(
+      `/public/events/featured?${queryParams.toString()}`,
+    );
+    const eventsArray = Array.isArray(response) ? response : [];
     return eventsArray.map(mapEvent);
   },
 
-  getEventCategories: async (params: EventCategoriesParams = {}) => {
-    const queryParams = new URLSearchParams();
-    if (params.limit) queryParams.append('limit', params.limit.toString());
+  // getEventCategories: async (params: EventCategoriesParams = {}) => {
+  //   const queryParams = new URLSearchParams();
+  //   if (params.limit) queryParams.append('limit', params.limit.toString());
 
-    const response = await api.get<{ categories: ApiCategory[] }>(`/public/categories?${queryParams.toString()}`);
+  //   const response = await api.get<{ categories: ApiCategory[] }>(`/public/categories?${queryParams.toString()}`);
 
-    const responseData = response as unknown as { categories: ApiCategory[] };
+  //   const responseData = response as unknown as { categories: ApiCategory[] };
 
-    return (responseData.categories || []).map(cat => ({
-      id: cat.id,
-      name: cat.name,
-      description: cat.description,
-      eventCount: cat.event_count || 0,
-    }));
-  },
+  //   return (responseData.categories || []).map(cat => ({
+  //     id: cat.id,
+  //     name: cat.name,
+  //     description: cat.description,
+  //     eventCount: cat.event_count || 0,
+  //   }));
+  // },
 
-  getEventByCategory: async (category: string, params: EventCategoriesParams = {}) => {
-    const queryParams = new URLSearchParams();
-    if (params.limit) queryParams.append('limit', params.limit.toString());
+  // getEventByCategory: async (
+  //   category: string,
+  //   params: EventCategoriesParams = {},
+  // ) => {
+  //   const queryParams = new URLSearchParams();
+  //   if (params.limit) queryParams.append("limit", params.limit.toString());
 
-    const response = await api.get<{ events: ApiEvent[] }>(`/public/categories/${category}?${queryParams.toString()}`);
+  //   const response = await api.get<{ events: ApiEvent[] }>(
+  //     `/public/categories/${category}?${queryParams.toString()}`,
+  //   );
 
-    const responseData = response as unknown as { events: ApiEvent[] };
+  //   const responseData = response as unknown as { events: ApiEvent[] };
 
-    return (responseData.events || []).map(mapEvent);
-  },
+  //   return (responseData.events || []).map(mapEvent);
+  // },
 
   getEventById: async (id: string): Promise<Event> => {
     try {
@@ -254,23 +265,29 @@ export const eventService = {
       return mapEvent(response);
     } catch (error) {
       console.error(`Error fetching event with ID ${id}:`, error);
-      throw new Error(`Failed to fetch event: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to fetch event: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   },
 
   getUpcomingEvents: async (params: PublicEventsParams = {}) => {
     const queryParams = new URLSearchParams();
-    if (params.page) queryParams.append('page', params.page.toString());
-    if (params.limit) queryParams.append('limit', params.limit.toString());
-    if (params.search) queryParams.append('search', params.search);
-    if (params.location) queryParams.append('location', params.location);
-    if (params.start_date) queryParams.append('start_date', params.start_date);
-    if (params.end_date) queryParams.append('end_date', params.end_date);
-    if (params.min_price) queryParams.append('min_price', params.min_price.toString());
-    if (params.max_price) queryParams.append('max_price', params.max_price.toString());
-    if (params.sort) queryParams.append('sort', params.sort);
+    if (params.page) queryParams.append("page", params.page.toString());
+    if (params.limit) queryParams.append("limit", params.limit.toString());
+    if (params.search) queryParams.append("search", params.search);
+    if (params.location) queryParams.append("location", params.location);
+    if (params.start_date) queryParams.append("start_date", params.start_date);
+    if (params.end_date) queryParams.append("end_date", params.end_date);
+    if (params.min_price)
+      queryParams.append("min_price", params.min_price.toString());
+    if (params.max_price)
+      queryParams.append("max_price", params.max_price.toString());
+    if (params.sort) queryParams.append("sort", params.sort);
 
-    const response = await api.get<ApiUpcomingEventsResponse>(`/public/events/upcoming?${queryParams.toString()}`);
+    const response = await api.get<ApiUpcomingEventsResponse>(
+      `/public/events/upcoming?${queryParams.toString()}`,
+    );
 
     return {
       events: (response.events || []).map(mapEvent),
@@ -282,8 +299,5 @@ export const eventService = {
         hasNext: response.pagination.has_next,
       },
     };
-  }
+  },
 };
-
-
-
