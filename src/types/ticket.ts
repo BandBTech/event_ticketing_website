@@ -68,7 +68,12 @@ export interface TicketItem {
   qrData: string;
   checkedIn: boolean;
   is_checked_in: boolean;
-  
+  checkInTime?: string | null;
+  checkIns?: Array<{
+    id: string;
+    eventDay?: { id: string; name: string; startTime: string; endTime: string };
+    checkedInAt: string;
+  }>;
 }
 
 export interface ViewTicketDetails {
