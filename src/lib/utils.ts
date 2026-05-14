@@ -256,12 +256,13 @@ export function formatEventDateTime(
 export const formatCurrency = (
   amount: number,
   currency: string = "USD",
-  locale: string = "en",
+  _locale?: string,
 ) => {
   const hasFraction = amount % 1 !== 0;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency,
+    currencyDisplay: "narrowSymbol",
     minimumFractionDigits: hasFraction ? 2 : 0,
     maximumFractionDigits: hasFraction ? 2 : 0,
   }).format(amount);

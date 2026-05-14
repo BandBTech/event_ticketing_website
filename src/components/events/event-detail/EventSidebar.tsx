@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { useTranslation } from "@/hooks/useTranslation";
-import { formatEventDateTime } from "@/lib/utils";
+import { formatCurrency, formatEventDateTime } from "@/lib/utils";
 import { useLanguageStore } from "@/store/languageStore";
 import { Event } from "@/types/event";
 import { BroadcastIcon, InfoIcon } from "@phosphor-icons/react";
@@ -162,11 +162,10 @@ export const EventSidebar = ({
               {t("events.startingFrom", "Tickets starting from")}
             </p>
             <p className="text-2xl font-bold text-blue-600">
-              {new Intl.NumberFormat("en-NP", {
-                style: "currency",
-                currency: availableTickets[0].currency,
-                minimumFractionDigits: 0,
-              }).format(lowestAvailablePrice)}
+              {formatCurrency(
+                lowestAvailablePrice,
+                availableTickets[0].currency,
+              )}
             </p>
           </div>
           <Button
@@ -285,15 +284,15 @@ export const EventSidebar = ({
                   </div>
                 </div>
 
-                {/* Sales End 
+                {/* Sales End
                 <div className="flex items-center justify-between text-sm font-medium gap-4 ">
                   <div className="flex items-center gap-2">
                     {/* <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
                     <span className="text-gray-900 font-medium">
                       {t("eventDetails.end", "Ends")}:
-                    </span> 
+                    </span>
                   </div>
-            
+
                 </div>*/}
               </div>
             ))}
@@ -316,26 +315,23 @@ export const EventSidebar = ({
           <h3 className="font-semibold text-gray-900 mb-2">
             {t("common.Event.date", "Event Date")}
           </h3>
-             <div className="flex items-center justify-between text-sm font-medium gap-4">
-                   
-                  <div className="flex items-center gap-2">
-              
-                         <span className="text-gray-900 bg-gray-50">
-                    {format(new Date(event.startDate), "MMM dd, yyyy")}
-                    <span className="text-gray-900 ml-1">
-                      {format(new Date(event.startDate), "hh:mm a")}
-                    </span>
-                  </span>-
-                  <span className="text-gray-900 bg-gray-50 ">
-                    {format(new Date(event.endDate), "MMM dd, yyyy")}
-                    <span className="text-gray-900 ml-1">
-                      {format(new Date(event.endDate), "hh:mm a")}
-                    </span>
-                  </span>
-
-                  </div>
-             
-                </div>
+          <div className="flex items-center justify-between text-sm font-medium gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-900 bg-gray-50">
+                {format(new Date(event.startDate), "MMM dd, yyyy")}
+                <span className="text-gray-900 ml-1">
+                  {format(new Date(event.startDate), "hh:mm a")}
+                </span>
+              </span>
+              -
+              <span className="text-gray-900 bg-gray-50 ">
+                {format(new Date(event.endDate), "MMM dd, yyyy")}
+                <span className="text-gray-900 ml-1">
+                  {format(new Date(event.endDate), "hh:mm a")}
+                </span>
+              </span>
+            </div>
+          </div>
           {/* <div className="flex items-start gap-2 text-gray-900">
             <span className="text-sm font-medium">
               {dateDisplay.start}{" "}
