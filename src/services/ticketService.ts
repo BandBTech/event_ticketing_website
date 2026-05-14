@@ -183,8 +183,8 @@ export const ticketService = {
             name: t.tier_name,
           },
           qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,
-          checkedIn: t.status === "used",
-          is_checked_in: t.status === "used",
+          checkedIn: t.status === "used" || t.status === "checked_in",
+          is_checked_in: t.status === "used" || t.status === "checked_in",
         },
       ],
 
@@ -253,19 +253,32 @@ export const ticketService = {
         startDate: d.event.start_date,
         endDate: d.event.end_date,
       },
-      tickets: d.tickets.map((t) => ({
-        ticketId: t.id,
-        status: t.status,
-        ticketNumber: t.ticket_number,
-        price: 0,
-        tierName: {
-          id: t.tier.id,
-          name: t.tier.name,
-        },
-        qrData: t.qr_data,
-        checkedIn: t.is_checked_in,
-        is_checked_in: t.is_checked_in,
-      })),
+      tickets: d.tickets.map((t) => {
+        const isCheckedIn = !!(t.check_in_time ?? t.is_checked_in);
+        return {
+          ticketId: t.id,
+          status: t.status,
+          ticketNumber: t.ticket_number,
+          price: 0,
+          tierName: { id: t.tier.id, name: t.tier.name },
+          qrData: t.qr_data,
+          checkedIn: isCheckedIn,
+          is_checked_in: isCheckedIn,
+          checkInTime: t.check_in_time ?? null,
+          checkIns: (t.check_ins ?? []).map((ci) => ({
+            id: ci.id,
+            eventDay: ci.event_day
+              ? {
+                  id: ci.event_day.id,
+                  name: ci.event_day.name,
+                  startTime: ci.event_day.start_time,
+                  endTime: ci.event_day.end_time,
+                }
+              : undefined,
+            checkedInAt: ci.checked_in_at,
+          })),
+        };
+      }),
     };
   },
 

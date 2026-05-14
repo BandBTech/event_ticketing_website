@@ -255,8 +255,20 @@ export interface ApiTransaction {
       name: string;
     };
     qr_data: string;
-    is_checked_in : boolean;
-
+    is_checked_in?: boolean;
+    check_in_time?: string | null;
+    checked_in_by?: string | null;
+    check_ins?: Array<{
+      id: string;
+      event_day?: {
+        id: string;
+        name: string;
+        start_time: string;
+        end_time: string;
+      };
+      checked_in_by: string;
+      checked_in_at: string;
+    }>;
   }>;
   transaction_status: string;
   created_at: string;
@@ -293,5 +305,10 @@ export interface TicketItems {
   tierName: { id: string; name: string };
   qrData: string;
   is_checked_in: boolean;
-  
+  checkInTime?: string | null;
+  checkIns?: Array<{
+    id: string;
+    eventDay?: { id: string; name: string; startTime: string; endTime: string };
+    checkedInAt: string;
+  }>;
 }

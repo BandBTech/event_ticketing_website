@@ -945,6 +945,17 @@ export default function TicketsPage() {
                               <p className="text-xl font-mono font-bold">
                                 Ticket Number : {ticket.ticketNumber}
                               </p>
+                              {ticket.is_checked_in && ticket.checkInTime && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  Checked in at {formatDate(ticket.checkInTime)}{" "}
+                                  {formatTime(ticket.checkInTime)}
+                                  {ticket.checkIns?.[0]?.eventDay && (
+                                    <span className="ml-1 font-medium text-emerald-700">
+                                      · {ticket.checkIns[0].eventDay.name}
+                                    </span>
+                                  )}
+                                </p>
+                              )}
                             </div>
                             {ticket.is_checked_in ? (
                               <Badge className="bg-emerald-100 text-emerald-700">
@@ -971,16 +982,11 @@ export default function TicketsPage() {
                                   ticket.status === "refunded" &&
                                     "bg-indigo-100 text-indigo-700",
                                   ticket.status === "checked_in" &&
-                                    "bg-rose-100 text-rose-700",
+                                    "bg-emerald-100 text-emerald-700",
                                 )}
                               >
                                 {ticket.status === "expired" && "Expired"}
-                                {ticket.status === "active" &&
-                                  !ticket.is_checked_in &&
-                                  "Active"}
-                                {ticket.status === "active" &&
-                                  ticket.is_checked_in &&
-                                  "Checked In"}
+                                {ticket.status === "active" && "Active"}
                                 {ticket.status === "used" && "Used"}
                                 {ticket.status === "pending_refund" &&
                                   "Pending Refund"}
