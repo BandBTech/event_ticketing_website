@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +26,8 @@ export function UnsavedChangesDialog({
   onConfirm,
   onCancel,
 }: UnsavedChangesDialogProps) {
-  const { t } = useTranslation();
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -37,7 +39,7 @@ export function UnsavedChangesDialog({
           <AlertDialogDescription>
             {t(
               "common.dialog.unsavedChanges.description",
-              "You have unsaved changes. Are you sure you want to leave? All your progress will be lost."
+              "You have unsaved changes. Are you sure you want to leave? All your progress will be lost.",
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
