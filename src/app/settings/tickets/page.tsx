@@ -100,6 +100,7 @@ export default function TicketsPage() {
     data: detailTickets,
     isLoading: isDetailLoading,
     isError: isDetailError,
+    refetch: refetchDetail,  
   } = useTransactionDetails(selectedOrderId ?? undefined);
   // Use the existing query hook
   const {
@@ -107,6 +108,7 @@ export default function TicketsPage() {
     isLoading,
     isFetching,
     error,
+    refetch: refetchList, 
   } = useUserTickets(currentPage, statusFilter, searchQuery);
   const ticketsArray = responseData?.tickets || [];
   const pagination = responseData?.pagination;
@@ -174,6 +176,12 @@ export default function TicketsPage() {
     setSelectedTicketForCancel(null);
     setShowCancelDialog(true);
   };
+    const refetchTransaction = async () => {
+    await refetchList();
+    if (selectedOrderId) {
+      await refetchDetail();
+    }
+  };
 
   const handleCancelTicket = (ticketId: string) => {
     setSelectedTicketForCancel(ticketId);
@@ -204,8 +212,7 @@ export default function TicketsPage() {
           });
         }
       }
-      // await refetchTransaction();
-
+   await refetchTransaction();
       // Close dialog on success
       setShowCancelDialog(false);
       setSelectedOrderForCancel(null);
@@ -971,7 +978,7 @@ export default function TicketsPage() {
                                   "text-xs font-medium",
                                   ticket.status === "expired" &&
                                     "bg-red-100 text-red-700",
-                                  ticket.status === "cancelled" &&
+                                  ticket.status === "canceled" &&
                                     "bg-red-100 text-red-700",
                                   ticket.status === "active" &&
                                     "bg-blue-100 text-blue-600",
@@ -991,7 +998,7 @@ export default function TicketsPage() {
                                 {ticket.status === "pending_refund" &&
                                   "Pending Refund"}
                                 {ticket.status === "refunded" && "Refunded"}
-                                {ticket.status === "cancelled" && "Cancelled"}
+                                {ticket.status === "canceled" && "Canceled"}
                                 {ticket.status === "checked_in" && "Checked In"}
                               </Badge>
                             )}
