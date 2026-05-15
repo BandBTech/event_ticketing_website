@@ -288,7 +288,9 @@
       "billingDesc": "Gestisci i tuoi metodi di pagamento",
       "ticketsDesc": "Visualizza i biglietti per i tuoi eventi",
       "tickets": "I miei biglietti",
-      "transactions": "Transazioni"
+      "transactions": "Transazioni",
+      "refunds": "I miei rimborsi",
+      "refundDesc": "Visualizza i tuoi rimborsi"
     }
   },
   "about": {

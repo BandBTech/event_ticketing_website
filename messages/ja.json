@@ -290,7 +290,9 @@
       "billingDesc": "支払い方法を管理する",
       "ticketsDesc": "イベントチケットを表示する",
       "tickets": "私のチケット",
-      "transactions": "トランザクション"
+      "transactions": "トランザクション",
+      "refunds": "私の返金",
+      "refundDesc": "払い戻しを確認する"
     }
   },
   "about": {

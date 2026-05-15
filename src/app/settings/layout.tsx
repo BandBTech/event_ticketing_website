@@ -13,6 +13,7 @@ import {
   TicketIcon
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import { BadgeDollarSignIcon } from 'lucide-react';
 
 
 export default function SettingsLayout({
@@ -55,6 +56,12 @@ export default function SettingsLayout({
       label: t('settings.menu.tickets', 'My Tickets'),
       icon: TicketIcon,
       description: t('settings.menu.ticketsDesc', 'View your event tickets'),
+    },
+      {
+      href: '/settings/refunds',
+      label: t('settings.menu.refunds', 'My Refunds'),
+      icon: BadgeDollarSignIcon,
+      description: t('settings.menu.refundDesc', 'View your refunds'),
     },
   ];
 

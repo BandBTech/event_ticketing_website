@@ -408,7 +408,9 @@
       "billingDesc": "Manage your payment methods",
       "tickets": "My Tickets",
       "ticketsDesc": "View your event tickets",
-      "transactions": "Transactions"
+      "transactions": "Transactions",
+      "refunds": "My Refunds",
+      "refundDesc": "View your refunds"
     }
   },
   "about": {
