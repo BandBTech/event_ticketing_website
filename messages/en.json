@@ -204,7 +204,8 @@
       "sales_upcoming": "Sales Upcoming",
       "live": "Live",
       "hold": "On Hold",
-      "scheduled": "Scheduled"
+      "scheduled": "Scheduled",
+      "cancel_pending": "Cancellation Pending"
     },
     "nextTierSalesStartingIn": "Next Ticket Sales Starting In"
   },
@@ -577,7 +578,9 @@
       "ticketSalesNotStartedNote": "Tickets are not yet available for purchase. Please check back when sales begin.",
       "ticketSalesEndedNote": "Official ticket sales for this event have concluded.",
       "eventLive": "Event is Live Now",
-      "eventLiveNote": "This event is currently happening. Online ticket sales are no longer available."
+      "eventLiveNote": "This event is currently happening. Online ticket sales are no longer available.",
+      "cancellationPending": "Cancellation Pending",
+      "cancellationPendingNote": "This event has a cancellation request pending admin approval. Ticket purchases are unavailable."
     },
     "backtoEvents": "Back to Events",
     "description": {

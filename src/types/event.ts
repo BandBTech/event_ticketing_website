@@ -66,7 +66,7 @@ export interface EventCategory {
 
 export type TicketCategory = 'General' | 'Premium' | 'VIP' | 'VVIP';
 
-export type EventStatus = 'Draft' | 'Completed' | 'On Sale' | 'Sale on Hold' | 'Sold Out' | 'Closed' | 'Cancelled' | 'Approved';
+export type EventStatus = 'Draft' | 'Completed' | 'On Sale' | 'Sale on Hold' | 'Sold Out' | 'Closed' | 'Cancelled' | 'Cancel Pending' | 'Approved';
 
 export interface EventFilters {
   search?: string;

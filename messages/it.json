@@ -175,7 +175,8 @@
       "sales_end": "Vendite Terminate",
       "sales_upcoming": "Vendite Future",
       "live": "Live",
-      "scheduled": "Scheduled"
+      "scheduled": "Scheduled",
+      "cancel_pending": "Cancellazione in sospeso"
     },
     "salesStartingIn": "Vendita biglietti a partire da",
     "nextTierSalesStartingIn": "Prossima vendita dei biglietti a partire da"
@@ -452,7 +453,9 @@
       "ticketSalesPausedNote": "La vendita dei biglietti è momentaneamente sospesa. \nRicontrolla più tardi.",
       "ticketSalesStoppedNote": "La vendita dei biglietti per questo evento è stata interrotta. \nSi prega di contattare il supporto per ulteriori informazioni.",
       "eventLive": "L'evento è in diretta",
-      "eventLiveNote": "Questo evento è attualmente in corso. La vendita dei biglietti online non è più disponibile."
+      "eventLiveNote": "Questo evento è attualmente in corso. La vendita dei biglietti online non è più disponibile.",
+      "cancellationPending": "Cancellazione in sospeso",
+      "cancellationPendingNote": "Questo evento ha una richiesta di cancellazione in attesa di approvazione. Gli acquisti di biglietti non sono disponibili."
     },
     "backtoEvents": "Torna a Eventi",
     "description": {

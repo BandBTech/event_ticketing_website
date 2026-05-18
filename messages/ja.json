@@ -176,7 +176,8 @@
       "sales_ended": "販売終了",
       "sales_upcoming": "販売予定",
       "live": "ライブ",
-      "scheduled": "スケジュール"
+      "scheduled": "スケジュール",
+      "cancel_pending": "キャンセル申請中"
     },
     "salesStartingIn": "チケット販売開始日",
     "nextTierSalesStartingIn": "次回のチケット販売開始日"
@@ -454,7 +455,9 @@
       "ticketSalesPausedNote": "チケット販売は一時的に中止とさせていただきます。\n後でもう一度確認してください。",
       "ticketSalesStoppedNote": "本イベントのチケット販売は終了いたしました。\n詳細については、サポートにお問い合わせください。",
       "eventLive": "イベント開催中",
-      "eventLiveNote": "このイベントは現在開催中です。オンラインチケット販売は終了しました。"
+      "eventLiveNote": "このイベントは現在開催中です。オンラインチケット販売は終了しました。",
+      "cancellationPending": "キャンセル申請中",
+      "cancellationPendingNote": "このイベントは管理者の承認待ちのキャンセルリクエストがあります。チケットの購入はできません。"
     },
     "backtoEvents": "イベントに戻る",
     "description": {

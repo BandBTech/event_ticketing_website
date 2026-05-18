@@ -28,10 +28,37 @@ export const EventSidebar = ({
   const dateDisplay = formatEventDateTime(event.startDate, event.endDate);
 
   const renderSalesAction = () => {
+    const isCancelPending = event.status?.toLowerCase() === "cancel_pending";
     const isLive = event.status?.toLowerCase() === "live";
     const isPaused =
       event.sales_status === "paused" || event.status?.toLowerCase() === "hold";
     const isStopped = event.sales_status === "stopped";
+
+    if (isCancelPending) {
+      return (
+        <div className="bg-amber-50 border flex items-start gap-2 border-amber-100 rounded-xl p-4 animate-in fade-in slide-in-from-top-2">
+          <InfoIcon
+            size={24}
+            weight="duotone"
+            className="text-amber-500 shrink-0"
+          />
+          <div className="text-amber-800">
+            <span className="font-bold">
+              {t(
+                "eventDetails.button.cancellationPending",
+                "Cancellation Pending",
+              )}
+            </span>
+            <p className="text-sm text-orange-700 mt-0.5">
+              {t(
+                "eventDetails.button.cancellationPendingNote",
+                "This event has a cancellation request pending admin approval. Ticket purchases are unavailable.",
+              )}
+            </p>
+          </div>
+        </div>
+      );
+    }
 
     if (isLive) {
       return (

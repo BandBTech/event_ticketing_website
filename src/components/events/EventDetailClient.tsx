@@ -19,6 +19,7 @@ const RESTRICTED_STATUSES = [
   "completed",
   "rejected",
   "cancelled",
+  "cancel_pending",
 ];
 
 interface EventDetailClientProps {
