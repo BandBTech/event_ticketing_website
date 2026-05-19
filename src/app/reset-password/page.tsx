@@ -34,11 +34,11 @@ const createResetPasswordSchema = (
       newPassword: z
         .string()
         .min(1, v.required("Password"))
-        .min(8)
+        .min(8, v.minLength("Password", 8))
         .max(100, v.maxLength("Password", 100))
-        .regex(/(?=.*[a-z])(?=.*[A-Z])/)
-        .regex(/[^A-Za-z0-9]/)
-        .regex(/[0-9]/),
+        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
+        .regex(/[0-9]/, v.passwordNumber()),
       confirmPassword: z.string().min(1, v.required("Confirm Password")),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
@@ -266,7 +266,12 @@ function ResetPasswordContent() {
                           </button>
                         </div>
                         <PasswordRequirements password={form.watch("newPassword")} />
-                        {errors.newPassword && errors.newPassword.message !== "Invalid input" && (
+                        {errors.newPassword &&
+                          errors.newPassword.message !== "Invalid input" &&
+                          !errors.newPassword.message?.includes("must be at least 8 characters") &&
+                          !errors.newPassword.message?.includes("uppercase and one lowercase") &&
+                          !errors.newPassword.message?.includes("special character") &&
+                          !errors.newPassword.message?.includes("numeric digit") && (
                           <p
                             className="text-sm text-destructive"
                             role="alert"

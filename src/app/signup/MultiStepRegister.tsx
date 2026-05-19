@@ -79,11 +79,11 @@ const createPasswordSchema = (
       password: z
         .string()
         .min(1, v.required("Password"))
-        .min(8)
+        .min(8, v.minLength("Password", 8))
         .max(100, v.maxLength("Password", 100))
-        .regex(/(?=.*[a-z])(?=.*[A-Z])/)
-        .regex(/[^A-Za-z0-9]/)
-        .regex(/[0-9]/),
+        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
+        .regex(/[0-9]/, v.passwordNumber()),
       confirmPassword: z.string().min(1, v.required("Confirm Password")),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -802,7 +802,11 @@ export default function MultiStepRegister() {
                       </div>
                       {passwordForm.formState.errors.password &&
                         passwordForm.formState.errors.password.message !==
-                          "Invalid input" && (
+                          "Invalid input" &&
+                        !passwordForm.formState.errors.password.message?.includes("must be at least 8 characters") &&
+                        !passwordForm.formState.errors.password.message?.includes("uppercase and one lowercase") &&
+                        !passwordForm.formState.errors.password.message?.includes("special character") &&
+                        !passwordForm.formState.errors.password.message?.includes("numeric digit") && (
                           <p className="text-sm text-destructive">
                             {passwordForm.formState.errors.password.message}
                           </p>
