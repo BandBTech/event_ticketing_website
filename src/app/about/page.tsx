@@ -37,7 +37,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <PageTitle title="About" />
+      <PageTitle title={t("about.pageTitle", "About")} />
    
     <div className="min-h-screen bg-white/40">
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">

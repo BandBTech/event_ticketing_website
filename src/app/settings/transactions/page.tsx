@@ -224,7 +224,7 @@ const getClearButtonIcon = () => {
 
   return (
     <>
-     <PageTitle title="My Transactions" />
+     <PageTitle title={t("setting.menu.transaction.title", "Transactions")}/>
     <div className="space-y-4 px-2 sm:px-0">
      
       {!selectedId && (

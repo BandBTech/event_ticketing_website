@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 export default function RefundPolicyPage() {
   const { locale } = useLanguageStore();
@@ -67,6 +68,8 @@ export default function RefundPolicyPage() {
   ];
 
   return (
+    <>
+    <PageTitle title={t("refundPolicy.title","Refund-Policy")}/>
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
@@ -203,5 +206,6 @@ export default function RefundPolicyPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

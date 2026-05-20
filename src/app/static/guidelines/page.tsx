@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 export default function EventGuidelinesPage() {
   const { locale } = useLanguageStore();
@@ -78,6 +79,8 @@ export default function EventGuidelinesPage() {
   ];
 
   return (
+    <>
+    <PageTitle title={t("guidelines.title","Guidelines")} />
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
@@ -156,5 +159,6 @@ export default function EventGuidelinesPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -100,7 +100,7 @@ export default function TicketsPage() {
     data: detailTickets,
     isLoading: isDetailLoading,
     isError: isDetailError,
-    refetch: refetchDetail,  
+    refetch: refetchDetail,
   } = useTransactionDetails(selectedOrderId ?? undefined);
   // Use the existing query hook
   const {
@@ -108,7 +108,7 @@ export default function TicketsPage() {
     isLoading,
     isFetching,
     error,
-    refetch: refetchList, 
+    refetch: refetchList,
   } = useUserTickets(currentPage, statusFilter, searchQuery);
   const ticketsArray = responseData?.tickets || [];
   const pagination = responseData?.pagination;
@@ -176,7 +176,7 @@ export default function TicketsPage() {
     setSelectedTicketForCancel(null);
     setShowCancelDialog(true);
   };
-    const refetchTransaction = async () => {
+  const refetchTransaction = async () => {
     await refetchList();
     if (selectedOrderId) {
       await refetchDetail();
@@ -212,7 +212,7 @@ export default function TicketsPage() {
           });
         }
       }
-   await refetchTransaction();
+      await refetchTransaction();
       // Close dialog on success
       setShowCancelDialog(false);
       setSelectedOrderForCancel(null);
@@ -460,7 +460,7 @@ export default function TicketsPage() {
 
   return (
     <div className="space-y-4">
-      <PageTitle title="My Tickets" />
+      <PageTitle title={t("setting.menu.tickets.title", "My Tickets")} />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
@@ -840,10 +840,10 @@ export default function TicketsPage() {
                 </div>
 
                 {/* Event Info */}
-                <div className="flex-1 space-y-3">
+                <div className="flex-1 space-y-3 min-w-0">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h2 className="text-2xl font-bold text-gray-900 leading-tight">
+                      <h2 className="text-2xl font-bold text-gray-900 leading-tight break-words w-full">
                         {detailTickets.event.title}
                       </h2>
                     </div>
@@ -880,12 +880,14 @@ export default function TicketsPage() {
                   </div>
 
                   {/* Location Info */}
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold flex items-start gap-1.5 text-gray-800">
-                      <MapPin className="h-4 w-4 text-primary mt-0.5" />
-                      {detailTickets.event.venueName}
+                  <div className="space-y-1 min-w-0 w-full">
+                    <p className="text-sm font-semibold flex items-start gap-1.5 text-gray-800 min-w-0 w-full">
+                      <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <span className="break-words min-w-0 w-full">
+                        {detailTickets.event.venueName}
+                      </span>
                     </p>
-                    <p className="text-xs text-muted-foreground ml-5 italic">
+                    <p className="text-xs text-muted-foreground ml-5 italic break-all min-w-0 w-full">
                       {detailTickets.event.address}
                     </p>
                   </div>

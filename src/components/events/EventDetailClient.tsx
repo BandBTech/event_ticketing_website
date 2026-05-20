@@ -12,6 +12,7 @@ import { EventLocation } from "./event-detail/EventLocation";
 import { EventOrganizer } from "./event-detail/EventOrganizer";
 import { EventSidebar } from "./event-detail/EventSidebar";
 import { EventNotFound } from "./EventNotFound";
+import { PageTitle } from "../pagetitle/PageTitle";
 
 const RESTRICTED_STATUSES = [
   "pending",
@@ -88,6 +89,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
 
   return (
     <div className="min-h-screen relative">
+      <PageTitle title={event.title}/>
       {/* Background */}
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50" />

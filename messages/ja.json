@@ -57,7 +57,7 @@
   "navigation": {
     "events": "イベント",
     "categories": "カテゴリー",
-    "about": "会社概要",
+    "about": "について",
     "contact": "お問い合わせ",
     "signIn": "サインイン",
     "organizeEvent": "イベント開催",
@@ -329,7 +329,8 @@
       "subtitle": "小規模な集まりでも大規模なフェスティバルでも、私たちは忘れられない経験を生み出し、成長させるお手伝いをいたします。",
       "becomeOrganizer": "オーガナイザーになる"
     },
-    "badge": "私たちの旅"
+    "badge": "私たちの旅",
+    "pageTitle": "について"
   },
   "newsletter": {
     "title": "最新情報を入手",
@@ -381,7 +382,8 @@
     },
     "followUs": "私たちに従ってください",
     "letsConnect": "つながろう",
-    "connectDescription": "コラボレーション、サポート、または一般的な問い合わせについてご連絡ください。"
+    "connectDescription": "コラボレーション、サポート、または一般的な問い合わせについてご連絡ください。",
+    "pageTitle": "接触"
   },
   "guestPurchase": {
     "token": {
@@ -525,7 +527,8 @@
     "cancelledMessage": "お支払いはキャンセルされました。",
     "cancellationFailed": "支払いのキャンセルに失敗しました",
     "securePayment": "安全な支払いを活用した",
-    "onlyTicketsLeft": "残りは {count} 個だけです!"
+    "onlyTicketsLeft": "残りは {count} 個だけです!",
+    "title": "チケット購入"
   },
   "ticketView": {
     "title": "デジタルチケット",
@@ -651,5 +654,44 @@
   },
   "status": {
     "sales_upcoming": "販売予定"
+  },
+  "allevents": {
+    "pageTitle": "イベント"
+  },
+  "forgotPassword": {
+    "title": "パスワードをお忘れですか"
+  },
+  "login": {
+    "title": "ログイン"
+  },
+  "refund": {
+    "title": "私の返金"
+  },
+  "security": {
+    "title": "安全"
+  },
+  "cookiesPolicy": {
+    "title": "クッキーポリシー"
+  },
+  "faq": {
+    "title": "よくある質問"
+  },
+  "guidelines": {
+    "title": "ガイドライン"
+  },
+  "howitworks": {
+    "title": "仕組み"
+  },
+  "privacyPolicy": {
+    "title": "プライバシーポリシー"
+  },
+  "refundPolicy": {
+    "title": "返金ポリシー"
+  },
+  "termsofservice": {
+    "title": "利用規約"
+  },
+  "eventdetail": {
+    "title": "イベント詳細"
   }
 }

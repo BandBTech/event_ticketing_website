@@ -148,16 +148,16 @@ function SingleTicketCard({
               </div>
 
               {/* Venue Row */}
-              <div className="flex items-start gap-3 text-gray-700">
-                <MapPin className="size-9 text-primary bg-primary/10 p-2.5 rounded-md" />
-                <div className="flex-1">
+              <div className="flex items-start gap-3 text-gray-700 min-w-0 w-full">
+                <MapPin className="size-9 text-primary bg-primary/10 p-2.5 rounded-md shrink-0" />
+                <div className="flex-1 min-w-0">
                   <p className="text-[10px] text-black/50 font-medium uppercase tracking-wider">
                     {t("ticketView.venue", "Venue")}
                   </p>
-                  <div className="flex flex-wrap gap-x-2 gap-y-1">
-                    <p className="text-sm font-semibold">{event.venueName}</p>
+                  <div className="flex flex-col gap-1 w-full">
+                    <p className="text-sm font-semibold  break-all w-full">{event.venueName}</p>
                     {event.address && !isCoordinates(event.address) && (
-                      <p className="text-sm text-black/60">{event.address}</p>
+                      <p className="text-sm text-black/60 break-all w-full">{event.address}</p>
                     )}
                   </div>
                 </div>

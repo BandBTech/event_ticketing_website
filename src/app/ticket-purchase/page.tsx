@@ -54,6 +54,7 @@ import { createValidationHelpers } from "@/lib/validation";
 import { PurchasePayload } from "@/services/ticketService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 // Max total tickets allowed
 const GUEST_MAX_QUANTITY = 6;
@@ -335,6 +336,7 @@ function GuestPurchaseContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <PageTitle title={t("ticketPurchase.title", "Ticket Purchase")}/>
       <div className="max-w-6xl mx-auto">
         {/* Header / Back Button */}
         <div className="mb-8 flex items-center justify-between">
@@ -457,7 +459,7 @@ function GuestPurchaseContent() {
                             : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/30",
                         )}
                       >
-                        {/* Left Column: Tier Info + Sale Schedule */}
+                        {/* Left Column: Tier Info */}
                         <div className="flex-1 space-y-4">
                           {/* Tier Info */}
                           <div>

@@ -12,6 +12,7 @@ import {
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { PhoneIcon } from "lucide-react";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 export default function CookiePolicyPage() {
   const { locale } = useLanguageStore();
@@ -90,6 +91,8 @@ export default function CookiePolicyPage() {
   ];
 
   return (
+    <>
+    <PageTitle title={t("cookiesPolicy.title","Cookies-Policy")} />
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
@@ -273,5 +276,6 @@ export default function CookiePolicyPage() {
         </div> */}
       </div>
     </div>
+    </>
   );
 }

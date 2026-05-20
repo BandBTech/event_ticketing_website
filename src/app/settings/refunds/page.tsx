@@ -20,11 +20,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 
 import { RefundDetail } from "@/components/refunds/refundDetails";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function RefundsPage() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+    const { locale } = useLanguageStore();
+    const { t } = useTranslation(locale);
 
   const [searchInput, debouncedSearch, setSearchInput] = useDebouncedState("", 400);
   const [page, setPage] = useState(1);
@@ -58,7 +62,7 @@ export default function RefundsPage() {
 
   return (
     <>
-      <PageTitle title="My Refunds" />
+      <PageTitle title={t("refund.title","My Refunds" )}/>
       <div className="space-y-4 px-2 sm:px-0">
         {!selectedId && (
           <div className="space-y-1">

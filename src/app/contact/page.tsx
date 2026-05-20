@@ -141,7 +141,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <PageTitle title="Contact" />
+      <PageTitle title={t("contact.pageTitle", "Contact")} />
 
       <div className="min-h-screen bg-background">
         <section className="py-20">

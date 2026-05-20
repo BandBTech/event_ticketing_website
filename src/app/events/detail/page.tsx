@@ -1,6 +1,7 @@
 "use client";
 
 import { EventDetailClient } from "@/components/events/EventDetailClient";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
@@ -17,6 +18,8 @@ function EventDetailContent() {
 
   if (!id) {
     return (
+      <>
+      <PageTitle title={t("eventdetail.title", "EventDetail")}/>
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
@@ -28,6 +31,7 @@ function EventDetailContent() {
           </Button>
         </div>
       </div>
+      </>
     );
   }
 

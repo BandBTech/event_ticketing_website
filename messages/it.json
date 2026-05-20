@@ -57,7 +57,7 @@
   "navigation": {
     "events": "Eventi",
     "categories": "Categorie",
-    "about": "Chi Siamo",
+    "about": "Di",
     "contact": "Contatti",
     "signIn": "Accedi",
     "organizeEvent": "Organizza Evento",
@@ -327,7 +327,8 @@
       "subtitle": "Che si tratti di un piccolo raduno o di un grande festival, siamo qui per aiutarti a creare e far crescere esperienze indimenticabili.",
       "becomeOrganizer": "Diventa un organizzatore"
     },
-    "badge": "Il nostro viaggio"
+    "badge": "Il nostro viaggio",
+    "pageTitle": "Di"
   },
   "newsletter": {
     "title": "Rimani aggiornato",
@@ -379,7 +380,8 @@
     },
     "followUs": "Seguici",
     "letsConnect": "Connettiamoci",
-    "connectDescription": "Contattaci per collaborazioni, supporto o domande generali."
+    "connectDescription": "Contattaci per collaborazioni, supporto o domande generali.",
+    "pageTitle": "Contatto"
   },
   "guestPurchase": {
     "token": {
@@ -523,7 +525,8 @@
     "cancelledMessage": "Il tuo pagamento è stato annullato.",
     "cancellationFailed": "Annullamento del pagamento non riuscito",
     "securePayment": "Pagamento sicuro fornito da",
-    "onlyTicketsLeft": "Rimangono solo {count}!"
+    "onlyTicketsLeft": "Rimangono solo {count}!",
+    "title": "Acquisto biglietti"
   },
   "ticketView": {
     "title": "Biglietto Digitale",
@@ -649,5 +652,44 @@
   },
   "status": {
     "sales_upcoming": "Vendite Future"
+  },
+  "allevents": {
+    "pageTitle": "Eventi"
+  },
+  "forgotPassword": {
+    "title": "Ha dimenticato la password"
+  },
+  "login": {
+    "title": "Login"
+  },
+  "refund": {
+    "title": "I miei rimborsi"
+  },
+  "security": {
+    "title": "Sicurezza"
+  },
+  "cookiesPolicy": {
+    "title": "Politica sui cookie"
+  },
+  "faq": {
+    "title": "domande frequenti"
+  },
+  "guidelines": {
+    "title": "Linee guida"
+  },
+  "howitworks": {
+    "title": "Come funziona"
+  },
+  "privacyPolicy": {
+    "title": "Politica sulla riservatezza"
+  },
+  "refundPolicy": {
+    "title": "Politica di rimborso"
+  },
+  "termsofservice": {
+    "title": "Termini di servizio"
+  },
+  "eventdetail": {
+    "title": "Dettagli evento"
   }
 }

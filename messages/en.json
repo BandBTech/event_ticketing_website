@@ -447,7 +447,8 @@
       },
       "subtitle": "Our impact in numbers across Nepal."
     },
-    "badge": "Our Journey"
+    "badge": "Our Journey",
+    "pageTitle": "About"
   },
   "newsletter": {
     "title": "Stay Updated",
@@ -499,7 +500,8 @@
     },
     "followUs": "Follow us",
     "letsConnect": "Let's Connect",
-    "connectDescription": "Reach out for collaborations, support, or general inquiries."
+    "connectDescription": "Reach out for collaborations, support, or general inquiries.",
+    "pageTitle": "Contact"
   },
   "guestPurchase": {
     "token": {
@@ -646,7 +648,8 @@
     "noTicketsCurrentlyAvailableDesc": "Tickets for this event are not on sale at the moment. Please check back later.",
     "onlyTicketsLeft": "Only {count} left!",
     "notEnoughTickets": "Only {count} tickets available",
-    "securePayment": "Secure payment powered by"
+    "securePayment": "Secure payment powered by",
+    "title": "Ticket Purchase"
   },
   "ticketView": {
     "title": "Digital Ticket",
@@ -774,5 +777,44 @@
   },
   "status": {
     "sales_upcoming": "Sales Upcoming"
+  },
+  "allevents": {
+    "pageTitle": "Events"
+  },
+  "forgotPassword": {
+    "title": "Forgot Password"
+  },
+  "login": {
+    "title": "Login"
+  },
+  "refund": {
+    "title": "My Refunds"
+  },
+  "security": {
+    "title": "Security"
+  },
+  "cookiesPolicy": {
+    "title": "Cookies-Policy"
+  },
+  "faq": {
+    "title": "faq"
+  },
+  "guidelines": {
+    "title": "Guidelines"
+  },
+  "howitworks": {
+    "title": "How-It-Works"
+  },
+  "privacyPolicy": {
+    "title": "Privacy-Policy"
+  },
+  "refundPolicy": {
+    "title": "Refund-Policy"
+  },
+  "termsofservice": {
+    "title": "Terms-Of-Service"
+  },
+  "eventdetail": {
+    "title": "EventDetail"
   }
 }

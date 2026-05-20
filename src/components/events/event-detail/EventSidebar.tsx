@@ -331,10 +331,10 @@ export const EventSidebar = ({
           <h3 className="font-semibold text-gray-900 mb-2">
             {t("common.place", "Venue")}
           </h3>
-          <p className="text-gray-900 font-medium">{event.venue.name}</p>
+          <p className="text-gray-900 font-medium break-words">{event.venue.name}</p>
           {!/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
             event.venue.address?.trim() || "",
-          ) && <p className="text-sm text-gray-600">{event.venue.address}</p>}
+          ) && <p className="text-sm text-gray-600 break-words w-full">{event.venue.address}</p>}
         </div>
 
         {/* Date */}

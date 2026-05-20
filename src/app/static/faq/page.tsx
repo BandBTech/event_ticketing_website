@@ -15,6 +15,7 @@ import {
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ChevronDownIcon, ChevronUpIcon, SearchIcon } from "lucide-react";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 export default function FAQPage() {
   const { locale } = useLanguageStore();
@@ -185,6 +186,8 @@ export default function FAQPage() {
   });
 
   return (
+    <>
+    <PageTitle title={t("faq.title","faq")}/>
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section with Search */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
@@ -328,5 +331,6 @@ export default function FAQPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

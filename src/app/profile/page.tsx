@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { createValidationHelpers } from "@/lib/validation";
 import { isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
+import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 // Validation schema
 const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
@@ -124,6 +125,8 @@ export default function ProfilePage() {
   };
 
   return (
+    <>
+        <PageTitle title={t("profile.title","Profile" )}/>
     <ProtectedRoute>
       <div className="flex-1 max-w-4xl mx-auto px-4 py-8 w-full">
         <div className="space-y-6">
@@ -380,5 +383,6 @@ export default function ProfilePage() {
         </div>
       </div>
     </ProtectedRoute>
+    </>
   );
 }

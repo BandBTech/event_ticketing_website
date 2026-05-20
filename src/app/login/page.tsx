@@ -115,7 +115,7 @@ export default function LoginPage() {
 
   return (
     <>
-    <PageTitle title="Login" />
+    <PageTitle title={t("login.title","Login" )}/>
     <GuestRoute>
       <div className="min-h-[calc(100vh-66px)] relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
         <div className="w-full max-w-[480px] relative z-10">

@@ -132,7 +132,7 @@ export default function SecuritySettingsPage() {
 
   return (
     <div className="space-y-4">
-      <PageTitle title="Security" />
+      <PageTitle title={t("security.title","Security")} />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
