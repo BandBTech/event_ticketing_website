@@ -34,6 +34,9 @@ function PaymentSuccessContent() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("pending_checkout_token");
+    }
     if (!checkoutToken) return;
 
     let attempts = 0;

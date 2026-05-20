@@ -30,7 +30,7 @@ export const paymentService = {
   confirmPayment: async (checkoutToken: string): Promise<PaymentSuccessResponse> => {
     return api.post<PaymentSuccessResponse>(`/public/payment/success?checkout_token=${checkoutToken}`, { checkout_token: checkoutToken });
   },
-  cancelledPayment: async (checkoutToken: string): Promise<PaymentSuccessResponse> => {
-    return api.post<PaymentSuccessResponse>(`/public/payment/failure?checkout_token=${checkoutToken}`, { checkout_token: checkoutToken });
+  cancelledPayment: async (checkoutToken: string): Promise<unknown> => {
+    return api.delete(`/public/checkout/${checkoutToken}`);
   },
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   CheckCircleIcon,
@@ -24,6 +24,12 @@ function PaymentCancelledContent() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const checkoutToken = useSearchParams().get("checkout_token") || "";
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("pending_checkout_token");
+    }
+  }, []);
 
   const { data, status, error } = useQuery({
     queryKey: queryKeys.payment.cancel(checkoutToken.trim()),

@@ -43,6 +43,8 @@ import {
   useGuestPurchaseMutation,
   useUserPurchaseMutation,
 } from "@/hooks/useTickets";
+import { api } from "@/lib/apiClient";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/store/authStore";
@@ -76,6 +78,7 @@ function GuestPurchaseContent() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const guestSchema = createGuestSchema(t);
+  const queryClient = useQueryClient();
 
   const [step, setStep] = useState<1 | 2>(1);
 
@@ -137,6 +140,25 @@ function GuestPurchaseContent() {
       window.removeEventListener("pageshow", handlePageShow);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const pendingToken = sessionStorage.getItem("pending_checkout_token");
+    if (pendingToken) {
+      api.delete(`/public/checkout/${pendingToken}`)
+        .then(() => {
+          if (eventIdFromUrl) {
+            queryClient.invalidateQueries({ queryKey: ["event", eventIdFromUrl] });
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to release checkout session:", err);
+        })
+        .finally(() => {
+          sessionStorage.removeItem("pending_checkout_token");
+        });
+    }
+  }, [eventIdFromUrl, queryClient]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

@@ -20,6 +20,9 @@ export const useGuestPurchaseMutation = () => {
         const gatewayData = res.data;
         if (gatewayData?.redirect_url) {
           toast.message("Redirecting to payment...", "success");
+          if (typeof window !== "undefined" && gatewayData.checkout_token) {
+            sessionStorage.setItem("pending_checkout_token", gatewayData.checkout_token);
+          }
           window.location.href = gatewayData.redirect_url;
           return;
         }
@@ -58,6 +61,9 @@ export const useUserPurchaseMutation = () => {
         const gatewayData = res.data;
         if (gatewayData?.redirect_url) {
           toast.message("Redirecting to payment...", "success");
+          if (typeof window !== "undefined" && gatewayData.checkout_token) {
+            sessionStorage.setItem("pending_checkout_token", gatewayData.checkout_token);
+          }
           window.location.href = gatewayData.redirect_url;
           return;
         }
