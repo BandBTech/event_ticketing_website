@@ -122,6 +122,7 @@ function GuestPurchaseContent() {
     defaultValues: {
       email: "",
     },
+    mode: "onChange",
   });
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -966,7 +967,12 @@ function GuestPurchaseContent() {
                         : "shadow-blue-200",
                     )}
                     disabled={
-                      isPending || isRedirectingToPayment || totalQuantity === 0
+                      isPending ||
+                      isRedirectingToPayment ||
+                      totalQuantity === 0 ||
+                      (step === 2 &&
+                        !isAuthenticated &&
+                        !guestForm.formState.isValid)
                     }
                   >
                     {isPending || isRedirectingToPayment ? (
