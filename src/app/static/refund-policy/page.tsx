@@ -2,8 +2,6 @@
 
 import { 
   ClockIcon, 
-  CurrencyDollarIcon, 
-  FileTextIcon,
   EnvelopeSimpleIcon,
   PhoneIcon,
   CheckCircleIcon,
@@ -19,27 +17,27 @@ export default function RefundPolicyPage() {
 
   const refundEligibility = [
     {
-      status: "Eligible for Refund",
+      status: t("refundPolicy.eligibility.eligible.status", "Eligible for Refund"),
       icon: CheckCircleIcon,
       color: "text-green-600",
       bgColor: "bg-green-50",
       conditions: [
-        "Event cancellation by organizer",
-        "Duplicate payment made",
-        "Technical error during purchase",
-        "Event rescheduled to different date (within 48 hours)"
+        t("refundPolicy.eligibility.eligible.cond1", "Event cancellation by organizer"),
+        t("refundPolicy.eligibility.eligible.cond2", "Duplicate payment made"),
+        t("refundPolicy.eligibility.eligible.cond3", "Technical error during purchase"),
+        t("refundPolicy.eligibility.eligible.cond4", "Event rescheduled to different date (within 48 hours)")
       ]
     },
     {
-      status: "Not Eligible for Refund",
+      status: t("refundPolicy.eligibility.notEligible.status", "Not Eligible for Refund"),
       icon: XCircleIcon,
       color: "text-red-600",
       bgColor: "bg-red-50",
       conditions: [
-        "Change of mind or personal reasons",
-        "Late arrival or no-show",
-        "Event already attended",
-        "Partial event attendance"
+        t("refundPolicy.eligibility.notEligible.cond1", "Change of mind or personal reasons"),
+        t("refundPolicy.eligibility.notEligible.cond2", "Late arrival or no-show"),
+        t("refundPolicy.eligibility.notEligible.cond3", "Event already attended"),
+        t("refundPolicy.eligibility.notEligible.cond4", "Partial event attendance")
       ]
     }
   ];
@@ -47,38 +45,38 @@ export default function RefundPolicyPage() {
   const refundProcess = [
     {
       step: 1,
-      title: "Submit Request",
-      description: "Contact support within the refund window with your order details"
+      title: t("refundPolicy.process.step1.title", "Submit Request"),
+      description: t("refundPolicy.process.step1.desc", "Contact support within the refund window with your order details")
     },
     {
       step: 2,
-      title: "Verification",
-      description: "Our team verifies your request against our refund policy"
+      title: t("refundPolicy.process.step2.title", "Verification"),
+      description: t("refundPolicy.process.step2.desc", "Our team verifies your request against our refund policy")
     },
     {
       step: 3,
-      title: "Approval",
-      description: "You'll receive confirmation if your refund is approved"
+      title: t("refundPolicy.process.step3.title", "Approval"),
+      description: t("refundPolicy.process.step3.desc", "You'll receive confirmation if your refund is approved")
     },
     {
       step: 4,
-      title: "Processing",
-      description: "Refund is processed within 5-10 business days"
+      title: t("refundPolicy.process.step4.title", "Processing"),
+      description: t("refundPolicy.process.step4.desc", "Refund is processed within 5-10 business days")
     }
   ];
 
   return (
     <>
-    <PageTitle title={t("refundPolicy.title","Refund-Policy")}/>
+    <PageTitle title={t("refundPolicy.title", "Refund Policy")}/>
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 font-poppins">
-            Refund Policy
+            {t("static.refundpolicy.title", "Refund Policy")}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Understanding your rights and our refund procedures
+            {t("static.refundpolicy.subtitle", "Understanding your rights and our refund procedures")}
           </p>
         </div>
       </section>
@@ -87,21 +85,25 @@ export default function RefundPolicyPage() {
         {/* Last Updated */}
         <div className="text-center mb-8">
           <p className="text-gray-500 text-sm">
-            Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {t("refundPolicy.lastUpdated", "Last Updated:")}{" "}
+            {new Date().toLocaleDateString(locale === "en" ? "en-US" : locale, { 
+              year: "numeric", 
+              month: "long", 
+              day: "numeric" 
+            })}
           </p>
         </div>
 
         {/* Introduction */}
         <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Introduction</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            {t("refundPolicy.intro.title", "Introduction")}
+          </h2>
           <p className="text-gray-600 leading-relaxed mb-4">
-            At Timro-Ticket, we strive to provide the best ticket purchasing experience. 
-            This refund policy outlines the circumstances under which refunds may be issued 
-            and the process for requesting them.
+            {t("refundPolicy.intro.p1", "At Timro-Ticket, we strive to provide the best ticket purchasing experience. This refund policy outlines the circumstances under which refunds may be issued and the process for requesting them.")}
           </p>
           <p className="text-gray-600 leading-relaxed">
-            Please read this policy carefully before making a purchase. By purchasing tickets 
-            through our platform, you agree to the terms outlined below.
+            {t("refundPolicy.intro.p2", "Please read this policy carefully before making a purchase. By purchasing tickets through our platform, you agree to the terms outlined below.")}
           </p>
         </div>
 
@@ -130,7 +132,9 @@ export default function RefundPolicyPage() {
 
         {/* Refund Process */}
         <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Refund Process</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {t("refundPolicy.process.title", "Refund Process")}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {refundProcess.map((step) => (
               <div key={step.step} className="text-center">
@@ -148,40 +152,54 @@ export default function RefundPolicyPage() {
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
           <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
             <ClockIcon size={20} className="text-yellow-600" />
-            Important Notes
+            {t("refundPolicy.notes.title", "Important Notes")}
           </h3>
           <ul className="space-y-2 text-gray-700">
-            <li>• Refund requests must be submitted within 7 days of purchase</li>
-            <li>• Processing time may vary depending on your payment method</li>
-            <li>• Service fees are non-refundable in most cases</li>
-            <li>• Refunds are issued to the original payment method</li>
-            <li>• Organizer-led events may have additional terms</li>
+            <li>• {t("refundPolicy.notes.bullet1", "Refund requests must be submitted within 7 days of purchase")}</li>
+            <li>• {t("refundPolicy.notes.bullet2", "Processing time may vary depending on your payment method")}</li>
+            <li>• {t("refundPolicy.notes.bullet3", "Service fees are non-refundable in most cases")}</li>
+            <li>• {t("refundPolicy.notes.bullet4", "Refunds are issued to the original payment method")}</li>
+            <li>• {t("refundPolicy.notes.bullet5", "Organizer-led events may have additional terms")}</li>
           </ul>
         </div>
 
         {/* How to Request */}
         <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Request a Refund</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            {t("refundPolicy.howToRequest.title", "How to Request a Refund")}
+          </h2>
           <div className="space-y-4">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold flex-shrink-0">1</div>
               <div>
-                <p className="font-semibold text-gray-900">Contact Support</p>
-                <p className="text-gray-600">Email us at <a href="mailto:support@timroticket.com" className="text-blue-600">support@timroticket.com</a> with your order ID</p>
+                <p className="font-semibold text-gray-900">
+                  {t("refundPolicy.howToRequest.step1.title", "Contact Support")}
+                </p>
+                <p className="text-gray-600">
+                  {t("refundPolicy.howToRequest.step1.desc", "Email us at")} <a href="mailto:support@timroticket.com" className="text-blue-600">support@timroticket.com</a> {t("refundPolicy.howToRequest.step1.descEnd", "with your order ID")}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold flex-shrink-0">2</div>
               <div>
-                <p className="font-semibold text-gray-900">Provide Details</p>
-                <p className="text-gray-600">Include your order number, event name, and reason for refund</p>
+                <p className="font-semibold text-gray-900">
+                  {t("refundPolicy.howToRequest.step2.title", "Provide Details")}
+                </p>
+                <p className="text-gray-600">
+                  {t("refundPolicy.howToRequest.step2.desc", "Include your order number, event name, and reason for refund")}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold flex-shrink-0">3</div>
               <div>
-                <p className="font-semibold text-gray-900">Wait for Response</p>
-                <p className="text-gray-600">Our team will respond within 2-3 business days</p>
+                <p className="font-semibold text-gray-900">
+                  {t("refundPolicy.howToRequest.step3.title", "Wait for Response")}
+                </p>
+                <p className="text-gray-600">
+                  {t("refundPolicy.howToRequest.step3.desc", "Our team will respond within 2-3 business days")}
+                </p>
               </div>
             </div>
           </div>
@@ -189,18 +207,20 @@ export default function RefundPolicyPage() {
 
         {/* Contact Support */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-xl p-8 text-white text-center">
-          <h2 className="text-2xl font-bold mb-4">Need Assistance?</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            {t("refundPolicy.cta.title", "Need Assistance?")}
+          </h2>
           <p className="text-blue-100 mb-6">
-            Our support team is here to help with any refund-related questions
+            {t("refundPolicy.cta.subtitle", "Our support team is here to help with any refund-related questions")}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a href="/contact" className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-shadow">
               <EnvelopeSimpleIcon size={20} />
-              Contact Support
+              {t("refundPolicy.cta.btnContact", "Contact Support")}
             </a>
             <a href="/static/faq" className="inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-400 transition-colors">
               <PhoneIcon size={20} />
-              Visit FAQ
+              {t("refundPolicy.cta.btnFaq", "Visit FAQ")}
             </a>
           </div>
         </div>

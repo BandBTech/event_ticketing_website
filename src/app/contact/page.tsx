@@ -238,7 +238,7 @@ export default function ContactPage() {
                         "h-12",
                         errors.name && "border-destructive",
                       )}
-                      placeholder="Enter your full name"
+                      placeholder={t("contact.form.placeholder.fullname","Enter your full name")}
                       {...register("name")}
                       maxLength={100}
                     />
@@ -262,7 +262,7 @@ export default function ContactPage() {
                         "h-12",
                         errors.email && "border-destructive",
                       )}
-                      placeholder="Enter your email"
+                      placeholder={t("contact.form.placeholder.email","Enter your email")}
                       {...register("email")}
                     />
                     {errors.email && (
@@ -281,23 +281,23 @@ export default function ContactPage() {
                       onValueChange={setSelectedCategory}
                     >
                       <SelectTrigger className="h-12 w-full">
-                        <SelectValue placeholder="Select an issue" />
+                        <SelectValue placeholder={t("contact.support.placeholder","Select an issue" )}/>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="ticket" className="cursor-pointer">
-                          Ticket Booking Issue
+                         {t("contact.support.value.v1"," Ticket Booking Issue")}
                         </SelectItem>
                         <SelectItem value="event" className="cursor-pointer">
-                          Event Publishing
+                          {t("contact.support.value.v2","Event Publishing")}
                         </SelectItem>
                         <SelectItem value="payment" className="cursor-pointer">
-                          Payments & Refund
+                         {t("contact.support.value.v3"," Payments & Refund")}
                         </SelectItem>
                         <SelectItem value="tech" className="cursor-pointer">
-                          Technical Support
+                          {t("contact.support.value.v4","Technical Support")}
                         </SelectItem>
                         <SelectItem value="partner" className="cursor-pointer">
-                          Partner/Business Inquiry
+                         {t("contact.support.value.v5"," Partner/Business Inquiry")}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -314,7 +314,7 @@ export default function ContactPage() {
                         errors.message && "border-destructive",
                       )}
                       maxLength={500}
-                      placeholder="Write your message..."
+                      placeholder={t("contact.placeholder.message","Write your message...")}
                       {...register("message")}
                     />
                     {errors.message && (

@@ -12,66 +12,66 @@ export default function HowItWorksPage() {
   const steps = [
     {
       icon: CalendarIcon,
-      title: "Find Your Event",
-      description: "Browse through thousands of events happening near you or online. Use filters to find exactly what you're looking for.",
+      title: t("howitworks.steps.findEvent.title", "Find Your Event"),
+      description: t("howitworks.steps.findEvent.desc", "Browse through thousands of events happening near you or online. Use filters to find exactly what you're looking for."),
       color: "from-blue-500 to-cyan-500"
     },
     {
       icon: TicketIcon,
-      title: "Choose Tickets",
-      description: "Select your preferred ticket type and quantity. Early bird discounts and group packages available.",
+      title: t("howitworks.steps.chooseTickets.title", "Choose Tickets"),
+      description: t("howitworks.steps.chooseTickets.desc", "Select your preferred ticket type and quantity. Early bird discounts and group packages available."),
       color: "from-purple-500 to-pink-500"
     },
     {
       icon: CreditCardIcon,
-      title: "Secure Payment",
-      description: "Pay securely using various payment methods including cards, mobile banking, and digital wallets.",
+      title: t("howitworks.steps.securePayment.title", "Secure Payment"),
+      description: t("howitworks.steps.securePayment.desc", "Pay securely using various payment methods including cards, mobile banking, and digital wallets."),
       color: "from-green-500 to-emerald-500"
     },
     {
       icon: UsersIcon,
-      title: "Get Your Tickets",
-      description: "Receive digital tickets instantly via email. Access them anytime from your account dashboard.",
+      title: t("howitworks.steps.getTickets.title", "Get Your Tickets"),
+      description: t("howitworks.steps.getTickets.desc", "Receive digital tickets instantly via email. Access them anytime from your account dashboard."),
       color: "from-orange-500 to-red-500"
     }
   ];
 
   const features = [
     {
-      title: "Instant Confirmation",
-      description: "Get your tickets immediately after payment",
+      title: t("howitworks.features.instant.title", "Instant Confirmation"),
+      description: t("howitworks.features.instant.desc", "Get your tickets immediately after payment"),
       icon: CheckCircleIcon
     },
     {
-      title: "Secure QR Codes",
-      description: "Each ticket has a unique QR code for entry",
+      title: t("howitworks.features.qrCodes.title", "Secure QR Codes"),
+      description: t("howitworks.features.qrCodes.desc", "Each ticket has a unique QR code for entry"),
       icon: CheckCircleIcon
     },
     {
-      title: "Easy Transfer",
-      description: "Transfer tickets to friends and family easily",
+      title: t("howitworks.features.transfer.title", "Easy Transfer"),
+      description: t("howitworks.features.transfer.desc", "Transfer tickets to friends and family easily"),
       icon: CheckCircleIcon
     },
     {
-      title: "24/7 Support",
-      description: "Our support team is always here to help",
+      title: t("howitworks.features.support.title", "24/7 Support"),
+      description: t("howitworks.features.support.desc", "Our support team is always here to help"),
       icon: CheckCircleIcon
     }
   ];
 
   return (
     <>
-    <PageTitle title={t("howitworks.title","How-It-Works")} />
+    <PageTitle title={t("howitworks.title", "How-It-Works")} />
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 text-white py-20">
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 font-poppins">
-            How Timro-Ticket Works
+            {t("static.howitworks.hero.title", "How Timro-Ticket Works")}
           </h1>
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Your journey to unforgettable experiences starts here. Follow these simple steps to get your tickets.
+            {t("static.howitworks.hero.subtitle", "Your journey to unforgettable experiences starts here. Follow these simple steps to get your tickets.")}
           </p>
         </div>
       </section>
@@ -112,10 +112,10 @@ export default function HowItWorksPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4 font-poppins">
-              Why Choose Timro-Ticket?
+              {t("howitworks.features.heading", "Why Choose Timro-Ticket?")}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              We make ticket buying simple, secure, and seamless
+              {t("howitworks.features.subheading", "We make ticket buying simple, secure, and seamless")}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

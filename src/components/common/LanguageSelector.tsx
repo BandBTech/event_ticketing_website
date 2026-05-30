@@ -34,7 +34,7 @@ export function LanguageSelector({ className }: LanguageSelectorProps) {
   };
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative inline-block", className)}>
       <Button
         variant="ghost"
         size="sm"
@@ -60,19 +60,20 @@ export function LanguageSelector({ className }: LanguageSelectorProps) {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 z-10" 
+            className="fixed inset-0 z-40 bg-black/5" 
             onClick={() => setIsOpen(false)}
           />
           
           {/* Menu */}
-          <div className="absolute top-full mt-2 right-0 z-20 min-w-[160px] glass border rounded-lg shadow-lg overflow-hidden">
+          <div className="absolute top-full mt-2 right-0 z-50 min-w-[160px]  rounded-lg shadow-xl overflow-hidden bg-white border border-gray-200">
+            <div className="py-1"> 
             {languages.map((language) => (
               <button
                 key={language.code}
                 onClick={() => handleLanguageSelect(language.code)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer",
-                  "hover:bg-white/80 transition-colors duration-200",
+                  "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer",
+                  "hover:bg-gray-50 transition-colors duration-200",
                   "text-sm font-medium text-gray-700",
                   locale === language.code && "bg-blue-50/80 text-blue-700"
                 )}
@@ -85,6 +86,8 @@ export function LanguageSelector({ className }: LanguageSelectorProps) {
               </button>
             ))}
           </div>
+          </div>
+          
         </>
       )}
     </div>

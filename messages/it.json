@@ -344,7 +344,8 @@
       "fullName": "Nome e cognome",
       "placeholder": {
         "fullName": "Inserisci il tuo nome completo",
-        "email": "Inserisci la tua email"
+        "email": "Inserisci la tua email",
+        "fullname": "Inserisci il tuo nome completo"
       },
       "email": "E-mail",
       "title": "Mandaci un messaggio"
@@ -359,6 +360,14 @@
         "selectIssue": "Seleziona un problema",
         "ticketBooking": "Problemi di prenotazione dei biglietti",
         "others": "Altri"
+      },
+      "placeholder": "Seleziona un problema",
+      "value": {
+        "v1": "Problema prenotazione biglietti",
+        "v2": "Pubblicazione di eventi",
+        "v3": "Pagamenti",
+        "v4": "Supporto tecnico",
+        "v5": "Richiesta partner/aziendale"
       }
     },
     "message": {
@@ -381,7 +390,10 @@
     "followUs": "Seguici",
     "letsConnect": "Connettiamoci",
     "connectDescription": "Contattaci per collaborazioni, supporto o domande generali.",
-    "pageTitle": "Contatto"
+    "pageTitle": "Contatto",
+    "placeholder": {
+      "message": "Scrivi il tuo messaggio..."
+    }
   },
   "guestPurchase": {
     "token": {
@@ -669,27 +681,564 @@
     "title": "Sicurezza"
   },
   "cookiesPolicy": {
-    "title": "Politica sui cookie"
+    "title": "Politica sui cookie",
+    "essential": {
+      "name": "Cookie essenziali",
+      "desc": "Necessario per il corretto funzionamento del sito web"
+    },
+    "examples": {
+      "auth": "Autenticazione",
+      "security": "Sicurezza",
+      "cart": "Carrello della spesa",
+      "session": "Gestione della sessione",
+      "lang": "Preferenze linguistiche",
+      "region": "Selezione della regione",
+      "ui": "Personalizzazione dell'interfaccia utente",
+      "login": "Ricorda i dettagli di accesso",
+      "views": "Visualizzazioni di pagina",
+      "clicks": "Monitoraggio dei clic",
+      "traffic": "Sorgenti di traffico",
+      "behavior": "Analisi del comportamento degli utenti",
+      "ads": "Annunci mirati",
+      "campaigns": "Monitoraggio della campagna",
+      "retargeting": "Retargeting",
+      "social": "Integrazione dei social media",
+      "label": "Esempi:"
+    },
+    "functional": {
+      "name": "Cookie funzionali",
+      "desc": "Migliora funzionalità e personalizzazione"
+    },
+    "analytics": {
+      "name": "Cookie analitici",
+      "desc": "Aiutaci a capire come i visitatori interagiscono con il nostro sito"
+    },
+    "marketing": {
+      "name": "Cookie di marketing",
+      "desc": "Utilizzato per fornire annunci pubblicitari pertinenti"
+    },
+    "chrome": {
+      "step1": "Fai clic sul menu con tre punti nell'angolo in alto a destra",
+      "step2": "Vai su Impostazioni > Privacy e sicurezza",
+      "step3": "Clicca su 'Cookie e altri dati dei siti'",
+      "step4": "Modifica le tue preferenze sui cookie"
+    },
+    "firefox": {
+      "step1": "Fai clic sul pulsante del menu (tre righe) in alto a destra",
+      "step2": "Seleziona Opzioni > Privacy",
+      "step3": "Vai alla sezione \"Cookie e dati dei siti\".",
+      "step4": "Scegli le tue impostazioni preferite"
+    },
+    "safari": {
+      "step1": "Vai su Safari > Preferenze",
+      "step2": "Fare clic sulla scheda Privacy",
+      "step3": "Modifica le impostazioni di \"Cookie e dati di siti web\".",
+      "step4": "Scegli la tua opzione preferita"
+    },
+    "edge": {
+      "step1": "Fai clic sul menu con tre punti in alto a destra",
+      "step2": "Vai su Impostazioni > Cookie e autorizzazioni sito",
+      "step3": "Seleziona 'Gestisci ed elimina cookie e dati dei siti'",
+      "step4": "Modifica le impostazioni dei cookie"
+    },
+    "lastUpdated": "Ultimo aggiornamento:",
+    "whatAreCookies": {
+      "title": "Cosa sono i cookie?",
+      "p1": "I cookie sono piccoli file di testo che vengono posizionati sul tuo computer o dispositivo mobile quando visiti un sito web. \nSono ampiamente utilizzati per far funzionare i siti Web in modo più efficiente e fornire informazioni preziose ai proprietari dei siti Web.",
+      "p2": "La presente Politica sui cookie spiega cosa sono i cookie, come li utilizziamo e come puoi controllare le tue preferenze sui cookie."
+    },
+    "types": {
+      "title": "Tipi di cookie che utilizziamo"
+    },
+    "status": {
+      "active": "Sempre attivo",
+      "optional": "Opzionale"
+    },
+    "manage": {
+      "title": "Come gestire i cookie",
+      "intro": "Puoi controllare e gestire i cookie in vari modi. \nLa maggior parte dei browser ti consente di:",
+      "bullet1": "Visualizza ed elimina i cookie memorizzati sul tuo dispositivo",
+      "bullet2": "Blocca i cookie di terze parti",
+      "bullet3": "Imposta le preferenze per siti Web specifici",
+      "bullet4": "Cancella tutti i cookie alla chiusura del browser",
+      "browsersTitle": "Istruzioni specifiche del browser"
+    },
+    "thirdParty": {
+      "title": "Cookie di terze parti",
+      "p1": "Potremmo anche utilizzare cookie di servizi di terze parti come Google Analytics, piattaforme di social media ed elaboratori di pagamento. \nQuesti cookie sono impostati da terze parti e sono soggetti alle rispettive politiche sulla privacy.",
+      "p2": "Sebbene non abbiamo un controllo diretto su questi cookie, puoi gestirli tramite le impostazioni del tuo browser o le preferenze sulla privacy di terze parti."
+    },
+    "consent": {
+      "title": "Consenso sui cookie",
+      "p1": "Quando visiti per la prima volta il nostro sito web, vedrai un banner sui cookie che richiede il tuo consenso per inserire cookie non essenziali sul tuo dispositivo. \nPuoi modificare le tue preferenze sui cookie in qualsiasi momento tramite:",
+      "bullet1": "Facendo clic sul collegamento Impostazioni cookie nel nostro piè di pagina",
+      "bullet2": "Modifica delle impostazioni del browser",
+      "bullet3": "Utilizzo di strumenti di opt-out di terze parti"
+    },
+    "updates": {
+      "title": "Aggiornamenti a questa politica",
+      "p1": "Potremmo aggiornare periodicamente la presente Politica sui cookie per riflettere i cambiamenti nella tecnologia, nei requisiti legali o nelle nostre pratiche. \nTi informeremo di eventuali modifiche sostanziali pubblicando la nuova politica su questa pagina e aggiornando la data di \"Ultimo aggiornamento\"."
+    }
   },
   "faq": {
-    "title": "domande frequenti"
+    "title": "domande frequenti",
+    "categories": {
+      "all": "Tutte le domande",
+      "tickets": "Biglietti",
+      "payments": "Pagamenti",
+      "account": "Account",
+      "security": "Sicurezza",
+      "events": "Eventi"
+    },
+    "questions": {
+      "q1": {
+        "question": "Come posso acquistare i biglietti?",
+        "answer": "Per acquistare i biglietti, sfoglia semplicemente gli eventi sulla nostra piattaforma, seleziona l'evento desiderato, scegli il numero di biglietti e procedi al pagamento. \nRiceverai i biglietti digitali via e-mail dopo aver effettuato con successo il pagamento."
+      },
+      "q3": {
+        "question": "Posso trasferire i miei biglietti a qualcun altro?",
+        "answer": "Sì, la maggior parte dei biglietti sono trasferibili. \nPuoi trasferire i biglietti tramite la dashboard del tuo account selezionando il biglietto e facendo clic su \"Trasferisci\". \nIl destinatario riceverà un'e-mail con le istruzioni per richiedere il biglietto."
+      },
+      "q4": {
+        "question": "Cosa succede se perdo il codice QR del mio biglietto?",
+        "answer": "Non preoccuparti! \nPuoi sempre accedere ai tuoi biglietti dalla dashboard del tuo account. \nAccedi semplicemente, vai su \"I miei biglietti\" e lì troverai tutti i tuoi codici QR. \nPuoi anche richiedere un nuovo invio dell'e-mail di conferma."
+      },
+      "q2": {
+        "question": "Dove posso trovare i miei biglietti dopo l'acquisto?",
+        "answer": "I tuoi biglietti sono disponibili in due posti: 1) La tua casella di posta elettronica (controlla la cartella spam se non la trovi) e 2) Il dashboard del tuo account nella sezione \"I miei biglietti\". \nPuoi anche scaricarli dalla pagina di conferma dell'ordine."
+      },
+      "q5": {
+        "question": "C'è un limite al numero di biglietti che posso acquistare?",
+        "answer": "I limiti dei biglietti variano in base all'evento. \nAlcuni eventi potrebbero avere un limite massimo di acquisto per persona per garantire un'equa distribuzione. \nQueste informazioni vengono visualizzate nella pagina dell'evento prima dell'acquisto."
+      },
+      "q6": {
+        "question": "Quali metodi di pagamento accettate?",
+        "answer": "Accettiamo vari metodi di pagamento tra cui carte di credito/debito (Visa, MasterCard, American Express), mobile banking, portafogli digitali (Google Pay, Apple Pay) e bonifici bancari. \nI metodi disponibili variano in base alla regione."
+      },
+      "q7": {
+        "question": "I miei dati di pagamento sono sicuri?",
+        "answer": "Assolutamente! \nUtilizziamo la crittografia standard del settore e non memorizziamo mai i dettagli di pagamento completi. \nTutte le transazioni vengono elaborate tramite gateway di pagamento sicuri e conformi PCI."
+      },
+      "q8": {
+        "question": "Come posso richiedere un rimborso?",
+        "answer": "Per richiedere un rimborso, contatta il nostro team di supporto nella finestra di rimborso con il tuo ID ordine. \nI rimborsi vengono elaborati secondo la nostra Politica di rimborso. \nVisita la nostra pagina Politica di rimborso per informazioni dettagliate."
+      },
+      "q9": {
+        "question": "Quanto tempo ci vuole per elaborare un rimborso?",
+        "answer": "L'elaborazione dei rimborsi richiede in genere 5-10 giorni lavorativi, a seconda del metodo di pagamento e della banca. \nRiceverai un'e-mail di conferma una volta avviato il rimborso."
+      },
+      "q10": {
+        "question": "A cosa servono le commissioni di servizio?",
+        "answer": "Le commissioni di servizio coprono la manutenzione della piattaforma, l'assistenza clienti, l'elaborazione sicura dei pagamenti e lo sviluppo delle funzionalità. \nQueste commissioni sono chiaramente visualizzate prima del pagamento."
+      },
+      "q11": {
+        "question": "Come posso creare un account?",
+        "answer": "Fai clic sul pulsante \"Iscriviti\" sulla nostra home page, inserisci il tuo indirizzo email, crea una password e segui i passaggi di verifica. \nPuoi anche registrarti utilizzando Google o Facebook per una registrazione più rapida."
+      },
+      "q12": {
+        "question": "Ho dimenticato la password. \nCome lo resetto?",
+        "answer": "Fai clic su \"Password dimenticata\" nella pagina di accesso, inserisci il tuo indirizzo email registrato e ti invieremo un collegamento per reimpostare la password. \nSegui le istruzioni contenute nell'e-mail per creare una nuova password."
+      },
+      "q13": {
+        "question": "Come posso aggiornare le informazioni del mio profilo?",
+        "answer": "Accedi al tuo account, vai su \"Impostazioni profilo\" e aggiorna le tue informazioni. \nPuoi modificare il tuo nome, indirizzo email, numero di telefono e preferenze di notifica."
+      },
+      "q14": {
+        "question": "Posso eliminare il mio account?",
+        "answer": "Sì, puoi eliminare il tuo account contattando il nostro team di supporto. \nTieni presente che questa azione è permanente e rimuoverà tutti i tuoi dati, inclusa la cronologia degli acquisti dei biglietti."
+      },
+      "q15": {
+        "question": "Come proteggete le mie informazioni personali?",
+        "answer": "Utilizziamo misure di sicurezza avanzate tra cui crittografia, server sicuri e controlli di sicurezza regolari. \nNon condividiamo mai le tue informazioni personali con terze parti senza il tuo consenso."
+      },
+      "q16": {
+        "question": "Cosa devo fare se ricevo un'e-mail sospetta sui miei biglietti?",
+        "answer": "Non fare clic su alcun collegamento né fornire informazioni personali. \nInoltra l'e-mail sospetta al nostro team di supporto ed eliminala immediatamente. \nAccedi sempre ai tuoi biglietti attraverso il nostro sito ufficiale."
+      },
+      "q17": {
+        "question": "Come posso abilitare l'autenticazione a due fattori?",
+        "answer": "Vai su Impostazioni account > Sicurezza > Autenticazione a due fattori. \nPuoi abilitarlo utilizzando un'app di autenticazione (come Google Authenticator) o la verifica via SMS per una maggiore sicurezza."
+      },
+      "q18": {
+        "question": "Cosa succede se un evento viene annullato?",
+        "answer": "Se un evento viene annullato, tutti i possessori del biglietto riceveranno automaticamente un rimborso completo. \nRiceverai una notifica via email con ulteriori istruzioni. \nNon è richiesta alcuna azione da parte tua."
+      },
+      "q19": {
+        "answer": "Se un evento viene riprogrammato, i tuoi biglietti saranno validi per la nuova data. \nRiceverai una notifica via email con i dettagli aggiornati. \nSe non puoi partecipare alla nuova data, puoi richiedere un rimborso.",
+        "question": "Cosa succede se un evento viene riprogrammato?"
+      },
+      "q20": {
+        "question": "Quali articoli sono proibiti durante gli eventi?",
+        "answer": "Gli articoli vietati variano in base alla sede e al tipo di evento. \nGli articoli comunemente vietati includono armi, cibo/bevande provenienti dall'esterno, fotocamere professionali e borse di grandi dimensioni. \nControlla la pagina dell'evento per restrizioni specifiche."
+      },
+      "q21": {
+        "question": "Posso ottenere un rimborso se non posso partecipare?",
+        "answer": "Generalmente non sono previsti rimborsi per la mancata partecipazione se non diversamente specificato nei termini dell'evento. \nTuttavia, la maggior parte dei biglietti può essere trasferita a qualcun altro. \nControlla la nostra politica di rimborso per maggiori dettagli."
+      }
+    },
+    "search": {
+      "placeholder": "Cerca risposte..."
+    },
+    "results": {
+      "found": "Trovato"
+    },
+    "noResults": {
+      "title": "Nessun risultato trovato",
+      "desc": "Non siamo riusciti a trovare nessuna risposta corrispondente alla tua ricerca. \nProva parole chiave diverse o contatta il nostro team di supporto."
+    },
+    "cta": {
+      "title": "Hai ancora domande?",
+      "subtitle": "Non trovi la risposta che cerchi? \nIl nostro team di supporto è qui per aiutarti.",
+      "btnContact": "Contatta l'assistenza",
+      "btnHow": "Scopri come funziona\""
+    }
   },
   "guidelines": {
-    "title": "Linee guida"
+    "title": "Linee guida",
+    "sections": {
+      "ticket": {
+        "title": "Linee guida per l'acquisto dei biglietti",
+        "item1": "Acquista i biglietti solo da fonti ufficiali",
+        "item2": "Verifica i dettagli dell'evento prima dell'acquisto",
+        "item3": "Mantieni il codice QR del tuo biglietto al sicuro",
+        "item4": "I biglietti non sono trasferibili se non diversamente specificato",
+        "item5": "Controlla la politica di rimborso prima dell'acquisto"
+      },
+      "attendee": {
+        "title": "Linee guida per i partecipanti",
+        "item1": "Arrivare almeno 30 minuti prima dell'inizio dell'evento",
+        "item2": "Porta con te un documento d'identità valido per gli eventi soggetti a limiti di età",
+        "item3": "Seguire le regole e i regolamenti della sede",
+        "item4": "Rispettare gli altri partecipanti e il personale",
+        "item5": "Nessun cibo o bevanda esterna se non consentito"
+      },
+      "safety": {
+        "title": "Sicurezza",
+        "item1": "Soggetto a controlli di sicurezza all'ingresso",
+        "item2": "Gli oggetti vietati verranno confiscati",
+        "item3": "Le uscite di emergenza sono chiaramente segnalate",
+        "item4": "Seguire le istruzioni del personale durante le emergenze",
+        "item5": "Segnala attività sospette alla sicurezza"
+      },
+      "timing": {
+        "title": "Tempistica dell'evento",
+        "item1": "Le porte aprono 60 minuti prima dell'inizio dell'evento",
+        "item2": "L'ingresso tardivo potrebbe non essere consentito",
+        "item3": "Il programma è soggetto a modifiche senza preavviso",
+        "item4": "Controlla gli orari aggiornati prima dell'evento",
+        "item5": "Nessun rientro dopo l'uscita"
+      }
+    },
+    "prohibited": {
+      "item1": "Armi o oggetti taglienti",
+      "item2": "Sostanze illegali",
+      "item3": "Fotocamere professionali",
+      "item4": "Dispositivi di registrazione",
+      "item5": "Borse o zaini grandi",
+      "item6": "Al di fuori dell'alcol",
+      "item7": "Puntatori laser",
+      "item8": "Bastoncini per selfie",
+      "item9": "Animali domestici (eccetto animali di servizio)",
+      "item10": "Fuochi d'artificio o esplosivi",
+      "title": "Articoli vietati"
+    },
+    "cta": {
+      "title": "Hai bisogno di aiuto?",
+      "subtitle": "Se hai domande sulle linee guida dell'evento, contatta il nostro team di supporto",
+      "btnContact": "Contatta l'assistenza",
+      "btnFaq": "Visita le domande frequenti"
+    }
   },
   "howitworks": {
-    "title": "Come funziona"
+    "title": "Come funziona",
+    "steps": {
+      "findEvent": {
+        "title": "Trova il tuo evento"
+      },
+      "chooseTickets": {
+        "title": "Scegli Biglietti",
+        "desc": "Seleziona il tipo e la quantità di biglietto che preferisci. \nDisponibili sconti per prenotazioni anticipate e pacchetti per gruppi."
+      },
+      "securePayment": {
+        "title": "Pagamento sicuro",
+        "desc": "Paga in modo sicuro utilizzando vari metodi di pagamento tra cui carte, mobile banking e portafogli digitali."
+      },
+      "getTickets": {
+        "title": "Ottieni i tuoi biglietti",
+        "desc": "Ricevi biglietti digitali istantaneamente via e-mail. \nAccedi ad essi in qualsiasi momento dalla dashboard del tuo account."
+      }
+    },
+    "features": {
+      "instant": {
+        "desc": "Ottieni i tuoi biglietti subito dopo il pagamento",
+        "title": "Conferma immediata"
+      },
+      "qrCodes": {
+        "title": "Codici QR sicuri",
+        "desc": "Ogni biglietto ha un codice QR univoco per l'ingresso"
+      },
+      "transfer": {
+        "title": "Trasferimento facile",
+        "desc": "Trasferisci facilmente i biglietti ad amici e familiari"
+      },
+      "support": {
+        "title": "Assistenza 24 ore su 24, 7 giorni su 7",
+        "desc": "Il nostro team di supporto è sempre qui per aiutarti"
+      },
+      "heading": "Perché scegliere Timro-Ticket?",
+      "subheading": "Rendiamo l'acquisto dei biglietti semplice, sicuro e senza intoppi"
+    }
   },
   "privacyPolicy": {
-    "title": "Politica sulla riservatezza"
+    "title": "Politica sulla riservatezza",
+    "sections": {
+      "date": "1 gennaio 2024",
+      "collect": {
+        "title": "Informazioni che raccogliamo",
+        "item1": "Informazioni personali (nome, email, numero di telefono, indirizzo",
+        "item2": "Informazioni di pagamento (elaborate in modo sicuro tramite fornitori di terze parti",
+        "item3": "Cronologia degli acquisti dei biglietti e preferenze degli eventi",
+        "item4": "Informazioni sul dispositivo e dati di utilizzo",
+        "item5": "Dati sulla posizione (con il tuo consenso)",
+        "item6": "Preferenze di comunicazione e feedback"
+      },
+      "use": {
+        "title": "Come utilizziamo le tue informazioni",
+        "item1": "Elaborare e consegnare gli acquisti di biglietti",
+        "item2": "Invia aggiornamenti sugli eventi e notifiche importanti",
+        "item3": "Migliorare i nostri servizi e l'esperienza dell'utente",
+        "item4": "Previeni le frodi e garantisci la sicurezza della piattaforma",
+        "item5": "",
+        "item6": ""
+      },
+      "share": {
+        "title": "Condivisione delle informazioni",
+        "item1": "Non vendiamo mai le tue informazioni personali a terzi",
+        "item2": "Condividi le informazioni necessarie con gli organizzatori dell'evento per la convalida del biglietto",
+        "item3": "Collabora con processori di pagamento e fornitori di servizi affidabili",
+        "item4": "Divulgare informazioni quando richiesto dalla legge",
+        "item5": "Condividi dati anonimi per analisi e miglioramenti"
+      },
+      "cookies": {
+        "title": "Biscotti",
+        "item1": "Utilizza i cookie per migliorare la tua esperienza di navigazione",
+        "item2": "Ricorda le tue preferenze e lo stato di accesso",
+        "item3": "Analizzare il traffico del sito web e il comportamento degli utenti",
+        "item4": "Puoi controllare le impostazioni dei cookie nel tuo browser",
+        "item5": "Cookie di terze parti per analisi e pubblicità"
+      }
+    },
+    "rights": {
+      "item1": "Accedi ai tuoi dati personali",
+      "item2": "Correggere le informazioni imprecise",
+      "item3": "Elimina il tuo account e i tuoi dati",
+      "item4": "Rinuncia alle comunicazioni di marketing",
+      "item5": "Portabilità dei dati",
+      "item6": "Limitare determinati trattamenti di dati",
+      "title": "I tuoi diritti sulla privacy",
+      "subtitle": "A seconda della tua posizione, potresti avere i seguenti diritti relativi ai tuoi dati personali:"
+    },
+    "lastUpdated": "Ultimo aggiornamento:",
+    "intro": {
+      "title": "Introduzione",
+      "p1": "Noi di Timro-Ticket ci impegniamo a proteggere la tua privacy e a garantire la sicurezza delle tue informazioni personali. \nLa presente Informativa sulla privacy spiega come raccogliamo, utilizziamo, divulghiamo e salvaguardamo le tue informazioni quando utilizzi la nostra piattaforma.",
+      "p2": "Utilizzando Timro-Ticket, acconsenti alle pratiche sui dati descritte in questa politica. \nTi preghiamo di leggere attentamente questa politica per comprendere le nostre opinioni e pratiche relative ai tuoi dati personali."
+    },
+    "security": {
+      "title": "Sicurezza dei dati",
+      "p1": "Implementiamo misure tecniche e organizzative adeguate per proteggere le tue informazioni personali da accessi non autorizzati, alterazioni, divulgazione o distruzione. \nQuesti includono:",
+      "item1": "Crittografia SSL/TLS per la trasmissione dei dati",
+      "item2": "Controlli di sicurezza regolari e valutazioni delle vulnerabilità",
+      "item3": "Controlli degli accessi e misure di autenticazione",
+      "item4": "Archiviazione sicura dei dati con crittografia a riposo"
+    }
   },
   "refundPolicy": {
-    "title": "Politica di rimborso"
+    "title": "Politica di rimborso",
+    "eligibility": {
+      "eligible": {
+        "status": "Idoneo al rimborso",
+        "cond1": "Annullamento dell'evento da parte dell'organizzatore",
+        "cond2": "Pagamento duplicato effettuato",
+        "cond3": "Errore tecnico durante l'acquisto",
+        "cond4": "Evento riprogrammato a una data diversa (entro 48 ore)"
+      },
+      "notEligible": {
+        "status": "Non idoneo al rimborso",
+        "cond1": "Cambiamento di opinione o motivi personali",
+        "cond2": "Arrivo tardivo o mancata presentazione",
+        "cond3": "Evento già partecipato",
+        "cond4": "Partecipazione parziale all'evento"
+      }
+    },
+    "process": {
+      "step1": {
+        "title": "Invia richiesta",
+        "desc": "Contatta l'assistenza all'interno della finestra di rimborso con i dettagli dell'ordine"
+      },
+      "step2": {
+        "title": "Verifica",
+        "desc": "Il nostro team verifica la tua richiesta rispetto alla nostra politica di rimborso"
+      },
+      "step3": {
+        "title": "Approvazione",
+        "desc": "Riceverai una conferma se il rimborso sarà approvato"
+      },
+      "step4": {
+        "title": "Elaborazione",
+        "desc": "Il rimborso viene elaborato entro 5-10 giorni lavorativi"
+      },
+      "title": "Processo di rimborso"
+    },
+    "notes": {
+      "title": "Note importanti",
+      "bullet1": "Le richieste di rimborso devono essere inviate entro 7 giorni dall'acquisto",
+      "bullet2": "Il tempo di elaborazione può variare a seconda del metodo di pagamento",
+      "bullet3": "Nella maggior parte dei casi le commissioni di servizio non sono rimborsabili",
+      "bullet4": "I rimborsi vengono emessi tramite il metodo di pagamento originale",
+      "bullet5": "Gli eventi gestiti dagli organizzatori potrebbero avere termini aggiuntivi"
+    },
+    "lastUpdated": "Ultimo aggiornamento:",
+    "intro": {
+      "title": "Introduzione",
+      "p1": "Noi di Timro-Ticket ci impegniamo a fornire la migliore esperienza di acquisto dei biglietti. \nQuesta politica di rimborso delinea le circostanze in cui possono essere emessi i rimborsi e il processo per richiederli.",
+      "p2": "Si prega di leggere attentamente questa politica prima di effettuare un acquisto. \nAcquistando i biglietti attraverso la nostra piattaforma, accetti i termini delineati di seguito."
+    },
+    "howToRequest": {
+      "title": "Come richiedere un rimborso",
+      "step1": {
+        "title": "Contatta l'assistenza",
+        "desc": "Inviaci un'e-mail a",
+        "descEnd": "con il tuo ID ordine"
+      },
+      "step2": {
+        "title": "Fornire dettagli",
+        "desc": "Includi il numero dell'ordine, il nome dell'evento e il motivo del rimborso"
+      },
+      "step3": {
+        "title": "Attendi la risposta",
+        "desc": "Il nostro team risponderà entro 2-3 giorni lavorativi"
+      }
+    },
+    "cta": {
+      "title": "Hai bisogno di assistenza?",
+      "subtitle": "Il nostro team di supporto è qui per aiutarti con qualsiasi domanda relativa al rimborso",
+      "btnContact": "Contatta l'assistenza",
+      "btnFaq": "Visita le domande frequenti"
+    }
   },
   "termsofservice": {
-    "title": "Termini di servizio"
+    "title": "Termini di servizio",
+    "account": {
+      "title": "Registrazione dell'account",
+      "step1": "Devi avere almeno 18 anni per creare un account",
+      "step2": "Fornire informazioni di registrazione accurate e complete",
+      "step3": "Sei responsabile del mantenimento della sicurezza dell'account",
+      "step4": "Avvisaci immediatamente in caso di accesso non autorizzato all'account",
+      "step5": "Ci riserviamo il diritto di sospendere o chiudere gli account"
+    },
+    "tickets": {
+      "title": "Acquisti di biglietti",
+      "step1": "Tutte le vendite dei biglietti sono definitive se non diversamente specificato",
+      "step2": "I biglietti non sono trasferibili se non diversamente specificato",
+      "step3": "I prezzi sono soggetti a modifiche senza preavviso",
+      "step4": "Ci riserviamo il diritto di limitare le quantità di biglietti",
+      "step5": "I biglietti contraffatti non verranno onorati"
+    },
+    "payments": {
+      "title": "Pagamenti",
+      "step1": "Tutti i pagamenti devono essere effettuati per intero al momento dell'acquisto",
+      "step2": "Potrebbero essere applicate commissioni di servizio e non sono rimborsabili",
+      "step3": "Utilizziamo processori di pagamento sicuri di terze parti",
+      "step4": "Gli storni di addebito possono comportare la sospensione dell'account",
+      "step5": "Per le transazioni internazionali potrebbero essere applicate commissioni di conversione valutaria"
+    },
+    "conduct": {
+      "title": "Condotta dell'utente",
+      "step1": "Non utilizzare la nostra piattaforma per attività fraudolente",
+      "step2": "Rispetta gli altri utenti e i partecipanti agli eventi",
+      "step3": "",
+      "step4": "Nessuno scraping automatizzato o data mining",
+      "step5": "Rispettare tutte le leggi e i regolamenti applicabili"
+    },
+    "cancellations": {
+      "title": "Cancellazioni di eventi",
+      "step1": "Gli organizzatori di eventi possono annullare o riprogrammare gli eventi",
+      "step2": "Verrai avvisato di cambiamenti significativi",
+      "step3": "I rimborsi vengono emessi secondo la nostra Politica di rimborso",
+      "step4": "Non siamo responsabili delle decisioni degli organizzatori",
+      "step5": "Eventi di forza maggiore possono compromettere la validità del biglietto"
+    },
+    "liability": {
+      "title": "Limitazione di responsabilità",
+      "step1": "Non siamo responsabili per problemi o infortuni legati all'evento",
+      "step2": "Responsabilità massima limitata al prezzo di acquisto del biglietto",
+      "step3": "Non garantiamo la qualità o la soddisfazione dell'evento",
+      "step4": "Non siamo responsabili per azioni di terzi",
+      "step5": "Alcune giurisdizioni potrebbero non consentire limitazioni di responsabilità"
+    },
+    "lastUpdated": "Ultimo aggiornamento:",
+    "acceptance": {
+      "title": "Accettazione dei Termini",
+      "p1": "Accedendo o utilizzando Timro-Ticket, accetti di essere vincolato dai presenti Termini di servizio e dalla nostra Informativa sulla privacy. \nSe non accetti questi termini, ti preghiamo di non utilizzare la nostra piattaforma.",
+      "p2": "Questi termini costituiscono un accordo legalmente vincolante tra te e Timro-Ticket per quanto riguarda l'utilizzo della nostra piattaforma di acquisto dei biglietti."
+    },
+    "intellectual": {
+      "title": "Proprietà intellettuale",
+      "p1": "Tutti i contenuti di Timro-Ticket, inclusi testo, grafica, loghi, icone, immagini e software, sono di proprietà di Timro-Ticket o dei suoi fornitori di contenuti e sono protetti dalle leggi sulla proprietà intellettuale.",
+      "p2": "Non è possibile riprodurre, distribuire, modificare, creare opere derivate, visualizzare pubblicamente o trasmettere alcun contenuto senza il nostro previo consenso scritto."
+    },
+    "termination": {
+      "title": "Terminazione",
+      "p1": "Possiamo chiudere o sospendere immediatamente il tuo account, senza preavviso o responsabilità, per qualsiasi motivo, incluso, senza limitazioni, in caso di violazione dei Termini.",
+      "p2": "In caso di risoluzione, il tuo diritto di utilizzare la piattaforma cesserà immediatamente. \nSe desideri chiudere il tuo account, puoi semplicemente smettere di utilizzare la piattaforma o contattare l'assistenza."
+    },
+    "changes": {
+      "title": "Modifiche ai Termini",
+      "p1": "Ci riserviamo il diritto di modificare o sostituire i presenti Termini in qualsiasi momento. \nSe una revisione è sostanziale, forniremo un preavviso di almeno 30 giorni prima che i nuovi termini entrino in vigore. \nContinuando ad accedere o a utilizzare la nostra piattaforma dopo l'entrata in vigore di tali revisioni, accetti di essere vincolato dai termini modificati."
+    },
+    "governing": {
+      "title": "Legge applicabile",
+      "p1": "I presenti Termini saranno regolati e interpretati in conformità con le leggi della giurisdizione in cui opera Timro-Ticket, indipendentemente dalle disposizioni sui conflitti di legge."
+    }
   },
   "eventdetail": {
     "title": "Dettagli evento"
+  },
+  "static": {
+    "cookiepolicy": {
+      "title": "Politica sui cookie",
+      "subtitle": "Scopri come utilizziamo i cookie e tecnologie simili per migliorare la tua esperienza."
+    },
+    "termsofservice": {
+      "title": "Termini di servizio",
+      "subtitle": "Si prega di leggere attentamente questi termini prima di utilizzare la nostra piattaforma."
+    },
+    "refundpolicy": {
+      "title": "Politica di rimborso",
+      "subtitle": "Comprendere i tuoi diritti e le nostre procedure di rimborso"
+    },
+    "privacypolicy": {
+      "title": "politica sulla riservatezza",
+      "subtitle": "La tua privacy è importante per noi. \nScopri come raccogliamo, utilizziamo e proteggiamo le tue informazioni."
+    },
+    "howitworks": {
+      "hero": {
+        "title": "Come funziona Timro-Ticket",
+        "subtitle": "Il tuo viaggio verso esperienze indimenticabili inizia qui. \nSegui questi semplici passaggi per ottenere i tuoi biglietti."
+      }
+    },
+    "guidelines": {
+      "hero": {
+        "title": "Linee guida per gli eventi",
+        "subtitle": "Informazioni importanti per garantire un'esperienza sicura e piacevole per tutti"
+      }
+    },
+    "faq": {
+      "hero": {
+        "title": "Domande frequenti",
+        "subtitle": "Trova le risposte alle domande più comuni su biglietti, pagamenti, eventi e altro ancora"
+      }
+    }
   }
 }

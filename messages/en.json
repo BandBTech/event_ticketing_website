@@ -464,7 +464,8 @@
       "fullName": "Full Name",
       "placeholder": {
         "fullName": "Enter your full name",
-        "email": "Enter your email"
+        "email": "Enter your email",
+        "fullname": "Enter your full name"
       },
       "email": "Email",
       "title": "Send us a message"
@@ -479,6 +480,14 @@
         "technicalSupport": "Technical Support",
         "partner": "Partner/Business Inquiry",
         "others": "Others"
+      },
+      "placeholder": "Select an issue",
+      "value": {
+        "v1": "Ticket Booking Issue",
+        "v2": "Event Publishing",
+        "v3": "Payments & Refund",
+        "v4": "Technical Support",
+        "v5": "Partner/Business Inquiry"
       }
     },
     "message": {
@@ -501,7 +510,10 @@
     "followUs": "Follow us",
     "letsConnect": "Let's Connect",
     "connectDescription": "Reach out for collaborations, support, or general inquiries.",
-    "pageTitle": "Contact"
+    "pageTitle": "Contact",
+    "placeholder": {
+      "message": "Write your message..."
+    }
   },
   "guestPurchase": {
     "token": {
@@ -794,27 +806,565 @@
     "title": "Security"
   },
   "cookiesPolicy": {
-    "title": "Cookies-Policy"
+    "title": "Cookies-Policy",
+    "essential": {
+      "name": "Essential Cookies",
+      "desc": "Required for the website to function properly"
+    },
+    "examples": {
+      "auth": "Authentication",
+      "security": "Security",
+      "cart": "Shopping cart",
+      "session": "Session management",
+      "lang": "Language preferences",
+      "region": "Region selection",
+      "ui": "User interface customization",
+      "login": "Remember login details",
+      "views": "Page views",
+      "clicks": "Click tracking",
+      "traffic": "Traffic sources",
+      "behavior": "User behavior analysis",
+      "ads": "Targeted ads",
+      "campaigns": "Campaign tracking",
+      "retargeting": "Retargeting",
+      "social": "Social media integration",
+      "label": "Examples:"
+    },
+    "functional": {
+      "name": "Functional Cookies",
+      "desc": "Enhance functionality and personalization"
+    },
+    "analytics": {
+      "name": "Analytics Cookies",
+      "desc": "Help us understand how visitors interact with our site"
+    },
+    "marketing": {
+      "name": "Marketing Cookies",
+      "desc": "Used to deliver relevant advertisements"
+    },
+    "chrome": {
+      "step1": "Click the three dots menu in the top-right corner",
+      "step2": "Go to Settings > Privacy and Security",
+      "step3": "Click on 'Cookies and other site data'",
+      "step4": "Adjust your cookie preferences"
+    },
+    "firefox": {
+      "step1": "Click the menu button (three lines) in the top-right",
+      "step2": "Select Options > Privacy & Security",
+      "step3": "Go to 'Cookies and Site Data' section",
+      "step4": "Choose your preferred settings"
+    },
+    "safari": {
+      "step1": "Go to Safari > Preferences",
+      "step2": "Click on the Privacy tab",
+      "step3": "Adjust 'Cookies and website data' settings",
+      "step4": "Choose your preferred option"
+    },
+    "edge": {
+      "step1": "Click the three dots menu in the top-right",
+      "step2": "Go to Settings > Cookies and site permissions",
+      "step3": "Select 'Manage and delete cookies and site data'",
+      "step4": "Adjust your cookie settings"
+    },
+    "lastUpdated": "Last Updated:",
+    "whatAreCookies": {
+      "title": "What Are Cookies?",
+      "p1": "Cookies are small text files that are placed on your computer or mobile device when you visit a website. They are widely used to make websites work more efficiently and provide valuable information to website owners.",
+      "p2": "This Cookie Policy explains what cookies are, how we use them, and how you can control your cookie preferences."
+    },
+    "types": {
+      "title": "Types of Cookie We Use"
+    },
+    "status": {
+      "active": "Always Active",
+      "optional": "Optional"
+    },
+    "manage": {
+      "title": "How to Manage Cookies",
+      "intro": "You can control and manage cookies in various ways. Most browsers allow you to:",
+      "bullet1": "View and delete cookies stored on your device",
+      "bullet2": "Block third-party cookies",
+      "bullet3": "Set preferences for specific websites",
+      "bullet4": "Clear all cookies when closing the browser",
+      "browsersTitle": "Browser-Specific Instructions"
+    },
+    "thirdParty": {
+      "title": "Third-Party Cookies",
+      "p1": "We may also use cookies from third-party services such as Google Analytics, social media platforms, and payment processors. These cookies are set by the third parties and are subject to their own privacy policies.",
+      "p2": "While we do not have direct control over these cookies, you can manage them through your browser settings or the third-party's privacy preferences."
+    },
+    "consent": {
+      "title": "Cookie Consent",
+      "p1": "When you first visit our website, you will see a cookie banner asking for your consent to place non-essential cookies on your device. You can change your cookie preferences at any time by:",
+      "bullet1": "Clicking the cookie settings link in our footer",
+      "bullet2": "Adjusting your browser settings",
+      "bullet3": "Using third-party opt-out tools"
+    },
+    "updates": {
+      "title": "Updates to This Policy",
+      "p1": "We may update this Cookie Policy from time to time to reflect changes in technology, legal requirements, or our practices. We will notify you of any material changes by posting the new policy on this page and updating the 'Last Updated' date."
+    }
   },
   "faq": {
-    "title": "faq"
+    "title": "faq",
+    "categories": {
+      "all": "All Questions",
+      "tickets": "Tickets & Booking",
+      "payments": "Payments & Refunds",
+      "account": "Account & Profile",
+      "security": "Security & Privacy",
+      "events": "Events & Venues"
+    },
+    "questions": {
+      "q1": {
+        "question": "How do I purchase tickets?",
+        "answer": "To purchase tickets, simply browse events on our platform, select your desired event, choose the number of tickets, and proceed to checkout. You'll receive digital tickets via email after successful payment."
+      },
+      "q3": {
+        "question": "Can I transfer my tickets to someone else?",
+        "answer": "Yes, most tickets are transferable. You can transfer tickets through your account dashboard by selecting the ticket and clicking 'Transfer'. The recipient will receive an email with instructions to claim the ticket."
+      },
+      "q4": {
+        "question": "What if I lose my ticket QR code?",
+        "answer": "Don't worry! You can always access your tickets from your account dashboard. Simply log in, go to 'My Tickets', and you'll find all your QR codes there. You can also request a resend of the confirmation email."
+      },
+      "q2": {
+        "question": "Where can I find my tickets after purchase?",
+        "answer": "Your tickets are available in two places: 1) Your email inbox (check spam folder if not found), and 2) Your account dashboard under 'My Tickets' section. You can also download them from the order confirmation page."
+      },
+      "q5": {
+        "question": "Is there a limit on how many tickets I can buy?",
+        "answer": "Ticket limits vary by event. Some events may have a maximum purchase limit per person to ensure fair distribution. This information is displayed on the event page before purchase."
+      },
+      "q6": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept various payment methods including credit/debit cards (Visa, MasterCard, American Express), mobile banking, digital wallets (Google Pay, Apple Pay), and bank transfers. Available methods vary by region."
+      },
+      "q7": {
+        "question": "Is my payment information secure?",
+        "answer": "Absolutely! We use industry-standard encryption and never store your full payment details. All transactions are processed through secure, PCI-compliant payment gateways."
+      },
+      "q8": {
+        "question": "How do I request a refund?",
+        "answer": "To request a refund, contact our support team within the refund window with your order ID. Refunds are processed according to our Refund Policy. Visit our Refund Policy page for detailed information."
+      },
+      "q9": {
+        "question": "How long does it take to process a refund?",
+        "answer": "Refunds typically take 5-10 business days to process, depending on your payment method and bank. You'll receive a confirmation email once the refund is initiated."
+      },
+      "q10": {
+        "question": "What are the service fees for?",
+        "answer": "Service fees cover platform maintenance, customer support, secure payment processing, and feature development. These fees are clearly displayed before checkout."
+      },
+      "q11": {
+        "question": "How do I create an account?",
+        "answer": "Click the 'Sign Up' button on our homepage, enter your email address, create a password, and follow the verification steps. You can also sign up using Google or Facebook for faster registration."
+      },
+      "q12": {
+        "answer": "Click 'Forgot Password' on the login page, enter your registered email address, and we'll send you a password reset link. Follow the instructions in the email to create a new password.",
+        "question": "I forgot my password. How do I reset it?"
+      },
+      "q13": {
+        "question": "How do I update my profile information?",
+        "answer": "Log into your account, go to 'Profile Settings', and update your information. You can change your name, email address, phone number, and notification preferences."
+      },
+      "q14": {
+        "question": "Can I delete my account?",
+        "answer": "Yes, you can delete your account by contacting our support team. Please note that this action is permanent and will remove all your data, including ticket purchase history."
+      },
+      "q15": {
+        "question": "How do you protect my personal information?",
+        "answer": "We use advanced security measures including encryption, secure servers, and regular security audits. We never share your personal information with third parties without your consent."
+      },
+      "q16": {
+        "question": "What should I do if I receive a suspicious email about my tickets?",
+        "answer": "Do not click any links or provide personal information. Forward the suspicious email to our support team and delete it immediately. Always access your tickets through our official website."
+      },
+      "q17": {
+        "question": "How do I enable two-factor authentication?",
+        "answer": "Go to Account Settings > Security > Two-Factor Authentication. You can enable it using an authenticator app (like Google Authenticator) or SMS verification for added security."
+      },
+      "q18": {
+        "question": "What happens if an event is canceled?",
+        "answer": "If an event is canceled, all ticket holders will receive a full refund automatically. You'll be notified via email with further instructions. No action is required on your part."
+      },
+      "q19": {
+        "question": "What if an event is rescheduled?",
+        "answer": "If an event is rescheduled, your tickets will be valid for the new date. You'll receive an email notification with the updated details. If you cannot attend the new date, you can request a refund."
+      },
+      "q20": {
+        "question": "What items are prohibited at events?",
+        "answer": "Prohibited items vary by venue and event type. Common prohibited items include weapons, outside food/drinks, professional cameras, and large bags. Check the event page for specific restrictions."
+      },
+      "q21": {
+        "question": "Can I get a refund if I can't attend?",
+        "answer": "Refunds for non-attendance are generally not provided unless specified in the event terms. However, most tickets can be transferred to someone else. Check our Refund Policy for more details."
+      }
+    },
+    "search": {
+      "placeholder": "Search for answers..."
+    },
+    "results": {
+      "found": "Found"
+    },
+    "noResults": {
+      "title": "No results found",
+      "desc": "We couldn't find any answers matching your search. Try different keywords or contact our support team."
+    },
+    "cta": {
+      "title": "Still have questions?",
+      "subtitle": "Can't find the answer you're looking for? Our support team is here to help.",
+      "btnContact": "Contact Support",
+      "btnHow": "Learn How It Works\""
+    }
   },
   "guidelines": {
-    "title": "Guidelines"
+    "title": "Guidelines",
+    "sections": {
+      "ticket": {
+        "title": "Ticket Purchase Guidelines",
+        "item1": "Purchase tickets only from official sources",
+        "item2": "Verify event details before purchasing",
+        "item3": "Keep your ticket QR code secure",
+        "item4": "Tickets are non-transferable unless specified",
+        "item5": "Check refund policy before purchase"
+      },
+      "attendee": {
+        "title": "Attendee Guidelines",
+        "item1": "Arrive at least 30 minutes before event start",
+        "item2": "Carry valid ID for age-restricted events",
+        "item3": "Follow venue rules and regulations",
+        "item4": "Respect other attendees and staff",
+        "item5": "No outside food or beverages unless permitted"
+      },
+      "safety": {
+        "title": "Safety & Security",
+        "item1": "Subject to security screening at entry",
+        "item2": "Prohibited items will be confiscated",
+        "item3": "Emergency exits are clearly marked",
+        "item4": "Follow staff instructions during emergencies",
+        "item5": "Report suspicious activity to security"
+      },
+      "timing": {
+        "title": "Event Timing",
+        "item1": "Doors open 60 minutes before event start",
+        "item2": "Late entry may not be permitted",
+        "item3": "Schedule subject to change without notice",
+        "item4": "Check for updated timings before event",
+        "item5": "No re-entry after exit"
+      }
+    },
+    "prohibited": {
+      "item1": "Weapons or sharp objects",
+      "item2": "Illegal substances",
+      "item3": "Professional cameras",
+      "item4": "Recording devices",
+      "item5": "Large bags or backpacks",
+      "item6": "Outside alcohol",
+      "item7": "Laser pointers",
+      "item8": "Selfie sticks",
+      "item9": "Pets (except service animals)",
+      "item10": "Fireworks or explosives",
+      "title": "Prohibited Items"
+    },
+    "cta": {
+      "title": "Need Help?",
+      "subtitle": "If you have any questions about event guidelines, please contact our support team",
+      "btnContact": "Contact Support",
+      "btnFaq": "Visit FAQ"
+    }
   },
   "howitworks": {
-    "title": "How-It-Works"
+    "title": "How-It-Works",
+    "steps": {
+      "findEvent": {
+        "title": "Find Your Event",
+        "desc": "Browse through thousands of events happening near you or online. Use filters to find exactly what you're looking for."
+      },
+      "chooseTickets": {
+        "title": "Choose Tickets",
+        "desc": "Select your preferred ticket type and quantity. Early bird discounts and group packages available."
+      },
+      "securePayment": {
+        "title": "Secure Payment",
+        "desc": "Pay securely using various payment methods including cards, mobile banking, and digital wallets."
+      },
+      "getTickets": {
+        "title": "Get Your Tickets",
+        "desc": "Receive digital tickets instantly via email. Access them anytime from your account dashboard."
+      }
+    },
+    "features": {
+      "instant": {
+        "desc": "Get your tickets immediately after payment",
+        "title": "Instant Confirmation"
+      },
+      "qrCodes": {
+        "title": "Secure QR Codes",
+        "desc": "Each ticket has a unique QR code for entry"
+      },
+      "transfer": {
+        "title": "Easy Transfer",
+        "desc": "Transfer tickets to friends and family easily"
+      },
+      "support": {
+        "title": "24/7 Support",
+        "desc": "Our support team is always here to help"
+      },
+      "heading": "Why Choose Timro-Ticket?",
+      "subheading": "We make ticket buying simple, secure, and seamless"
+    }
   },
   "privacyPolicy": {
-    "title": "Privacy-Policy"
+    "title": "Privacy-Policy",
+    "sections": {
+      "date": "January 1, 2024",
+      "collect": {
+        "title": "Information We Collect",
+        "item1": "Personal information (name, email, phone number, address",
+        "item2": "Payment information (processed securely through third-party providers",
+        "item3": "Ticket purchase history and event preferences",
+        "item4": "Device information and usage data",
+        "item5": "Location data (with your consent)",
+        "item6": "Communication preferences and feedback"
+      },
+      "use": {
+        "title": "How We Use Your Information",
+        "item1": "Process and deliver ticket purchases",
+        "item2": "Send event updates and important notifications",
+        "item3": "Improve our services and user experience",
+        "item4": "Prevent fraud and ensure platform security",
+        "item5": "Personalize event recommendations",
+        "item6": "Comply with legal obligations"
+      },
+      "share": {
+        "title": "Information Sharing",
+        "item1": "We never sell your personal information to third parties",
+        "item2": "Share necessary information with event organizers for ticket validation",
+        "item3": "Work with trusted payment processors and service providers",
+        "item4": "Disclose information when required by law",
+        "item5": "Share anonymized data for analytics and improvements"
+      },
+      "cookies": {
+        "title": "Cookies & Tracking",
+        "item1": "Use cookies to enhance your browsing experience",
+        "item2": "Remember your preferences and login status",
+        "item3": "Analyze website traffic and user behavior",
+        "item4": "You can control cookie settings in your browser",
+        "item5": "Third-party cookies for analytics and advertising"
+      }
+    },
+    "rights": {
+      "item1": "Access your personal data",
+      "item2": "Correct inaccurate information",
+      "item3": "Delete your account and data",
+      "item4": "Opt-out of marketing communications",
+      "item5": "Data portability",
+      "item6": "Restrict certain data processing",
+      "title": "Your Privacy Rights",
+      "subtitle": "Depending on your location, you may have the following rights regarding your personal data:"
+    },
+    "lastUpdated": "Last Updated:",
+    "intro": {
+      "title": "Introduction",
+      "p1": "At Timro-Ticket, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.",
+      "p2": "By using Timro-Ticket, you consent to the data practices described in this policy. Please read this policy carefully to understand our views and practices regarding your personal data."
+    },
+    "security": {
+      "title": "Data Security",
+      "p1": "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These include:",
+      "item1": "SSL/TLS encryption for data transmission",
+      "item2": "Regular security audits and vulnerability assessments",
+      "item3": "Access controls and authentication measures",
+      "item4": "Secure data storage with encryption at rest"
+    }
   },
   "refundPolicy": {
-    "title": "Refund-Policy"
+    "title": "Refund Policy",
+    "eligibility": {
+      "eligible": {
+        "status": "Eligible for Refund",
+        "cond1": "Event cancellation by organizer",
+        "cond2": "Duplicate payment made",
+        "cond3": "Technical error during purchase",
+        "cond4": "Event rescheduled to different date (within 48 hours)"
+      },
+      "notEligible": {
+        "status": "Not Eligible for Refund",
+        "cond1": "Change of mind or personal reasons",
+        "cond2": "Late arrival or no-show",
+        "cond3": "Event already attended",
+        "cond4": "Partial event attendance"
+      }
+    },
+    "process": {
+      "step1": {
+        "title": "Submit Request",
+        "desc": "Contact support within the refund window with your order details"
+      },
+      "step2": {
+        "title": "Verification",
+        "desc": "Our team verifies your request against our refund policy"
+      },
+      "step3": {
+        "desc": "You'll receive confirmation if your refund is approved",
+        "title": "Approval"
+      },
+      "step4": {
+        "title": "Processing",
+        "desc": "Refund is processed within 5-10 business days"
+      },
+      "title": "Refund Process"
+    },
+    "notes": {
+      "title": "Important Notes",
+      "bullet1": "Refund requests must be submitted within 7 days of purchase",
+      "bullet2": "Processing time may vary depending on your payment method",
+      "bullet3": "Service fees are non-refundable in most cases",
+      "bullet4": "Refunds are issued to the original payment method",
+      "bullet5": "Organizer-led events may have additional terms"
+    },
+    "lastUpdated": "Last Updated:",
+    "intro": {
+      "title": "Introduction",
+      "p1": "At Timro-Ticket, we strive to provide the best ticket purchasing experience. This refund policy outlines the circumstances under which refunds may be issued and the process for requesting them.",
+      "p2": "Please read this policy carefully before making a purchase. By purchasing tickets through our platform, you agree to the terms outlined below."
+    },
+    "howToRequest": {
+      "title": "How to Request a Refund",
+      "step1": {
+        "title": "Contact Support",
+        "desc": "Email us at",
+        "descEnd": "with your order ID"
+      },
+      "step2": {
+        "title": "Provide Details",
+        "desc": "Include your order number, event name, and reason for refund"
+      },
+      "step3": {
+        "title": "Wait for Response",
+        "desc": "Our team will respond within 2-3 business days"
+      }
+    },
+    "cta": {
+      "title": "Need Assistance?",
+      "subtitle": "Our support team is here to help with any refund-related questions",
+      "btnContact": "Contact Support",
+      "btnFaq": "Visit FAQ"
+    }
   },
   "termsofservice": {
-    "title": "Terms-Of-Service"
+    "title": "Terms of Service",
+    "account": {
+      "title": "Account Registration",
+      "step1": "You must be at least 18 years old to create an account",
+      "step2": "Provide accurate and complete registration information",
+      "step3": "You are responsible for maintaining account security",
+      "step4": "Notify us immediately of unauthorized account access",
+      "step5": "We reserve the right to suspend or terminate accounts"
+    },
+    "tickets": {
+      "title": "Ticket Purchases",
+      "step1": "All ticket sales are final unless otherwise stated",
+      "step2": "Tickets are non-transferable unless specified",
+      "step3": "Prices are subject to change without notice",
+      "step4": "We reserve the right to limit ticket quantities",
+      "step5": "Counterfeit tickets will not be honored"
+    },
+    "payments": {
+      "title": "Payments & Fees",
+      "step1": "All payments must be made in full at time of purchase",
+      "step2": "Service fees may apply and are non-refundable",
+      "step3": "We use secure third-party payment processors",
+      "step4": "Chargebacks may result in account suspension",
+      "step5": "Currency conversion fees may apply for international transactions"
+    },
+    "conduct": {
+      "title": "User Conduct",
+      "step1": "Do not use our platform for fraudulent activities",
+      "step2": "Respect other users and event attendees",
+      "step3": "Do not attempt to bypass security measures",
+      "step4": "No automated scraping or data mining",
+      "step5": "Comply with all applicable laws and regulations"
+    },
+    "cancellations": {
+      "title": "Event Cancellations & Changes",
+      "step1": "Event organizers may cancel or reschedule events",
+      "step2": "You will be notified of significant changes",
+      "step3": "Refunds are issued according to our Refund Policy",
+      "step4": "We are not responsible for organizer decisions",
+      "step5": "Force majeure events may affect ticket validity"
+    },
+    "liability": {
+      "title": "Limitation of Liability",
+      "step1": "We are not liable for event-related issues or injuries",
+      "step2": "Maximum liability limited to ticket purchase price",
+      "step3": "We do not guarantee event quality or satisfaction",
+      "step4": "We are not responsible for third-party actions",
+      "step5": "Some jurisdictions may not allow liability limitations"
+    },
+    "lastUpdated": "Last Updated:",
+    "acceptance": {
+      "title": "Acceptance of Terms",
+      "p1": "By accessing or using Timro-Ticket, you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, please do not use our platform.",
+      "p2": "These terms constitute a legally binding agreement between you and Timro-Ticket regarding your use of our ticket purchasing platform."
+    },
+    "intellectual": {
+      "title": "Intellectual Property",
+      "p1": "All content on Timro-Ticket, including text, graphics, logos, icons, images, and software, is the property of Timro-Ticket or its content suppliers and is protected by intellectual property laws.",
+      "p2": "You may not reproduce, distribute, modify, create derivative works of, publicly display, or transmit any content without our prior written consent."
+    },
+    "termination": {
+      "title": "Termination",
+      "p1": "We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.",
+      "p2": "Upon termination, your right to use the platform will cease immediately. If you wish to terminate your account, you may simply discontinue using the platform or contact support."
+    },
+    "changes": {
+      "title": "Changes to Terms",
+      "p1": "We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our platform after those revisions become effective, you agree to be bound by the revised terms."
+    },
+    "governing": {
+      "title": "Governing Law",
+      "p1": "These Terms shall be governed and construed in accordance with the laws of the jurisdiction where Timro-Ticket operates, without regard to its conflict of law provisions."
+    }
   },
   "eventdetail": {
     "title": "EventDetail"
+  },
+  "static": {
+    "cookiepolicy": {
+      "title": "Cookie Policy",
+      "subtitle": "Learn how we use cookies and similar technologies to improve your experience."
+    },
+    "termsofservice": {
+      "title": "Terms of Service",
+      "subtitle": "Please read these terms carefully before using our platform."
+    },
+    "refundpolicy": {
+      "title": "Refund Policy",
+      "subtitle": "Understanding your rights and our refund procedures"
+    },
+    "privacypolicy": {
+      "title": "Privacy Policy",
+      "subtitle": "Your privacy matters to us. Learn how we collect, use, and protect your information."
+    },
+    "howitworks": {
+      "hero": {
+        "title": "How Timro-Ticket Works",
+        "subtitle": "Your journey to unforgettable experiences starts here. Follow these simple steps to get your tickets."
+      }
+    },
+    "guidelines": {
+      "hero": {
+        "title": "Event Guidelines",
+        "subtitle": "Important information to ensure a safe and enjoyable experience for everyone"
+      }
+    },
+    "faq": {
+      "hero": {
+        "title": "Frequently Asked Questions",
+        "subtitle": "Find answers to common questions about tickets, payments, events, and more"
+      }
+    }
   }
 }

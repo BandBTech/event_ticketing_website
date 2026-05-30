@@ -5,10 +5,8 @@ import {
   UsersIcon, 
   ClockIcon, 
   TicketIcon, 
-  CurrencyDollarIcon,
   PhoneIcon,
-  EnvelopeSimpleIcon,
-  MapPinIcon
+  EnvelopeSimpleIcon
 } from "@phosphor-icons/react";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -21,75 +19,75 @@ export default function EventGuidelinesPage() {
   const guidelines = [
     {
       icon: TicketIcon,
-      title: "Ticket Purchase Guidelines",
+      title: t("guidelines.sections.ticket.title", "Ticket Purchase Guidelines"),
       items: [
-        "Purchase tickets only from official sources",
-        "Verify event details before purchasing",
-        "Keep your ticket QR code secure",
-        "Tickets are non-transferable unless specified",
-        "Check refund policy before purchase"
+        t("guidelines.sections.ticket.item1", "Purchase tickets only from official sources"),
+        t("guidelines.sections.ticket.item2", "Verify event details before purchasing"),
+        t("guidelines.sections.ticket.item3", "Keep your ticket QR code secure"),
+        t("guidelines.sections.ticket.item4", "Tickets are non-transferable unless specified"),
+        t("guidelines.sections.ticket.item5", "Check refund policy before purchase")
       ]
     },
     {
       icon: UsersIcon,
-      title: "Attendee Guidelines",
+      title: t("guidelines.sections.attendee.title", "Attendee Guidelines"),
       items: [
-        "Arrive at least 30 minutes before event start",
-        "Carry valid ID for age-restricted events",
-        "Follow venue rules and regulations",
-        "Respect other attendees and staff",
-        "No outside food or beverages unless permitted"
+        t("guidelines.sections.attendee.item1", "Arrive at least 30 minutes before event start"),
+        t("guidelines.sections.attendee.item2", "Carry valid ID for age-restricted events"),
+        t("guidelines.sections.attendee.item3", "Follow venue rules and regulations"),
+        t("guidelines.sections.attendee.item4", "Respect other attendees and staff"),
+        t("guidelines.sections.attendee.item5", "No outside food or beverages unless permitted")
       ]
     },
     {
       icon: ShieldCheckIcon,
-      title: "Safety & Security",
+      title: t("guidelines.sections.safety.title", "Safety & Security"),
       items: [
-        "Subject to security screening at entry",
-        "Prohibited items will be confiscated",
-        "Emergency exits are clearly marked",
-        "Follow staff instructions during emergencies",
-        "Report suspicious activity to security"
+        t("guidelines.sections.safety.item1", "Subject to security screening at entry"),
+        t("guidelines.sections.safety.item2", "Prohibited items will be confiscated"),
+        t("guidelines.sections.safety.item3", "Emergency exits are clearly marked"),
+        t("guidelines.sections.safety.item4", "Follow staff instructions during emergencies"),
+        t("guidelines.sections.safety.item5", "Report suspicious activity to security")
       ]
     },
     {
       icon: ClockIcon,
-      title: "Event Timing",
+      title: t("guidelines.sections.timing.title", "Event Timing"),
       items: [
-        "Doors open 60 minutes before event start",
-        "Late entry may not be permitted",
-        "Schedule subject to change without notice",
-        "Check for updated timings before event",
-        "No re-entry after exit"
+        t("guidelines.sections.timing.item1", "Doors open 60 minutes before event start"),
+        t("guidelines.sections.timing.item2", "Late entry may not be permitted"),
+        t("guidelines.sections.timing.item3", "Schedule subject to change without notice"),
+        t("guidelines.sections.timing.item4", "Check for updated timings before event"),
+        t("guidelines.sections.timing.item5", "No re-entry after exit")
       ]
     }
   ];
 
   const prohibitedItems = [
-    "Weapons or sharp objects",
-    "Illegal substances",
-    "Professional cameras",
-    "Recording devices",
-    "Large bags or backpacks",
-    "Outside alcohol",
-    "Laser pointers",
-    "Selfie sticks",
-    "Pets (except service animals)",
-    "Fireworks or explosives"
+    t("guidelines.prohibited.item1", "Weapons or sharp objects"),
+    t("guidelines.prohibited.item2", "Illegal substances"),
+    t("guidelines.prohibited.item3", "Professional cameras"),
+    t("guidelines.prohibited.item4", "Recording devices"),
+    t("guidelines.prohibited.item5", "Large bags or backpacks"),
+    t("guidelines.prohibited.item6", "Outside alcohol"),
+    t("guidelines.prohibited.item7", "Laser pointers"),
+    t("guidelines.prohibited.item8", "Selfie sticks"),
+    t("guidelines.prohibited.item9", "Pets (except service animals)"),
+    t("guidelines.prohibited.item10", "Fireworks or explosives")
   ];
 
   return (
     <>
-    <PageTitle title={t("guidelines.title","Guidelines")} />
+    <PageTitle title={t("guidelines.title", "Guidelines")} />
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 font-poppins">
-            Event Guidelines
+            {t("static.guidelines.hero.title", "Event Guidelines")}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Important information to ensure a safe and enjoyable experience for everyone
+            {t("static.guidelines.hero.subtitle", "Important information to ensure a safe and enjoyable experience for everyone")}
           </p>
         </div>
       </section>
@@ -125,7 +123,7 @@ export default function EventGuidelinesPage() {
           <div className="bg-gradient-to-r from-red-50 to-orange-50 p-6 border-b">
             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
               <span className="w-2 h-2 bg-red-500 rounded-full" />
-              Prohibited Items
+              {t("guidelines.prohibited.title", "Prohibited Items")}
             </h2>
           </div>
           <div className="p-6">
@@ -142,18 +140,20 @@ export default function EventGuidelinesPage() {
 
         {/* Contact Section */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-xl p-8 text-white text-center">
-          <h2 className="text-2xl font-bold mb-4">Need Help?</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            {t("guidelines.cta.title", "Need Help?")}
+          </h2>
           <p className="text-blue-100 mb-6">
-            If you have any questions about event guidelines, please contact our support team
+            {t("guidelines.cta.subtitle", "If you have any questions about event guidelines, please contact our support team")}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a href="/contact" className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-shadow">
               <EnvelopeSimpleIcon size={20} />
-              Contact Support
+              {t("guidelines.cta.btnContact", "Contact Support")}
             </a>
             <a href="/static/faq" className="inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-400 transition-colors">
               <PhoneIcon size={20} />
-              Visit FAQ
+              {t("guidelines.cta.btnFaq", "Visit FAQ")}
             </a>
           </div>
         </div>
