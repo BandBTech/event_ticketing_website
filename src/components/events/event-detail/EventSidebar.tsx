@@ -29,7 +29,10 @@ export const EventSidebar = ({
 
   const renderSalesAction = () => {
     const isCancelPending = event.status?.toLowerCase() === "cancel_pending";
+    const isCancelled =
+      event.is_cancelled || event.status?.toLowerCase() === "cancelled";
     const isLive = event.status?.toLowerCase() === "live";
+    const isCompleted = event.status?.toLowerCase() === "completed";
     const isPaused =
       event.sales_status === "paused" || event.status?.toLowerCase() === "hold";
     const isStopped = event.sales_status === "stopped";
@@ -53,6 +56,29 @@ export const EventSidebar = ({
               {t(
                 "eventDetails.button.cancellationPendingNote",
                 "This event has a cancellation request pending admin approval. Ticket purchases are unavailable.",
+              )}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (isCancelled) {
+      return (
+        <div className="bg-red-50 border flex items-start gap-2 border-red-100 rounded-xl p-4 animate-in fade-in slide-in-from-top-2">
+          <InfoIcon
+            size={24}
+            weight="duotone"
+            className="text-red-500 shrink-0"
+          />
+          <div className="text-red-800">
+            <span className="font-bold">
+              {t("eventDetails.button.eventCancelled", "Event Cancelled")}
+            </span>
+            <p className="text-sm text-red-700 mt-0.5">
+              {t(
+                "eventDetails.button.eventCancelledNote",
+                "This event has been cancelled. Ticket sales are unavailable.",
               )}
             </p>
           </div>
@@ -141,6 +167,29 @@ export const EventSidebar = ({
       );
     }
 
+    if (isCompleted) {
+      return (
+        <div className="bg-gray-100 border flex items-start gap-2 border-gray-200 rounded-xl p-4 animate-in fade-in slide-in-from-top-2">
+          <InfoIcon
+            size={24}
+            weight="duotone"
+            className="text-gray-500 shrink-0"
+          />
+          <div className="text-gray-800">
+            <span className="font-bold leading-8">
+              {t("eventDetails.button.eventEnded", "Event Ended")}
+            </span>
+            <p className="text-sm text-gray-700">
+              {t(
+                "eventDetails.button.eventEndedNote",
+                "This event has ended. Ticket sales are no longer available.",
+              )}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     const now = new Date().toISOString();
     const hasActiveTickets = event.ticketTypes.some(
       (t) => t.sales_start <= now && t.sales_end >= now && t.isActive,
@@ -181,9 +230,23 @@ export const EventSidebar = ({
       const lowestAvailablePrice = Math.min(
         ...availableTickets.map((t) => t.price),
       );
+      const lowestRemaining = Math.min(
+        ...availableTickets.map((t) => t.available),
+      );
 
       return (
         <>
+          {lowestRemaining > 0 && lowestRemaining < 10 && (
+            <div className="mb-3">
+              <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
+                {t(
+                  "events.onlyTicketsLeft",
+                  `Only ${lowestRemaining} left!`,
+                  { count: lowestRemaining },
+                )}
+              </span>
+            </div>
+          )}
           <div className="mb-4">
             <p className="text-sm text-gray-500 font-medium">
               {t("events.startingFrom", "Tickets starting from")}

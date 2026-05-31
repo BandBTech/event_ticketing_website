@@ -127,7 +127,7 @@ const mapTier = (tier: ApiEventTier): TicketType => ({
   gstPercentage: tier.gst ?? 0,
   sales_start: tier.sales_start,
   sales_end: tier.sales_end,
-  available: tier.available,
+  available: tier.available - tier.sold,
   isActive: tier.is_active ?? true,
 });
 

@@ -9,6 +9,7 @@ import * as z from "zod";
 import {
   ArrowLeftIcon,
   CalendarIcon,
+  CalendarX,
   EnvelopeIcon,
   MapPinIcon,
   MinusIcon,
@@ -333,6 +334,55 @@ function GuestPurchaseContent() {
 
   if (!eventData) {
     return <div>Event not found</div>;
+  }
+
+  const isCancelled =
+    eventData.is_cancelled ||
+    eventData.status?.toLowerCase() === "cancelled";
+  const isRestricted = ["pending", "rejected", "cancel_pending"].includes(
+    eventData.status?.toLowerCase(),
+  );
+  const isCompleted = eventData.status?.toLowerCase() === "completed";
+  const isSalesUnavailable =
+    eventData.sales_status === "stopped" ||
+    eventData.sales_status === "paused";
+
+  if (isCancelled || isRestricted || isCompleted || isSalesUnavailable) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
+            <CalendarX size={40} weight="duotone" className="text-gray-400" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {t("ticketPurchase.notAvailable", "Tickets Not Available")}
+          </h1>
+          <p className="text-gray-500">
+            {isCompleted
+              ? t(
+                  "ticketPurchase.eventEnded",
+                  "This event has ended. Ticket sales are no longer available.",
+                )
+              : isCancelled
+                ? t(
+                    "ticketPurchase.eventCancelled",
+                    "This event has been cancelled. Ticket sales are unavailable.",
+                  )
+                : t(
+                    "ticketPurchase.ticketsNotAvailable",
+                    "Ticket sales for this event are currently unavailable.",
+                  )}
+          </p>
+          <Button
+            onClick={() => router.push(`/events/detail/?id=${eventIdFromUrl}`)}
+            variant="outline"
+            className="mt-4"
+          >
+            {t("ticketPurchase.backToEvent", "Back to Event")}
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (

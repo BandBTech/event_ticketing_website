@@ -16,8 +16,6 @@ import { PageTitle } from "../pagetitle/PageTitle";
 
 const RESTRICTED_STATUSES = [
   "pending",
-  "live",
-  "completed",
   "rejected",
   "cancelled",
   "cancel_pending",
@@ -78,14 +76,14 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     return <EventNotFound reason="api_error" />;
   }
 
-  // const isRestricted =
-  //   RESTRICTED_STATUSES.includes(event.status?.toLowerCase()) ||
-  //   event.sales_status === "stopped" ||
-  //   event.is_cancelled;
+  const isRestricted =
+    RESTRICTED_STATUSES.includes(event.status?.toLowerCase()) ||
+    event.sales_status === "stopped" ||
+    event.is_cancelled;
 
-  // if (isRestricted) {
-  //   return <EventNotFound reason="restricted_status" />;
-  // }
+  if (isRestricted) {
+    return <EventNotFound reason="restricted_status" />;
+  }
 
   return (
     <div className="min-h-screen relative">
