@@ -66,7 +66,9 @@
     "billing": "Fatturazione",
     "notifications": "Notifica",
     "logout": "Esci",
-    "transactions": "Transazioni"
+    "transactions": "Transazioni",
+    "refund": "I miei rimborsi",
+    "security": "Sicurezza"
   },
   "hero": {
     "badge": "La Piattaforma Eventi Premier del Nepal",
@@ -292,6 +294,19 @@
       "transactions": "Transazioni",
       "refunds": "I miei rimborsi",
       "refundDesc": "Visualizza i tuoi rimborsi"
+    },
+    "profile": {
+      "title": "Impostazioni del profilo",
+      "subtitle": "Gestisci le tue informazioni personali",
+      "editButton": "Modifica profilo",
+      "firstName": "Nome di battesimo",
+      "lastName": "Cognome",
+      "email": "Indirizzo e-mail",
+      "emailNote": "L'e-mail non può essere modificata",
+      "phone": "Numero di telefono",
+      "saving": "Risparmio...",
+      "saveButton": "Salva modifiche",
+      "cancelButton": "Cancellare"
     }
   },
   "about": {
@@ -609,14 +624,44 @@
         "button": {
           "clearall": "Cancella tutti i filtri",
           "loadmore": "Caricamento di più...",
-          "load": "Carica più transazioni"
+          "load": "Carica più transazioni",
+          "cleardates": "Cancella date",
+          "clear": "Chiaro",
+          "clearfilter": "Cancella filtri",
+          "back": "Torniamo alle Transazioni",
+          "backhistory": "Ritorno alla storia"
         },
         "showing": "Mostrare",
         "of": "Di",
         "trans": "Transazioni",
-        "loading": "Caricamento transazioni..."
+        "loading": "Caricamento transazioni...",
+        "filtertitle": "Filtra transazioni",
+        "filtertransactiondate": "Seleziona l'intervallo di date per filtrare le transazioni",
+        "selectDate": "Intervallo selezionato:",
+        "applyfilter": "Applica filtri",
+        "notransaction": "Nessuna transazione trovata",
+        "nodetails": "Dettagli della transazione non trovati.",
+        "detail": "Dettagli della transazione",
+        "buyer": {
+          "title": "Acquirente",
+          "name": "",
+          "email": "E-mail",
+          "EventName": "Nome dell'evento",
+          "quantity": "Quantità",
+          "gateway": "Porta",
+          "created": "Creato a",
+          "total": "Importo totale",
+          "invoice": "Visualizza fattura",
+          "payment": "Pagamento"
+        }
+      },
+      "tranasction": {
+        "button": {
+          "clearallfilter": "Cancella tutti i filtri"
+        }
       }
-    }
+    },
+    "emailverified": "Verificato"
   },
   "cancelTicket": {
     "button": {
@@ -1240,5 +1285,11 @@
         "subtitle": "Trova le risposte alle domande più comuni su biglietti, pagamenti, eventi e altro ancora"
       }
     }
+  },
+  "passwordRequirement": {
+    "text1": "Deve contenere almeno 8 caratteri",
+    "text2": "Deve contenere almeno una lettera maiuscola e una minuscola",
+    "text3": "Deve contenere almeno un carattere speciale",
+    "text4": "Deve contenere almeno una cifra numerica"
   }
 }

@@ -92,9 +92,13 @@ export default function BillingPage() {
     isFetching,
   } = useUserTransactions(page, limit, apiFilters, debouncedSearch);
 
-  const { data: detailData, isLoading: isDetailLoading } = useTransactionDetail(
+  const { data: detailData, isLoading: isDetailLoading 
+    ,isFetching: isDetailFetching,
+    isPending: isDetailPending,
+  } = useTransactionDetail(
     selectedId ?? undefined,
   );
+
 
   const transactions = response?.data?.transactions || [];
   const pagination = response?.data?.pagination;
@@ -154,12 +158,12 @@ export default function BillingPage() {
   };
 const getClearButtonText = () => {
   if (dateRange?.from || dateRange?.to) {
-    return "Clear Dates";
+    return t("setting.menu.transaction.button.cleardates","Clear Dates");
   }
   if (hasActiveFilters) {
-    return "Clear Filters";
+    return t("setting.menu.transaction.button.clearfilter","Clear Filters");
   }
-  return "Clear";
+  return t("setting.menu.transaction.button.clear","Clear");
 };
 
 const getClearButtonIcon = () => {
@@ -245,7 +249,7 @@ const getClearButtonIcon = () => {
         {selectedId ? (
           <TransactionDetail
             data={detailData}
-            isLoading={isDetailLoading}
+            isLoading={isDetailLoading} 
             onBack={() => router.push(pathname)}
           />
         ) : (
@@ -295,7 +299,7 @@ const getClearButtonIcon = () => {
                     )}
                   >
                     <Filter className="h-4 w-4" />
-                    <span className="text-sm font-medium">Filters</span>
+                    <span className="text-sm font-medium">{t("setting.menu.transaction.filter","Filters")}</span>
                     {/*  {hasActiveFilters && (
                       <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-blue-500 rounded-full">
                         {getActiveFiltersCount()}
@@ -313,10 +317,10 @@ const getClearButtonIcon = () => {
                 >
                   <div className="p-1 sm:p-4 border-b">
                     <h3 className="font-semibold text-gray-900">
-                      Filter Transactions
+                      {t("setting.menu.transaction.filtertitle","Filter Transactions")}
                     </h3>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      Select date range to filter transactions
+                      {t("setting.menu.transaction.filtertransactiondate","Select date range to filter transactions")}
                     </p>
                   </div>
 
@@ -386,7 +390,7 @@ const getClearButtonIcon = () => {
                     {(dateRange?.from || dateRange?.to) && (
                       <div className="mt-3 p-2 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-600">Selected range:</span>
+                          <span className="text-gray-600">{t("setting.menu.transaction.selectDate","Selected range:")}</span>
                           {/* <button
                             onClick={handleDateRangeClear}
                             className="text-red-500 hover:text-red-600 text-xs"
@@ -435,7 +439,7 @@ const getClearButtonIcon = () => {
                       onClick={handleDateRangeApply}
                       className="order-1 sm:order-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                      Apply Filters
+                      {t("setting.menu.transaction.applyfilter","Apply Filters")}
                     </button>
                   </div>
                 </PopoverContent>
@@ -448,7 +452,7 @@ const getClearButtonIcon = () => {
                   className="flex items-center justify-center gap-2 px-4 h-[42px] bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all font-medium text-red-600 text-sm active:scale-95"
                 >
                   <Eraser className="h-4 w-4" />
-                  <span className="hidden sm:inline">Clear All</span>
+                  <span className="hidden sm:inline">{t("setting.menu.transaction.button.clearall","Clear All")}</span>
                 </button>
               )}
             </div>
@@ -513,14 +517,14 @@ const getClearButtonIcon = () => {
               <div className="text-center py-20 px-4">
                 <TicketIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-gray-900 font-semibold">
-                  No transactions found
+                  {t("setting.menu.transaction.notransaction","No transactions found")}
                 </h3>
                 {hasActiveFilters && (
                   <button
                     onClick={handleClearAll}
                     className="text-blue-600 text-sm mt-2 hover:underline"
                   >
-                    Clear all filters
+                    {t("setting.menu.tranasction.button.clearallfilter","Clear all filters")}
                   </button>
                 )}
               </div>
@@ -576,7 +580,7 @@ const getClearButtonIcon = () => {
 
                       <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-0 pt-2 sm:pt-0 border-gray-50">
                         <p className="text-base sm:text-lg font-black text-gray-900">
-                          ${tx.price?.toLocaleString()}
+                          {tx.price?.toLocaleString()}
                         </p>
                         <span
                           className={cn(

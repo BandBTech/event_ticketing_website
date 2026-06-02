@@ -822,7 +822,7 @@ export default function TicketsPage() {
                 <div className="relative shrink-0 w-48 h-48">
                   <Image
                     src={
-                      detailTickets?.event.imageUrl || "/placeholder-event.jpg"
+                      detailTickets?.event?.imageUrl || "/placeholder-event.jpg"
                     }
                     fill
                     alt="Event"
@@ -844,11 +844,13 @@ export default function TicketsPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h2 className="text-2xl font-bold text-gray-900 leading-tight break-words w-full">
-                        {detailTickets.event.title}
+                        {detailTickets.event?.title || "Loading Event..."}
                       </h2>
                     </div>
 
                     {/* Date & Time Row */}
+                    {detailTickets.event && (
+            <>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-700">
                       <div className="flex items-center gap-1.5 font-medium">
                         <Calendar className="h-4 w-4 text-primary" />
@@ -877,9 +879,12 @@ export default function TicketsPage() {
                         {formatTime(detailTickets.event.endDate)}
                       </div>
                     </div>
+                    </>
+          )}
                   </div>
 
                   {/* Location Info */}
+                  {detailTickets.event && (
                   <div className="space-y-1 min-w-0 w-full">
                     <p className="text-sm font-semibold flex items-start gap-1.5 text-gray-800 min-w-0 w-full">
                       <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -891,6 +896,7 @@ export default function TicketsPage() {
                       {detailTickets.event.address}
                     </p>
                   </div>
+                  )}
 
                   {/* Metadata: Order ID & Status */}
                   <div className="pt-2 flex flex-wrap gap-2 border-t border-primary/10">

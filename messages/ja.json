@@ -66,7 +66,9 @@
     "billing": "請求する",
     "notifications": "通知",
     "logout": "ログアウト",
-    "transactions": "トランザクション"
+    "transactions": "トランザクション",
+    "refund": "私の返金",
+    "security": "安全"
   },
   "hero": {
     "badge": "ネパール最高のイベントプラットフォーム",
@@ -294,6 +296,19 @@
       "transactions": "トランザクション",
       "refunds": "私の返金",
       "refundDesc": "払い戻しを確認する"
+    },
+    "profile": {
+      "title": "プロファイル設定",
+      "subtitle": "個人情報の管理",
+      "editButton": "プロフィールの編集",
+      "firstName": "ファーストネーム",
+      "lastName": "苗字",
+      "email": "電子メールアドレス",
+      "emailNote": "メールアドレスは変更できません",
+      "phone": "電話番号",
+      "saving": "保存中...",
+      "saveButton": "変更を保存",
+      "cancelButton": "キャンセル"
     }
   },
   "about": {
@@ -611,14 +626,44 @@
         "button": {
           "clearall": "すべてのフィルターをクリア",
           "loadmore": "さらに読み込み中...",
-          "load": "さらにトランザクションをロードする"
+          "load": "さらにトランザクションをロードする",
+          "cleardates": "日付をクリアする",
+          "clear": "クリア",
+          "clearfilter": "フィルターをクリアする",
+          "back": "取引に戻る",
+          "backhistory": "歴史に戻る"
         },
         "showing": "表示中",
         "of": "の",
         "trans": "取引",
-        "loading": "トランザクションをロード中..."
+        "loading": "トランザクションをロード中...",
+        "filtertitle": "トランザクションのフィルタリング",
+        "filtertransactiondate": "トランザクションをフィルタリングする日付範囲を選択してください",
+        "selectDate": "選択範囲:",
+        "applyfilter": "フィルターを適用する",
+        "notransaction": "トランザクションが見つかりませんでした",
+        "nodetails": "トランザクションの詳細が見つかりません。",
+        "detail": "取引の詳細",
+        "buyer": {
+          "title": "買い手",
+          "name": "ユーザー名",
+          "email": "電子メール",
+          "EventName": "イベント名",
+          "quantity": "量",
+          "gateway": "ゲートウェイ",
+          "created": "作成日",
+          "total": "合計金額",
+          "invoice": "請求書の表示",
+          "payment": "支払い"
+        }
+      },
+      "tranasction": {
+        "button": {
+          "clearallfilter": "すべてのフィルターをクリア"
+        }
       }
-    }
+    },
+    "emailverified": "確認済み"
   },
   "cancelTicket": {
     "button": {
@@ -1243,5 +1288,11 @@
         "subtitle": "チケット、支払い、イベントなどに関するよくある質問への回答を見つけます。"
       }
     }
+  },
+  "passwordRequirement": {
+    "text1": "少なくとも 8 文字で構成する必要があります",
+    "text2": "少なくとも 1 つの大文字と 1 つの小文字を含める必要があります",
+    "text3": "少なくとも 1 つの特殊文字を含める必要があります",
+    "text4": "少なくとも 1 桁の数字が含まれている必要があります"
   }
 }

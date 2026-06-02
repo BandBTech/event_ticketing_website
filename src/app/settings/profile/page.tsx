@@ -220,7 +220,7 @@ export default function ProfileSettingsPage() {
               <p className="text-sm text-gray-600">{user?.email}</p>
               {user?.isEmailVerified && (
                 <span className="inline-flex items-center px-2 py-0.5 mt-2 text-xs font-medium text-green-700 bg-green-100 rounded-full">
-                  ✓ Verified
+                  ✓ {t("setting.emailverified","Verified")}
                 </span>
               )}
             </div>

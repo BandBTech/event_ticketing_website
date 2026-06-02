@@ -67,7 +67,9 @@
     "myTickets": "My Tickets",
     "billing": "Billing",
     "notifications": "Notification",
-    "transactions": "Transactions"
+    "transactions": "Transactions",
+    "refund": "My Refunds",
+    "security": "Security"
   },
   "profile": {
     "title": "My Profile",
@@ -412,6 +414,19 @@
       "transactions": "Transactions",
       "refunds": "My Refunds",
       "refundDesc": "View your refunds"
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "subtitle": "Manage your personal information",
+      "editButton": "Edit Profile",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "emailNote": "Email cannot be changed",
+      "phone": "Phone Number",
+      "saving": "Saving...",
+      "saveButton": "Save Changes",
+      "cancelButton": "Cancel"
     }
   },
   "about": {
@@ -734,14 +749,44 @@
         "button": {
           "clearall": "Clear all filters",
           "loadmore": "Loading more...",
-          "load": "Load More Transactions"
+          "load": "Load More Transactions",
+          "cleardates": "Clear Dates",
+          "clear": "Clear",
+          "clearfilter": "Clear Filters",
+          "back": "Back to Transactions",
+          "backhistory": "Back to History"
         },
         "showing": "Showing",
         "of": "of",
         "trans": "Transactions",
-        "loading": "Loading transactions..."
+        "loading": "Loading transactions...",
+        "filtertitle": "Filter Transactions",
+        "filtertransactiondate": "Select date range to filter transactions",
+        "selectDate": "Selected range:",
+        "applyfilter": "Apply Filters",
+        "notransaction": "No transactions found",
+        "nodetails": "Transaction details not found.",
+        "detail": "Transaction Detail",
+        "buyer": {
+          "title": "Buyer",
+          "name": "User Name",
+          "email": "Email",
+          "EventName": "Event Name",
+          "quantity": "Quantity",
+          "gateway": "Gateway",
+          "created": "Created At",
+          "total": "Total Amount",
+          "invoice": "View Invoice",
+          "payment": "Payment"
+        }
+      },
+      "tranasction": {
+        "button": {
+          "clearallfilter": "Clear all filters"
+        }
       }
-    }
+    },
+    "emailverified": "Verified"
   },
   "cancelTicket": {
     "button": {
@@ -1366,5 +1411,11 @@
         "subtitle": "Find answers to common questions about tickets, payments, events, and more"
       }
     }
+  },
+  "passwordRequirement": {
+    "text1": "Must consist of at least 8 characters",
+    "text2": "Must contain at least one uppercase and one lowercase letter",
+    "text3": "Must contain at least one special character",
+    "text4": "Must contain at least one numeric digit"
   }
 }
