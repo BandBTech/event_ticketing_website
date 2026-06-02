@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -46,8 +46,10 @@ import {
 } from "@/hooks/useTickets";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useAuthStore } from "@/store/authStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { UnsavedChangesDialog } from "@/components/modals/UnsavedChangesDialog";
 
 import { formatCurrency, formatEventDateTime } from "@/lib/utils";
 import { createValidationHelpers } from "@/lib/validation";
@@ -171,6 +173,14 @@ function GuestPurchaseContent() {
   const totalQuantity = useMemo(() => {
     return Object.values(tierQuantities).reduce((sum, qty) => sum + qty, 0);
   }, [tierQuantities]);
+
+  const hasUnsavedChanges = useCallback(
+    () => totalQuantity > 0 && !isRedirectingToPayment,
+    [totalQuantity, isRedirectingToPayment],
+  );
+
+  const { showLeaveDialog, setShowLeaveDialog, confirmLeave, cancelLeave, handleNavigateAway } =
+    useNavigationGuard({ hasUnsavedChanges });
 
   // Compute selected tiers (those with quantity > 0) for order summary and payload
   const selectedTiers = useMemo(() => {
@@ -346,8 +356,9 @@ function GuestPurchaseContent() {
   const isSalesUnavailable =
     eventData.sales_status === "stopped" ||
     eventData.sales_status === "paused";
+  const isNotOnSale = eventData.status?.toLowerCase() !== "on_sale";
 
-  if (isCancelled || isRestricted || isCompleted || isSalesUnavailable) {
+  if (isCancelled || isRestricted || isCompleted || isSalesUnavailable || isNotOnSale) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
         <div className="text-center space-y-4 max-w-md">
@@ -394,7 +405,7 @@ function GuestPurchaseContent() {
           <Button
             onClick={() => {
               if (step === 2) setStep(1);
-              else router.push(`/events/detail/?id=${eventIdFromUrl}`);
+              else handleNavigateAway(() => router.push(`/events/detail/?id=${eventIdFromUrl}`));
             }}
             variant="ghost"
             className="hover:bg-white! hover:shadow-sm transition-shadow"
@@ -1060,6 +1071,13 @@ function GuestPurchaseContent() {
         open={isLoginModalOpen}
         onOpenChange={setIsLoginModalOpen}
         onSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      <UnsavedChangesDialog
+        open={showLeaveDialog}
+        onOpenChange={setShowLeaveDialog}
+        onConfirm={confirmLeave}
+        onCancel={cancelLeave}
       />
     </div>
   );
