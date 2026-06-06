@@ -174,7 +174,7 @@ export default function ProfileSettingsPage() {
   const lastNameValue = watch("lastName");
   return (
     <>
-      <PageTitle title="My Profile" />
+      <PageTitle title={t("profile.title", "My Profile")} />
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">

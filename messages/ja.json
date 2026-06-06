@@ -219,7 +219,28 @@
       "modalDescription": "購入を続行するには、アカウントにサインインしてください。"
     },
     "signup": {
+      "title": "登録",
+      "subtitle": "参加者として",
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "メールアドレス",
+      "phone": "連絡先番号",
+      "password": "パスワード",
+      "confirmPassword": "パスワードの確認",
+      "firstNamePlaceholder": "ジョン",
+      "lastNamePlaceholder": "ドウ",
+      "emailPlaceholder": "メールアドレスを入力してください",
       "phonePlaceholder": "有効な連絡先番号を入力してください",
+      "passwordPlaceholder": "••••••••••••",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "signupButton": "始める",
+      "signingUp": "アカウントを作成中...",
+      "haveAccount": "既にアカウントをお持ちですか？",
+      "loginHere": "参加者としてログイン",
+      "termsPrefix": "続行することにより、当社の利用規約とプライバシーポリシーを読み、理解したことに同意したことになります。",
+      "terms": "利用規約",
+      "termsAnd": "および",
+      "privacy": "プライバシーポリシー",
       "validation": {
         "phoneRequired": "連絡先番号は必須です",
         "firstNameRequired": "名は必須です",
@@ -234,11 +255,35 @@
         "passwordMismatch": "パスワードが一致しません。"
       },
       "setPassword": "安全なパスワードを作成する",
-      "phone": "連絡先番号",
       "loginToSkip": "詳細の入力をスキップするにはログインしてください。"
     },
     "resetPassword": {
-      "subtitle": "新しいパスワードを設定してください"
+      "title": "パスワードリセット",
+      "subtitle": "新しいパスワードを設定してください",
+      "back": "戻る",
+      "otp": "確認コード",
+      "otpPlaceholder": "コードを入力してください",
+      "newPassword": "新しいパスワード",
+      "newPasswordPlaceholder": "••••••••••••",
+      "confirmPassword": "パスワードの確認",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "resetButton": "パスワードをリセット",
+      "resetting": "リセット中...",
+      "backToLogin": "ログインに戻る",
+      "successMessage": "パスワードのリセットに成功しました！ログインにリダイレクトしています...",
+      "validation": {
+        "otpRequired": "確認コードが必要です",
+        "otpInvalid": "無効な確認コードです",
+        "passwordTooShort": "パスワードは少なくとも8文字である必要があります",
+        "passwordTooLong": "パスワードが長すぎます",
+        "passwordUppercase": "大文字を含める必要があります",
+        "passwordLowercase": "小文字を含める必要があります",
+        "passwordNumber": "数字を含める必要があります",
+        "passwordMismatch": "パスワードが一致しません"
+      },
+      "errors": {
+        "resetFailed": "パスワードのリセットに失敗しました。もう一度お試しください。"
+      }
     },
     "verifyOTP": {
       "otpValidity": "コードは 10 分後に自動的に期限切れになります。",
@@ -249,6 +294,8 @@
       "verifying": "確認中...",
       "didntReceive": "コードを受け取っていませんか?",
       "resend": "再送信",
+      "resending": "再送信中...",
+      "resendIn": "{seconds}秒後に再送信",
       "checkSpam": "メールが見つからない場合は迷惑メールフォルダを確認してください"
     },
     "toast": {
@@ -611,7 +658,8 @@
         "button": {
           "back": "チケットリストに戻る"
         },
-        "notickets": "チケットが見つかりません"
+        "notickets": "チケットが見つかりません",
+        "viewTickets": "チケットを表示"
       },
       "transaction": {
         "search": "トランザクションの検索",

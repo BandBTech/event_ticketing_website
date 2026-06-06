@@ -218,7 +218,28 @@
       "modalDescription": "Accedi al tuo account per continuare con l'acquisto."
     },
     "signup": {
+      "title": "Registrati",
+      "subtitle": "come Partecipante",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "email": "Email",
+      "phone": "Numero di contatto",
+      "password": "Password",
+      "confirmPassword": "Conferma password",
+      "firstNamePlaceholder": "John",
+      "lastNamePlaceholder": "Doe",
+      "emailPlaceholder": "Inserisci l'indirizzo email",
       "phonePlaceholder": "Inserisci un numero di contatto valido",
+      "passwordPlaceholder": "••••••••••••",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "signupButton": "Inizia",
+      "signingUp": "Creazione dell'account...",
+      "haveAccount": "Hai già un account?",
+      "loginHere": "Accedi come Partecipante.",
+      "termsPrefix": "Proseguendo, acconsenti di aver letto e compreso i nostri",
+      "terms": "termini e condizioni",
+      "termsAnd": "e la",
+      "privacy": "politica sulla privacy",
       "validation": {
         "phoneRequired": "Il numero di contatto è obbligatorio",
         "firstNameRequired": "Il nome è obbligatorio",
@@ -233,11 +254,35 @@
         "passwordMismatch": "Le password non corrispondono."
       },
       "setPassword": "Crea una password sicura per",
-      "phone": "Numero di contatto",
       "loginToSkip": "Accedi per evitare di inserire i tuoi dati."
     },
     "resetPassword": {
-      "subtitle": "Imposta una nuova password per"
+      "title": "Reimposta Password",
+      "subtitle": "Imposta una nuova password per",
+      "back": "Indietro",
+      "otp": "Codice di verifica",
+      "otpPlaceholder": "Inserisci il codice",
+      "newPassword": "Nuova password",
+      "newPasswordPlaceholder": "••••••••••••",
+      "confirmPassword": "Conferma password",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "resetButton": "Reimposta password",
+      "resetting": "Reimpostazione...",
+      "backToLogin": "Torna al login",
+      "successMessage": "Reimpostazione della password riuscita! Reindirizzamento al login...",
+      "validation": {
+        "otpRequired": "Il codice OTP è richiesto",
+        "otpInvalid": "Codice OTP non valido",
+        "passwordTooShort": "La password deve contenere almeno 8 caratteri",
+        "passwordTooLong": "La password è troppo lunga",
+        "passwordUppercase": "Deve contenere una lettera maiuscola",
+        "passwordLowercase": "Deve contenere una lettera minuscola",
+        "passwordNumber": "Deve contenere un numero",
+        "passwordMismatch": "Le password non corrispondono"
+      },
+      "errors": {
+        "resetFailed": "Impossibile reimpostare la password. Per favore riprova."
+      }
     },
     "verifyOTP": {
       "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti.",
@@ -248,6 +293,8 @@
       "verifying": "Verifica...",
       "didntReceive": "Non hai ricevuto il codice?",
       "resend": "Invia nuovamente",
+      "resending": "Invio in corso...",
+      "resendIn": "Invia di nuovo in {seconds}s",
       "checkSpam": "Controlla la cartella spam se non vedi l'e-mail"
     },
     "toast": {
@@ -609,7 +656,8 @@
         "button": {
           "back": "Torna all'elenco dei biglietti"
         },
-        "notickets": "Nessun biglietto trovato"
+        "notickets": "Nessun biglietto trovato",
+        "viewTickets": "Visualizza Biglietti"
       },
       "transaction": {
         "search": "Cerca Transazioni",

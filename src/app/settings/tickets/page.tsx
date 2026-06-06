@@ -774,7 +774,7 @@ export default function TicketsPage() {
                                 handleViewTickets(order);
                               }}
                             >
-                              View Tickets
+                              {t("setting.menu.tickets.viewTickets", "View Tickets")}
                             </Button>
                           </div>
                         </div>

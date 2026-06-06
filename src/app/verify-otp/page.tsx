@@ -261,7 +261,7 @@ function VerifyOTPContent() {
                     {isResending
                       ? t("auth.verifyOTP.resending", "Resending...")
                       : resendTimer > 0
-                        ? `Resend in ${resendTimer}s`
+                        ? t("auth.verifyOTP.resendIn", "Resend in {seconds}s").replace("{seconds}", String(resendTimer))
                         : t("auth.verifyOTP.resend", "Resend")}
                   </button>
                 </p>
