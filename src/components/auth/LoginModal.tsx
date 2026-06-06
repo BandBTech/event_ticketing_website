@@ -81,7 +81,7 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
           email: data.email,
           password: data.password,
         },
-        data.rememberMe
+        data.rememberMe,
       );
 
       toast.success("auth.toast.loginSuccess", "Welcome back!");
@@ -96,13 +96,13 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
           case "NETWORK_ERROR":
             toast.error(
               "auth.toast.networkError",
-              "Network error. Please check your connection."
+              "Network error. Please check your connection.",
             );
             break;
           default:
             toast.error(
               "auth.toast.loginError",
-              error.message || "Login failed. Please try again."
+              error.message || "Login failed. Please try again.",
             );
         }
       } else {
@@ -119,7 +119,10 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
             {t("auth.login.title", "Log In")}
           </DialogTitle>
           <DialogDescription>
-            {t("auth.login.modalDescription", "Sign in to your account to continue with your purchase.")}
+            {t(
+              "auth.login.modalDescription",
+              "Sign in to your account to continue with your purchase.",
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -137,17 +140,24 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
                 className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center"
                 aria-hidden="true"
               >
-                <EnvelopeIcon weight="duotone" size={20} className="text-gray-500" />
+                <EnvelopeIcon
+                  weight="duotone"
+                  size={20}
+                  className="text-gray-500"
+                />
               </div>
               <Input
                 id="modal-email"
                 type="email"
                 autoComplete="email"
                 disabled={isLoading}
-                placeholder={t("auth.login.emailPlaceholder", "Enter your email")}
+                placeholder={t(
+                  "auth.login.emailPlaceholder",
+                  "Enter your email",
+                )}
                 className={cn(
                   "h-11 pl-10 pr-4",
-                  errors.email && "border-destructive"
+                  errors.email && "border-destructive",
                 )}
                 {...register("email")}
               />
@@ -179,10 +189,13 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 disabled={isLoading}
-                placeholder={t("auth.login.passwordPlaceholder", "Enter your password")}
+                placeholder={t(
+                  "auth.login.passwordPlaceholder",
+                  "Enter your password",
+                )}
                 className={cn(
                   "h-11 pl-10 pr-12",
-                  errors.password && "border-destructive"
+                  errors.password && "border-destructive",
                 )}
                 {...register("password")}
               />
@@ -208,7 +221,7 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
           </div>
 
           {/* Remember Me & Forgot Password */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap sm:items-center justify-between">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="modal-remember-me"
@@ -243,10 +256,12 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
               "bg-blue-600 hover:bg-blue-700 text-white",
               "shadow-md hover:shadow-lg",
               "disabled:opacity-50 disabled:cursor-not-allowed",
-              isLoading && "animate-pulse"
+              isLoading && "animate-pulse",
             )}
           >
-            {isLoading ? t("auth.login.signingIn", "Signing in...") : t("auth.login.loginButton", "Log In")}
+            {isLoading
+              ? t("auth.login.signingIn", "Signing in...")
+              : t("auth.login.loginButton", "Log In")}
           </Button>
 
           {/* Sign Up Link */}
