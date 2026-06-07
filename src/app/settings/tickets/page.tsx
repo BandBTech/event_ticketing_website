@@ -994,6 +994,8 @@ export default function TicketsPage() {
                                     "bg-purple-100 text-purple-700",
                                   ticket.status === "pending_refund" &&
                                     "bg-amber-100 text-amber-700",
+                                  ticket.status === "partially_refunded" &&
+                                    "bg-amber-100 text-amber-700",
                                   ticket.status === "refunded" &&
                                     "bg-indigo-100 text-indigo-700",
                                   ticket.status === "checked_in" &&
@@ -1005,6 +1007,8 @@ export default function TicketsPage() {
                                 {ticket.status === "used" && "Used"}
                                 {ticket.status === "pending_refund" &&
                                   "Pending Refund"}
+                                {ticket.status === "partially_refunded" &&
+                                  "Partially Refunded"}
                                 {ticket.status === "refunded" && "Refunded"}
                                 {ticket.status === "canceled" && "Canceled"}
                                 {ticket.status === "checked_in" && "Checked In"}
