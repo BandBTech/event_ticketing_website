@@ -66,8 +66,8 @@ export default function RefundsPage() {
       <div className="space-y-4 px-2 sm:px-0">
         {!selectedId && (
           <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 font-poppins">Refunds</h1>
-            <p className="text-xs sm:text-sm text-gray-600">Track and manage your requests.</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 font-poppins">{t("refunds.title","Refunds")}</h1>
+            <p className="text-xs sm:text-sm text-gray-600">{t("refunds.subtitile","Track and manage your requests.")}</p>
           </div>
         )}
 
@@ -121,7 +121,7 @@ export default function RefundsPage() {
                 ) : refunds.length === 0 ? (
                   <div className="text-center py-20 text-gray-400">
                     <Undo2 className="mx-auto h-12 w-12 mb-4 opacity-20" />
-                    <p>No refunds found.</p>
+                    <p>{t("refunds.nofound","No refunds found.")}</p>
                   </div>
                 ) : (
                   refunds.map((refund) => (

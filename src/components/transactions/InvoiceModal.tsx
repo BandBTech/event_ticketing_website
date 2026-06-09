@@ -189,8 +189,10 @@ export function InvoiceModal({
               <PDFDownloadLink
                 document={
                   <InvoicePDF
+                  
                     invoiceInfo={invoiceInfo}
                     transaction={transaction}
+                    
                   />
                 }
                 fileName={`invoice-${invoiceInfo.invoice_number}.pdf`}

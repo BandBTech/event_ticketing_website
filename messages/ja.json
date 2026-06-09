@@ -52,7 +52,9 @@
         "stay": "ページにとどまる",
         "leave": "ページを離れる"
       }
-    }
+    },
+    "results": "結果",
+    "rowsPerPage": "ページあたりの行数"
   },
   "navigation": {
     "events": "イベント",
@@ -299,7 +301,11 @@
       "checkSpam": "メールが見つからない場合は迷惑メールフォルダを確認してください"
     },
     "toast": {
-      "passwordChangedLogin": "新しいパスワードでログインしてください。"
+      "passwordChangedLogin": "新しいパスワードでログインしてください。",
+      "loginSuccess": "おかえり！",
+      "networkError": "ネットワークエラー。\n接続を確認してください。",
+      "loginError": "ログインに失敗しました。\nもう一度試してください。",
+      "unauthorized": "無効な電子メールまたはパスワード"
     },
     "forgotPassword": {
       "title": "パスワードをお忘れですか",
@@ -633,7 +639,51 @@
   "ticket": {
     "eventTicket": "イベントチケット",
     "welcomeMessage": "親愛なる閣下、",
-    "welcomeMessage2": "ぜひイベントにご招待いたします。\nこのチケットを確認するには、入口でこのQRを提示してください。"
+    "welcomeMessage2": "ぜひイベントにご招待いたします。\nこのチケットを確認するには、入口でこのQRを提示してください。",
+    "toast": {
+      "generatingpdf": "PDF を生成しています...",
+      "tickeddownload": "チケットをダウンロードしました！",
+      "error": "PDFの生成に失敗しました。\nもう一度試してください。",
+      "shareticket": "共有するチケットを準備しています...",
+      "ticketshared": "チケットシェアしました！",
+      "downloadpdf": "ダウンロードされた PDF (このブラウザでは共有はサポートされていません)",
+      "errorshare": "チケットを共有できませんでした。\nもう一度試してください。"
+    },
+    "alltickets": "すべてのチケット",
+    "paymentstatus": "支払い状況",
+    "pagination": {
+      "showing": "表示中",
+      "of": "の",
+      "tickets": "チケット"
+    },
+    "ticketdetail": "チケット詳細",
+    "details": {
+      "starts": "開始:",
+      "ends": "終了:",
+      "paymentstatus": "支払いステータス:",
+      "purchased": "購入したもの:",
+      "downloadall": "すべてダウンロード",
+      "shareall": "すべて共有する",
+      "ticketnumber": "チケット番号",
+      "checkedinat": "にチェックインしました",
+      "checkedin": "チェックイン済み",
+      "button": {
+        "cancel": "チケットをキャンセルする",
+        "viewqr": "QRコードを見る"
+      },
+      "cancelNotAllowed": "イベント開始後 24 時間以内のキャンセルは認められません。",
+      "expired": "チケットの有効期限が切れています。",
+      "used": "チケットはすでに使用されています。",
+      "refunded": "チケットは払い戻されました。",
+      "noticket": "このトランザクションでは個別のチケットが見つかりませんでした。",
+      "qr": {
+        "title": "チケットQRコード",
+        "present": "このQRコードを会場入口にてご提示ください"
+      }
+    },
+    "qr": {
+      "number": "チケット番号:"
+    }
   },
   "billing": {
     "title": "請求する",
@@ -752,7 +802,15 @@
   },
   "transaction": {
     "loadMore": "さらにトランザクションをロードする",
-    "history": "取引履歴"
+    "history": "取引履歴",
+    "toast": {
+      "dateclear": "日付の選択がクリアされました。",
+      "filterclear": "すべてのフィルターがクリアされました。",
+      "noclear": "クリアするものは何もありません",
+      "daterange": "日付範囲を選択してください",
+      "startenddate": "終了日を開始日より前にすることはできません",
+      "dateexceed": "期間は 3 か月を超えることはできません"
+    }
   },
   "upcomming": {
     "loadMore": "今後さらにロードする"
@@ -1342,5 +1400,33 @@
     "text2": "少なくとも 1 つの大文字と 1 つの小文字を含める必要があります",
     "text3": "少なくとも 1 つの特殊文字を含める必要があります",
     "text4": "少なくとも 1 桁の数字が含まれている必要があります"
+  },
+  "invoice": {
+    "number": "請求書",
+    "title": "請求書"
+  },
+  "refunds": {
+    "title": "払い戻し",
+    "subtitile": "リクエストを追跡および管理します。",
+    "nofound": "返金は見つかりませんでした。",
+    "details": {
+      "nofound": "払い戻しの詳細が見つかりません。",
+      "back": "戻る",
+      "goback": "リストに戻る",
+      "reason": "返金理由",
+      "rejection": "拒否メモ",
+      "label": {
+        "refundnumber": "払い戻し番号",
+        "daterequested": "リクエスト日"
+      }
+    },
+    "deatils": {
+      "total": "返金総額"
+    },
+    "detilas": {
+      "label": {
+        "provider": "プロバイダー"
+      }
+    }
   }
 }

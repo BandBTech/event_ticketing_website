@@ -52,7 +52,9 @@
         "stay": "Rimani sulla pagina",
         "leave": "Lascia la pagina"
       }
-    }
+    },
+    "results": "Risultati",
+    "rowsPerPage": "Righe per pagina"
   },
   "navigation": {
     "events": "Eventi",
@@ -142,8 +144,8 @@
       },
       "legal": {
         "title": "Legale",
-        "privacyPolicy": "Politica Privacy",
-        "termsOfService": "Termini di Servizio",
+        "privacyPolicy": "politica sulla riservatezza",
+        "termsOfService": "Termini di servizio",
         "cookiePolicy": "Politica sui cookie",
         "security": "Sicurezza"
       }
@@ -298,7 +300,11 @@
       "checkSpam": "Controlla la cartella spam se non vedi l'e-mail"
     },
     "toast": {
-      "passwordChangedLogin": "Effettua il login con la tua nuova password."
+      "passwordChangedLogin": "Effettua il login con la tua nuova password.",
+      "loginSuccess": "Bentornato!",
+      "networkError": "Errore di rete. \nPer favore controlla la tua connessione.",
+      "loginError": "Accesso non riuscito. \nPer favore riprova.",
+      "unauthorized": "E-mail o password non valide"
     },
     "forgotPassword": {
       "title": "Ha dimenticato la password",
@@ -631,7 +637,51 @@
   "ticket": {
     "eventTicket": "Biglietto per eventi",
     "welcomeMessage": "Gentile signore/signora,",
-    "welcomeMessage2": "Siamo lieti di invitarvi all'evento. \nSi prega di mostrare questo QR all'ingresso per verificare questo biglietto."
+    "welcomeMessage2": "Siamo lieti di invitarvi all'evento. \nSi prega di mostrare questo QR all'ingresso per verificare questo biglietto.",
+    "toast": {
+      "generatingpdf": "Generazione PDF...",
+      "tickeddownload": "Biglietti scaricati!",
+      "error": "Impossibile generare il PDF. \nPer favore riprova.",
+      "shareticket": "Preparazione dei ticket per la condivisione...",
+      "ticketshared": "Biglietti condivisi!",
+      "downloadpdf": "PDF scaricato (condivisione non supportata in questo browser)",
+      "errorshare": "Impossibile condividere i biglietti. \nPer favore riprova."
+    },
+    "alltickets": "Tutti i biglietti",
+    "paymentstatus": "Stato del pagamento",
+    "pagination": {
+      "showing": "Mostrare",
+      "of": "Di",
+      "tickets": "biglietti"
+    },
+    "ticketdetail": "Dettagli del biglietto",
+    "details": {
+      "starts": "Inizia:",
+      "ends": "Finisce:",
+      "paymentstatus": "Stato del pagamento:",
+      "purchased": "Acquistato:",
+      "downloadall": "Scarica tutto",
+      "shareall": "Condividi tutto",
+      "ticketnumber": "Numero del biglietto",
+      "checkedinat": "Check-in alle",
+      "checkedin": "Check-in",
+      "button": {
+        "cancel": "Annulla biglietto",
+        "viewqr": "Visualizza il codice QR"
+      },
+      "cancelNotAllowed": "Non sono ammesse cancellazioni entro 24 ore dall'evento.",
+      "expired": "Il biglietto è scaduto.",
+      "used": "Biglietto già utilizzato.",
+      "refunded": "Il biglietto è stato rimborsato.",
+      "noticket": "Nessun biglietto individuale trovato in questa transazione.",
+      "qr": {
+        "title": "Codice QR del biglietto",
+        "present": "Presenta questo codice QR all'ingresso della sede"
+      }
+    },
+    "qr": {
+      "number": "Numero del biglietto:"
+    }
   },
   "billing": {
     "title": "Fatturazione",
@@ -750,7 +800,15 @@
   },
   "transaction": {
     "loadMore": "Carica più transazioni",
-    "history": "Cronologia delle transazioni"
+    "history": "Cronologia delle transazioni",
+    "toast": {
+      "dateclear": "La selezione della data è stata cancellata.",
+      "filterclear": "Tutti i filtri sono stati cancellati.",
+      "noclear": "Niente da chiarire",
+      "daterange": "Seleziona un intervallo di date",
+      "startenddate": "La data di fine non può essere anteriore alla data di inizio",
+      "dateexceed": "L'intervallo di date non può superare i 3 mesi"
+    }
   },
   "upcomming": {
     "loadMore": "Carica altri in arrivo"
@@ -1339,5 +1397,33 @@
     "text2": "Deve contenere almeno una lettera maiuscola e una minuscola",
     "text3": "Deve contenere almeno un carattere speciale",
     "text4": "Deve contenere almeno una cifra numerica"
+  },
+  "invoice": {
+    "number": "FATTURA",
+    "title": "FATTURA"
+  },
+  "refunds": {
+    "title": "Rimborsi",
+    "subtitile": "Tieni traccia e gestisci le tue richieste.",
+    "nofound": "Nessun rimborso trovato.",
+    "details": {
+      "nofound": "Dettagli del rimborso non trovati.",
+      "back": "Torna indietro",
+      "goback": "Torna all'elenco",
+      "reason": "Motivo del rimborso",
+      "rejection": "Nota di rifiuto",
+      "label": {
+        "refundnumber": "Numero di rimborso",
+        "daterequested": "Data richiesta"
+      }
+    },
+    "deatils": {
+      "total": "Totale rimborsato"
+    },
+    "detilas": {
+      "label": {
+        "provider": "Fornitore"
+      }
+    }
   }
 }

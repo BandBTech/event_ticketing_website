@@ -256,6 +256,7 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoiceInfo, transaction }: InvoicePDFProps) => {
+  
   if (!invoiceInfo || !transaction) {
     return (
       <Document>

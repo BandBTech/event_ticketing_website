@@ -135,17 +135,17 @@ export default function BillingPage() {
   const handleClear = () => {
     if (dateRange?.from || dateRange?.to) {
       setDateRange({ from: undefined, to: undefined });
-      toast.info("Date selection cleared");
+      toast.info(t("transaction.toast.dateclear","Date selection cleared"));
       return;
     }
 
     if (hasActiveFilters) {
       handleClearAll();
-      toast.success("All filters cleared");
+      toast.success(t("transaction.toast.filterclear","All filters cleared"));
       return;
     }
 
-    toast.info("Nothing to clear");
+    toast.info(t("transaction.toast.noclear","Nothing to clear"));
   };
   const getClearButtonStyle = () => {
     if (dateRange?.from || dateRange?.to) {
@@ -178,7 +178,7 @@ const getClearButtonIcon = () => {
 
   const handleDateRangeApply = () => {
     if (!dateRange?.from) {
-      toast.error("Please select a date range");
+      toast.error(t("transaction.toast.daterange","Please select a date range"));
       return;
     }
 
@@ -192,7 +192,7 @@ const getClearButtonIcon = () => {
 
     // Validation
     if (normalizedEnd < normalizedStart) {
-      toast.error("End date cannot be before start date");
+      toast.error(t("transaction.toast.startenddate","End date cannot be before start date"));
       return;
     }
 
@@ -200,7 +200,7 @@ const getClearButtonIcon = () => {
       (normalizedEnd.getFullYear() - normalizedStart.getFullYear()) * 12 +
       (normalizedEnd.getMonth() - normalizedStart.getMonth());
     if (monthDiff > 3) {
-      toast.error("Range cannot exceed 3 months");
+      toast.error(t("transaction.toast.dateexceed","Date Range cannot exceed 3 months"));
       return;
     }
 

@@ -43,7 +43,7 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
     try {
       setIsPdfGenerating(true);
       // Generate PDF blob
-      const blob = await pdf(<InvoicePDF invoiceInfo={inv} transaction={tx} />).toBlob();
+      const blob = await pdf(<InvoicePDF invoiceInfo={inv} transaction={tx}  />).toBlob();
       // Create URL for the blob
       const url = URL.createObjectURL(blob);
       // Open in new window

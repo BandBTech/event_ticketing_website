@@ -61,7 +61,7 @@ export default function HowItWorksPage() {
 
   return (
     <>
-    <PageTitle title={t("howitworks.title", "How-It-Works")} />
+    <PageTitle title={t("howitworks.title", "How It Works")} />
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 text-white py-20">

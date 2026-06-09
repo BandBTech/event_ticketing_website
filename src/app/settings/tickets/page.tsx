@@ -390,7 +390,7 @@ export default function TicketsPage() {
   const handleDownloadAllTickets = async (order: ViewTicketDetails) => {
     const loadingToastId = "download-tickets";
     try {
-      toast.loading("Generating PDF...", { id: loadingToastId });
+      toast.loading(t("ticket.toast.generatingpdf","Generating PDF...", { id: loadingToastId }));
       const pdfBlob = await generateTicketsPdf(order);
       const shortId = order.orderId.split("-")[0];
       const url = URL.createObjectURL(pdfBlob);
@@ -399,19 +399,19 @@ export default function TicketsPage() {
       link.download = `tickets-${shortId}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
-      toast.success("Tickets downloaded!", { id: loadingToastId });
+      toast.success(t("ticket.toast.tickeddownload","Tickets downloaded!", { id: loadingToastId }));
     } catch (error) {
       console.error("Download error:", error);
-      toast.error("Failed to generate PDF. Please try again.", {
+      toast.error(t("ticket.toast.error","Failed to generate PDF. Please try again.", {
         id: loadingToastId,
-      });
+      }));
     }
   };
 
   const handleShareAllTickets = async (order: ViewTicketDetails) => {
     const loadingToastId = "share-tickets";
     try {
-      toast.loading("Preparing tickets for sharing...", { id: loadingToastId });
+      toast.loading(t("ticket.toast.shareticket","Preparing tickets for sharing...", { id: loadingToastId }));
       const pdfBlob = await generateTicketsPdf(order);
       const shortId = order.orderId.split("-")[0];
       const fileName = `tickets-${shortId}.pdf`;
@@ -430,7 +430,7 @@ export default function TicketsPage() {
           text: `My tickets for ${order.event.title} on ${formatDate(order.event.startDate)}`,
           files: [pdfFile],
         });
-        toast.success("Tickets shared!", { id: loadingToastId });
+        toast.success(t("ticket.toast.ticketshared","Tickets shared!", { id: loadingToastId }));
       } else {
         // Fallback: download when Web Share API (with files) is unavailable
         const url = URL.createObjectURL(pdfBlob);
@@ -439,19 +439,19 @@ export default function TicketsPage() {
         link.download = fileName;
         link.click();
         URL.revokeObjectURL(url);
-        toast.success(
+        toast.success(t("ticket.toast.downloadpdf",
           "PDF downloaded (sharing not supported in this browser)",
           {
             id: loadingToastId,
           },
-        );
+        ));
       }
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
         console.error("Share error:", error);
-        toast.error("Could not share tickets. Please try again.", {
+        toast.error(t("ticket.toast.errorshare","Could not share tickets. Please try again.", {
           id: loadingToastId,
-        });
+        }));
       } else {
         toast.dismiss(loadingToastId);
       }
@@ -582,7 +582,7 @@ export default function TicketsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="pb-2 px-1 text-3xl font-bold text-gray-900">
-                {view === "list" ? "All Tickets" : "Ticket Details"}
+                {view === "list" ? t("ticket.alltickets","All Tickets") : t("ticket.ticketdetail","Ticket Details")}
               </h1>
 
               <p className="text-sm text-gray-600">{view === "list"}</p>
@@ -744,7 +744,7 @@ export default function TicketsPage() {
                           <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4 sm:min-w-[150px] pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l sm:pl-6 border-gray-100">
                             <div className="sm:text-right">
                               <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">
-                                Payment Status
+                                {t("ticket.paymentstatus","Payment Status")}
                               </p>
                               <div className="flex items-center sm:justify-end gap-1.5">
                                 {order.transactionStatus === "completed" && (
@@ -802,8 +802,8 @@ export default function TicketsPage() {
 
                       {pagination && (
                         <p className="text-gray-500 text-sm mt-3">
-                          Showing {allTickets.length} of {pagination.total}{" "}
-                          tickets
+                          {t("ticket.pagination.showing","Showing" )}{allTickets.length} {t("ticket.pagination.of","of")} {pagination.total}{" "}
+                          {t("ticket.pagination.tickets","tickets")}
                         </p>
                       )}
                     </div>
@@ -855,7 +855,7 @@ export default function TicketsPage() {
                       <div className="flex items-center gap-1.5 font-medium">
                         <Calendar className="h-4 w-4 text-primary" />
                         <span className="text-xs text-muted-foreground uppercase font-bold mr-1">
-                          Starts:
+                          {t("ticket.details.starts","Starts:")}
                         </span>
                         {formatDate(detailTickets.event.startDate)}
                       </div>
@@ -870,7 +870,7 @@ export default function TicketsPage() {
                       <div className="flex items-center gap-1.5 font-medium">
                         <Calendar className="h-4 w-4 text-primary" />
                         <span className="text-xs text-muted-foreground uppercase font-bold mr-1">
-                          Ends:
+                          {t("ticket.details.ends","Ends:")}
                         </span>
                         {formatDate(detailTickets.event.endDate)}
                       </div>
@@ -904,13 +904,13 @@ export default function TicketsPage() {
                       variant="outline"
                       className="bg-white/50 text-[10px] uppercase tracking-wider"
                     >
-                      Payment Status: {detailTickets.transactionStatus}
+                      {t("ticket.details.paymentstatus","Payment Status: ")}{detailTickets.transactionStatus}
                     </Badge>
                     <Badge
                       variant="outline"
                       className="bg-white/50 text-[10px] uppercase tracking-wider"
                     >
-                      Purchased: {formatDate(detailTickets.purchaseDate)}
+                      {t("ticket.details.purchased", "Purchased: ")}{formatDate(detailTickets.purchaseDate)}
                       <Clock className="h-4 w-4 text-primary" />{" "}
                       {formatTime(detailTickets.purchaseDate)}
                     </Badge>
@@ -923,14 +923,14 @@ export default function TicketsPage() {
                       variant="outline"
                       onClick={() => handleDownloadAllTickets(detailTickets)}
                     >
-                      <Download className="h-3.5 w-3.5 mr-1.5" /> Download All
+                      <Download className="h-3.5 w-3.5 mr-1.5" /> {t("ticket.details.downloadall","Download All")}
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => handleShareAllTickets(detailTickets)}
                     >
-                      <Share className="h-3.5 w-3.5 mr-1.5" /> Share All
+                      <Share className="h-3.5 w-3.5 mr-1.5" /> {t("ticket.details.shareall","Share All")}
                     </Button>
                   </div>
                 </div>
@@ -958,11 +958,11 @@ export default function TicketsPage() {
                                 {ticket.tierName?.name || "General"}
                               </Badge>
                               <p className="text-xl font-mono font-bold">
-                                Ticket Number : {ticket.ticketNumber}
+                                {t("ticket.details.ticketnumber","Ticket Number")} : {ticket.ticketNumber}
                               </p>
                               {ticket.is_checked_in && ticket.checkInTime && (
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  Checked in at {formatDate(ticket.checkInTime)}{" "}
+                                  {t("ticket.details.checkedinat","Checked in at")} {formatDate(ticket.checkInTime)}{" "}
                                   {formatTime(ticket.checkInTime)}
                                   {ticket.checkIns?.[0]?.eventDay && (
                                     <span className="ml-1 font-medium text-emerald-700">
@@ -978,7 +978,7 @@ export default function TicketsPage() {
                                   weight="fill"
                                   className="h-6"
                                 />
-                                Checked In
+                                {t("ticket.details.checkedin","Checked In")}
                               </Badge>
                             ) : (
                               <Badge
@@ -1030,8 +1030,8 @@ export default function TicketsPage() {
                                   }
                                   disabled={cancelMutation.isPending}
                                 >
-                                  <X className="h-3.5 w-3.5 mr-1" /> Cancel
-                                  Ticket
+                                  <X className="h-3.5 w-3.5 mr-1" /> 
+                                  {t("ticket.details.button.cancel","Cancel Ticket")}
                                 </Button>
                               )}
 
@@ -1041,7 +1041,7 @@ export default function TicketsPage() {
                               !isRefundAllowed && (
                                 <span className="text-xs font-semibold  text-amber-600 ">
                                   {t(
-                                    "ticket.cancelNotAllowed",
+                                    "ticket.details.cancelNotAllowed",
                                     "Cancellations are not allowed within 24 hours of the event.",
                                   )}
                                 </span>
@@ -1049,19 +1049,19 @@ export default function TicketsPage() {
 
                             {ticket.status === "expired" && (
                               <span className="text-xs font-semibold text-red-400">
-                                The Ticket has expired.
+                                {t("ticket.details.expired","The Ticket has expired.")}
                               </span>
                             )}
 
                             {ticket.status === "used" && (
                               <span className="text-xs font-semibold text-blue-400 ">
-                                Ticket already used.
+                                {t("ticket.details.used","Ticket already used.")}
                               </span>
                             )}
 
                             {ticket.status === "refunded" && (
                               <span className="text-xs font-semibold  text-gray-400 ">
-                                The Ticket has been refunded.
+                                {t("ticket.details.refunded","The Ticket has been refunded.")}
                               </span>
                             )}
                           </div>{" "}
@@ -1088,7 +1088,7 @@ export default function TicketsPage() {
                               setShowQRModal(true);
                             }}
                           >
-                            View QR Code
+                            {t("ticket.details.button.viewqr","View QR Code")}
                           </Button>
                         </div>
                       </CardContent>
@@ -1098,7 +1098,7 @@ export default function TicketsPage() {
               ) : (
                 <div className="p-10 text-center border-2 border-dashed rounded-xl">
                   <p className="text-muted-foreground">
-                    No individual tickets found in this transaction.
+                    {t("ticket.details.noticket","No individual tickets found in this transaction.")}
                   </p>
                   <p className="text-xs text-gray-400">ID:</p>
                 </div>
@@ -1117,10 +1117,10 @@ export default function TicketsPage() {
                 order.tickets.some(
                   (t) => t.ticketId === selectedTicketForQR?.ticketId,
                 ),
-              )?.event.title || "Ticket QR Code"}
+              )?.event.title || t("ticket.details.qr.title","Ticket QR Code")}
             </DialogTitle>
             <DialogDescription>
-              Ticket Number: #{selectedTicketForQR?.ticketNumber}
+              {t("ticket.qr.number","Ticket Number:")} #{selectedTicketForQR?.ticketNumber}
             </DialogDescription>
           </DialogHeader>
           {selectedTicketForQR && (
@@ -1173,7 +1173,7 @@ export default function TicketsPage() {
                   {selectedTicketForQR.tierName?.name}
                 </Badge>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Present this QR code at the venue entrance
+                  {t("ticket.details.qr.present","Present this QR code at the venue entrance")}
                 </p>
               </div>
             </div>

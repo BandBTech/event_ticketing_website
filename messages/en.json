@@ -53,7 +53,9 @@
         "stay": "Stay on Page",
         "leave": "Leave Page"
       }
-    }
+    },
+    "results": "Results",
+    "rowsPerPage": "Rows per page"
   },
   "navigation": {
     "events": "Events",
@@ -382,7 +384,8 @@
       "networkError": "Network error. Please check your connection.",
       "serverError": "Something went wrong. Please try again.",
       "passwordChanged": "Password changed successfully!",
-      "passwordChangedLogin": "Please login with your new password."
+      "passwordChangedLogin": "Please login with your new password.",
+      "unauthorized": "Invalid email or password"
     }
   },
   "settings": {
@@ -710,7 +713,51 @@
   "ticket": {
     "eventTicket": "Event Ticket",
     "welcomeMessage": "Dear Sir/Ma'am,",
-    "welcomeMessage2": "We are pleased to invite you to the event. Please show this QR at the entrance to verify this ticket."
+    "welcomeMessage2": "We are pleased to invite you to the event. Please show this QR at the entrance to verify this ticket.",
+    "toast": {
+      "generatingpdf": "Generating PDF...",
+      "tickeddownload": "Tickets downloaded!",
+      "error": "Failed to generate PDF. Please try again.",
+      "shareticket": "Preparing tickets for sharing...",
+      "ticketshared": "Tickets shared!",
+      "downloadpdf": "PDF downloaded (sharing not supported in this browser)",
+      "errorshare": "Could not share tickets. Please try again."
+    },
+    "alltickets": "All Tickets",
+    "paymentstatus": "Payment Status",
+    "pagination": {
+      "showing": "Showing",
+      "of": "of",
+      "tickets": "tickets"
+    },
+    "ticketdetail": "Ticket Details",
+    "details": {
+      "starts": "Starts:",
+      "ends": "Ends:",
+      "paymentstatus": "Payment Status: ",
+      "purchased": "Purchased: ",
+      "downloadall": "Download All",
+      "shareall": "Share All",
+      "ticketnumber": "Ticket Number",
+      "checkedinat": "Checked in at",
+      "checkedin": "Checked In",
+      "button": {
+        "cancel": "Cancel Ticket",
+        "viewqr": "View QR Code"
+      },
+      "cancelNotAllowed": "Cancellations are not allowed within 24 hours of the event.",
+      "expired": "The Ticket has expired.",
+      "used": "Ticket already used.",
+      "refunded": "The Ticket has been refunded.",
+      "noticket": "No individual tickets found in this transaction.",
+      "qr": {
+        "title": "Ticket QR Code",
+        "present": "Present this QR code at the venue entrance"
+      }
+    },
+    "qr": {
+      "number": "Ticket Number:"
+    }
   },
   "billing": {
     "title": "Billing & Payments",
@@ -829,7 +876,15 @@
   },
   "transaction": {
     "loadMore": "Load More Transactions",
-    "history": "Transaction History"
+    "history": "Transaction History",
+    "toast": {
+      "dateclear": "Date selection cleared.",
+      "filterclear": "All filters cleared.",
+      "noclear": "Nothing to clear",
+      "daterange": "Please select a date range",
+      "startenddate": "End date cannot be before start date",
+      "dateexceed": "Date Range cannot exceed 3 months"
+    }
   },
   "upcomming": {
     "loadMore": "Load More Upcoming"
@@ -853,7 +908,7 @@
     "title": "Security"
   },
   "cookiesPolicy": {
-    "title": "Cookies-Policy",
+    "title": "Cookies Policy",
     "essential": {
       "name": "Essential Cookies",
       "desc": "Required for the website to function properly"
@@ -1122,7 +1177,7 @@
     }
   },
   "howitworks": {
-    "title": "How-It-Works",
+    "title": "How It Works",
     "steps": {
       "findEvent": {
         "title": "Find Your Event",
@@ -1419,5 +1474,33 @@
     "text2": "Must contain at least one uppercase and one lowercase letter",
     "text3": "Must contain at least one special character",
     "text4": "Must contain at least one numeric digit"
+  },
+  "invoice": {
+    "number": "INVOICE #",
+    "title": "INVOICE"
+  },
+  "refunds": {
+    "title": "Refunds",
+    "subtitile": "Track and manage your requests.",
+    "nofound": "No refunds found.",
+    "details": {
+      "nofound": "Refund details not found.",
+      "back": "Go Back",
+      "goback": "Back to list",
+      "reason": "Refund Reason",
+      "rejection": "Rejection Note",
+      "label": {
+        "refundnumber": "Refund Number",
+        "daterequested": "Date Requested"
+      }
+    },
+    "deatils": {
+      "total": "Total Refunded"
+    },
+    "detilas": {
+      "label": {
+        "provider": "Provider"
+      }
+    }
   }
 }
