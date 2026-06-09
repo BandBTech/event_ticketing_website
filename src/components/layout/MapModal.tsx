@@ -15,7 +15,7 @@ interface MapModalProps {
 export const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose, venue }) => {
   const mapQuery = venue.coordinates 
     ? `${venue.coordinates.lat},${venue.coordinates.lng}`
-    : encodeURIComponent(venue.address);
+    : encodeURIComponent(venue.address.trim());
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
