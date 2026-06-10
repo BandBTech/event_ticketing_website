@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -26,26 +26,25 @@ import { isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
 import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 // Validation schema
-const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
-  const v = createValidationHelpers(t);
-
+const createProfileSchema = () => {
   return z.object({
     firstName: z
       .string()
-      .min(1, v.required("First name"))
-      .min(3, v.minLength("First name", 3))
-      .max(50, v.maxLength("First name", 50)),
+      .min(1, "profile.validation.firstNameRequired")
+      .min(3, "profile.validation.firstNameMinLength")
+      .max(50, "profile.validation.firstNameMaxLength"),
     lastName: z
       .string()
-      .min(1, v.required("Last name"))
-      .min(3, v.minLength("Last name", 3))
-      .max(50, v.maxLength("Last name", 50)),
+      .min(1, "profile.validation.lastNameRequired")
+      .min(3, "profile.validation.lastNameMinLength")
+      .max(50, "profile.validation.lastNameMaxLength"),
     phone: z
       .string()
-      .min(1, v.required("Contact number"))
-      .refine((val) => isValidPhoneNumber(val), v.phone("Phone")),
+      .min(1, "profile.validation.phoneRequired")
+      .refine((val) => isValidPhoneNumber(val), "profile.validation.phoneInvalid"),
   });
 };
+
 
 export default function ProfilePage() {
   const { user, fetchProfile } = useAuthStore();
@@ -54,7 +53,8 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const schema = createProfileSchema(t);
+  
+const schema = useMemo(() => createProfileSchema(), [t]);
   type ProfileFormData = z.infer<typeof schema>;
 
   const form = useForm<ProfileFormData>({
@@ -152,6 +152,8 @@ export default function ProfilePage() {
             )}
           </div>
 
+          
+
           {/* Profile Card */}
           <div className="glass-card rounded-2xl p-6">
             {/* Avatar Section */}
@@ -218,7 +220,8 @@ export default function ProfilePage() {
                         className="text-sm text-destructive font-medium"
                         role="alert"
                       >
-                        {errors.firstName.message}
+                      
+                        {t(errors.firstName.message as string)}
                       </p>
                     )}
                   </div>
@@ -256,7 +259,7 @@ export default function ProfilePage() {
                         className="text-sm text-destructive font-medium"
                         role="alert"
                       >
-                        {errors.lastName.message}
+                        {t(errors.lastName.message as string)}
                       </p>
                     )}
                   </div>
@@ -318,7 +321,7 @@ export default function ProfilePage() {
                       className="text-sm text-destructive font-medium"
                       role="alert"
                     >
-                      {errors.phone.message}
+                      {t(errors.phone.message as string)}
                     </p>
                   )}
                 </div>

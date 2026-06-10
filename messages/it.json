@@ -561,7 +561,17 @@
     "saving": "Risparmio...",
     "saveButton": "Salva modifiche",
     "cancelButton": "Cancellare",
-    "organization": "Organizzazione"
+    "organization": "Organizzazione",
+    "validation": {
+      "firstNameRequired": "Il nome è obbligatorio",
+      "firstNameMinLength": "Il nome deve contenere almeno 3 caratteri",
+      "firstNameMaxLength": "Il nome non può superare i 50 caratteri",
+      "lastNameRequired": "Il cognome è obbligatorio",
+      "lastNameMinLength": "Il cognome deve contenere almeno 3 caratteri",
+      "lastNameMaxLength": "Il cognome non può superare i 50 caratteri",
+      "phoneRequired": "Il numero di telefono è obbligatorio",
+      "phoneInvalid": "Inserisci un numero di telefono valido"
+    }
   },
   "ticketPurchase": {
     "selectTickets": "Seleziona Biglietti",
@@ -681,6 +691,9 @@
     },
     "qr": {
       "number": "Numero del biglietto:"
+    },
+    "button": {
+      "loadmore": "Carica altro"
     }
   },
   "billing": {

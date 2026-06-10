@@ -91,7 +91,15 @@
       "firstNameTooShort": "First name must be at least 2 characters",
       "firstNameTooLong": "First name is too long",
       "lastNameTooShort": "Last name must be at least 2 characters",
-      "lastNameTooLong": "Last name is too long"
+      "lastNameTooLong": "Last name is too long",
+      "firstNameRequired": "First name is required",
+      "firstNameMinLength": "First name must be at least 3 characters",
+      "firstNameMaxLength": "First name cannot exceed 50 characters",
+      "lastNameRequired": "Last name is required",
+      "lastNameMinLength": "Last name must be at least 3 characters",
+      "lastNameMaxLength": "Last name cannot exceed 50 characters",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Please enter a valid phone number"
     },
     "toast": {
       "updateSuccess": "Profile updated successfully!",
@@ -757,6 +765,9 @@
     },
     "qr": {
       "number": "Ticket Number:"
+    },
+    "button": {
+      "loadmore": "Load More"
     }
   },
   "billing": {

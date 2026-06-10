@@ -563,7 +563,16 @@
     "saving": "保存中...",
     "saveButton": "変更を保存",
     "cancelButton": "キャンセル",
-    "organization": "組織"
+    "organization": "組織",
+    "validation": {
+      "firstNameRequired": "名は必須です",
+      "firstNameMinLength": "名は少なくとも 3 文字である必要があります",
+      "lastNameRequired": "姓は必須です",
+      "lastNameMinLength": "姓は少なくとも 3 文字である必要があります",
+      "lastNameMaxLength": "姓は50文字を超えることはできません",
+      "phoneRequired": "電話番号は必須です",
+      "phoneInvalid": "有効な電話番号を入力してください"
+    }
   },
   "ticketPurchase": {
     "selectTickets": "チケットを選択",
@@ -683,6 +692,9 @@
     },
     "qr": {
       "number": "チケット番号:"
+    },
+    "button": {
+      "loadmore": "もっと読み込む"
     }
   },
   "billing": {

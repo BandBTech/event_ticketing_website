@@ -796,7 +796,7 @@ export default function TicketsPage() {
                             Loading...
                           </span>
                         ) : (
-                          "Load More"
+                          t("ticket.button.loadmore","Load More")
                         )}
                       </Button>
 
