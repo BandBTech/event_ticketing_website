@@ -246,6 +246,10 @@
       "validation": {
         "phoneRequired": "連絡先番号は必須です",
         "firstNameRequired": "名は必須です",
+        "lastNameRequired": "姓は必須です",
+        "emailRequired": "メールアドレスは必須です",
+        "passwordRequired": "パスワードは必須です",
+        "confirmPasswordRequired": "パスワードを確認してください",
         "firstNameTooLong": "名前が長すぎます",
         "firstNameTooShort": "名は少なくとも 2 文字である必要があります",
         "lastNameTooShort": "姓は少なくとも 2 文字である必要があります",
@@ -254,7 +258,9 @@
         "passwordNumber": "パスワードには少なくとも 1 つの数字が含まれている必要があります。",
         "emailInvalid": "有効なメールアドレスを入力してください。",
         "phoneInvalid": "有効な電話番号を入力してください。",
-        "passwordMismatch": "パスワードが一致しません。"
+        "passwordMismatch": "パスワードが一致しません。",
+        "passwordTooShort": "パスワードは8文字以上である必要があります",
+        "passwordTooLong": "パスワードが長すぎます"
       },
       "setPassword": "安全なパスワードを作成する",
       "loginToSkip": "詳細の入力をスキップするにはログインしてください。"
@@ -281,7 +287,9 @@
         "passwordUppercase": "大文字を含める必要があります",
         "passwordLowercase": "小文字を含める必要があります",
         "passwordNumber": "数字を含める必要があります",
-        "passwordMismatch": "パスワードが一致しません"
+        "passwordMismatch": "パスワードが一致しません",
+        "passwordRequired": "パスワードは必須です",
+        "confirmPasswordRequired": "パスワードを確認してください"
       },
       "errors": {
         "resetFailed": "パスワードのリセットに失敗しました。もう一度お試しください。"
@@ -332,7 +340,14 @@
       "confirmPassword": "新しいパスワードを確認する",
       "confirmPasswordPlaceholder": "新しいパスワードをもう一度入力してください",
       "updating": "更新中...",
-      "updateButton": "パスワードを更新する"
+      "updateButton": "パスワードを更新する",
+      "validation": {
+        "currentPasswordRequired": "現在のパスワードは必須です",
+        "newPasswordRequired": "新しいパスワードは必須です",
+        "confirmPasswordRequired": "新しいパスワードを確認してください",
+        "passwordTooShort": "パスワードは8文字以上である必要があります",
+        "passwordTooLong": "パスワードは100文字以内にしてください"
+      }
     },
     "title": "設定",
     "menu": {

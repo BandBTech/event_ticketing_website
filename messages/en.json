@@ -296,6 +296,8 @@
         "phoneRequired": "Contact number is required.",
         "firstNameRequired": "First name is required.",
         "lastNameRequired": "Last name is required.",
+        "passwordRequired": "Password is required.",
+        "confirmPasswordRequired": "Please confirm your password.",
         "passwordSpecialChar": "Must contain at least one special character.",
         "passwordUpperLower": "Must contain at least one uppercase and one lowercase."
       },
@@ -345,12 +347,14 @@
       "validation": {
         "otpRequired": "OTP is required",
         "otpInvalid": "Invalid OTP",
+        "passwordRequired": "Password is required",
         "passwordTooShort": "Password must be at least 8 characters",
         "passwordTooLong": "Password is too long",
         "passwordUppercase": "Must contain uppercase letter",
         "passwordLowercase": "Must contain lowercase letter",
         "passwordNumber": "Must contain number",
-        "passwordMismatch": "Passwords do not match"
+        "passwordMismatch": "Passwords do not match",
+        "confirmPasswordRequired": "Please confirm your password"
       },
       "errors": {
         "resetFailed": "Failed to reset password. Please try again."
@@ -409,7 +413,14 @@
       "confirmPassword": "Confirm New Password",
       "confirmPasswordPlaceholder": "Enter new password again",
       "updating": "Updating...",
-      "updateButton": "Update Password"
+      "updateButton": "Update Password",
+      "validation": {
+        "currentPasswordRequired": "Current password is required",
+        "newPasswordRequired": "New password is required",
+        "confirmPasswordRequired": "Please confirm your new password",
+        "passwordTooShort": "Password must be at least 8 characters",
+        "passwordTooLong": "Password must not exceed 100 characters"
+      }
     },
     "title": "Settings",
     "menu": {

@@ -30,67 +30,60 @@ import { authService, AuthError } from "@/lib/authService";
 import { GuestRoute } from "@/components/auth/GuestRoute";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { createValidationHelpers } from "@/lib/validation";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import { PageTitle } from "@/components/pagetitle/PageTitle";
 
-// Step 1: Basic Info Schema
-const createBasicInfoSchema = (
-  t: (key: string, fallback?: string) => string,
-) => {
-  const v = createValidationHelpers(t);
-
-  return z.object({
-    firstName: z
-      .string()
-      .min(1, v.required("First name"))
-      .min(3, v.minLength("First name", 3))
-      .max(50, v.maxLength("First name", 50)),
-    lastName: z
-      .string()
-      .min(1, v.required("Last name"))
-      .min(3, v.minLength("Last name", 3))
-      .max(50, v.maxLength("Last name", 50)),
-    email: z.string().min(1, v.required("Email")).email(v.email("Email")),
-    phone: z
-      .string()
-      .min(1, v.required("Contact number"))
-      .refine((val) => isValidPhoneNumber(val), v.phone("Phone")),
-  });
-};
+// Step 1: Basic Info Schema — uses translation keys as message strings (deferred
+// translation). Error messages are looked up via t(key) at render time, so they
+// update reactively when the locale changes without recreating the schema.
+const basicInfoSchema = z.object({
+  firstName: z
+    .string()
+    .min(1, "auth.signup.validation.firstNameRequired")
+    .min(3, "auth.signup.validation.firstNameTooShort")
+    .max(50, "auth.signup.validation.firstNameTooLong"),
+  lastName: z
+    .string()
+    .min(1, "auth.signup.validation.lastNameRequired")
+    .min(3, "auth.signup.validation.lastNameTooShort")
+    .max(50, "auth.signup.validation.lastNameTooLong"),
+  email: z
+    .string()
+    .min(1, "auth.signup.validation.emailRequired")
+    .email("auth.signup.validation.emailInvalid"),
+  phone: z
+    .string()
+    .min(1, "auth.signup.validation.phoneRequired")
+    .refine((val) => isValidPhoneNumber(val), {
+      message: "auth.signup.validation.phoneInvalid",
+    }),
+});
 
 // Step 2: OTP Schema
-const createOTPSchema = () => {
-  return z.object({
-    otp: z.string().length(6, "OTP must be 6 digits"),
-  });
-};
+const otpSchema = z.object({
+  otp: z.string().length(6, "OTP must be 6 digits"),
+});
 
 // Step 3: Password Schema
-const createPasswordSchema = (
-  t: (key: string, fallback?: string) => string,
-) => {
-  const v = createValidationHelpers(t);
-
-  return z
-    .object({
-      password: z
-        .string()
-        .min(1, v.required("Password"))
-        .min(8, v.minLength("Password", 8))
-        .max(100, v.maxLength("Password", 100))
-        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
-        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
-        .regex(/[0-9]/, v.passwordNumber()),
-      confirmPassword: z.string().min(1, v.required("Confirm Password")),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: v.passwordMatch(),
-      path: ["confirmPassword"],
-    });
-};
+const passwordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(1, "auth.signup.validation.passwordRequired")
+      .min(8, "auth.signup.validation.passwordTooShort")
+      .max(100, "auth.signup.validation.passwordTooLong")
+      .regex(/(?=.*[a-z])(?=.*[A-Z])/, "auth.signup.validation.passwordUpperLower")
+      .regex(/[^A-Za-z0-9]/, "auth.signup.validation.passwordSpecialChar")
+      .regex(/[0-9]/, "auth.signup.validation.passwordNumber"),
+    confirmPassword: z.string().min(1, "auth.signup.validation.confirmPasswordRequired"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "auth.signup.validation.passwordMismatch",
+    path: ["confirmPassword"],
+  });
 
 type RegistrationStep = 1 | 2 | 3;
 
@@ -184,7 +177,6 @@ export default function MultiStepRegister() {
   }, []);
 
   // Step 1: Basic Info Form
-  const basicInfoSchema = createBasicInfoSchema(t);
   type BasicInfoData = z.infer<typeof basicInfoSchema>;
 
   const basicInfoForm = useForm<BasicInfoData>({
@@ -253,7 +245,6 @@ export default function MultiStepRegister() {
   };
 
   // Step 2: OTP Verification Form
-  const otpSchema = createOTPSchema();
   type OTPData = z.infer<typeof otpSchema>;
 
   const otpForm = useForm<OTPData>({
@@ -323,7 +314,6 @@ export default function MultiStepRegister() {
   };
 
   // Step 3: Set Password Form
-  const passwordSchema = createPasswordSchema(t);
   type PasswordData = z.infer<typeof passwordSchema>;
 
   const passwordForm = useForm<PasswordData>({
@@ -488,7 +478,7 @@ export default function MultiStepRegister() {
                         </div>
                         {basicInfoForm.formState.errors.firstName && (
                           <p className="text-sm text-destructive">
-                            {basicInfoForm.formState.errors.firstName.message}
+                            {t(basicInfoForm.formState.errors.firstName.message as string)}
                           </p>
                         )}
                       </div>
@@ -526,7 +516,7 @@ export default function MultiStepRegister() {
                         </div>
                         {basicInfoForm.formState.errors.lastName && (
                           <p className="text-sm text-destructive">
-                            {basicInfoForm.formState.errors.lastName.message}
+                            {t(basicInfoForm.formState.errors.lastName.message as string)}
                           </p>
                         )}
                       </div>
@@ -566,7 +556,7 @@ export default function MultiStepRegister() {
                       </div>
                       {basicInfoForm.formState.errors.email && (
                         <p className="text-sm text-destructive">
-                          {basicInfoForm.formState.errors.email.message}
+                          {t(basicInfoForm.formState.errors.email.message as string)}
                         </p>
                       )}
                     </div>
@@ -601,7 +591,7 @@ export default function MultiStepRegister() {
                       />
                       {basicInfoForm.formState.errors.phone && (
                         <p className="text-sm text-destructive">
-                          {basicInfoForm.formState.errors.phone.message}
+                          {t(basicInfoForm.formState.errors.phone.message as string)}
                         </p>
                       )}
                     </div>
@@ -800,17 +790,11 @@ export default function MultiStepRegister() {
                           )}
                         </button>
                       </div>
-                      {passwordForm.formState.errors.password &&
-                        passwordForm.formState.errors.password.message !==
-                          "Invalid input" &&
-                        !passwordForm.formState.errors.password.message?.includes("must be at least 8 characters") &&
-                        !passwordForm.formState.errors.password.message?.includes("uppercase and one lowercase") &&
-                        !passwordForm.formState.errors.password.message?.includes("special character") &&
-                        !passwordForm.formState.errors.password.message?.includes("numeric digit") && (
-                          <p className="text-sm text-destructive">
-                            {passwordForm.formState.errors.password.message}
-                          </p>
-                        )}
+                      {passwordForm.formState.errors.password && (
+                        <p className="text-sm text-destructive">
+                          {t(passwordForm.formState.errors.password.message as string)}
+                        </p>
+                      )}
                       <PasswordRequirements
                         password={passwordForm.watch("password")}
                       />
@@ -872,10 +856,7 @@ export default function MultiStepRegister() {
                       </div>
                       {passwordForm.formState.errors.confirmPassword && (
                         <p className="text-sm text-destructive">
-                          {
-                            passwordForm.formState.errors.confirmPassword
-                              .message
-                          }
+                          {t(passwordForm.formState.errors.confirmPassword.message as string)}
                         </p>
                       )}
                     </div>

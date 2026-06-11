@@ -245,6 +245,10 @@
       "validation": {
         "phoneRequired": "Il numero di contatto è obbligatorio",
         "firstNameRequired": "Il nome è obbligatorio",
+        "lastNameRequired": "Il cognome è obbligatorio",
+        "emailRequired": "L'email è obbligatoria",
+        "passwordRequired": "La password è obbligatoria",
+        "confirmPasswordRequired": "Si prega di confermare la password",
         "firstNameTooLong": "Il nome è troppo lungo",
         "firstNameTooShort": "Il nome deve contenere almeno 2 caratteri",
         "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri",
@@ -253,7 +257,9 @@
         "passwordNumber": "La password deve contenere almeno un numero.",
         "emailInvalid": "Si prega di inserire un indirizzo email valido.",
         "phoneInvalid": "Inserisci un numero di telefono valido.",
-        "passwordMismatch": "Le password non corrispondono."
+        "passwordMismatch": "Le password non corrispondono.",
+        "passwordTooShort": "La password deve contenere almeno 8 caratteri",
+        "passwordTooLong": "La password è troppo lunga"
       },
       "setPassword": "Crea una password sicura per",
       "loginToSkip": "Accedi per evitare di inserire i tuoi dati."
@@ -280,7 +286,9 @@
         "passwordUppercase": "Deve contenere una lettera maiuscola",
         "passwordLowercase": "Deve contenere una lettera minuscola",
         "passwordNumber": "Deve contenere un numero",
-        "passwordMismatch": "Le password non corrispondono"
+        "passwordMismatch": "Le password non corrispondono",
+        "passwordRequired": "La password è obbligatoria",
+        "confirmPasswordRequired": "Si prega di confermare la password"
       },
       "errors": {
         "resetFailed": "Impossibile reimpostare la password. Per favore riprova."
@@ -330,7 +338,14 @@
       "confirmPassword": "Conferma nuova password",
       "confirmPasswordPlaceholder": "Immettere nuovamente la nuova password",
       "updating": "Aggiornamento...",
-      "updateButton": "Aggiorna password"
+      "updateButton": "Aggiorna password",
+      "validation": {
+        "currentPasswordRequired": "La password attuale è obbligatoria",
+        "newPasswordRequired": "La nuova password è obbligatoria",
+        "confirmPasswordRequired": "Si prega di confermare la nuova password",
+        "passwordTooShort": "La password deve contenere almeno 8 caratteri",
+        "passwordTooLong": "La password non deve superare i 100 caratteri"
+      }
     },
     "title": "Impostazioni",
     "menu": {

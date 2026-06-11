@@ -35,36 +35,16 @@ import { cn } from "@/lib/utils";
 const MIN_REASON_LENGTH = 20;
 const MAX_REASON_LENGTH = 500;
 
-// Validation schema
-const createCancelTicketSchema = (
-  t: (key: string, fallback?: string) => string,
-) => {
-  return z.object({
-    reason: z
-      .string()
-      .min(
-        1,
-        t(
-          "cancelTicket.validation.reasonRequired",
-          "Please provide a reason for cancellation",
-        ),
-      )
-      .min(
-        MIN_REASON_LENGTH,
-        t(
-          "cancelTicket.validation.reasonMinLength",
-          `Reason must be at least ${MIN_REASON_LENGTH} characters`,
-        ),
-      )
-      .max(
-        MAX_REASON_LENGTH,
-        t(
-          "cancelTicket.validation.reasonMaxLength",
-          `Reason must not exceed ${MAX_REASON_LENGTH} characters`,
-        ),
-      ),
-  });
-};
+// Schema uses translation keys as message strings (deferred translation).
+// TranslatedFormMessage calls t(key) on every render so errors update
+// reactively when the locale changes.
+const cancelTicketSchema = z.object({
+  reason: z
+    .string()
+    .min(1, "cancelTicket.validation.reasonRequired")
+    .min(MIN_REASON_LENGTH, "cancelTicket.validation.reasonMinLength")
+    .max(MAX_REASON_LENGTH, "cancelTicket.validation.reasonMaxLength"),
+});
 
 interface CancelTicketDialogProps {
   open: boolean;
@@ -87,7 +67,7 @@ export function CancelTicketDialog({
   const { t } = useTranslation(locale);
   const [step, setStep] = useState<"reason" | "confirmation">("reason");
 
-  const schema = createCancelTicketSchema(t);
+  const schema = cancelTicketSchema;
   type FormData = z.infer<typeof schema>;
 
   const form = useForm<FormData>({

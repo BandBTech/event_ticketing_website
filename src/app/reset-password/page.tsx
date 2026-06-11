@@ -9,10 +9,17 @@ import {
   EyeIcon,
   KeyIcon,
   EyeClosedIcon,
-  // ArrowLeftIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  TranslatedFormMessage,
+} from "@/components/ui/form";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authService, AuthError } from "@/lib/authService";
@@ -20,32 +27,34 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createValidationHelpers } from "@/lib/validation";
 import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 
-// Create validation schema - OTP is no longer needed as it's verified in previous step
-const createResetPasswordSchema = (
-  t: (key: string, fallback?: string) => string
-) => {
-  const v = createValidationHelpers(t);
+// Schema uses translation keys as message strings (deferred translation).
+// TranslatedFormMessage calls t(key) on every render so errors update
+// reactively when the locale changes.
+const resetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(1, "auth.resetPassword.validation.passwordRequired")
+      .min(8, "auth.resetPassword.validation.passwordTooShort")
+      .max(100, "auth.resetPassword.validation.passwordTooLong")
+      .regex(
+        /(?=.*[a-z])(?=.*[A-Z])/,
+        "auth.signup.validation.passwordUpperLower",
+      )
+      .regex(/[^A-Za-z0-9]/, "auth.signup.validation.passwordSpecialChar")
+      .regex(/[0-9]/, "auth.signup.validation.passwordNumber"),
+    confirmPassword: z
+      .string()
+      .min(1, "auth.resetPassword.validation.confirmPasswordRequired"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "auth.resetPassword.validation.passwordMismatch",
+    path: ["confirmPassword"],
+  });
 
-  return z
-    .object({
-      newPassword: z
-        .string()
-        .min(1, v.required("Password"))
-        .min(8, v.minLength("Password", 8))
-        .max(100, v.maxLength("Password", 100))
-        .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
-        .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
-        .regex(/[0-9]/, v.passwordNumber()),
-      confirmPassword: z.string().min(1, v.required("Confirm Password")),
-    })
-    .refine((data) => data.newPassword === data.confirmPassword, {
-      message: v.passwordMatch(),
-      path: ["confirmPassword"],
-    });
-}
+type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
@@ -75,23 +84,14 @@ function ResetPasswordContent() {
     setOtp(otpParam);
   }, [searchParams, router]);
 
-  const schema = createResetPasswordSchema(t);
-  type ResetPasswordFormData = z.infer<typeof schema>;
-
   const form = useForm<ResetPasswordFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
       newPassword: "",
       confirmPassword: "",
     },
     mode: "onBlur",
   });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = form;
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     setIsLoading(true);
@@ -108,7 +108,7 @@ function ResetPasswordContent() {
       // Show success toast
       toast.success(
         "auth.toast.passwordResetSuccess",
-        "Password reset successful!"
+        "Password reset successful!",
       );
 
       setIsSuccess(true);
@@ -121,16 +121,16 @@ function ResetPasswordContent() {
         console.error("Password reset failed:", err, err.message, err.details);
         toast.error(
           "auth.toast.serverError",
-          err.message || "Failed to reset password. Please try again."
+          err.message || "Failed to reset password. Please try again.",
         );
       } else {
         toast.error(
           "auth.toast.serverError",
-          "Failed to reset password. Please try again."
+          "Failed to reset password. Please try again.",
         );
       }
     } finally {
-      sessionStorage.removeItem('password_reset_email');
+      sessionStorage.removeItem("password_reset_email");
       setIsLoading(false);
     }
   };
@@ -141,24 +141,16 @@ function ResetPasswordContent() {
         <div className="relative">
           <div className="glass-login-card rounded-2xl p-4 sm:p-6">
             <div className="space-y-6 p-2 sm:p-3">
-                                                      {isLoading && (
-                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-                        <p className="text-sm font-medium text-gray-700">
-                          {t("auth.resetPassword.resetting", "Resetting  ...")}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-              {/* Back Button */}
-              {/* <Link
-                href="/forgot-password"
-                className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                <ArrowLeftIcon size={16} />
-                {t("auth.resetPassword.back", "Back")}
-              </Link> */}
+              {isLoading && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                    <p className="text-sm font-medium text-gray-700">
+                      {t("auth.resetPassword.resetting", "Resetting  ...")}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Header */}
               <div className="space-y-2">
@@ -166,10 +158,7 @@ function ResetPasswordContent() {
                   {t("auth.resetPassword.title", "Reset Password")}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {t(
-                    "auth.resetPassword.subtitle",
-                    "Set a new password for"
-                  )}{" "}
+                  {t("auth.resetPassword.subtitle", "Set a new password for")}{" "}
                   <strong>{email}</strong>
                 </p>
               </div>
@@ -181,7 +170,7 @@ function ResetPasswordContent() {
                     <p className="text-sm text-green-700 text-center">
                       {t(
                         "auth.resetPassword.successMessage",
-                        "Password reset successful! Redirecting to login..."
+                        "Password reset successful! Redirecting to login...",
                       )}
                     </p>
                   </div>
@@ -195,166 +184,156 @@ function ResetPasswordContent() {
                     </div>
                   )}
 
-                    {/* Form */}
+                  {/* Form */}
+                  <Form {...form}>
                     <form
-                      onSubmit={handleSubmit(onSubmit)}
+                      onSubmit={form.handleSubmit(onSubmit)}
                       className="space-y-6"
                     >
                       {/* New Password Field */}
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="newPassword"
-                          className="text-sm font-medium text-gray-900 block"
-                        >
-                          {t(
-                            "auth.resetPassword.newPassword",
-                            "New Password"
-                          )}
-                        </label>
-                        <div className="relative">
-                          <div
-                            className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
-                            aria-hidden="true"
-                          >
-                            <KeyIcon
-                              weight="duotone"
-                              size={24}
-                              className="text-gray-600"
+                      <FormField
+                        control={form.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-900">
+                              {t(
+                                "auth.resetPassword.newPassword",
+                                "New Password",
+                              )}
+                            </FormLabel>
+                            <div className="relative">
+                              <div
+                                className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
+                                aria-hidden="true"
+                              >
+                                <KeyIcon
+                                  weight="duotone"
+                                  size={24}
+                                  className="text-gray-600"
+                                />
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  id="newPassword"
+                                  type={showNewPassword ? "text" : "password"}
+                                  autoComplete="new-password"
+                                  disabled={isLoading}
+                                  placeholder={t(
+                                    "auth.resetPassword.newPasswordPlaceholder",
+                                    "••••••••••••",
+                                  )}
+                                  className="h-12 pl-16 pr-16 login-input"
+                                />
+                              </FormControl>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setShowNewPassword(!showNewPassword)
+                                }
+                                disabled={isLoading}
+                                aria-label={
+                                  showNewPassword
+                                    ? "Hide password"
+                                    : "Show password"
+                                }
+                                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
+                              >
+                                {showNewPassword ? (
+                                  <EyeIcon
+                                    weight="duotone"
+                                    size={24}
+                                    className="text-gray-600"
+                                  />
+                                ) : (
+                                  <EyeClosedIcon
+                                    weight="duotone"
+                                    size={24}
+                                    className="text-gray-600"
+                                  />
+                                )}
+                              </button>
+                            </div>
+                            <PasswordRequirements
+                              password={form.watch("newPassword")}
                             />
-                          </div>
-                          <Input
-                            id="newPassword"
-                            type={showNewPassword ? "text" : "password"}
-                            autoComplete="new-password"
-                            disabled={isLoading}
-                            placeholder={t(
-                              "auth.resetPassword.newPasswordPlaceholder",
-                              "••••••••••••"
-                            )}
-                            className={cn(
-                              "h-12 pl-16 pr-16 login-input",
-                              errors.newPassword && "border-destructive"
-                            )}
-                            {...register("newPassword")}
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowNewPassword(!showNewPassword)
-                            }
-                            disabled={isLoading}
-                            aria-label={
-                              showNewPassword
-                                ? "Hide password"
-                                : "Show password"
-                            }
-                            className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
-                          >
-                            {showNewPassword ? (
-                              <EyeIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            ) : (
-                              <EyeClosedIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            )}
-                          </button>
-                        </div>
-                        <PasswordRequirements password={form.watch("newPassword")} />
-                        {errors.newPassword &&
-                          errors.newPassword.message !== "Invalid input" &&
-                          !errors.newPassword.message?.includes("must be at least 8 characters") &&
-                          !errors.newPassword.message?.includes("uppercase and one lowercase") &&
-                          !errors.newPassword.message?.includes("special character") &&
-                          !errors.newPassword.message?.includes("numeric digit") && (
-                          <p
-                            className="text-sm text-destructive"
-                            role="alert"
-                          >
-                            {errors.newPassword.message}
-                          </p>
+                            <TranslatedFormMessage t={t} />
+                          </FormItem>
                         )}
-                      </div>
+                      />
 
                       {/* Confirm Password Field */}
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="confirmPassword"
-                          className="text-sm font-medium text-gray-900 block"
-                        >
-                          {t(
-                            "auth.resetPassword.confirmPassword",
-                            "Confirm Password"
-                          )}
-                        </label>
-                        <div className="relative">
-                          <div
-                            className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
-                            aria-hidden="true"
-                          >
-                            <KeyIcon
-                              weight="duotone"
-                              size={24}
-                              className="text-gray-600"
-                            />
-                          </div>
-                          <Input
-                            id="confirmPassword"
-                            type={showConfirmPassword ? "text" : "password"}
-                            autoComplete="new-password"
-                            disabled={isLoading}
-                            placeholder={t(
-                              "auth.resetPassword.confirmPasswordPlaceholder",
-                              "••••••••••••"
-                            )}
-                            className={cn(
-                              "h-12 pl-16 pr-16 login-input",
-                              errors.confirmPassword && "border-destructive"
-                            )}
-                            {...register("confirmPassword")}
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
-                            disabled={isLoading}
-                            aria-label={
-                              showConfirmPassword
-                                ? "Hide password"
-                                : "Show password"
-                            }
-                            className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
-                          >
-                            {showConfirmPassword ? (
-                              <EyeIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            ) : (
-                              <EyeClosedIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            )}
-                          </button>
-                        </div>
-                        {errors.confirmPassword && (
-                          <p
-                            className="text-sm text-destructive"
-                            role="alert"
-                          >
-                            {errors.confirmPassword.message}
-                          </p>
+                      <FormField
+                        control={form.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-900">
+                              {t(
+                                "auth.resetPassword.confirmPassword",
+                                "Confirm Password",
+                              )}
+                            </FormLabel>
+                            <div className="relative">
+                              <div
+                                className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
+                                aria-hidden="true"
+                              >
+                                <KeyIcon
+                                  weight="duotone"
+                                  size={24}
+                                  className="text-gray-600"
+                                />
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  id="confirmPassword"
+                                  type={
+                                    showConfirmPassword ? "text" : "password"
+                                  }
+                                  autoComplete="new-password"
+                                  disabled={isLoading}
+                                  placeholder={t(
+                                    "auth.resetPassword.confirmPasswordPlaceholder",
+                                    "••••••••••••",
+                                  )}
+                                  className="h-12 pl-16 pr-16 login-input"
+                                />
+                              </FormControl>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setShowConfirmPassword(!showConfirmPassword)
+                                }
+                                disabled={isLoading}
+                                aria-label={
+                                  showConfirmPassword
+                                    ? "Hide password"
+                                    : "Show password"
+                                }
+                                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
+                              >
+                                {showConfirmPassword ? (
+                                  <EyeIcon
+                                    weight="duotone"
+                                    size={24}
+                                    className="text-gray-600"
+                                  />
+                                ) : (
+                                  <EyeClosedIcon
+                                    weight="duotone"
+                                    size={24}
+                                    className="text-gray-600"
+                                  />
+                                )}
+                              </button>
+                            </div>
+                            <TranslatedFormMessage t={t} />
+                          </FormItem>
                         )}
-                      </div>
+                      />
 
                       {/* Submit Button */}
                       <div className="space-y-4 pt-2">
@@ -366,27 +345,25 @@ function ResetPasswordContent() {
                             "bg-blue-600 hover:bg-blue-700 text-white",
                             "shadow-lg hover:shadow-xl",
                             "disabled:opacity-50 disabled:cursor-not-allowed",
-                            isLoading && "animate-pulse"
+                            isLoading && "animate-pulse",
                           )}
                         >
                           {isLoading
-                            ? t(
-                              "auth.resetPassword.resetting",
-                              "Resetting..."
-                            )
+                            ? t("auth.resetPassword.resetting", "Resetting...")
                             : t(
-                              "auth.resetPassword.resetButton",
-                              "Reset Password"
-                            )}
+                                "auth.resetPassword.resetButton",
+                                "Reset Password",
+                              )}
                         </Button>
                       </div>
                     </form>
+                  </Form>
 
                   {/* Back to Login */}
                   <div className="text-center">
                     <Link
                       href="/login"
-                        className="text-sm cursor-pointer font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                      className="text-sm cursor-pointer font-medium text-blue-600 hover:text-blue-700 transition-colors"
                     >
                       {t("auth.resetPassword.backToLogin", "Back to login")}
                     </Link>

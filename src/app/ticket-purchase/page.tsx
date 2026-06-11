@@ -31,7 +31,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  TranslatedFormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,7 +52,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { UnsavedChangesDialog } from "@/components/modals/UnsavedChangesDialog";
 
 import { formatCurrency, formatEventDateTime } from "@/lib/utils";
-import { createValidationHelpers } from "@/lib/validation";
+
 
 import { PurchasePayload } from "@/services/ticketService";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -63,15 +63,17 @@ import { PageTitle } from "@/components/pagetitle/PageTitle";
 const GUEST_MAX_QUANTITY = 6;
 const USER_MAX_QUANTITY = 10;
 
-const createGuestSchema = (t: (key: string, fallback?: string) => string) => {
-  const v = createValidationHelpers(t);
+// Schema uses translation keys as message strings (deferred translation).
+// TranslatedFormMessage calls t(key) on every render so errors update
+// reactively when the locale changes.
+const guestSchema = z.object({
+  email: z
+    .string()
+    .min(1, "auth.forgotPassword.validation.emailRequired")
+    .email("auth.forgotPassword.validation.emailInvalid"),
+});
 
-  return z.object({
-    email: z.string().min(1, v.required("Email")).email(v.email("Email")),
-  });
-};
-
-type GuestFormData = z.infer<ReturnType<typeof createGuestSchema>>;
+type GuestFormData = z.infer<typeof guestSchema>;
 
 function GuestPurchaseContent() {
   const searchParams = useSearchParams();
@@ -79,8 +81,6 @@ function GuestPurchaseContent() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const guestSchema = createGuestSchema(t);
-
   const [step, setStep] = useState<1 | 2>(1);
 
   const { data: eventData, isLoading: isLoadingEvent } = useEventById(
@@ -98,12 +98,6 @@ function GuestPurchaseContent() {
   );
 
   // Payment gateway state
-  // const CASH_GATEWAY = {
-  //   name: "cash",
-  //   display_name: "Cash",
-  //   description: "Pay with cash at the venue",
-  //   icon_url: "",
-  // };
   const STRIPE_GATEWAY = {
     name: "stripe",
     display_name: "Stripe",
@@ -744,7 +738,7 @@ function GuestPurchaseContent() {
                                   "Your ticket will be sent to this email address",
                                 )}
                               </p>
-                              <FormMessage />
+                              <TranslatedFormMessage t={t} />
                             </FormItem>
                           )}
                         />
