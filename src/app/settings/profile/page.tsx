@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -12,43 +12,56 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  TranslatedFormMessage,
+} from "@/components/ui/form";
 import { useAuthStore } from "@/store/authStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authService, AuthError } from "@/lib/authService";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { createValidationHelpers } from "@/lib/validation";
 
 import { isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
 import { PageTitle } from "@/components/pagetitle/PageTitle";
 import { UnsavedChangesDialog } from "@/components/modals/UnsavedChangesDialog";
 import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 
-// Validation schema
-const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
-  const v = createValidationHelpers(t);
+const FIRST_NAME_MAX = 50;
+const LAST_NAME_MAX = 50;
 
+// Validation schema using translation keys as message strings (deferred translation).
+// TranslatedFormMessage reads these keys and calls t() on every render, so
+// validation messages update reactively when the locale changes — same pattern
+// used in admin and organizer repos.
+const createProfileSchema = () => {
   return z.object({
     firstName: z
       .string()
-      .min(1, v.required("First name"))
-      .min(3, v.minLength("First name", 3))
-      .max(50, v.maxLength("First name", 50)),
+      .min(1, "profile.validation.firstNameRequired")
+      .min(3, "profile.validation.firstNameMinLength")
+      .max(50, "profile.validation.firstNameMaxLength"),
     lastName: z
       .string()
-      .min(1, v.required("Last name"))
-      .min(3, v.minLength("Last name", 3))
-      .max(50, v.maxLength("Last name", 50)),
+      .min(1, "profile.validation.lastNameRequired")
+      .min(3, "profile.validation.lastNameMinLength")
+      .max(50, "profile.validation.lastNameMaxLength"),
     phone: z
       .string()
-      .min(1, v.required("Phone number"))
+      .min(1, "profile.validation.phoneRequired")
       .refine(
         (val) => typeof val === "string" && isValidPhoneNumber(val),
-        v.phone("Phone"),
+        { message: "profile.validation.phoneInvalid" },
       ),
   });
 };
+
+type ProfileFormData = z.infer<ReturnType<typeof createProfileSchema>>;
 
 export default function ProfileSettingsPage() {
   const { user, fetchProfile } = useAuthStore();
@@ -57,8 +70,7 @@ export default function ProfileSettingsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const schema = createProfileSchema(t);
-  type ProfileFormData = z.infer<typeof schema>;
+  const schema = useMemo(() => createProfileSchema(), []);
 
   // Helper function to combine country code and phone number
   const getFullPhoneNumber = (phone?: string, countryCode?: string): string => {
@@ -80,14 +92,7 @@ export default function ProfileSettingsPage() {
     mode: "onChange",
   });
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    watch,
-    formState: { errors, isDirty },
-  } = form;
+  const { isDirty } = form.formState;
 
   const hasUnsavedChanges = useCallback(() => {
     return isDirty;
@@ -97,25 +102,36 @@ export default function ProfileSettingsPage() {
     useNavigationGuard({
       hasUnsavedChanges,
       onBeforeLeave: () => {
-        reset();
+        form.reset(form.getValues());
       },
     });
 
+  const isInitialMount = useRef(true);
+  const prevUserRef = useRef<string | null>(null);
+
   // Update form when user data changes (e.g., after profile fetch)
   useEffect(() => {
-    if (user) {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      prevUserRef.current = JSON.stringify(user);
+      return;
+    }
+
+    const currentUserStr = JSON.stringify(user);
+    if (user && prevUserRef.current !== currentUserStr) {
+      prevUserRef.current = currentUserStr;
       const fullPhone =
         user.phone && user.countryCode && !user.phone.startsWith("+")
           ? `${user.countryCode}${user.phone}`
           : user.phone || "";
 
-      reset({
+      form.reset({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         phone: fullPhone,
       });
     }
-  }, [user, reset]);
+  }, [user, form]);
 
   const onSubmit = async (data: ProfileFormData) => {
     setIsLoading(true);
@@ -162,7 +178,7 @@ export default function ProfileSettingsPage() {
   };
 
   const handleCancel = () => {
-    reset({
+    form.reset({
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       phone: getFullPhoneNumber(user?.phone, user?.countryCode),
@@ -170,8 +186,6 @@ export default function ProfileSettingsPage() {
     setIsEditing(false);
   };
 
-  const firstNameValue = watch("firstName");
-  const lastNameValue = watch("lastName");
   return (
     <>
       <PageTitle title={t("profile.title", "My Profile")} />
@@ -220,204 +234,206 @@ export default function ProfileSettingsPage() {
               <p className="text-sm text-gray-600">{user?.email}</p>
               {user?.isEmailVerified && (
                 <span className="inline-flex items-center px-2 py-0.5 mt-2 text-xs font-medium text-green-700 bg-green-100 rounded-full">
-                  ✓ {t("setting.emailverified","Verified")}
+                  ✓ {t("setting.emailverified", "Verified")}
                 </span>
               )}
             </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
-            {(isEditing && isLoading) && (
-              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-                  <p className="text-sm font-medium text-gray-700">
-                    {t("common.updating", "Updating")}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* First Name */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="firstName"
-                  className="text-sm font-medium text-gray-900 block"
-                >
-                  {t("settings.profile.firstName", "First Name")}{" "}
-                  <span className="text-destructive">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                    <UserIcon
-                      weight="duotone"
-                      size={18}
-                      className="text-gray-600"
-                    />
-                  </div>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    disabled={!isEditing || isLoading}
-                    className={cn(
-                      "h-11 pl-11 pr-4",
-                      (!isEditing || isLoading) &&
-                        "bg-gray-50 cursor-not-allowed",
-                      errors.firstName && "border-destructive",
-                    )}
-                    {...register("firstName")}
-                    maxLength={50}
-                  />
-                </div>
-
-                <div className="flex justify-between items-center mt-1 min-h-5">
-                  {errors.firstName && (
-                    <p className="text-xs text-destructive">
-                      {errors.firstName.message}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="mt-6 space-y-6 relative"
+            >
+              {isEditing && isLoading && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                    <p className="text-sm font-medium text-gray-700">
+                      {t("common.updating", "Updating")}
                     </p>
-                  )}
-                  {isEditing && (
-                    <div className="text-xs text-muted-foreground ml-auto">
-                      {firstNameValue?.length || 0}/{50}{" "}
-                      {t("common.characters", "characters")}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Last Name */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="lastName"
-                  className="text-sm font-medium text-gray-900 block"
-                >
-                  {t("settings.profile.lastName", "Last Name")}{" "}
-                  <span className="text-destructive">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                    <UserIcon
-                      weight="duotone"
-                      size={18}
-                      className="text-gray-600"
-                    />
                   </div>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    disabled={!isEditing || isLoading}
-                    className={cn(
-                      "h-11 pl-11 pr-4",
-                      (!isEditing || isLoading) &&
-                        "bg-gray-50 cursor-not-allowed",
-                      errors.lastName && "border-destructive",
-                    )}
-                    {...register("lastName")}
-                    maxLength={50}
-                  />
                 </div>
+              )}
 
-                <div className="flex justify-between items-center mt-1 min-h-5">
-                  {errors.lastName && (
-                    <p className="text-xs text-destructive">
-                      {errors.lastName.message}
-                    </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* First Name */}
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        required
+                        className="text-sm font-medium text-gray-900"
+                      >
+                        {t("settings.profile.firstName", "First Name")}
+                      </FormLabel>
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                          <UserIcon
+                            weight="duotone"
+                            size={18}
+                            className="text-gray-600"
+                          />
+                        </div>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="text"
+                            disabled={!isEditing || isLoading}
+                            className={cn(
+                              "h-11 pl-11 pr-4",
+                              (!isEditing || isLoading) &&
+                                "bg-gray-50 cursor-not-allowed",
+                            )}
+                            maxLength={FIRST_NAME_MAX}
+                          />
+                        </FormControl>
+                      </div>
+                      {isEditing && (
+                        <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                          <TranslatedFormMessage t={t} className="mt-0" />
+                          <div className="text-xs text-muted-foreground ml-auto">
+                            {field.value?.length || 0}/{FIRST_NAME_MAX}{" "}
+                            {t("common.characters", "characters")}
+                          </div>
+                        </div>
+                      )}
+                    </FormItem>
                   )}
-                  {isEditing && (
-                    <div className="text-xs text-muted-foreground ml-auto">
-                      {lastNameValue?.length || 0}/{50}{" "}
-                      {t("common.characters", "characters")}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+                />
 
-            {/* Email (Read-only) */}
-            <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="text-sm font-medium text-gray-900 block"
-              >
-                {t("settings.profile.email", "Email Address")}
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <EnvelopeIcon
-                    weight="duotone"
-                    size={18}
-                    className="text-gray-600"
-                  />
-                </div>
-                <Input
-                  id="email"
-                  type="email"
-                  value={user?.email || ""}
-                  disabled
-                  className="h-11 pl-11 pr-4 bg-gray-50 cursor-not-allowed"
+                {/* Last Name */}
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        required
+                        className="text-sm font-medium text-gray-900"
+                      >
+                        {t("settings.profile.lastName", "Last Name")}
+                      </FormLabel>
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                          <UserIcon
+                            weight="duotone"
+                            size={18}
+                            className="text-gray-600"
+                          />
+                        </div>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="text"
+                            disabled={!isEditing || isLoading}
+                            className={cn(
+                              "h-11 pl-11 pr-4",
+                              (!isEditing || isLoading) &&
+                                "bg-gray-50 cursor-not-allowed",
+                            )}
+                            maxLength={LAST_NAME_MAX}
+                          />
+                        </FormControl>
+                      </div>
+                      {isEditing && (
+                        <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                          <TranslatedFormMessage t={t} className="mt-0" />
+                          <div className="text-xs text-muted-foreground ml-auto">
+                            {field.value?.length || 0}/{LAST_NAME_MAX}{" "}
+                            {t("common.characters", "characters")}
+                          </div>
+                        </div>
+                      )}
+                    </FormItem>
+                  )}
                 />
               </div>
-              <p className="text-xs text-gray-500">
-                {t("settings.profile.emailNote", "Email cannot be changed")}
-              </p>
-            </div>
 
-            {/* Phone */}
-            <div className="space-y-2">
-              <label
-                htmlFor="phone"
-                className="text-sm font-medium text-gray-900 flex items-center gap-1"
-              >
-                {t("settings.profile.phone", "Phone Number")}
-                <span className="text-destructive">*</span>
-              </label>
-              <Controller
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <PhoneInput
-                    value={field.value || ""}
-                    onChange={(value) => field.onChange(value || "")}
-                    disabled={!isEditing || isLoading}
-                    defaultCountry="NP"
-                    className={cn(
-                      (!isEditing || isLoading) &&
-                        "opacity-50 cursor-not-allowed",
-                      errors.phone && "border-destructive",
-                    )}
+              {/* Email (Read-only) */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-900 block"
+                >
+                  {t("settings.profile.email", "Email Address")}
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <EnvelopeIcon
+                      weight="duotone"
+                      size={18}
+                      className="text-gray-600"
+                    />
+                  </div>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={user?.email || ""}
+                    disabled
+                    className="h-11 pl-11 pr-4 bg-gray-50 cursor-not-allowed"
                   />
+                </div>
+                <p className="text-xs text-gray-500">
+                  {t("settings.profile.emailNote", "Email cannot be changed")}
+                </p>
+              </div>
+
+              {/* Phone */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel
+                      required
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      {t("settings.profile.phone", "Phone Number")}
+                    </FormLabel>
+                    <FormControl>
+                      <PhoneInput
+                        value={field.value || ""}
+                        onChange={(value) => field.onChange(value || "")}
+                        disabled={!isEditing || isLoading}
+                        defaultCountry="NP"
+                        className={cn(
+                          (!isEditing || isLoading) &&
+                            "opacity-50 cursor-not-allowed",
+                        )}
+                      />
+                    </FormControl>
+                    <TranslatedFormMessage t={t} />
+                  </FormItem>
                 )}
               />
-              {errors.phone && (
-                <p className="text-xs text-destructive">
-                  {errors.phone.message}
-                </p>
-              )}
-            </div>
 
-            {/* Action Buttons */}
-            {isEditing && (
-              <div className="flex gap-3 pt-4 border-t border-gray-200">
-                <Button
-                  type="submit"
-                  disabled={isLoading || !isDirty}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  {isLoading
-                    ? t("settings.profile.saving", "Saving...")
-                    : t("settings.profile.saveButton", "Save Changes")}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={handleCancel}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-600"
-                >
-                  {t("settings.profile.cancelButton", "Cancel")}
-                </Button>
-              </div>
-            )}
-          </form>
+              {/* Action Buttons */}
+              {isEditing && (
+                <div className="flex gap-3 pt-4 border-t border-gray-200">
+                  <Button
+                    type="submit"
+                    disabled={isLoading || !isDirty}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {isLoading
+                      ? t("settings.profile.saving", "Saving...")
+                      : t("settings.profile.saveButton", "Save Changes")}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleCancel}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-600"
+                  >
+                    {t("settings.profile.cancelButton", "Cancel")}
+                  </Button>
+                </div>
+              )}
+            </form>
+          </Form>
 
           <UnsavedChangesDialog
             open={showLeaveDialog}
