@@ -6,6 +6,7 @@
 import { tokenManager } from './tokenManager';
 import { AuthError } from './authService';
 import { toast } from './toast';
+import { useLanguageStore } from '../store/languageStore';
 
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sandbox.timroticket.com/api/v1';
@@ -58,6 +59,7 @@ export async function apiRequest<T>(
   // Prepare headers
   const requestHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
+    'Accept-Language': useLanguageStore.getState().locale || 'ja',
     ...headers as Record<string, string>,
   };
 
