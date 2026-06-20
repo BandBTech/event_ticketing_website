@@ -182,7 +182,7 @@ export const ticketService = {
             id: "",
             name: t.tier_name,
           },
-          qrData: `https://sandbox.timroticket.com/validate/${t.ticket_number}`,
+          qrData: `https://api.timroticket.com/validate/${t.ticket_number}`,
           checkedIn: t.status === "used" || t.status === "checked_in",
           is_checked_in: t.status === "used" || t.status === "checked_in",
         },

@@ -1,17 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  TicketIcon,
-  List,
-  X,
-  User,
-  SignOut,
-  UserCircle,
-} from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/ui/button";
-import { FigmaButton } from "@/components/ui/figma-button";
 import { LanguageSelector } from "@/components/common/LanguageSelector";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,16 +10,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useLanguageStore } from "@/store/languageStore";
-import { useAuthStore } from "@/store/authStore";
+import { FigmaButton } from "@/components/ui/figma-button";
+import { useCompanyInfo } from "@/hooks/useCompany";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
+import { useLanguageStore } from "@/store/languageStore";
+import { CreditCardIcon, LockKeyIcon } from "@phosphor-icons/react";
+import {
+  List,
+  SignOut,
+  TicketIcon,
+  User,
+  UserCircle,
+  X,
+} from "@phosphor-icons/react/dist/ssr";
+import { BadgeDollarSignIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BellIcon, CreditCardIcon, LockKeyIcon } from "@phosphor-icons/react";
-import { useCompanyInfo } from "@/hooks/useCompany";
-import { BadgeDollarSignIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -40,7 +40,7 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
-    const { data: company, isLoading } = useCompanyInfo();
+  const { data: company, isLoading } = useCompanyInfo();
   const handleLogout = async () => {
     const result = await logout();
     // [TODO: Translate Setup]
@@ -48,7 +48,7 @@ export function Header() {
     router.push("/");
   };
   const handleOrganizeRedirect = () => {
-    window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
+    window.open("https://organizer.timroticket.com/login/", "_blank");
   };
 
   const navigation = [
@@ -65,8 +65,10 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-   <Link href="/" className="flex items-center gap-2 py-1.5 hover:opacity-80 transition-opacity">
-       
+          <Link
+            href="/"
+            className="flex items-center gap-2 py-1.5 hover:opacity-80 transition-opacity"
+          >
             {mounted ? (
               <>
                 {company?.logo_url && (
@@ -140,110 +142,147 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link
                           href="/settings/profile"
-                                  className={cn(
-            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
-           pathname === "/settings/profile" 
-              ? "bg-blue-50/80 text-blue-700" 
-              : "text-gray-700 hover:bg-gray-50"
-          )}
-                        > <UserCircle size={18} className={cn(pathname === "/settings/profile" ? "text-blue-700" : "text-gray-500")} />
-          <span>{t("navigation.profile", "My Profile")}</span>
-          {pathname === "/settings/profile" && (
-            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
-          )}
-        </Link>
-      </DropdownMenuItem>
+                          className={cn(
+                            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
+                            pathname === "/settings/profile"
+                              ? "bg-blue-50/80 text-blue-700"
+                              : "text-gray-700 hover:bg-gray-50",
+                          )}
+                        >
+                          {" "}
+                          <UserCircle
+                            size={18}
+                            className={cn(
+                              pathname === "/settings/profile"
+                                ? "text-blue-700"
+                                : "text-gray-500",
+                            )}
+                          />
+                          <span>{t("navigation.profile", "My Profile")}</span>
+                          {pathname === "/settings/profile" && (
+                            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
 
-      {/* Security Link */}
-      <DropdownMenuItem asChild>
-        <Link
-          href="/settings/security"
-          className={cn(
-            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
-            pathname === "/settings/security" 
-              ? "bg-blue-50/80 text-blue-700" 
-              : "text-gray-700 hover:bg-gray-50"
-          )}
-        >
-          <LockKeyIcon size={18} className={cn(pathname === "/settings/security" ? "text-blue-700" : "text-gray-500")} />
-          <span>{t("navigation.security", "Security")}</span>
-          {pathname === "/settings/security" && (
-            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
-          )}
-        </Link>
-      </DropdownMenuItem>
+                      {/* Security Link */}
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/settings/security"
+                          className={cn(
+                            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
+                            pathname === "/settings/security"
+                              ? "bg-blue-50/80 text-blue-700"
+                              : "text-gray-700 hover:bg-gray-50",
+                          )}
+                        >
+                          <LockKeyIcon
+                            size={18}
+                            className={cn(
+                              pathname === "/settings/security"
+                                ? "text-blue-700"
+                                : "text-gray-500",
+                            )}
+                          />
+                          <span>{t("navigation.security", "Security")}</span>
+                          {pathname === "/settings/security" && (
+                            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
 
-      {/* Transactions Link */}
-      <DropdownMenuItem asChild>
-        <Link
-          href="/settings/transactions"
-          className={cn(
-            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
-            pathname === "/settings/transactions" 
-              ? "bg-blue-50/80 text-blue-700" 
-              : "text-gray-700 hover:bg-gray-50"
-          )}
-        >
-          <CreditCardIcon size={18} className={cn(pathname === "/settings/transactions" ? "text-blue-700" : "text-gray-500")} />
-          <span>{t("navigation.transactions", "Transactions")}</span>
-          {pathname === "/settings/transactions" && (
-            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
-          )}
-        </Link>
-      </DropdownMenuItem>
+                      {/* Transactions Link */}
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/settings/transactions"
+                          className={cn(
+                            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
+                            pathname === "/settings/transactions"
+                              ? "bg-blue-50/80 text-blue-700"
+                              : "text-gray-700 hover:bg-gray-50",
+                          )}
+                        >
+                          <CreditCardIcon
+                            size={18}
+                            className={cn(
+                              pathname === "/settings/transactions"
+                                ? "text-blue-700"
+                                : "text-gray-500",
+                            )}
+                          />
+                          <span>
+                            {t("navigation.transactions", "Transactions")}
+                          </span>
+                          {pathname === "/settings/transactions" && (
+                            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
 
-      {/* Tickets Link */}
-      <DropdownMenuItem asChild>
-        <Link
-          href="/settings/tickets"
-          className={cn(
-            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
-            pathname === "/settings/tickets" 
-              ? "bg-blue-50/80 text-blue-700" 
-              : "text-gray-700 hover:bg-gray-50"
-          )}
-        >
-          <TicketIcon size={18} className={cn(pathname === "/settings/tickets" ? "text-blue-700" : "text-gray-500")} />
-          <span>{t("navigation.myTickets", "My Tickets")}</span>
-          {pathname === "/settings/tickets" && (
-            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
-          )}
-        </Link>
-      </DropdownMenuItem>
+                      {/* Tickets Link */}
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/settings/tickets"
+                          className={cn(
+                            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
+                            pathname === "/settings/tickets"
+                              ? "bg-blue-50/80 text-blue-700"
+                              : "text-gray-700 hover:bg-gray-50",
+                          )}
+                        >
+                          <TicketIcon
+                            size={18}
+                            className={cn(
+                              pathname === "/settings/tickets"
+                                ? "text-blue-700"
+                                : "text-gray-500",
+                            )}
+                          />
+                          <span>{t("navigation.myTickets", "My Tickets")}</span>
+                          {pathname === "/settings/tickets" && (
+                            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
 
-      {/* Refunds Link */}
-      <DropdownMenuItem asChild>
-        <Link
-          href="/settings/refunds"
-          className={cn(
-            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
-            pathname === "/settings/refunds" 
-              ? "bg-blue-50/80 text-blue-700" 
-              : "text-gray-700 hover:bg-gray-50"
-          )}
-        >
-          <BadgeDollarSignIcon size={18} className={cn(pathname === "/settings/refunds" ? "text-blue-700" : "text-gray-500")} />
-          <span>{t("navigation.refund", "My Refunds")}</span>
-          {pathname === "/settings/refunds" && (
-            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
-          )}
-        </Link>
-      </DropdownMenuItem>
+                      {/* Refunds Link */}
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/settings/refunds"
+                          className={cn(
+                            "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium",
+                            pathname === "/settings/refunds"
+                              ? "bg-blue-50/80 text-blue-700"
+                              : "text-gray-700 hover:bg-gray-50",
+                          )}
+                        >
+                          <BadgeDollarSignIcon
+                            size={18}
+                            className={cn(
+                              pathname === "/settings/refunds"
+                                ? "text-blue-700"
+                                : "text-gray-500",
+                            )}
+                          />
+                          <span>{t("navigation.refund", "My Refunds")}</span>
+                          {pathname === "/settings/refunds" && (
+                            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
 
-      <DropdownMenuSeparator className="bg-gray-100" />
+                      <DropdownMenuSeparator className="bg-gray-100" />
 
-      {/* Logout Action Button */}
-      <DropdownMenuItem
-        onClick={handleLogout}
-        className="w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium text-destructive focus:text-destructive focus:bg-red-50"
-      >
-        <SignOut size={18} className="text-red-500" />
-        <span>{t("navigation.logout", "Logout")}</span>
-      </DropdownMenuItem>
-      
-   
-  </DropdownMenuContent>
-</DropdownMenu>
+                      {/* Logout Action Button */}
+                      <DropdownMenuItem
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer transition-colors duration-200 text-sm font-medium text-destructive focus:text-destructive focus:bg-red-50"
+                      >
+                        <SignOut size={18} className="text-red-500" />
+                        <span>{t("navigation.logout", "Logout")}</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               ) : (
                 <>

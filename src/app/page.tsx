@@ -295,12 +295,18 @@ export default function HomePage() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUpcomingEvents(10);
 
-const upcomingEvents = (data?.pages.flatMap((page) => page.events) || [])
-  .filter((event) => event.status === "scheduled" || event.status === "sales_upcoming")
-  .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-const salesLiveEvents = (salesLiveData?.events || []).filter(
-  (event) => event.status === "on_sale"
-);
+  const upcomingEvents = (data?.pages.flatMap((page) => page.events) || [])
+    .filter(
+      (event) =>
+        event.status === "scheduled" || event.status === "sales_upcoming",
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+    );
+  const salesLiveEvents = (salesLiveData?.events || []).filter(
+    (event) => event.status === "on_sale",
+  );
 
   const totalItems = data?.pages[0]?.pagination.total;
 
@@ -313,7 +319,7 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
     setSelectedCategory(selectedCategory === category ? "" : category);
   };
   const handleOrganizeRedirect = () => {
-    window.open("https://sandbox-organizer.timroticket.com/login/", "_blank");
+    window.open("https://organizer.timroticket.com/login/", "_blank");
   };
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -529,7 +535,7 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
                 {t("common.pagination.showing")} {upcomingEvents.length}{" "}
                 {/* {t("common.pagination.of")} {totalItems}{" "} */}
                 {t("sections.upcomingEvents.subtitle")}
-              </p> 
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
