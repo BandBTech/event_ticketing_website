@@ -10,9 +10,10 @@ import { COMMON_FAQS } from "@/data/commonFAQs";
 
 interface EventFAQProps {
   organizerName: string;
+  organizerEmail?: string;
 }
 
-export const EventFAQ = ({ organizerName }: EventFAQProps) => {
+export const EventFAQ = ({ organizerName, organizerEmail }: EventFAQProps) => {
   const [showFAQ, setShowFAQ] = useState(false);
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -51,39 +52,43 @@ export const EventFAQ = ({ organizerName }: EventFAQProps) => {
             </div>
           ))}
           {/* Still have questions? */}
-          <div className="mt-8 pt-6 border-t border-gray-100">
-            <div className="bg-blue-50/50 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="text-center md:text-left">
-                <h4 className="text-sm font-bold text-gray-900">
+          {organizerEmail && (
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <div className="bg-blue-50/50 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="text-center md:text-left">
+                  <h4 className="text-sm font-bold text-gray-900">
+                    {t(
+                      "eventDetails.faq.stillQuestions",
+                      "Still have questions?",
+                    )}
+                  </h4>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {t("eventDetails.faq.contactPrefix", "Contact")}{" "}
+                    <span className="font-bold text-blue-600">
+                      {organizerName}
+                    </span>{" "}
+                    {t(
+                      "eventDetails.faq.contactSuffix",
+                      "for specific event inquiries.",
+                    )}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-white hover:bg-gray-50 border-gray-200 text-blue-600 font-semibold"
+                  onClick={() => {
+                    window.location.href = `mailto:${organizerEmail}`;
+                  }}
+                >
                   {t(
-                    "eventDetails.faq.stillQuestions",
-                    "Still have questions?",
+                    "eventDetails.button.contactOrganizer",
+                    "Contact Organizer",
                   )}
-                </h4>
-                <p className="text-xs text-gray-600 mt-1">
-                  {t("eventDetails.faq.contactPrefix", "Contact")}{" "}
-                  <span className="font-bold text-blue-600">
-                    {organizerName}
-                  </span>{" "}
-                  {t(
-                    "eventDetails.faq.contactSuffix",
-                    "for specific event inquiries.",
-                  )}
-                </p>
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-white hover:bg-gray-50 border-gray-200 text-blue-600 font-semibold"
-                onClick={() => { }}
-              >
-                {t(
-                  "eventDetails.button.contactOrganizer",
-                  "Contact Organizer",
-                )}
-              </Button>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

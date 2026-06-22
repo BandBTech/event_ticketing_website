@@ -143,7 +143,10 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
               <EventDescription description={event.description} />
               <EventOrganizer event={event} />
               <EventLocation venue={event.venue} />
-              <EventFAQ organizerName={event.organizer.business_name} />
+              <EventFAQ
+                organizerName={event.organizer.business_name}
+                organizerEmail={event.organizer.email}
+              />
             </div>
 
             {/* Sidebar */}
