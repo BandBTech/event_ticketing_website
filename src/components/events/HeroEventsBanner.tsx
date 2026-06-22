@@ -272,7 +272,9 @@ export function HeroEventsBanner({
                   <div className="pt-4 flex flex-wrap items-center gap-4">
                     <div className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/35 hover:shadow-indigo-600/50 transition-all duration-300 transform active:scale-[0.98]">
                       {/*<TicketIcon size={18} weight="bold" />*/}
-                      {t("hero.banner.getTickets", "Get Tickets")}
+                      {event.status?.toLowerCase() === "scheduled"
+                        ? t("common.viewDetails", "View Details")
+                        : t("hero.banner.getTickets", "Get Tickets")}
                     </div>
                     {getStartingPrice(event) && (
                       <span className="text-sm font-semibold text-slate-300">
