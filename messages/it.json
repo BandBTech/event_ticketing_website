@@ -30,6 +30,12 @@
     "tags": "Tag",
     "allEventsLoaded": "Tutti gli eventi caricati",
     "acceptedPaymentMethods": "Metodi di pagamento accettati",
+    "paymentMethods": {
+      "konbini": "Konbini",
+      "stripe": "Stripe",
+      "visa": "Visa",
+      "mastercard": "Mastercard"
+    },
     "processing": "Elaborazione...",
     "continue": "Continuare",
     "apply": "Fare domanda a",
@@ -81,6 +87,15 @@
       "events": "Eventi Elencati",
       "tickets": "Biglietti Venduti",
       "cities": "Città Coperte"
+    },
+    "banner": {
+      "featured": "In Evidenza",
+      "latest": "Ultimi Eventi",
+      "viewEvent": "Visualizza Evento",
+      "getTickets": "Ottieni Biglietti",
+      "liveNow": "In Vendita Ora",
+      "upcoming": "In Arrivo",
+      "exploreMore": "Esplora Altri Eventi"
     }
   },
   "sections": {

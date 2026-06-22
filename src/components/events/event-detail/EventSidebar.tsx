@@ -239,11 +239,9 @@ export const EventSidebar = ({
           {lowestRemaining > 0 && lowestRemaining < 10 && (
             <div className="mb-3">
               <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
-                {t(
-                  "events.onlyTicketsLeft",
-                  `Only ${lowestRemaining} left!`,
-                  { count: lowestRemaining },
-                )}
+                {t("events.onlyTicketsLeft", `Only ${lowestRemaining} left!`, {
+                  count: lowestRemaining,
+                })}
               </span>
             </div>
           )}
@@ -394,10 +392,16 @@ export const EventSidebar = ({
           <h3 className="font-semibold text-gray-900 mb-2">
             {t("common.place", "Venue")}
           </h3>
-          <p className="text-gray-900 font-medium break-words">{event.venue.name}</p>
+          <p className="text-gray-900 font-medium break-words">
+            {event.venue.name}
+          </p>
           {!/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
             event.venue.address?.trim() || "",
-          ) && <p className="text-sm text-gray-600 break-words w-full">{event.venue.address}</p>}
+          ) && (
+            <p className="text-sm text-gray-600 break-words w-full">
+              {event.venue.address}
+            </p>
+          )}
         </div>
 
         {/* Date */}
@@ -456,20 +460,36 @@ export const EventSidebar = ({
           <h3 className="font-semibold text-gray-900 mb-3">
             {t("common.acceptedPaymentMethods", "Accepted Payment Methods")}
           </h3>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Image
               src="/images/stripe.svg"
-              alt="Stripe"
+              alt={t("common.paymentMethods.stripe", "Stripe")}
               width={50}
               height={50}
             />
-            <Image src="/images/visa.svg" alt="Visa" width={50} height={50} />
+            <Image
+              src="/images/visa.svg"
+              alt={t("common.paymentMethods.visa", "Visa")}
+              width={50}
+              height={50}
+            />
             <Image
               src="/images/mastercard.svg"
-              alt="Mastercard"
+              alt={t("common.paymentMethods.mastercard", "Mastercard")}
               width={50}
               height={50}
             />
+            <div className="flex items-center gap-1.5">
+              <span className="flex min-h-[34px] items-center gap-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-300/90 rounded-md px-1.5 py-0.5">
+                <Image
+                  src="/images/konbini.svg"
+                  alt={t("common.paymentMethods.konbini", "Konbini")}
+                  width={20}
+                  height={20}
+                />
+                {t("common.paymentMethods.konbini", "Konbini")}
+              </span>
+            </div>
           </div>
         </div>
       </div>

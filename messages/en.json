@@ -31,6 +31,12 @@
     "tags": "Tags",
     "allEventsLoaded": "All Events Loaded",
     "acceptedPaymentMethods": "Accepted Payment Methods",
+    "paymentMethods": {
+      "konbini": "Konbini",
+      "stripe": "Stripe",
+      "visa": "Visa",
+      "mastercard": "Mastercard"
+    },
     "processing": "Processing...",
     "continue": "Continue",
     "apply": "Apply",
@@ -115,6 +121,15 @@
       "events": "Events Listed",
       "tickets": "Tickets Sold",
       "cities": "Cities Covered"
+    },
+    "banner": {
+      "featured": "Featured",
+      "latest": "Latest",
+      "viewEvent": "View Event",
+      "getTickets": "Get Tickets",
+      "liveNow": "Live Now",
+      "upcoming": "Upcoming",
+      "exploreMore": "Explore More Events"
     }
   },
   "sections": {

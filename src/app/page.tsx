@@ -255,6 +255,7 @@
 
 import { EventSearch } from "@/components/events/EventSearch";
 import { HomeEvent } from "@/components/events/HomeEvent";
+import { HeroEventsBanner } from "@/components/events/HeroEventsBanner";
 import { Button } from "@/components/ui/button";
 import { FigmaButton } from "@/components/ui/figma-button";
 import {
@@ -326,11 +327,10 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section - Commented Out Entirely
       <section id="home" className="relative py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center space-y-8">
-            {/* Hero Content */}
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border">
                 <TicketIcon size={20} className="text-blue-600" />
@@ -353,7 +353,6 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
               </p>
             </div>
 
-            {/* Search Section */}
             <div className="max-w-2xl mx-auto">
               <EventSearch
                 onSearch={handleSearch}
@@ -363,7 +362,6 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
               />
             </div>
 
-            {/* Only show when searching or filtering */}
             {(searchQuery || selectedCategory) && (
               <section className="py-16 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
@@ -389,10 +387,6 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
                     )}
                   </div>
 
-                  {/* <EventGrid
-                    events={eventsData?.events || []}
-                    isLoading={eventsLoading}
-                  /> */}
                   {eventsLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                       {[...Array(8)].map((_, i) => (
@@ -415,7 +409,6 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
                     </div>
                   )}
 
-                  {/* Load More Button */}
                   {eventsData &&
                     eventsData.pagination.page <
                       eventsData.pagination.totalPages && (
@@ -432,7 +425,7 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
                 </div>
               </section>
             )}
-            {/* Stats */}
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto pt-8">
               <div className="glass rounded-lg p-6 text-center">
                 <div className="text-3xl font-bold text-gray-900 mb-2">
@@ -460,41 +453,14 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
           </div>
         </div>
       </section>
+      */}
 
-      {/* SECTION 1: SALES LIVE */}
-      {salesLiveEvents && salesLiveEvents.length > 0 && (
-        <section className="py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
-              <div className="space-y-1">
-                <h2 className="text-3xl font-bold text-gray-900 font-poppins">
-                  {t("sections.salesLive.title")}
-                </h2>
-                <p className="text-gray-500">
-                  {t("sections.salesLive.subtitle")}
-                </p>
-              </div>
-              {/* <Badge className="bg-green-500 hover:bg-green-600 animate-pulse">Live Now</Badge> */}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {salesLoading ? (
-                <p>{t("sections.salesLive.loading")}</p>
-              ) : salesLiveEvents.length > 0 ? (
-                salesLiveEvents.map((event) => (
-                  <HomeEvent key={event.id} event={event} />
-                ))
-              ) : (
-                <div className="col-span-full py-10 text-center bg-gray-50 rounded-xl border-2 border-dashed">
-                  <p className="text-gray-400">
-                    {t("sections.salesLive.noEvents")}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Hero Banner with Latest & Featured Events */}
+      <HeroEventsBanner
+        featuredEvents={featuredEvents}
+        salesLiveEvents={salesLiveEvents}
+        isLoading={salesLoading}
+      />
 
       {/* Featured Events Section */}
       {/* {featuredEvents && featuredEvents.length > 0 && (

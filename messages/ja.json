@@ -30,6 +30,12 @@
     "tags": "タグ",
     "allEventsLoaded": "すべてのイベントがロードされました",
     "acceptedPaymentMethods": "ご利用いただけるお支払い方法",
+    "paymentMethods": {
+      "konbini": "コンビニ払い",
+      "stripe": "Stripe",
+      "visa": "Visa",
+      "mastercard": "Mastercard"
+    },
     "processing": "処理...",
     "continue": "続く",
     "apply": "適用する",
@@ -81,6 +87,15 @@
       "events": "掲載イベント",
       "tickets": "販売チケット",
       "cities": "対応都市"
+    },
+    "banner": {
+      "featured": "注目イベント",
+      "latest": "最新のイベント",
+      "viewEvent": "イベントを見る",
+      "getTickets": "チケットを入手",
+      "liveNow": "販売中",
+      "upcoming": "近日開催",
+      "exploreMore": "他のイベントを見る"
     }
   },
   "sections": {

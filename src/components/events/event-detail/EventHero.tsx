@@ -11,12 +11,14 @@ interface EventHeroProps {
 export const EventHero = ({ event }: EventHeroProps) => {
   return (
     <>
-      <div className="relative w-full aspect-16/10 rounded-2xl overflow-hidden mb-8 shadow-2xl">
+      <div className="relative w-full rounded-2xl overflow-hidden mb-8 shadow-2xl">
         <Image
           src={event.bannerImageUrl || event.imageUrl}
           alt={event.title}
-          fill
-          className="object-cover"
+          width={1200}
+          height={675}
+          sizes="100vw"
+          className="w-full h-auto"
           priority
         />
         {event.is_featured && (
