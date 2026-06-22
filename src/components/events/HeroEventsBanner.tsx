@@ -232,7 +232,7 @@ export function HeroEventsBanner({
                   </h2>
 
                   {/* Event Tags Badge (below title) */}
-                  {event.categories && event.categories.length > 0 && (
+                  {/*{event.categories && event.categories.length > 0 && (
                     <div className="flex flex-wrap gap-2 pt-1">
                       {event.categories.map((category) => (
                         <Badge
@@ -244,7 +244,7 @@ export function HeroEventsBanner({
                         </Badge>
                       ))}
                     </div>
-                  )}
+                  )}*/}
 
                   {/* Metadata Row */}
                   <div className="flex flex-wrap items-start gap-6 text-sm text-slate-300 font-medium pt-1">
