@@ -6,6 +6,7 @@
 import { AuthError } from "./authService";
 import { toast } from "./toast";
 import { tokenManager } from "./tokenManager";
+import { useLanguageStore } from "../store/languageStore";
 
 // API Configuration
 const API_BASE_URL =
@@ -61,6 +62,7 @@ export async function apiRequest<T>(
   // Prepare headers
   const requestHeaders: Record<string, string> = {
     "Content-Type": "application/json",
+    "Accept-Language": useLanguageStore.getState().locale || "ja",
     ...(headers as Record<string, string>),
   };
 

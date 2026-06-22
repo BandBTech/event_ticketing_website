@@ -30,6 +30,12 @@
     "tags": "タグ",
     "allEventsLoaded": "すべてのイベントがロードされました",
     "acceptedPaymentMethods": "ご利用いただけるお支払い方法",
+    "paymentMethods": {
+      "konbini": "コンビニ払い",
+      "stripe": "Stripe",
+      "visa": "Visa",
+      "mastercard": "Mastercard"
+    },
     "processing": "処理...",
     "continue": "続く",
     "apply": "適用する",
@@ -81,6 +87,15 @@
       "events": "掲載イベント",
       "tickets": "販売チケット",
       "cities": "対応都市"
+    },
+    "banner": {
+      "featured": "注目イベント",
+      "latest": "最新のイベント",
+      "viewEvent": "イベントを見る",
+      "getTickets": "チケットを入手",
+      "liveNow": "販売中",
+      "upcoming": "近日開催",
+      "exploreMore": "他のイベントを見る"
     }
   },
   "sections": {
@@ -624,6 +639,12 @@
     "payWithStripe": "Stripe で支払う",
     "redirectingToPayment": "支払いにリダイレクトしています...",
     "validatingPayment": "お支払いを確認しています...",
+    "processingPayment": "お支払いを処理しています",
+    "checkingPaymentStatus": "お支払い状況を確認しています...",
+    "validatingTimeout": "予想以上に時間がかかっています。メールを確認してください。",
+    "networkIssue": "ネットワークの問題が発生しました... 再試行中",
+    "attempt": "試行",
+    "invalidCheckoutSession": "無効なチェックアウトセッション",
     "paymentFailed": "支払い確認に失敗しました",
     "invalidAccess": "無効なアクセス",
     "invalidAccessMessage": "お支払いの詳細を確認できませんでした。",

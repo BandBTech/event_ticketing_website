@@ -4,6 +4,8 @@ import { api } from "@/lib/apiClient";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 interface CheckoutStatus {
   success: boolean;
@@ -28,7 +30,10 @@ function PaymentSuccessContent() {
   const checkoutToken =
     searchParams.get("checkout_token") || searchParams.get("token") || "";
 
-  const [message, setMessage] = useState("Checking payment status...");
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
+
+  const [message, setMessage] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -84,25 +89,27 @@ function PaymentSuccessContent() {
         if (Date.now() - start > MAX_TIME) {
           clearInterval(intervalRef.current!);
           intervalRef.current = null;
-          setMessage("Taking longer than expected. Please check email.");
+          setMessage(t("ticketPurchase.validatingTimeout", "Taking longer than expected. Please check email."));
         }
       } catch (err) {
-        setMessage("Network issue... retrying");
+        setMessage(t("ticketPurchase.networkIssue", "Network issue... retrying"));
       }
     }, 2000);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [checkoutToken]);
+  }, [checkoutToken, t]);
 
   if (!checkoutToken) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        Invalid checkout session
+        {t("ticketPurchase.invalidCheckoutSession", "Invalid checkout session")}
       </div>
     );
   }
+
+  const displayMessage = message || t("ticketPurchase.checkingPaymentStatus", "Checking payment status...");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -114,12 +121,14 @@ function PaymentSuccessContent() {
         />
 
         <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          Processing Payment
+          {t("ticketPurchase.processingPayment", "Processing Payment")}
         </h2>
 
-        <p className="text-gray-600 mb-2">{message}</p>
+        <p className="text-gray-600 mb-2">{displayMessage}</p>
 
-        <p className="text-xs text-gray-400">Attempt #{attempt}</p>
+        <p className="text-xs text-gray-400">
+          {t("ticketPurchase.attempt", "Attempt")} #{attempt}
+        </p>
       </div>
     </div>
   );

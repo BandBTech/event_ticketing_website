@@ -30,6 +30,12 @@
     "tags": "Tag",
     "allEventsLoaded": "Tutti gli eventi caricati",
     "acceptedPaymentMethods": "Metodi di pagamento accettati",
+    "paymentMethods": {
+      "konbini": "Konbini",
+      "stripe": "Stripe",
+      "visa": "Visa",
+      "mastercard": "Mastercard"
+    },
     "processing": "Elaborazione...",
     "continue": "Continuare",
     "apply": "Fare domanda a",
@@ -81,6 +87,15 @@
       "events": "Eventi Elencati",
       "tickets": "Biglietti Venduti",
       "cities": "Città Coperte"
+    },
+    "banner": {
+      "featured": "In Evidenza",
+      "latest": "Ultimi Eventi",
+      "viewEvent": "Visualizza Evento",
+      "getTickets": "Ottieni Biglietti",
+      "liveNow": "In Vendita Ora",
+      "upcoming": "In Arrivo",
+      "exploreMore": "Esplora Altri Eventi"
     }
   },
   "sections": {
@@ -623,6 +638,12 @@
     "payWithStripe": "Paga con Stripe",
     "redirectingToPayment": "Reindirizzamento al pagamento...",
     "validatingPayment": "Verifica del pagamento...",
+    "processingPayment": "Elaborazione del pagamento",
+    "checkingPaymentStatus": "Verifica dello stato del pagamento...",
+    "validatingTimeout": "Richiede più tempo del previsto. Controlla l'e-mail.",
+    "networkIssue": "Problema di rete... riprovo",
+    "attempt": "Tentativo",
+    "invalidCheckoutSession": "Sessione di checkout non valida",
     "paymentFailed": "Conferma del pagamento non riuscita",
     "invalidAccess": "Accesso non valido",
     "invalidAccessMessage": "Non siamo riusciti a verificare i dettagli del tuo pagamento.",

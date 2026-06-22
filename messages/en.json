@@ -31,6 +31,12 @@
     "tags": "Tags",
     "allEventsLoaded": "All Events Loaded",
     "acceptedPaymentMethods": "Accepted Payment Methods",
+    "paymentMethods": {
+      "konbini": "Konbini",
+      "stripe": "Stripe",
+      "visa": "Visa",
+      "mastercard": "Mastercard"
+    },
     "processing": "Processing...",
     "continue": "Continue",
     "apply": "Apply",
@@ -115,6 +121,15 @@
       "events": "Events Listed",
       "tickets": "Tickets Sold",
       "cities": "Cities Covered"
+    },
+    "banner": {
+      "featured": "Featured",
+      "latest": "Latest",
+      "viewEvent": "View Event",
+      "getTickets": "Get Tickets",
+      "liveNow": "Live Now",
+      "upcoming": "Upcoming",
+      "exploreMore": "Explore More Events"
     }
   },
   "sections": {
@@ -688,6 +703,12 @@
     "payWithStripe": "Pay with Stripe",
     "redirectingToPayment": "Redirecting to payment...",
     "validatingPayment": "Verifying your payment...",
+    "processingPayment": "Processing Payment",
+    "checkingPaymentStatus": "Checking payment status...",
+    "validatingTimeout": "Taking longer than expected. Please check email.",
+    "networkIssue": "Network issue... retrying",
+    "attempt": "Attempt",
+    "invalidCheckoutSession": "Invalid checkout session",
     "paymentFailed": "Payment Confirmation Failed",
     "invalidAccess": "Invalid Access",
     "invalidAccessMessage": "We could not verify your payment details.",

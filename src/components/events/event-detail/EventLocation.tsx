@@ -16,10 +16,8 @@ export const EventLocation = ({ venue }: EventLocationProps) => {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
-  const isCoord = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(venue.address.trim());
-  const mapQuery = isCoord
-    ? venue.address.trim()
-    : `${venue.name}, ${venue.address}`;
+  const isCoord = /^\s*-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?\s*$/.test(venue.address);
+  const mapQuery = venue.address.trim();
 
   return (
     <div className="glass-card rounded-2xl overflow-hidden">

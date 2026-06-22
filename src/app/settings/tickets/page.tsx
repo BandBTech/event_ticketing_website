@@ -34,7 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TicketItems, ViewTicketDetails } from "@/types/ticket";
+import { ApiUserTicket, TicketItems, ViewTicketDetails } from "@/types/ticket";
 import { useTransactionDetails, useUserTickets } from "@/hooks/useTickets";
 import { QRCodeSVG } from "qrcode.react";
 import { cn, formatDate, formatTime } from "@/lib/utils";
@@ -102,7 +102,16 @@ export default function TicketsPage() {
     isError: isDetailError,
     refetch: refetchDetail,
   } = useTransactionDetails(selectedOrderId ?? undefined);
-  // Use the existing query hook
+
+     const sortedTickets = useMemo(() => {
+    if (!detailTickets?.tickets) return [];
+    return [...detailTickets.tickets].sort((a, b) => {
+      const numA = a.ticketNumber || "";
+    const numB = b.ticketNumber || "";
+    return numA.localeCompare(numB);
+    });
+  }, [detailTickets?.tickets]); 
+
   const {
     data: responseData,
     isLoading,
@@ -189,6 +198,7 @@ export default function TicketsPage() {
     setShowCancelDialog(true);
   };
 
+
   const handleCancelConfirm = async (reason: string) => {
     if (!selectedOrderForCancel && !selectedTicketForCancel) return;
 
@@ -246,6 +256,8 @@ export default function TicketsPage() {
       setCurrentPage((prev) => prev + 1);
     }
   };
+
+
 
   useEffect(() => {
     if (responseData?.tickets) {
@@ -386,27 +398,33 @@ export default function TicketsPage() {
       setIsGeneratingPdf(false);
     }
   };
+  
 
   const handleDownloadAllTickets = async (order: ViewTicketDetails) => {
     const loadingToastId = "download-tickets";
     try {
-      toast.loading(t("ticket.toast.generatingpdf","Generating PDF...", { id: loadingToastId }));
+      toast.loading(t("ticket.toast.generatingpdf","Generating PDF..."), { id: loadingToastId });
       const pdfBlob = await generateTicketsPdf(order);
+
+      const eventName = order.event.title
+      ? order.event.title.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/(^-|-$)/g, "")
+      : "tickets";
       const shortId = order.orderId.split("-")[0];
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `tickets-${shortId}.pdf`;
+      link.download = `${eventName}-${shortId}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
-      toast.success(t("ticket.toast.tickeddownload","Tickets downloaded!", { id: loadingToastId }));
+      toast.success(t("ticket.toast.tickeddownload","Tickets downloaded!"), { id: loadingToastId });
     } catch (error) {
       console.error("Download error:", error);
-      toast.error(t("ticket.toast.error","Failed to generate PDF. Please try again.", {
+      toast.error(t("ticket.toast.error","Failed to generate PDF. Please try again."), {
         id: loadingToastId,
-      }));
+      });
     }
   };
+
 
   const handleShareAllTickets = async (order: ViewTicketDetails) => {
     const loadingToastId = "share-tickets";
@@ -944,7 +962,7 @@ export default function TicketsPage() {
                 </div>
               ) : detailTickets && detailTickets.tickets?.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4">
-                  {detailTickets?.tickets.map((ticket) => (
+                  {sortedTickets.map((ticket) => (
                     <Card
                       key={ticket.ticketId}
                       className="border-none shadow-sm overflow-hidden bg-white border-l-4 border-l-primary"
