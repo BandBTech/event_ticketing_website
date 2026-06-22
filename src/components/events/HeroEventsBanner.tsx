@@ -170,7 +170,7 @@ export function HeroEventsBanner({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto max-xl:px-4 pt-16 mb-8 relative z-10">
+    <div className="w-full max-w-7xl mx-auto max-xl:px-4 pt-4 md:pt-8 lg:pt-16 mb-8 relative z-10">
       {/* Visual background glow effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5 blur-3xl -z-10 rounded-3xl" />
 
