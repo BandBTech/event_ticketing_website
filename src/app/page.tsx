@@ -293,6 +293,10 @@ export default function HomePage() {
 
   const { data: featuredEvents } = useFeaturedEvents();
 
+  const { data: allEventsData } = useEvents({
+    limit: 10,
+  });
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUpcomingEvents(10);
 
@@ -459,6 +463,7 @@ const salesLiveEvents = (salesLiveData?.events || []).filter(
       <HeroEventsBanner
         featuredEvents={featuredEvents}
         salesLiveEvents={salesLiveEvents}
+        allEvents={allEventsData?.events || []}
         isLoading={salesLoading}
       />
 

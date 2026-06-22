@@ -22,12 +22,14 @@ import FeaturedBadge from "@/components/events/FeaturedBadge";
 interface HeroEventsBannerProps {
   featuredEvents?: Event[];
   salesLiveEvents?: Event[];
+  allEvents?: Event[];
   isLoading?: boolean;
 }
 
 export function HeroEventsBanner({
   featuredEvents = [],
   salesLiveEvents = [],
+  allEvents = [],
   isLoading = false,
 }: HeroEventsBannerProps) {
   const { locale } = useLanguageStore();
@@ -36,7 +38,7 @@ export function HeroEventsBanner({
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Combine featured events and live events to get a solid list of top events
+  // Combine featured events, live events, and all public events to get a solid list of top events
   const combinedEvents: Event[] = [];
   const addedIds = new Set<string>();
 
@@ -56,8 +58,16 @@ export function HeroEventsBanner({
     }
   });
 
-  // Limit to top 5 for the banner
-  const bannerEvents = combinedEvents.slice(0, 5);
+  // Then add all public events to ensure we have at least 5 events if possible, and up to 10
+  allEvents.forEach((event) => {
+    if (!addedIds.has(event.id)) {
+      combinedEvents.push(event);
+      addedIds.add(event.id);
+    }
+  });
+
+  // Limit to top 10 for the banner
+  const bannerEvents = combinedEvents.slice(0, 10);
 
   const nextSlide = useCallback(() => {
     if (bannerEvents.length > 0) {
@@ -237,7 +247,7 @@ export function HeroEventsBanner({
                   )}
 
                   {/* Metadata Row */}
-                  <div className="flex flex-wrap items-center gap-6 text-sm text-slate-300 font-medium pt-1">
+                  <div className="flex flex-wrap items-start gap-6 text-sm text-slate-300 font-medium pt-1">
                     <span className="flex items-center gap-2">
                       <CalendarDotsIcon size={18} className="text-indigo-400" />
                       {new Date(event.startDate).toLocaleDateString("en-US", {
@@ -247,9 +257,12 @@ export function HeroEventsBanner({
                         year: "numeric",
                       })}
                     </span>
-                    <span className="flex items-center gap-2">
-                      <MapPinIcon size={18} className="text-indigo-400" />
-                      <span className="truncate">
+                    <span className="flex items-start gap-2">
+                      <MapPinIcon
+                        size={18}
+                        className="text-indigo-400 flex-shrink-0"
+                      />
+                      <span className="wrap-anywhere">
                         {getDisplayLocation(event)}
                       </span>
                     </span>
@@ -281,14 +294,14 @@ export function HeroEventsBanner({
           <>
             <button
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 border border-white/10 text-white hover:text-white backdrop-blur-sm transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:scale-105 active:scale-95"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 hidden md:flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 border border-white/10 text-white hover:text-white backdrop-blur-sm transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:scale-105 active:scale-95"
               aria-label="Previous Slide"
             >
               <CaretLeftIcon size={24} weight="bold" />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 border border-white/10 text-white hover:text-white backdrop-blur-sm transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:scale-105 active:scale-95"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 hidden md:flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 border border-white/10 text-white hover:text-white backdrop-blur-sm transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:scale-105 active:scale-95"
               aria-label="Next Slide"
             >
               <CaretRightIcon size={24} weight="bold" />

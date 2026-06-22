@@ -13,6 +13,7 @@ import { EventOrganizer } from "./event-detail/EventOrganizer";
 import { EventSidebar } from "./event-detail/EventSidebar";
 import { EventNotFound } from "./EventNotFound";
 import { PageTitle } from "../pagetitle/PageTitle";
+import { formatCurrency } from "@/lib/utils";
 
 const RESTRICTED_STATUSES = [
   "pending",
@@ -85,6 +86,24 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
     return <EventNotFound reason="restricted_status" />;
   }
 
+  // Calculate sales states
+  const now = new Date();
+  const availableTickets = event
+    ? event.ticketTypes.filter((t) => t.isActive && t.available > 0)
+    : [];
+  const isAvailable = availableTickets.length > 0;
+
+  const willSalesStart = event
+    ? event.ticketTypes.some(
+        (t) => new Date(t.sales_start) > now && t.isActive,
+      )
+    : false;
+
+  const lowestAvailablePrice = isAvailable
+    ? Math.min(...availableTickets.map((t) => t.price))
+    : null;
+  const currency = isAvailable ? availableTickets[0].currency : null;
+
   return (
     <div className="min-h-screen relative">
       <PageTitle title={event.title}/>
@@ -106,7 +125,7 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
       </div>
 
       <div className="relative z-10">
-        <main className="max-w-7xl mx-auto px-4 py-12">
+        <main className="max-w-7xl mx-auto px-4 py-12 pb-28 md:pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
@@ -132,6 +151,64 @@ export function EventDetailClient({ eventId }: EventDetailClientProps) {
             </div>
           </div>
         </main>
+      </div>
+
+      {/* Floating Bottom Bar for Mobile Screen */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200/80 shadow-2xl p-4 animate-in slide-in-from-bottom duration-300">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex flex-col min-w-0">
+            {isAvailable ? (
+              <>
+                <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                  {t("events.startingFrom", "Starting from")}
+                </span>
+                <span className="text-xl font-bold text-blue-600 truncate">
+                  {lowestAvailablePrice !== null && currency
+                    ? formatCurrency(lowestAvailablePrice, currency)
+                    : ""}
+                </span>
+              </>
+            ) : willSalesStart ? (
+              <>
+                <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                  {t("eventDetails.status", "Status")}
+                </span>
+                <span className="text-base font-bold text-amber-600 truncate">
+                  {t("events.upcoming", "Upcoming")}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                  {t("eventDetails.status", "Status")}
+                </span>
+                <span className="text-base font-bold text-red-600 truncate">
+                  {t("eventDetails.button.ticketSalesEnded", "Sales Ended")}
+                </span>
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {isAvailable ? (
+              <button
+                onClick={handleFindTickets}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold rounded-xl transition-all shadow-md shadow-blue-600/25"
+              >
+                {t("eventDetails.button.findTickets", "Buy Tickets")}
+              </button>
+            ) : (
+              <button
+                disabled
+                className="px-6 py-3 bg-gray-200 text-gray-400 font-semibold rounded-xl cursor-not-allowed"
+              >
+                {willSalesStart
+                  ? t("events.upcoming", "Upcoming")
+                  : t("eventDetails.button.ticketSalesEnded", "Sales Ended")}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

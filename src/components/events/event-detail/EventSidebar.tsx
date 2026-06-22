@@ -235,7 +235,7 @@ export const EventSidebar = ({
       );
 
       return (
-        <>
+        <div className="hidden md:block">
           {lowestRemaining > 0 && lowestRemaining < 10 && (
             <div className="mb-3">
               <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
@@ -262,7 +262,7 @@ export const EventSidebar = ({
           >
             {t("eventDetails.button.findTickets", "Buy Tickets")}
           </Button>
-        </>
+        </div>
       );
     }
 
