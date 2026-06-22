@@ -100,7 +100,7 @@ export function HeroEventsBanner({
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-7xl mx-auto max-lg:px-4 pt-16 mb-16">
+      <div className="w-full max-w-7xl mx-auto max-lg:px-4 pt-6 md:pt-8 lg:pt-16 mb-16">
         <div className="w-full h-[576px] bg-slate-200/60 rounded-3xl border border-slate-200/50 animate-pulse flex items-end p-10">
           <div className="space-y-4 max-w-xl w-full">
             <div className="h-6 bg-slate-300/60 rounded w-1/4" />
@@ -170,7 +170,7 @@ export function HeroEventsBanner({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto max-xl:px-4 pt-96 md:pt-8 lg:pt-16 mb-8 relative z-10">
+    <div className="w-full max-w-7xl mx-auto max-xl:px-4 pt-6 md:pt-8 lg:pt-16 mb-8 relative z-10">
       {/* Visual background glow effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5 blur-3xl -z-10 rounded-3xl" />
 
