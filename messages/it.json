@@ -724,7 +724,8 @@
         "title": "Codice QR del biglietto",
         "present": "Presenta questo codice QR all'ingresso della sede"
       },
-      "downloading": "Download in corso..."
+      "downloading": "Download in corso...",
+      "filename": "Biglietti"
     },
     "qr": {
       "number": "Numero del biglietto:"

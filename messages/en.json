@@ -794,7 +794,8 @@
         "title": "Ticket QR Code",
         "present": "Present this QR code at the venue entrance"
       },
-      "downloading": "Downloading..."
+      "downloading": "Downloading...",
+      "filename": "Tickets"
     },
     "qr": {
       "number": "Ticket Number:"

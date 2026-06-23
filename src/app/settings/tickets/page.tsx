@@ -411,11 +411,11 @@ export default function TicketsPage() {
       const eventName = order.event.title
       ? order.event.title.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/(^-|-$)/g, "")
       : "tickets";
-      const shortId = order.orderId.split("-")[0];
+     // const shortId = order.orderId.split("-")[0];
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${eventName}-${shortId}.pdf`;
+      link.download = `${eventName} ${t("ticket.details.filename", "Tickets")}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
       toast.success(t("ticket.toast.tickeddownload","Tickets downloaded!"), { id: loadingToastId });

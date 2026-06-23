@@ -725,7 +725,8 @@
         "title": "チケットQRコード",
         "present": "このQRコードを会場入口にてご提示ください"
       },
-      "downloading": "ダウンロード中..."
+      "downloading": "ダウンロード中...",
+      "filename": "チケット"
     },
     "qr": {
       "number": "チケット番号:"
