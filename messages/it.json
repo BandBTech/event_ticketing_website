@@ -723,7 +723,8 @@
       "qr": {
         "title": "Codice QR del biglietto",
         "present": "Presenta questo codice QR all'ingresso della sede"
-      }
+      },
+      "downloading": "Download in corso..."
     },
     "qr": {
       "number": "Numero del biglietto:"

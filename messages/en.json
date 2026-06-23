@@ -793,7 +793,8 @@
       "qr": {
         "title": "Ticket QR Code",
         "present": "Present this QR code at the venue entrance"
-      }
+      },
+      "downloading": "Downloading..."
     },
     "qr": {
       "number": "Ticket Number:"

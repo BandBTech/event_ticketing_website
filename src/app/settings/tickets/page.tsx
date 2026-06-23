@@ -66,6 +66,7 @@ export default function TicketsPage() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [showQRModal, setShowQRModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedTicketForQR, setSelectedTicketForQR] =
     useState<TicketItems | null>(null);
@@ -402,6 +403,7 @@ export default function TicketsPage() {
 
   const handleDownloadAllTickets = async (order: ViewTicketDetails) => {
     const loadingToastId = "download-tickets";
+    setIsDownloading(true);
     try {
       toast.loading(t("ticket.toast.generatingpdf","Generating PDF..."), { id: loadingToastId });
       const pdfBlob = await generateTicketsPdf(order);
@@ -422,6 +424,8 @@ export default function TicketsPage() {
       toast.error(t("ticket.toast.error","Failed to generate PDF. Please try again."), {
         id: loadingToastId,
       });
+    }finally{
+      setIsDownloading(false);
     }
   };
 
@@ -940,9 +944,18 @@ export default function TicketsPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleDownloadAllTickets(detailTickets)}
+                      disabled={isDownloading}
                     >
-                      <Download className="h-3.5 w-3.5 mr-1.5" /> {t("ticket.details.downloadall","Download All")}
-                    </Button>
+                  {isDownloading ? (
+      <svg className="animate-spin h-3.5 w-3.5 mr-1.5 text-current" viewBox="0 0 24 24" fill="none">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+      </svg>
+    ) : (
+      <Download className="h-3.5 w-3.5 mr-1.5" />
+    )}
+    {isDownloading ? t("ticket.details.downloading", "Downloading...") : t("ticket.details.downloadall", "Download All")}
+   </Button>
                     <Button
                       size="sm"
                       variant="outline"
