@@ -300,8 +300,15 @@ export default function HomePage() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUpcomingEvents(10);
 
-  const upcomingEvents = data?.pages.flatMap((page) => page.events) || [];
-
+  const upcomingEvents = (data?.pages.flatMap((page) => page.events) || [])
+    .filter(
+      (event) =>
+        event.status === "scheduled" || event.status === "sales_upcoming",
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+    );
   const salesLiveEvents = (salesLiveData?.events || []).filter(
     (event) => event.status === "on_sale",
   );
