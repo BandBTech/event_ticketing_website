@@ -748,7 +748,8 @@
     "supportedBy": "Supported by",
     "validityNotice": "Validity: This ticket is valid for a single individual only.",
     "ticketCounter": "Ticket {index} of {total}",
-    "total": "Total"
+    "total": "Total",
+    "downloading": "Downloading..."
   },
   "ticket": {
     "eventTicket": "Event Ticket",
@@ -795,7 +796,8 @@
         "present": "Present this QR code at the venue entrance"
       },
       "downloading": "Downloading...",
-      "filename": "Tickets"
+      "filename": "Tickets",
+      "sharing": "Sharing..."
     },
     "qr": {
       "number": "Ticket Number:"

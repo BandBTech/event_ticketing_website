@@ -679,7 +679,8 @@
     "organizedBy": "主催",
     "validityNotice": "有効期限：このチケットは1名様のみ有効です。",
     "ticketCounter": "チケット {index } / {total}",
-    "total": "合計"
+    "total": "合計",
+    "downloading": "ダウンロード中..."
   },
   "ticket": {
     "eventTicket": "イベントチケット",
@@ -726,7 +727,8 @@
         "present": "このQRコードを会場入口にてご提示ください"
       },
       "downloading": "ダウンロード中...",
-      "filename": "チケット"
+      "filename": "チケット",
+      "sharing": "共有中..."
     },
     "qr": {
       "number": "チケット番号:"

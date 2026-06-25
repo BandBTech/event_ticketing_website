@@ -678,7 +678,8 @@
     "organizedBy": "Organizzato da",
     "validityNotice": "Validità: questo biglietto è valido solo per una persona.",
     "ticketCounter": "Biglietto {index} di {total}",
-    "total": "Totale"
+    "total": "Totale",
+    "downloading": "Download in corso..."
   },
   "ticket": {
     "eventTicket": "Biglietto per eventi",
@@ -725,7 +726,8 @@
         "present": "Presenta questo codice QR all'ingresso della sede"
       },
       "downloading": "Download in corso...",
-      "filename": "Biglietti"
+      "filename": "Biglietti",
+      "sharing": "Condivisione..."
     },
     "qr": {
       "number": "Numero del biglietto:"

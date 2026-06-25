@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
+import { useEffect, Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { TicketDisplay } from "@/components/tickets/TicketDisplay";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ function TicketVerification() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const token = searchParams.get("token") || "";
+  const [isExporting,  setIsExporting] = useState(false);
 
   const { data: validationData } = useSuspenseQuery({
     queryKey: queryKeys.tickets.validate(token),
@@ -66,6 +67,8 @@ function TicketVerification() {
   const handleDownload = async () => {
     const element = document.getElementById("ticket-container");
     if (!element) return;
+
+    setIsExporting(true);
 
     try {
       const waitForImages = async (root: HTMLElement, timeoutMs = 3000) => {
@@ -174,9 +177,11 @@ function TicketVerification() {
         );
       }
 
-      const orderId = ticketDetails?.orderId;
-      const shortId = orderId ? orderId.split("-")[0] : "tickets";
-      pdf.save(`tickets-${shortId}.pdf`);
+      const eventName = ticketDetails?.event?.title || "Event";
+      const localizedTicketsName= t("ticket.details.filename", "Tickets");
+      // const orderId = ticketDetails?.orderId;
+      // const shortId = orderId ? orderId.split("-")[0] : "tickets";
+      pdf.save(`${eventName} ${localizedTicketsName}.pdf`);
 
       toast.success("Ticket exported successfully!");
     } catch (err) {
@@ -184,6 +189,9 @@ function TicketVerification() {
         err instanceof Error ? `${err.name}: ${err.message}` : String(err);
       console.error("Failed to generate PDF:", message, err);
       toast.error("Failed to generate PDF. Please try printing explicitly.");
+    }finally {
+      setIsExporting(false);
+
     }
   };
 
@@ -210,13 +218,24 @@ function TicketVerification() {
               <Ticket weight="bold" size={18} />
               {t("ticketView.printTicket")}
             </Button>
-            <Button
-              onClick={handleDownload}
-              className="bg-primary hover:bg-primary/90 text-white font-bold h-11 px-6 rounded-xl flex items-center gap-2.5 shadow-xl shadow-primary/20 transition-all active:scale-95"
-            >
-              <DownloadSimple weight="bold" size={18} />
-              {t("ticketView.downloadTicket", "Download")}
-            </Button>
+        <Button
+  onClick={handleDownload}
+  disabled={isExporting}
+  className="bg-primary hover:bg-primary/90 text-white font-bold h-11 px-6 rounded-xl flex items-center gap-2.5 shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-75 disabled:pointer-events-none"
+>
+  {isExporting ? (
+    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+    </svg>
+  ) : (
+    <DownloadSimple weight="bold" size={18} />
+  )}
+  {isExporting 
+    ? t("ticketView.downloading", "Downloading...") 
+    : t("ticketView.downloadTicket", "Download")
+  }
+</Button>
           </div>
         </div>
 
