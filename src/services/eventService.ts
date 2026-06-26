@@ -12,6 +12,7 @@ export interface PublicEventsParams {
   max_price?: number;
   sort?: string;
   status?: string;
+  category?: string;
 }
 
 export interface FeaturedEventsParams {
@@ -196,6 +197,8 @@ export const eventService = {
     if (params.limit) queryParams.append("limit", params.limit.toString());
     if (params.search) queryParams.append("search", params.search);
     if (params.location) queryParams.append("location", params.location);
+    if (params.status) queryParams.append("status", params.status);
+    if (params.category) queryParams.append("category", params.category);
     if (params.start_date) queryParams.append("start_date", params.start_date);
     if (params.end_date) queryParams.append("end_date", params.end_date);
     if (params.min_price)

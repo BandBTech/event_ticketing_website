@@ -123,6 +123,19 @@
       "organizeEvent": "イベント開催",
       "learnMore": "詳細を見る"
     },
+    "onSale": {
+      "title": "販売中",
+      "subtitle": "今すぐ購入可能なイベントです。"
+    },
+    "salesUpcoming": {
+      "title": "販売予定",
+      "subtitle": "イベントを見つけて、事前に計画を立てましょう。"
+    },
+    "scheduledEvents": {
+      "title": "開催予定のイベント",
+      "subtitle": "承認され発表されましたが、チケットはまだ販売されていません。"
+    },
+    "viewAllEvents": "すべてのイベントを表示",
     "allEvents": {
       "title": "すべてのイベント",
       "subTitle": "ここですべてのイベントを見つけることができます。"

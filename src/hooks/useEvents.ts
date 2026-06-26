@@ -60,3 +60,27 @@ export const useUpcomingEvents = (limit: number = 10) => {
     },
   });
 };
+
+export const useOnSaleEvents = (limit: number = 6) => {
+  return useQuery({
+    queryKey: ["events", "on_sale", limit],
+    queryFn: () => eventService.getPublicEvents({ status: "on_sale", limit }),
+    staleTime: 0,
+  });
+};
+
+export const useSalesUpcomingEvents = (limit: number = 6) => {
+  return useQuery({
+    queryKey: ["events", "sales_upcoming", limit],
+    queryFn: () => eventService.getPublicEvents({ status: "sales_upcoming", limit }),
+    staleTime: 0,
+  });
+};
+
+export const useScheduledEvents = (limit: number = 6) => {
+  return useQuery({
+    queryKey: ["events", "scheduled", limit],
+    queryFn: () => eventService.getPublicEvents({ status: "scheduled", limit }),
+    staleTime: 0,
+  });
+};

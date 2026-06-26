@@ -124,6 +124,19 @@
       "organizeEvent": "Organizza Evento",
       "learnMore": "Scopri di Più"
     },
+    "onSale": {
+      "title": "In Vendita Ora",
+      "subtitle": "Questi sono gli eventi che puoi acquistare subito."
+    },
+    "salesUpcoming": {
+      "title": "Vendite in Arrivo",
+      "subtitle": "Scopri gli eventi e pianifica in anticipo."
+    },
+    "scheduledEvents": {
+      "title": "Eventi Programmati",
+      "subtitle": "Approvati e annunciati, biglietti non ancora disponibili."
+    },
+    "viewAllEvents": "Visualizza tutti gli eventi",
     "allEvents": {
       "title": "Tutti gli eventi",
       "subTitle": "Qui puoi trovare tutti gli eventi."

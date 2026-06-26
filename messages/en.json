@@ -158,6 +158,19 @@
       "organizeEvent": "Organize Event",
       "learnMore": "Learn More"
     },
+    "onSale": {
+      "title": "On Sale Now",
+      "subtitle": "These are the events you can purchase immediately."
+    },
+    "salesUpcoming": {
+      "title": "Upcoming Sales",
+      "subtitle": "Discover events and plan ahead."
+    },
+    "scheduledEvents": {
+      "title": "Scheduled Events",
+      "subtitle": "Approved and announced, tickets not available yet."
+    },
+    "viewAllEvents": "View All Events",
     "allEvents": {
       "title": "All Events",
       "subTitle": "Here you can find all the events."

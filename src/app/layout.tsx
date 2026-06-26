@@ -53,7 +53,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ja" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var e=window.localStorage.getItem('language-storage');if(e){var t=JSON.parse(e);var n=t&&t.state&&t.state.locale;if(n==='en'||n==='ja'||n==='it'){window.__INITIAL_LOCALE__=n;document.documentElement.lang=n;}}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${poppins.variable} font-sans antialiased`}
       >
