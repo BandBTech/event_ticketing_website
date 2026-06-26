@@ -173,8 +173,10 @@ function TicketVerification() {
 
       if (exportedWithoutImages) {
         toast.message(
+         t(
+          "ticketView.toast.corsWarning",
           "Exported without some images due to CORS restrictions (banner/logo).",
-        );
+        ),);
       }
 
       const eventName = ticketDetails?.event?.title || "Event";
@@ -183,12 +185,15 @@ function TicketVerification() {
       // const shortId = orderId ? orderId.split("-")[0] : "tickets";
       pdf.save(`${eventName} ${localizedTicketsName}.pdf`);
 
-      toast.success("Ticket exported successfully!");
+      toast.success(t("ticketView.toast.exportSuccess", "Ticket downloaded successfully!"));
     } catch (err) {
       const message =
         err instanceof Error ? `${err.name}: ${err.message}` : String(err);
       console.error("Failed to generate PDF:", message, err);
-      toast.error("Failed to generate PDF. Please try printing explicitly.");
+      toast.error(   t(
+        "ticketView.toast.exportError",
+        "Failed to generate PDF. Please try printing explicitly.",
+      ),);
     }finally {
       setIsExporting(false);
 

@@ -37,7 +37,7 @@ import {
 import { ApiUserTicket, TicketItems, ViewTicketDetails } from "@/types/ticket";
 import { useTransactionDetails, useUserTickets } from "@/hooks/useTickets";
 import { QRCodeSVG } from "qrcode.react";
-import { cn, formatDate, formatTime } from "@/lib/utils";
+import { cn, formatDate, formatTime, formatTransactionDate, formatTransactionTime } from "@/lib/utils";
 
 import { ArrowLeftIcon, CheckCircleIcon } from "@phosphor-icons/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -772,7 +772,7 @@ export default function TicketsPage() {
                               >
                                 <TicketIcon className="w-3 h-3 mr-1" />
                                 {order.ticketCount}{" "}
-                                {order.ticketCount === 1 ? "Ticket" : "Tickets"}
+                                {order.ticketCount === 1 ? t("ticket.count_pural_one","ticket"): t("ticket.count_pural_other","tickets")}
                               </Badge>
                             </div>
 
@@ -780,12 +780,12 @@ export default function TicketsPage() {
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-primary shrink-0" />
                                 <span className="truncate">
-                                  {formatDate(order.event.startDate)}
+                                  {formatTransactionDate(order.event.startDate, locale)}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-primary shrink-0" />
-                                <span>{formatTime(order.event.startDate)}</span>
+                                <span>{formatTransactionTime(order.event.startDate, locale)}</span>
                               </div>
                               <div className="flex items-center gap-2 col-span-full">
                                 <MapPin className="h-4 w-4 text-primary shrink-0" />
@@ -812,12 +812,13 @@ export default function TicketsPage() {
                                 <p
                                   className={cn(
                                     "font-bold text-sm capitalize",
-                                    order.transactionStatus === "completed"
+                                    order.transactionStatus === "succeeded"
                                       ? "text-green-600"
                                       : "text-amber-600",
                                   )}
                                 >
-                                  {order.transactionStatus}
+                                 
+                                  {t(`status.${order.transactionStatus}`, order.transactionStatus)}
                                 </p>
                               </div>
                             </div>
@@ -918,11 +919,11 @@ export default function TicketsPage() {
                             <span className="text-xs text-muted-foreground uppercase font-bold mr-1">
                               {t("ticket.details.starts", "Starts:")}
                             </span>
-                            {formatDate(detailTickets.event.startDate)}
+                            {formatTransactionDate(detailTickets.event.startDate, locale)}
                           </div>
                           <div className="flex items-center gap-1.5 font-medium">
                             <Clock className="h-4 w-4 text-primary" />
-                            {formatTime(detailTickets.event.startDate)}
+                            {formatTransactionTime(detailTickets.event.startDate, locale)}
                           </div>
                         </div>
 
@@ -933,11 +934,11 @@ export default function TicketsPage() {
                             <span className="text-xs text-muted-foreground uppercase font-bold mr-1">
                               {t("ticket.details.ends", "Ends:")}
                             </span>
-                            {formatDate(detailTickets.event.endDate)}
+                            {formatTransactionDate(detailTickets.event.endDate, locale)}
                           </div>
                           <div className="flex items-center gap-1.5 font-medium">
                             <Clock className="h-4 w-4 text-primary" />
-                            {formatTime(detailTickets.event.endDate)}
+                            {formatTransactionTime(detailTickets.event.endDate, locale)}
                           </div>
                         </div>
                       </>
@@ -966,16 +967,18 @@ export default function TicketsPage() {
                       className="bg-white/50 text-[10px] uppercase tracking-wider"
                     >
                       {t("ticket.details.paymentstatus", "Payment Status: ")}
-                      {detailTickets.transactionStatus}
+                      
+                       {t(`status.${detailTickets.transactionStatus}`, detailTickets.transactionStatus)}
+                      
                     </Badge>
                     <Badge
                       variant="outline"
                       className="bg-white/50 text-[10px] uppercase tracking-wider"
                     >
                       {t("ticket.details.purchased", "Purchased: ")}
-                      {formatDate(detailTickets.purchaseDate)}
+                      {formatTransactionDate(detailTickets.purchaseDate, locale)}
                       <Clock className="h-4 w-4 text-primary" />{" "}
-                      {formatTime(detailTickets.purchaseDate)}
+                      {formatTransactionTime(detailTickets.purchaseDate, locale)}
                     </Badge>
                   </div>
 
@@ -1125,7 +1128,7 @@ export default function TicketsPage() {
                                     "bg-emerald-100 text-emerald-700",
                                 )}
                               >
-                                {ticket.status === "expired" && "Expired"}
+                                {/* {ticket.status === "expired" && "Expired"}
                                 {ticket.status === "active" && "Active"}
                                 {ticket.status === "used" && "Used"}
                                 {ticket.status === "pending_refund" &&
@@ -1134,7 +1137,9 @@ export default function TicketsPage() {
                                   "Partially Refunded"}
                                 {ticket.status === "refunded" && "Refunded"}
                                 {ticket.status === "canceled" && "Canceled"}
-                                {ticket.status === "checked_in" && "Checked In"}
+                                {ticket.status === "checked_in" && "Checked In"} */}
+
+                                {t(`ticket.status.${ticket.status}`, ticket.status)}
                               </Badge>
                             )}
                           </div>

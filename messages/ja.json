@@ -680,7 +680,12 @@
     "validityNotice": "有効期限：このチケットは1名様のみ有効です。",
     "ticketCounter": "チケット {index } / {total}",
     "total": "合計",
-    "downloading": "ダウンロード中..."
+    "downloading": "ダウンロード中...",
+    "toast": {
+      "corsWarning": "CORS 制限により、一部の画像なしでエクスポートされました (バナー/ロゴ)。",
+      "exportSuccess": "チケットが正常にダウンロードされました。",
+      "exportError": "PDFの生成に失敗しました。\n明示的に印刷してみてください。"
+    }
   },
   "ticket": {
     "eventTicket": "イベントチケット",
@@ -694,6 +699,16 @@
       "ticketshared": "チケットシェアしました！",
       "downloadpdf": "ダウンロードされた PDF (このブラウザでは共有はサポートされていません)",
       "errorshare": "チケットを共有できませんでした。\nもう一度試してください。"
+    },
+        "status": {
+      "active": "有効",
+      "used": "使用済み",
+      "expired": "期限切れ",
+      "canceled": "キャンセル済み",
+      "checked_in": "入場済み",
+      "refunded": "返金済み",
+      "pending_refund": "返金保留中",
+      "partially_refunded": "一部返金済み"
     },
     "alltickets": "すべてのチケット",
     "paymentstatus": "支払い状況",
@@ -735,7 +750,9 @@
     },
     "button": {
       "loadmore": "もっと読み込む"
-    }
+    },
+    "count_pural_one": "チケット",
+    "count_pural_other": "チケット"
   },
   "billing": {
     "title": "請求する",
@@ -868,7 +885,14 @@
     "loadMore": "今後さらにロードする"
   },
   "status": {
-    "sales_upcoming": "販売予定"
+    "sales_upcoming": "販売予定",
+    "succeeded": "完了",
+    "pending": "保留中",
+    "failed": "失敗"
+  },
+  "payment": {
+    "stripe": "Stripe決済",
+    "card": "クレジットカード"
   },
   "allevents": {
     "pageTitle": "イベント"

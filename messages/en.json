@@ -1,4 +1,5 @@
 {
+
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong",
@@ -749,7 +750,12 @@
     "validityNotice": "Validity: This ticket is valid for a single individual only.",
     "ticketCounter": "Ticket {index} of {total}",
     "total": "Total",
-    "downloading": "Downloading..."
+    "downloading": "Downloading...",
+    "toast": {
+      "corsWarning": "Exported without some images due to CORS restrictions (banner/logo).",
+      "exportSuccess": "Ticket downloaded successfully!",
+      "exportError": "Failed to generate PDF. Please try printing explicitly."
+    }
   },
   "ticket": {
     "eventTicket": "Event Ticket",
@@ -763,6 +769,16 @@
       "ticketshared": "Tickets shared!",
       "downloadpdf": "PDF downloaded (sharing not supported in this browser)",
       "errorshare": "Could not share tickets. Please try again."
+    },
+       "status": {
+      "active": "Active",
+      "used": "Used",
+      "expired": "Expired",
+      "canceled": "Canceled",
+      "checked_in": "Checked In",
+      "refunded": "Refunded",
+      "pending_refund": "Pending Refund",
+      "partially_refunded": "Partially Refunded"
     },
     "alltickets": "All Tickets",
     "paymentstatus": "Payment Status",
@@ -804,7 +820,9 @@
     },
     "button": {
       "loadmore": "Load More"
-    }
+    },
+    "count_pural_one": "ticket",
+    "count_pural_other": "tickets"
   },
   "billing": {
     "title": "Billing & Payments",
