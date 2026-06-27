@@ -9,7 +9,7 @@ import { useUserRefunds, useRefundDetail } from "@/hooks/useRefunds";
 import { useDebouncedState } from "@/hooks/useDebounce";
 import TablePagination from "@/components/ui/TablePagination";
 import { PageTitle } from "@/components/pagetitle/PageTitle";
-import { cn } from "@/lib/utils";
+import { cn, formatTransactionDate, formatTransactionTime } from "@/lib/utils";
 import { format } from "date-fns";
 import {
   Popover,
@@ -22,6 +22,7 @@ import { DateRange } from "react-day-picker";
 import { RefundDetail } from "@/components/refunds/refundDetails";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Refund } from "@/types/refund";
 
 export default function RefundsPage() {
   const searchParams = useSearchParams();
@@ -51,11 +52,14 @@ export default function RefundsPage() {
     router.push(pathname);
   };
 
-  const getStatusStyle = (status: string) => {
+  const getStatusStyle = (status: Refund["status"]) => {
+    if (!status) return "bg-gray-100 text-gray-700";
     switch (status.toLowerCase()) {
       case "completed": return "bg-green-100 text-green-700";
+      case "succeeded" : return "bg-green-100 text-green-700"
       case "pending": return "bg-amber-100 text-amber-700";
       case "rejected": return "bg-red-100 text-red-700";
+      case "processing": return "bg-blue-100 text-blue-700";
       default: return "bg-gray-100 text-gray-700";
     }
   };
@@ -117,7 +121,7 @@ export default function RefundsPage() {
               {/* List */}
               <div className="space-y-3">
                 {isFetching && refunds.length === 0 ? (
-                  <div className="p-8 text-center text-gray-400">Loading...</div>
+                  <div className="p-8 text-center text-gray-400"> {t("common.loading", "Loading...")}</div>
                 ) : refunds.length === 0 ? (
                   <div className="text-center py-20 text-gray-400">
                     <Undo2 className="mx-auto h-12 w-12 mb-4 opacity-20" />
@@ -126,8 +130,8 @@ export default function RefundsPage() {
                 ) : (
                   refunds.map((refund) => (
                     <div
-                      key={refund.ID}
-                      onClick={() => router.push(`${pathname}?id=${refund.ID}`)}
+                      key={refund.id}
+                      onClick={() => router.push(`${pathname}?id=${refund.id}`)}
                       className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-all cursor-pointer group"
                     >
                       <div className="flex items-center gap-4">
@@ -136,15 +140,25 @@ export default function RefundsPage() {
                         </div>
                         <div>
                           <h3 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                            {refund.RefundNumber}
+                             {refund.event?.title}
+                            
                           </h3>
-                          <p className="text-[10px] text-gray-400">{format(new Date(refund.CreatedAt), "MMM dd, yyyy")}</p>
-                        </div>
+                           <p className="text-[11px] font-medium text-gray-700 capitalize">
+     {refund.refund_number} 
+  </p>
+                          
+                           <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
+                              <span>{formatTransactionDate(refund.created_at, locale || "en")}</span>
+                              <span className="text-gray-300">•</span>
+                              <span>{formatTransactionTime(refund.created_at, locale || "en")}</span>
+                            </div>
+                        </div> 
                       </div>
                       <div className="flex sm:flex-col items-center sm:items-end justify-between mt-2 sm:mt-0">
-                        <p className="font-black text-gray-900">{refund.Currency} {(refund.Amount / 100).toFixed(2)}</p>
-                        <span className={cn("text-[10px] font-bold uppercase px-2 py-0.5 rounded", getStatusStyle(refund.Status))}>
-                          {refund.Status}
+                        <p className="font-black text-gray-900">{refund.event.symbol} {refund.amount }</p>
+                        <span className={cn("text-[10px] font-bold uppercase px-2 py-0.5 rounded", getStatusStyle(refund.status))}>
+                         
+                          {t(`status.${refund.status}`, refund.status)}
                         </span>
                       </div>
                     </div>

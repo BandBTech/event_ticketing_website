@@ -1,5 +1,4 @@
 {
-
   "common": {
     "all": "All",
     "loading": "Loading...",
@@ -784,7 +783,7 @@
       "downloadpdf": "PDF downloaded (sharing not supported in this browser)",
       "errorshare": "Could not share tickets. Please try again."
     },
-       "status": {
+    "status": {
       "active": "Active",
       "used": "Used",
       "expired": "Expired",
@@ -792,7 +791,8 @@
       "checked_in": "Checked In",
       "refunded": "Refunded",
       "pending_refund": "Pending Refund",
-      "partially_refunded": "Partially Refunded"
+      "partially_refunded": "Partially Refunded",
+      "processing": "Processing"
     },
     "alltickets": "All Tickets",
     "paymentstatus": "Payment Status",
@@ -1570,8 +1570,18 @@
       "rejection": "Rejection Note",
       "label": {
         "refundnumber": "Refund Number",
-        "daterequested": "Date Requested"
-      }
+        "daterequested": "Date Requested",
+        "txdate": "Purchase Date",
+        "user_name": "Full Name",
+        "user_email": "Email Address",
+        "eventtitle": "Event Name",
+        "organizer": "Organizer Name"
+      },
+      "refundrequest": "Refund Requested By",
+      "sections": {
+        "event": "Event & Organizer Details"
+      },
+      "noreason": "No specific reason was provided."
     },
     "deatils": {
       "total": "Total Refunded"

@@ -714,7 +714,7 @@
       "downloadpdf": "PDF scaricato (condivisione non supportata in questo browser)",
       "errorshare": "Impossibile condividere i biglietti. \nPer favore riprova."
     },
-       "status": {
+    "status": {
       "active": "Attivo",
       "used": "Utilizzato",
       "expired": "Scaduto",
@@ -902,7 +902,8 @@
     "sales_upcoming": "Vendite Future",
     "succeeded": "Riuscito",
     "pending": "In attesa",
-    "failed": "Fallito"
+    "failed": "Fallito",
+    "processing": "elaborazione"
   },
   "payment": {
     "stripe": "Pagamento tramite Stripe",
@@ -1506,8 +1507,18 @@
       "rejection": "Nota di rifiuto",
       "label": {
         "refundnumber": "Numero di rimborso",
-        "daterequested": "Data richiesta"
-      }
+        "daterequested": "Data richiesta",
+        "txdate": "Data di acquisto",
+        "user_name": "Nome e cognome",
+        "user_email": "Indirizzo e-mail",
+        "eventtitle": "Nome dell'evento",
+        "organizer": "Nome dell'organizzatore"
+      },
+      "refundrequest": "Rimborso richiesto da",
+      "sections": {
+        "event": "Evento"
+      },
+      "noreason": "Non è stata fornita alcuna motivazione specifica."
     },
     "deatils": {
       "total": "Totale rimborsato"

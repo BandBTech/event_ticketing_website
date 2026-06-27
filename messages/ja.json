@@ -714,7 +714,7 @@
       "downloadpdf": "ダウンロードされた PDF (このブラウザでは共有はサポートされていません)",
       "errorshare": "チケットを共有できませんでした。\nもう一度試してください。"
     },
-        "status": {
+    "status": {
       "active": "有効",
       "used": "使用済み",
       "expired": "期限切れ",
@@ -722,7 +722,8 @@
       "checked_in": "入場済み",
       "refunded": "返金済み",
       "pending_refund": "返金保留中",
-      "partially_refunded": "一部返金済み"
+      "partially_refunded": "一部返金済み",
+      "processing": "処理"
     },
     "alltickets": "すべてのチケット",
     "paymentstatus": "支払い状況",
@@ -902,7 +903,8 @@
     "sales_upcoming": "販売予定",
     "succeeded": "完了",
     "pending": "保留中",
-    "failed": "失敗"
+    "failed": "失敗",
+    "processing": "処理"
   },
   "payment": {
     "stripe": "Stripe決済",
@@ -1507,8 +1509,18 @@
       "rejection": "拒否メモ",
       "label": {
         "refundnumber": "払い戻し番号",
-        "daterequested": "リクエスト日"
-      }
+        "daterequested": "リクエスト日",
+        "txdate": "購入日",
+        "user_name": "フルネーム",
+        "user_email": "電子メールアドレス",
+        "eventtitle": "イベント名",
+        "organizer": "主催者名"
+      },
+      "refundrequest": "払い戻しの要求者",
+      "sections": {
+        "event": "イベント"
+      },
+      "noreason": "具体的な理由は示されなかった。"
     },
     "deatils": {
       "total": "返金総額"
