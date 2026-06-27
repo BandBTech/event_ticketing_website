@@ -1,6 +1,7 @@
 {
 
   "common": {
+    "all": "All",
     "loading": "Loading...",
     "error": "Something went wrong",
     "search": "Search",

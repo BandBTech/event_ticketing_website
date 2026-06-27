@@ -1,6 +1,7 @@
 {
   "status.succeeded": "Riuscito",
   "common": {
+    "all": "Tutti",
     "loading": "Caricamento...",
     "error": "Qualcosa è andato storto",
     "search": "Cerca",
