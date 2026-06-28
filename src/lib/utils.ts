@@ -81,7 +81,7 @@ export function formatDate(
  * @returns Formatted time string or empty string if invalid
  */
 export function formatTime(
-  date: Date | string | number | null | undefined,
+  date: Date | string | number | null | undefined, 
 ): string {
   if (!date) return "";
 
@@ -266,6 +266,30 @@ export const formatCurrency = (
     minimumFractionDigits: hasFraction ? 2 : 0,
     maximumFractionDigits: hasFraction ? 2 : 0,
   }).format(amount);
+};
+
+export const formatTransactionDate = (dateString: string | number | Date, locale: string = "en") => {
+  if (!dateString) return "";
+  
+  const date = new Date(dateString);
+  
+  // Custom configurations per language requirements
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "short",  // E.g., "Jun" in EN, "6月" in JA, "giu" in IT
+    day: "numeric",
+  }).format(date);
+};
+export const formatTransactionTime = (dateString: string | number | Date, locale: string = "en") => {
+  if (!dateString) return "";
+  
+  const date = new Date(dateString);
+  
+  return new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: locale === "en", // Uses AM/PM for English, 24-hour style for IT/JA
+  }).format(date);
 };
 
 /**

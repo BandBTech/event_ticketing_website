@@ -22,7 +22,7 @@ import {
   getDefaultFilters,
 } from "@/types/transaction";
 import TablePagination from "@/components/ui/TablePagination";
-import { cn, formatDate,} from "@/lib/utils";
+import { cn, formatDate, formatTransactionDate,} from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TransactionDetail } from "@/components/transactions/TransactionDetail";
 import Image from "next/image";
@@ -570,9 +570,9 @@ const getClearButtonIcon = () => {
                           )}
 
                           <p className="text-[10px] sm:text-xs text-gray-500">
-                            {formatDate(tx.date)} •{" "}
+                            {formatTransactionDate(tx.date, locale)} •{" "}
                             <span className="capitalize">
-                              {tx.payment_method}
+                               {t(`payment.${tx.payment_method}`, tx.payment_method)}
                             </span>
                           </p>
                         </div>
@@ -585,12 +585,12 @@ const getClearButtonIcon = () => {
                         <span
                           className={cn(
                             "text-[9px] sm:text-[10px] font-bold uppercase px-2 py-0.5 rounded",
-                            tx.status === "completed"
+                            tx.status === "succeeded"
                               ? "bg-green-100 text-green-700"
                               : "bg-amber-100 text-amber-700",
                           )}
                         >
-                          {tx.status}
+                          {t(`status.${tx.status}`, tx.status)}
                         </span>
                       </div>
                     </div>

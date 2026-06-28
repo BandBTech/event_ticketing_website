@@ -1,5 +1,6 @@
 {
   "common": {
+    "all": "All",
     "loading": "Loading...",
     "error": "Something went wrong",
     "search": "Search",
@@ -157,6 +158,19 @@
       "organizeEvent": "Organize Event",
       "learnMore": "Learn More"
     },
+    "onSale": {
+      "title": "On Sale Now",
+      "subtitle": "These are the events you can purchase immediately."
+    },
+    "salesUpcoming": {
+      "title": "Upcoming Sales",
+      "subtitle": "Discover events and plan ahead."
+    },
+    "scheduledEvents": {
+      "title": "Scheduled Events",
+      "subtitle": "Approved and announced, tickets not available yet."
+    },
+    "viewAllEvents": "View All Events",
     "allEvents": {
       "title": "All Events",
       "subTitle": "Here you can find all the events."
@@ -748,7 +762,13 @@
     "supportedBy": "Supported by",
     "validityNotice": "Validity: This ticket is valid for a single individual only.",
     "ticketCounter": "Ticket {index} of {total}",
-    "total": "Total"
+    "total": "Total",
+    "downloading": "Downloading...",
+    "toast": {
+      "corsWarning": "Exported without some images due to CORS restrictions (banner/logo).",
+      "exportSuccess": "Ticket downloaded successfully!",
+      "exportError": "Failed to generate PDF. Please try printing explicitly."
+    }
   },
   "ticket": {
     "eventTicket": "Event Ticket",
@@ -762,6 +782,17 @@
       "ticketshared": "Tickets shared!",
       "downloadpdf": "PDF downloaded (sharing not supported in this browser)",
       "errorshare": "Could not share tickets. Please try again."
+    },
+    "status": {
+      "active": "Active",
+      "used": "Used",
+      "expired": "Expired",
+      "canceled": "Canceled",
+      "checked_in": "Checked In",
+      "refunded": "Refunded",
+      "pending_refund": "Pending Refund",
+      "partially_refunded": "Partially Refunded",
+      "processing": "Processing"
     },
     "alltickets": "All Tickets",
     "paymentstatus": "Payment Status",
@@ -793,14 +824,19 @@
       "qr": {
         "title": "Ticket QR Code",
         "present": "Present this QR code at the venue entrance"
-      }
+      },
+      "downloading": "Downloading...",
+      "filename": "Tickets",
+      "sharing": "Sharing..."
     },
     "qr": {
       "number": "Ticket Number:"
     },
     "button": {
       "loadmore": "Load More"
-    }
+    },
+    "count_pural_one": "ticket",
+    "count_pural_other": "tickets"
   },
   "billing": {
     "title": "Billing & Payments",
@@ -1534,8 +1570,18 @@
       "rejection": "Rejection Note",
       "label": {
         "refundnumber": "Refund Number",
-        "daterequested": "Date Requested"
-      }
+        "daterequested": "Date Requested",
+        "txdate": "Purchase Date",
+        "user_name": "Full Name",
+        "user_email": "Email Address",
+        "eventtitle": "Event Name",
+        "organizer": "Organizer Name"
+      },
+      "refundrequest": "Refund Requested By",
+      "sections": {
+        "event": "Event & Organizer Details"
+      },
+      "noreason": "No specific reason was provided."
     },
     "deatils": {
       "total": "Total Refunded"

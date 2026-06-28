@@ -15,7 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatTransactionDate } from "@/lib/utils";
 import { TransactionDetailApiResponse } from "@/types/transaction";
 import { InvoiceModal } from "./InvoiceModal";
 import { InvoicePDF } from "./InvoicePDF";
@@ -88,10 +88,10 @@ if (!tx || !inv) {
         </Button>
         <div className="flex gap-2">
           <Badge className="bg-[#E7F7EF] text-[#0FAF62] hover:bg-[#E7F7EF] border-none px-3 py-1 capitalize">
-            {tx.status}
+           {t(`status.${tx.status}`,tx.status)}
           </Badge>
           <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 px-3 py-1">
-            {tx.payment_gateway}
+            {t(`payment.${tx.payment_gateway}`,tx.payment_gateway)}
           </Badge>
         </div>
       </div>
@@ -123,7 +123,7 @@ if (!tx || !inv) {
             <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.name","User Name")}</span><span className="font-semibold">{tx.user.name}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.email","Email")}</span><span className="font-semibold">{tx.user.email}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.EventName","Event Name")}</span><span className="font-semibold">{tx.event.title}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.quantity","Quantity")}</span><span className="font-semibold">{tx.ticket_count} {tx.ticket_count === 1 ? "ticket" : "tickets"}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.quantity","Quantity")}</span><span className="font-semibold">{tx.ticket_count} {tx.ticket_count === 1 ? t("ticket.count_pural_one","ticket"): t("ticket.count_pural_other","tickets")}</span></div>
           </div>
         </div>
 
@@ -133,8 +133,8 @@ if (!tx || !inv) {
             <h3 className="font-bold">{t("setting.menu.transaction.buyer.payment","Payment")}</h3>
           </div>
           <div className="space-y-4 text-sm">
-            <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.gateway","Gateway")}</span><span className="font-semibold capitalize">{tx.payment_gateway}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.created","Created At")}</span><span className="font-semibold">{formatDate(tx.created_at)}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.gateway","Gateway")}</span><span className="font-semibold capitalize">{t(`payment.${tx.payment_gateway}`,tx.payment_gateway)}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">{t("setting.menu.transaction.buyer.created","Created At")}</span><span className="font-semibold">{formatTransactionDate(tx.created_at, locale)}</span></div>
             <div className="mt-6 p-4 bg-[#F8F9FB] rounded-lg flex justify-between items-center">
               <span className="text-gray-500 text-xs">{t("setting.menu.transaction.buyer.total","Total Amount")}</span>
               <span className="text-xl font-bold">{tx.currency} {tx.amount.toFixed(2)}</span>

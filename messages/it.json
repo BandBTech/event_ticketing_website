@@ -1,5 +1,7 @@
 {
+  "status.succeeded": "Riuscito",
   "common": {
+    "all": "Tutti",
     "loading": "Caricamento...",
     "error": "Qualcosa è andato storto",
     "search": "Cerca",
@@ -123,6 +125,19 @@
       "organizeEvent": "Organizza Evento",
       "learnMore": "Scopri di Più"
     },
+    "onSale": {
+      "title": "In Vendita Ora",
+      "subtitle": "Questi sono gli eventi che puoi acquistare subito."
+    },
+    "salesUpcoming": {
+      "title": "Vendite in Arrivo",
+      "subtitle": "Scopri gli eventi e pianifica in anticipo."
+    },
+    "scheduledEvents": {
+      "title": "Eventi Programmati",
+      "subtitle": "Approvati e annunciati, biglietti non ancora disponibili."
+    },
+    "viewAllEvents": "Visualizza tutti gli eventi",
     "allEvents": {
       "title": "Tutti gli eventi",
       "subTitle": "Qui puoi trovare tutti gli eventi."
@@ -678,7 +693,13 @@
     "organizedBy": "Organizzato da",
     "validityNotice": "Validità: questo biglietto è valido solo per una persona.",
     "ticketCounter": "Biglietto {index} di {total}",
-    "total": "Totale"
+    "total": "Totale",
+    "downloading": "Download in corso...",
+    "toast": {
+      "corsWarning": "Esportato senza alcune immagini a causa delle restrizioni CORS (banner/logo).",
+      "exportSuccess": "Biglietto scaricato con successo!",
+      "exportError": "Impossibile generare il PDF. \nProva a stampare esplicitamente."
+    }
   },
   "ticket": {
     "eventTicket": "Biglietto per eventi",
@@ -692,6 +713,16 @@
       "ticketshared": "Biglietti condivisi!",
       "downloadpdf": "PDF scaricato (condivisione non supportata in questo browser)",
       "errorshare": "Impossibile condividere i biglietti. \nPer favore riprova."
+    },
+    "status": {
+      "active": "Attivo",
+      "used": "Utilizzato",
+      "expired": "Scaduto",
+      "canceled": "Annullato",
+      "checked_in": "Registrato",
+      "refunded": "Rimborsato",
+      "pending_refund": "Rimborso in attesa",
+      "partially_refunded": "Parzialmente rimborsato"
     },
     "alltickets": "Tutti i biglietti",
     "paymentstatus": "Stato del pagamento",
@@ -723,14 +754,19 @@
       "qr": {
         "title": "Codice QR del biglietto",
         "present": "Presenta questo codice QR all'ingresso della sede"
-      }
+      },
+      "downloading": "Download in corso...",
+      "filename": "Biglietti",
+      "sharing": "Condivisione..."
     },
     "qr": {
       "number": "Numero del biglietto:"
     },
     "button": {
       "loadmore": "Carica altro"
-    }
+    },
+    "count_pural_one": "biglietto",
+    "count_pural_other": "biglietti"
   },
   "billing": {
     "title": "Fatturazione",
@@ -863,7 +899,15 @@
     "loadMore": "Carica altri in arrivo"
   },
   "status": {
-    "sales_upcoming": "Vendite Future"
+    "sales_upcoming": "Vendite Future",
+    "succeeded": "Riuscito",
+    "pending": "In attesa",
+    "failed": "Fallito",
+    "processing": "elaborazione"
+  },
+  "payment": {
+    "stripe": "Pagamento tramite Stripe",
+    "card": "Carta di credito"
   },
   "allevents": {
     "pageTitle": "Eventi"
@@ -1463,8 +1507,18 @@
       "rejection": "Nota di rifiuto",
       "label": {
         "refundnumber": "Numero di rimborso",
-        "daterequested": "Data richiesta"
-      }
+        "daterequested": "Data richiesta",
+        "txdate": "Data di acquisto",
+        "user_name": "Nome e cognome",
+        "user_email": "Indirizzo e-mail",
+        "eventtitle": "Nome dell'evento",
+        "organizer": "Nome dell'organizzatore"
+      },
+      "refundrequest": "Rimborso richiesto da",
+      "sections": {
+        "event": "Evento"
+      },
+      "noreason": "Non è stata fornita alcuna motivazione specifica."
     },
     "deatils": {
       "total": "Totale rimborsato"

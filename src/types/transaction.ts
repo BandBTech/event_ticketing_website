@@ -58,7 +58,7 @@ id: string;
   amount: number;
   price: number;
   currency: string;
-  status: 'completed' | 'pending' | 'failed' | 'refunded';
+  status: 'completed' | 'pending' | 'failed' | 'refunded' | 'succeeded';
   created_at: string;
   updated_at: string;
   invoice_info: TransactionInvoice;

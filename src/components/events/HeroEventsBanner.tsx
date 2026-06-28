@@ -36,38 +36,55 @@ export function HeroEventsBanner({
   const { t } = useTranslation(locale);
   const [activeIdx, setActiveIdx] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [aspectRatios, setAspectRatios] = useState<Record<number, number>>({});
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
   // Combine featured events, live events, and all public events to get a solid list of top events
   const combinedEvents: Event[] = [];
   const addedIds = new Set<string>();
 
+  // Filter helper: check if event is within 3 months from today
+  const isWithinThreeMonths = (event: Event) => {
+    if (!event.startDate) return false;
+    const eventDate = new Date(event.startDate);
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+    threeMonthsLater.setHours(23, 59, 59, 999);
+
+    return eventDate >= todayStart && eventDate <= threeMonthsLater;
+  };
+
+  const addEvents = (list: Event[]) => {
+    list.forEach((event) => {
+      if (isWithinThreeMonths(event) && !addedIds.has(event.id)) {
+        combinedEvents.push(event);
+        addedIds.add(event.id);
+      }
+    });
+  };
+
   // Prioritize featured events
-  featuredEvents.forEach((event) => {
-    if (!addedIds.has(event.id)) {
-      combinedEvents.push(event);
-      addedIds.add(event.id);
-    }
-  });
+  addEvents(featuredEvents);
 
   // Then add sales live events
-  salesLiveEvents.forEach((event) => {
-    if (!addedIds.has(event.id)) {
-      combinedEvents.push(event);
-      addedIds.add(event.id);
-    }
-  });
+  addEvents(salesLiveEvents);
 
   // Then add all public events to ensure we have at least 5 events if possible, and up to 10
-  allEvents.forEach((event) => {
-    if (!addedIds.has(event.id)) {
-      combinedEvents.push(event);
-      addedIds.add(event.id);
-    }
-  });
+  addEvents(allEvents);
 
-  // Limit to top 10 for the banner
-  const bannerEvents = combinedEvents.slice(0, 10);
+  // Separate featured and non-featured from our deduplicated & filtered list
+  const featured = combinedEvents.filter((e) => e.is_featured);
+  const nonFeatured = combinedEvents.filter((e) => !e.is_featured);
+
+  // Make featured come first
+  const sortedCombinedEvents = [...featured, ...nonFeatured];
+
+  // Limit to top 5 for the banner
+  const bannerEvents = sortedCombinedEvents.slice(0, 5);
 
   const nextSlide = useCallback(() => {
     if (bannerEvents.length > 0) {
@@ -101,7 +118,7 @@ export function HeroEventsBanner({
   if (isLoading) {
     return (
       <div className="w-full max-w-7xl mx-auto max-lg:px-4 pt-6 md:pt-8 lg:pt-16 mb-16">
-        <div className="w-full h-[576px] bg-slate-200/60 rounded-3xl border border-slate-200/50 animate-pulse flex items-end p-10">
+        <div className="w-full aspect-[16/10] bg-slate-200/60 rounded-3xl border border-slate-200/50 animate-pulse flex items-end p-10">
           <div className="space-y-4 max-w-xl w-full">
             <div className="h-6 bg-slate-300/60 rounded w-1/4" />
             <div className="h-10 bg-slate-300/60 rounded w-3/4" />
@@ -119,6 +136,9 @@ export function HeroEventsBanner({
 
   // Ensure active index is within bounds
   const activeIndex = activeIdx >= bannerEvents.length ? 0 : activeIdx;
+
+  // Determine aspect ratio based on active image, fallback to 1.6 (16:10)
+  const currentAspectRatio = aspectRatios[activeIndex] || 1.6;
 
   // Helper to get lowest ticket price
   const getStartingPrice = (event: Event) => {
@@ -176,12 +196,15 @@ export function HeroEventsBanner({
 
       {/* Main Carousel Wrapper */}
       <div
-        className="relative w-full h-[576px] overflow-hidden rounded-3xl border border-white/20 shadow-xl group/carousel"
+        className="relative w-full h-auto md:aspect-[var(--desktop-aspect)] overflow-hidden rounded-3xl border border-white/20 shadow-xl group/carousel transition-all duration-500 ease-in-out"
+        style={
+          { "--desktop-aspect": currentAspectRatio } as React.CSSProperties
+        }
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Slides Container */}
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-auto md:absolute md:inset-0 md:h-full">
           {bannerEvents.map((event, idx) => {
             const isActive = idx === activeIndex;
             return (
@@ -189,35 +212,62 @@ export function HeroEventsBanner({
                 key={event.id}
                 href={`/events/detail?id=${event.id}`}
                 className={cn(
-                  "absolute inset-0 w-full h-full flex flex-col justify-end transition-all duration-700 ease-in-out cursor-pointer",
                   isActive
-                    ? "opacity-100 z-10 scale-100 pointer-events-auto"
-                    : "opacity-0 z-0 scale-[1.02] pointer-events-none",
+                    ? "relative w-full h-auto md:absolute md:inset-0 md:h-full md:w-full flex flex-col justify-start md:justify-end opacity-100 z-10 scale-100 pointer-events-auto"
+                    : "absolute top-0 left-0 w-full h-full flex flex-col justify-start md:justify-end opacity-0 z-0 scale-[1.02] pointer-events-none",
+                  "transition-all duration-700 ease-in-out cursor-pointer",
                 )}
               >
-                {/* Slide Background Image */}
-                <div className="absolute inset-0 transition-transform duration-10000 ease-out scale-100 group-hover/carousel:scale-[1.03]">
+                {/* Slide Image Container */}
+                <div
+                  className="relative w-full aspect-[var(--image-aspect)] md:aspect-auto md:absolute md:inset-0 md:w-full md:h-full transition-transform duration-10000 ease-out scale-100 group-hover/carousel:scale-[1.03] overflow-hidden shrink-0"
+                  style={
+                    {
+                      "--image-aspect": aspectRatios[idx] || 1.6,
+                    } as React.CSSProperties
+                  }
+                >
                   <Image
                     src={event.imageUrl}
                     alt={event.title}
                     fill
                     priority={idx === 0}
-                    className="object-cover"
+                    className="object-cover blur-3xl z-0"
                   />
-                  {/* Premium Layered Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+                  <Image
+                    src={event.imageUrl}
+                    alt={event.title}
+                    fill
+                    priority={idx === 0}
+                    className="object-contain object-center md:object-right"
+                    onLoad={(e) => {
+                      if (
+                        typeof window !== "undefined" &&
+                        window.innerWidth < 768
+                      ) {
+                        const { naturalWidth, naturalHeight } = e.currentTarget;
+                        if (naturalWidth && naturalHeight) {
+                          setAspectRatios((prev) => ({
+                            ...prev,
+                            [idx]: naturalWidth / naturalHeight,
+                          }));
+                        }
+                      }
+                    }}
+                  />
+                  {/* Premium Layered Gradient Overlay - Desktop Only */}
+                  <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
                 </div>
 
                 {/* Featured Badge - Top Right Corner */}
                 {event.is_featured && (
-                  <div className="absolute top-6 right-6 z-20">
+                  <div className="absolute top-4 right-4 md:top-6 md:right-6 z-20">
                     <FeaturedBadge />
                   </div>
                 )}
 
-                {/* Left/Main Overlay Content */}
-                <div className="relative z-10 p-8 sm:p-12 md:p-16 text-white space-y-4 max-w-3xl animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+                {/* Left/Main Overlay & Content Block */}
+                <div className="relative z-10 w-full p-6 md:p-12 lg:p-16 space-y-2 md:max-w-3xl flex flex-col grow justify-between bg-white md:bg-transparent md:grow-0 md:justify-start">
                   {/* Badge Row */}
                   <div className="flex flex-wrap items-center gap-2">
                     <EventStatusBadge
@@ -227,29 +277,17 @@ export function HeroEventsBanner({
                   </div>
 
                   {/* Title */}
-                  <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white line-clamp-2 leading-tight">
+                  <h2 className="text-xl sm:text-2xl md:text-5xl font-extrabold tracking-tight md:text-white line-clamp-2 leading-tight">
                     {event.title}
                   </h2>
 
-                  {/* Event Tags Badge (below title) */}
-                  {/*{event.categories && event.categories.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {event.categories.map((category) => (
-                        <Badge
-                          key={category.id}
-                          variant="secondary"
-                          className="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-white/10 text-indigo-200 border border-white/10 backdrop-blur-md"
-                        >
-                          {category.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}*/}
-
                   {/* Metadata Row */}
-                  <div className="flex flex-wrap items-start gap-6 text-sm text-slate-300 font-medium pt-1">
-                    <span className="flex items-center gap-2">
-                      <CalendarDotsIcon size={18} className="text-indigo-400" />
+                  <div className="flex flex-wrap items-start gap-x-6 gap-y-2 text-sm md:text-base text-slate-300 font-medium pt-1">
+                    <span className="flex items-center gap-2 text-muted-foreground md:text-white/80">
+                      <CalendarDotsIcon
+                        size={24}
+                        className="text-gray-400 md:w-[18px]"
+                      />
                       {new Date(event.startDate).toLocaleDateString("en-US", {
                         weekday: "short",
                         month: "short",
@@ -257,10 +295,10 @@ export function HeroEventsBanner({
                         year: "numeric",
                       })}
                     </span>
-                    <span className="flex items-start gap-2">
+                    <span className="flex items-start gap-2 text-muted-foreground md:text-white/80">
                       <MapPinIcon
-                        size={18}
-                        className="text-indigo-400 flex-shrink-0"
+                        size={24}
+                        className="text-gray-400 flex-shrink-0 md:w-[18px]"
                       />
                       <span className="wrap-anywhere">
                         {getDisplayLocation(event)}
@@ -269,17 +307,16 @@ export function HeroEventsBanner({
                   </div>
 
                   {/* Action Block */}
-                  <div className="pt-4 flex flex-wrap items-center gap-4">
-                    <div className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/35 hover:shadow-indigo-600/50 transition-all duration-300 transform active:scale-[0.98]">
-                      {/*<TicketIcon size={18} weight="bold" />*/}
+                  <div className="pt-2 md:pt-4 flex flex-wrap items-center gap-4">
+                    <div className="inline-flex items-center justify-center gap-2 px-6 py-2.5 md:px-8 md:py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm md:text-base font-bold rounded-xl shadow-lg shadow-indigo-600/35 hover:shadow-indigo-600/50 transition-all duration-300 transform active:scale-[0.98]">
                       {event.status?.toLowerCase() === "scheduled"
                         ? t("common.viewDetails", "View Details")
                         : t("hero.banner.getTickets", "Get Tickets")}
                     </div>
                     {getStartingPrice(event) && (
-                      <span className="text-sm font-semibold text-slate-300">
+                      <span className="text-xs md:text-sm font-semibold text-slate-300">
                         {t("events.startingFrom", "Starting from")}{" "}
-                        <span className="text-yellow-400 text-lg font-extrabold ml-1">
+                        <span className="text-yellow-400 text-sm md:text-lg font-extrabold ml-1">
                           {getStartingPrice(event)}
                         </span>
                       </span>
