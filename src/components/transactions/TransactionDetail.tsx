@@ -56,7 +56,6 @@ export function TransactionDetail({ data, isLoading, onBack }: TransactionDetail
       setIsPdfGenerating(false);
     }
   };
-
 if (isLoading || !data || !tx) {
   return (
     <div className="space-y-6 animate-pulse">
@@ -70,11 +69,15 @@ if (isLoading || !data || !tx) {
   );
 }
 
-if (!tx || !inv) {
+if (!isLoading && (!tx || !inv)) {
   return (
-    <div className="text-center py-20 bg-white rounded-xl border border-dashed">
-      <p className="text-muted-foreground mb-4">{t("setting.menu.transaction.nodetails","Transaction details not found.")}</p>
-      <Button onClick={onBack}>{t("setting.menu.transaction.button.back","Back to Transactions")}</Button>
+    <div className="text-center py-20 bg-white rounded-xl border border-dashed mx-auto max-w-md my-4">
+      <p className="text-muted-foreground mb-4">
+        {t("setting.menu.transaction.nodetails", "Transaction details not found.")}
+      </p>
+      <Button onClick={onBack}>
+        {t("setting.menu.transaction.button.back", "Back to Transactions")}
+      </Button>
     </div>
   );
 }

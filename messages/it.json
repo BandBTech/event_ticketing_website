@@ -210,7 +210,8 @@
       "sales_upcoming": "Vendite Future",
       "live": "Live",
       "scheduled": "Scheduled",
-      "cancel_pending": "Cancellazione in sospeso"
+      "cancel_pending": "Cancellazione in sospeso",
+      "featured": "In primo piano"
     },
     "salesStartingIn": "Vendita biglietti a partire da",
     "nextTierSalesStartingIn": "Prossima vendita dei biglietti a partire da"
@@ -903,7 +904,9 @@
     "succeeded": "Riuscito",
     "pending": "In attesa",
     "failed": "Fallito",
-    "processing": "elaborazione"
+    "processing": "elaborazione",
+    "rejected": "respinto"
+    
   },
   "payment": {
     "stripe": "Pagamento tramite Stripe",

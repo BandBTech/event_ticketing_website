@@ -246,7 +246,8 @@
       "live": "Live",
       "hold": "On Hold",
       "scheduled": "Scheduled",
-      "cancel_pending": "Cancellation Pending"
+      "cancel_pending": "Cancellation Pending",
+      "featured": "Featured"
     },
     "nextTierSalesStartingIn": "Next Ticket Sales Starting In"
   },
