@@ -26,12 +26,13 @@ interface EventSidebarProps {
 // Hardcoded physical outlet info for this event.
 // Move this into event data later if it needs to vary per event.
 const PHYSICAL_OUTLETS = [
-  "Bamboo Chee Restaurant",
-  "Pa Village Restaurant",
-  "Momo Nepali Restaurant",
-  "Mantra Lounge and Bar",
+  { name: "Fishtail homes", address: "Shinjuku, Tokyo" },
+  { name: "Infinity solution co.,ltd ", address: "Shinjuku, Tokyo" },
+  { name: "Bamboo Chee Restaurant", address: "Shinjuku, Tokyo" },
+  { name: "Pa Village Restaurant", address: "Shinjuku, Tokyo" },
+  { name: "Momo Nepali Restaurant", address: "Shinjuku, Tokyo" },
+  { name: "Mantra Lounge and Bar", address: "Shinjuku, Tokyo" },
 ];
-const PHYSICAL_OUTLETS_CITY = "Shinjuku, Tokyo";
 
 export const EventSidebar = ({
   event,
@@ -368,21 +369,17 @@ export const EventSidebar = ({
                 "Physical Tickets Available At",
               )}
             </h3>
-            <ul className="space-y-1.5 mb-2">
+            <ul className="space-y-2 mb-2">
               {PHYSICAL_OUTLETS.map((outlet) => (
-                <li
-                  key={outlet}
-                  className="text-sm text-gray-700 flex items-start gap-2"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" />
-                  {outlet}
+                <li key={outlet.name} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
+                  <p className="text-sm text-gray-700">
+                    <span className="font-medium">{outlet.name}</span>
+                    <span className="text-gray-500"> — {outlet.address}</span>
+                  </p>
                 </li>
               ))}
             </ul>
-            <div className="flex items-start gap-2 text-sm text-gray-500">
-              <MapPinIcon size={16} className="shrink-0 mt-0.5" />
-              <span>{PHYSICAL_OUTLETS_CITY}</span>
-            </div>
           </div>
 
           <div className="space-y-3 border-t pt-4">
