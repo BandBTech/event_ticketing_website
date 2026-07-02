@@ -104,12 +104,12 @@ function GuestPurchaseContent() {
     description: "Secure online payment via Stripe",
     icon_url: "/images/stripe.svg",
   };
-  const KONBINI_GATEWAY = {
-    name: "konbini",
-    display_name: "Konbini",
-    description: "Pay at a convenience store in Japan",
-    icon_url: "",
-  };
+  // const KONBINI_GATEWAY = {
+  //   name: "konbini",
+  //   display_name: "Konbini",
+  //   description: "Pay at a convenience store in Japan",
+  //   icon_url: "",
+  // };
   const [selectedGateway, setSelectedGateway] = useState<string>("stripe");
   const [isJapanLocation, setIsJapanLocation] = useState(false);
 
@@ -156,7 +156,7 @@ function GuestPurchaseContent() {
   // const gateways = [STRIPE_GATEWAY, CASH_GATEWAY];
   const gateways = useMemo(
     () =>
-      isJapanLocation ? [STRIPE_GATEWAY, KONBINI_GATEWAY] : [STRIPE_GATEWAY],
+      isJapanLocation ? [STRIPE_GATEWAY] : [STRIPE_GATEWAY],
     [isJapanLocation],
   );
   const isLoadingGateways = false;
@@ -1043,7 +1043,7 @@ function GuestPurchaseContent() {
                     ) : step === 1 ? (
                       t("common.continue", "Continue")
                     ) : selectedGateway === "stripe" ? (
-                      t("ticketPurchase.payWithStripe", "Pay with Stripe")
+                      t("ticketPurchase.payWithStripe", "Pay Now")
                     ) : (
                       t(
                         "ticketPurchase.proceedToCheckout",

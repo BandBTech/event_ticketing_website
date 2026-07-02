@@ -651,7 +651,7 @@
     "multiTierHint": "Seleziona le quantità per ciascun tipo di biglietto (max {maxQuantity} totale)",
     "noTicketsSelected": "Nessun biglietto selezionato",
     "totalTickets": "Biglietti totali",
-    "payWithStripe": "Paga con Stripe",
+    "payWithStripe": "Paga adesso",
     "redirectingToPayment": "Reindirizzamento al pagamento...",
     "validatingPayment": "Verifica del pagamento...",
     "processingPayment": "Elaborazione del pagamento",

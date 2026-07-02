@@ -7,7 +7,12 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { formatCurrency, formatEventDateTime } from "@/lib/utils";
 import { useLanguageStore } from "@/store/languageStore";
 import { Event } from "@/types/event";
-import { BroadcastIcon, InfoIcon } from "@phosphor-icons/react";
+import {
+  BroadcastIcon,
+  InfoIcon,
+  MapPinIcon,
+  StorefrontIcon,
+} from "@phosphor-icons/react";
 import { format } from "date-fns";
 import Image from "next/image";
 import { SalesCountdown } from "./SalesCountdown";
@@ -17,6 +22,16 @@ interface EventSidebarProps {
   onShare: () => void;
   onFindTickets: () => void;
 }
+
+// Hardcoded physical outlet info for this event.
+// Move this into event data later if it needs to vary per event.
+const PHYSICAL_OUTLETS = [
+  "Bamboo Chee Restaurant",
+  "Pa Village Restaurant",
+  "Momo Nepali Restaurant",
+  "Mantra Lounge and Bar",
+];
+const PHYSICAL_OUTLETS_CITY = "Shinjuku, Tokyo";
 
 export const EventSidebar = ({
   event,
@@ -339,6 +354,37 @@ export const EventSidebar = ({
               onShare={onShare}
             />
           </div>
+
+          {/* Physical Outlets (hardcoded) */}
+          <div className="border-t pt-4">
+            <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-1.5">
+              <StorefrontIcon
+                size={18}
+                weight="duotone"
+                className="text-blue-600"
+              />
+              {t(
+                "eventDetails.physicalOutlets",
+                "Physical Tickets Available At",
+              )}
+            </h3>
+            <ul className="space-y-1.5 mb-2">
+              {PHYSICAL_OUTLETS.map((outlet) => (
+                <li
+                  key={outlet}
+                  className="text-sm text-gray-700 flex items-start gap-2"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                  {outlet}
+                </li>
+              ))}
+            </ul>
+            <div className="flex items-start gap-2 text-sm text-gray-500">
+              <MapPinIcon size={16} className="shrink-0 mt-0.5" />
+              <span>{PHYSICAL_OUTLETS_CITY}</span>
+            </div>
+          </div>
+
           <div className="space-y-3 border-t pt-4">
             <p className=" font-semibold text-gray-900 mb-2 tracking-wide flex items-center gap-1">
               {t("eventDetails.schedule", "Sales Date")}
@@ -352,10 +398,6 @@ export const EventSidebar = ({
                 {/* Sales Start */}
                 <div className="flex items-center justify-between text-sm font-medium gap-4">
                   <div className="flex items-center gap-2">
-                    {/*  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                    <span className="text-gray-900 font-medium">
-                      {t("eventDetails.starts", "Starts")}:
-                    </span> */}
                     <span className="text-gray-900 bg-gray-50">
                       {format(new Date(type.sales_start), "MMM dd, yyyy")}
                       <span className="text-gray-900 ml-1">
@@ -371,17 +413,6 @@ export const EventSidebar = ({
                     </span>
                   </div>
                 </div>
-
-                {/* Sales End
-                <div className="flex items-center justify-between text-sm font-medium gap-4 ">
-                  <div className="flex items-center gap-2">
-                    {/* <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                    <span className="text-gray-900 font-medium">
-                      {t("eventDetails.end", "Ends")}:
-                    </span>
-                  </div>
-
-                </div>*/}
               </div>
             ))}
           </div>
@@ -426,15 +457,6 @@ export const EventSidebar = ({
               </span>
             </div>
           </div>
-          {/* <div className="flex items-start gap-2 text-gray-900">
-            <span className="text-sm font-medium">
-              {dateDisplay.start}{" "}
-              {dateDisplay.isSameDay ? `- ${dateDisplay.end}` : "-"}
-            </span>
-            {!dateDisplay.isSameDay && (
-              <span className="text-sm font-medium">{dateDisplay.end}</span>
-            )}
-          </div> */}
         </div>
 
         {/* Tags */}
@@ -479,7 +501,7 @@ export const EventSidebar = ({
               width={50}
               height={50}
             />
-            <div className="flex items-center gap-1.5">
+            {/* <div className="flex items-center gap-1.5">
               <span className="flex min-h-[34px] items-center gap-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-300/90 rounded-md px-1.5 py-0.5">
                 <Image
                   src="/images/konbini.svg"
@@ -489,7 +511,7 @@ export const EventSidebar = ({
                 />
                 {t("common.paymentMethods.konbini", "Konbini")}
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

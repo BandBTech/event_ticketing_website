@@ -651,7 +651,7 @@
     "multiTierHint": "各チケットタイプの数量を選択してください (合計最大 {maxQuantity})",
     "noTicketsSelected": "チケットが選択されていません",
     "totalTickets": "合計チケット数",
-    "payWithStripe": "Stripe で支払う",
+    "payWithStripe": "今すぐ支払う",
     "redirectingToPayment": "支払いにリダイレクトしています...",
     "validatingPayment": "お支払いを確認しています...",
     "processingPayment": "お支払いを処理しています",
