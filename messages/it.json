@@ -354,7 +354,11 @@
       "sendingVerificationCode": "Invio del codice di verifica ...",
       "sendResetCode": "Invia codice di ripristino",
       "rememberPassword": "Ricordi la tua password?",
-      "loginHere": "Accedi qui"
+      "loginHere": "Accedi qui",
+      "validation": {
+        "emailRequired": "L'email è obbligatoria.",
+        "emailInvalid": "Inserisci un indirizzo email valido."
+      }
     }
   },
   "settings": {
