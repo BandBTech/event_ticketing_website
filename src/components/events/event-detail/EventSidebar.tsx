@@ -30,7 +30,7 @@ const PHYSICAL_OUTLETS = [
   { name: "Infinity solution co.,ltd ", address: "Shinjuku, Tokyo" },
   { name: "Bamboo Chee Restaurant", address: "Shinjuku, Tokyo" },
   { name: "Pa Village Restaurant", address: "Shinjuku, Tokyo" },
-  { name: "Momo Nepali Restaurant", address: "Shinjuku, Tokyo" },
+  { name: "Momo Restaurant", address: "Shinjuku, Tokyo" },
   { name: "Mantra Lounge and Bar", address: "Shinjuku, Tokyo" },
 ];
 
@@ -480,12 +480,12 @@ export const EventSidebar = ({
             {t("common.acceptedPaymentMethods", "Accepted Payment Methods")}
           </h3>
           <div className="flex flex-wrap items-center gap-2">
-            <Image
+            {/* <Image
               src="/images/stripe.svg"
               alt={t("common.paymentMethods.stripe", "Stripe")}
               width={50}
               height={50}
-            />
+            /> */}
             <Image
               src="/images/visa.svg"
               alt={t("common.paymentMethods.visa", "Visa")}
