@@ -210,7 +210,8 @@
       "sales_upcoming": "販売予定",
       "live": "ライブ",
       "scheduled": "スケジュール",
-      "cancel_pending": "キャンセル申請中"
+      "cancel_pending": "キャンセル申請中",
+      "featured": "注目の"
     },
     "salesStartingIn": "チケット販売開始日",
     "nextTierSalesStartingIn": "次回のチケット販売開始日"
@@ -353,7 +354,11 @@
       "sendingVerificationCode": "確認コードを送信しています ...",
       "sendResetCode": "リセットコードを送信する",
       "rememberPassword": "パスワードを覚えていますか?",
-      "loginHere": "ここからログインしてください"
+      "loginHere": "ここからログインしてください",
+      "validation": {
+        "emailRequired": "メールアドレスは必須です。",
+        "emailInvalid": "有効なメールアドレスを入力してください。"
+      }
     }
   },
   "settings": {
@@ -650,7 +655,7 @@
     "multiTierHint": "各チケットタイプの数量を選択してください (合計最大 {maxQuantity})",
     "noTicketsSelected": "チケットが選択されていません",
     "totalTickets": "合計チケット数",
-    "payWithStripe": "Stripe で支払う",
+    "payWithStripe": "今すぐ支払う",
     "redirectingToPayment": "支払いにリダイレクトしています...",
     "validatingPayment": "お支払いを確認しています...",
     "processingPayment": "お支払いを処理しています",
@@ -723,7 +728,8 @@
       "refunded": "返金済み",
       "pending_refund": "返金保留中",
       "partially_refunded": "一部返金済み",
-      "processing": "処理"
+      "processing": "処理",
+      "rejected": "却下"
     },
     "alltickets": "すべてのチケット",
     "paymentstatus": "支払い状況",
@@ -904,10 +910,11 @@
     "succeeded": "完了",
     "pending": "保留中",
     "failed": "失敗",
-    "processing": "処理"
+    "processing": "処理",
+    "rejected": "却下"
   },
   "payment": {
-    "stripe": "Stripe決済",
+    "stripe": "ストライプ",
     "card": "クレジットカード"
   },
   "allevents": {

@@ -210,7 +210,8 @@
       "sales_upcoming": "Vendite Future",
       "live": "Live",
       "scheduled": "Scheduled",
-      "cancel_pending": "Cancellazione in sospeso"
+      "cancel_pending": "Cancellazione in sospeso",
+      "featured": "In primo piano"
     },
     "salesStartingIn": "Vendita biglietti a partire da",
     "nextTierSalesStartingIn": "Prossima vendita dei biglietti a partire da"
@@ -353,7 +354,11 @@
       "sendingVerificationCode": "Invio del codice di verifica ...",
       "sendResetCode": "Invia codice di ripristino",
       "rememberPassword": "Ricordi la tua password?",
-      "loginHere": "Accedi qui"
+      "loginHere": "Accedi qui",
+      "validation": {
+        "emailRequired": "L'email è obbligatoria.",
+        "emailInvalid": "Inserisci un indirizzo email valido."
+      }
     }
   },
   "settings": {
@@ -650,7 +655,7 @@
     "multiTierHint": "Seleziona le quantità per ciascun tipo di biglietto (max {maxQuantity} totale)",
     "noTicketsSelected": "Nessun biglietto selezionato",
     "totalTickets": "Biglietti totali",
-    "payWithStripe": "Paga con Stripe",
+    "payWithStripe": "Paga adesso",
     "redirectingToPayment": "Reindirizzamento al pagamento...",
     "validatingPayment": "Verifica del pagamento...",
     "processingPayment": "Elaborazione del pagamento",
@@ -903,7 +908,9 @@
     "succeeded": "Riuscito",
     "pending": "In attesa",
     "failed": "Fallito",
-    "processing": "elaborazione"
+    "processing": "elaborazione",
+    "rejected": "respinto"
+    
   },
   "payment": {
     "stripe": "Pagamento tramite Stripe",

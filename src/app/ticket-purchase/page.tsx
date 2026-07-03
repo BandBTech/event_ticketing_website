@@ -53,7 +53,6 @@ import { UnsavedChangesDialog } from "@/components/modals/UnsavedChangesDialog";
 
 import { formatCurrency, formatEventDateTime } from "@/lib/utils";
 
-
 import { PurchasePayload } from "@/services/ticketService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -70,7 +69,8 @@ const guestSchema = z.object({
   email: z
     .string()
     .min(1, "auth.forgotPassword.validation.emailRequired")
-    .email("auth.forgotPassword.validation.emailInvalid"),
+    .email("auth.forgotPassword.validation.emailInvalid")
+    .transform((val) => val.toLowerCase()),
 });
 
 type GuestFormData = z.infer<typeof guestSchema>;
@@ -104,12 +104,12 @@ function GuestPurchaseContent() {
     description: "Secure online payment via Stripe",
     icon_url: "/images/stripe.svg",
   };
-  const KONBINI_GATEWAY = {
-    name: "konbini",
-    display_name: "Konbini",
-    description: "Pay at a convenience store in Japan",
-    icon_url: "",
-  };
+  // const KONBINI_GATEWAY = {
+  //   name: "konbini",
+  //   display_name: "Konbini",
+  //   description: "Pay at a convenience store in Japan",
+  //   icon_url: "",
+  // };
   const [selectedGateway, setSelectedGateway] = useState<string>("stripe");
   const [isJapanLocation, setIsJapanLocation] = useState(false);
 
@@ -155,8 +155,7 @@ function GuestPurchaseContent() {
   // const { data: gateways, isLoading: isLoadingGateways } = useGateways();
   // const gateways = [STRIPE_GATEWAY, CASH_GATEWAY];
   const gateways = useMemo(
-    () =>
-      isJapanLocation ? [STRIPE_GATEWAY, KONBINI_GATEWAY] : [STRIPE_GATEWAY],
+    () => (isJapanLocation ? [STRIPE_GATEWAY] : [STRIPE_GATEWAY]),
     [isJapanLocation],
   );
   const isLoadingGateways = false;
@@ -173,8 +172,13 @@ function GuestPurchaseContent() {
     [totalQuantity, isRedirectingToPayment],
   );
 
-  const { showLeaveDialog, setShowLeaveDialog, confirmLeave, cancelLeave, handleNavigateAway } =
-    useNavigationGuard({ hasUnsavedChanges });
+  const {
+    showLeaveDialog,
+    setShowLeaveDialog,
+    confirmLeave,
+    cancelLeave,
+    handleNavigateAway,
+  } = useNavigationGuard({ hasUnsavedChanges });
 
   // Compute selected tiers (those with quantity > 0) for order summary and payload
   const selectedTiers = useMemo(() => {
@@ -341,18 +345,22 @@ function GuestPurchaseContent() {
   }
 
   const isCancelled =
-    eventData.is_cancelled ||
-    eventData.status?.toLowerCase() === "cancelled";
+    eventData.is_cancelled || eventData.status?.toLowerCase() === "cancelled";
   const isRestricted = ["pending", "rejected", "cancel_pending"].includes(
     eventData.status?.toLowerCase(),
   );
   const isCompleted = eventData.status?.toLowerCase() === "completed";
   const isSalesUnavailable =
-    eventData.sales_status === "stopped" ||
-    eventData.sales_status === "paused";
+    eventData.sales_status === "stopped" || eventData.sales_status === "paused";
   const isNotOnSale = eventData.status?.toLowerCase() !== "on_sale";
 
-  if (isCancelled || isRestricted || isCompleted || isSalesUnavailable || isNotOnSale) {
+  if (
+    isCancelled ||
+    isRestricted ||
+    isCompleted ||
+    isSalesUnavailable ||
+    isNotOnSale
+  ) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
         <div className="text-center space-y-4 max-w-md">
@@ -392,14 +400,17 @@ function GuestPurchaseContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <PageTitle title={t("ticketPurchase.title", "Ticket Purchase")}/>
+      <PageTitle title={t("ticketPurchase.title", "Ticket Purchase")} />
       <div className="max-w-6xl mx-auto">
         {/* Header / Back Button */}
         <div className="mb-8 flex items-center justify-between">
           <Button
             onClick={() => {
               if (step === 2) setStep(1);
-              else handleNavigateAway(() => router.push(`/events/detail/?id=${eventIdFromUrl}`));
+              else
+                handleNavigateAway(() =>
+                  router.push(`/events/detail/?id=${eventIdFromUrl}`),
+                );
             }}
             variant="ghost"
             className="hover:bg-white! hover:shadow-sm transition-shadow"
@@ -728,6 +739,11 @@ function GuestPurchaseContent() {
                                   <Input
                                     placeholder="john@example.com"
                                     {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        e.target.value.toLowerCase(),
+                                      )
+                                    }
                                     className="pl-10 h-11"
                                   />
                                 </div>
@@ -1043,7 +1059,7 @@ function GuestPurchaseContent() {
                     ) : step === 1 ? (
                       t("common.continue", "Continue")
                     ) : selectedGateway === "stripe" ? (
-                      t("ticketPurchase.payWithStripe", "Pay with Stripe")
+                      t("ticketPurchase.payWithStripe", "Pay Now")
                     ) : (
                       t(
                         "ticketPurchase.proceedToCheckout",

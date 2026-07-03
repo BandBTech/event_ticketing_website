@@ -63,6 +63,7 @@ export default function BillingPage() {
   });
 
   const selectedId = searchParams.get("id");
+ 
 
   // Update date range when filters change
   useEffect(() => {
@@ -249,8 +250,9 @@ const getClearButtonIcon = () => {
         {selectedId ? (
           <TransactionDetail
             data={detailData}
-            isLoading={isDetailLoading} 
+            isLoading={isDetailLoading } 
             onBack={() => router.push(pathname)}
+            
           />
         ) : (
           <>
@@ -535,6 +537,7 @@ const getClearButtonIcon = () => {
                     <div
                       key={tx.id}
                       onClick={() => router.push(`${pathname}?id=${tx.id}`)}
+                      
                       className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-all cursor-pointer group gap-3"
                     >
                       <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
