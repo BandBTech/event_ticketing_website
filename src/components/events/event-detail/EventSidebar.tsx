@@ -26,12 +26,12 @@ interface EventSidebarProps {
 // Hardcoded physical outlet info for this event.
 // Move this into event data later if it needs to vary per event.
 const PHYSICAL_OUTLETS = [
-  { name: "Fishtail homes", address: "Shinjuku, Tokyo" },
-  { name: "Infinity solution co.,ltd ", address: "Shinjuku, Tokyo" },
-  { name: "Bamboo Chee Restaurant", address: "Shinjuku, Tokyo" },
-  { name: "Pa Village Restaurant", address: "Shinjuku, Tokyo" },
-  { name: "Momo Restaurant", address: "Shinjuku, Tokyo" },
-  { name: "Mantra Lounge and Bar", address: "Shinjuku, Tokyo" },
+  { name: "Fishtail homes", address: "Shinokubo ,Tokyo" },
+  { name: "Infinity solution co. ltd ", address: "Shinokubo ,Tokyo" },
+  { name: "Bamboo Chee Restaurant", address: "Shinokubo ,Tokyo" },
+  { name: "Momo Restaurant", address: "Shinokubo, Tokyo" },
+  { name: "Pa Village Restaurant", address: "Okubo, Tokyo" },
+  { name: "Mantra lounge and bar", address: "Okubo, Tokyo" },
 ];
 
 export const EventSidebar = ({
