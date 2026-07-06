@@ -43,12 +43,12 @@ const basicInfoSchema = z.object({
   firstName: z
     .string()
     .min(1, "auth.signup.validation.firstNameRequired")
-    .min(3, "auth.signup.validation.firstNameTooShort")
+    .min(2, "auth.signup.validation.firstNameTooShort")
     .max(50, "auth.signup.validation.firstNameTooLong"),
   lastName: z
     .string()
     .min(1, "auth.signup.validation.lastNameRequired")
-    .min(3, "auth.signup.validation.lastNameTooShort")
+    .min(2, "auth.signup.validation.lastNameTooShort")
     .max(50, "auth.signup.validation.lastNameTooLong"),
   email: z
     .string()
