@@ -4,11 +4,12 @@ FROM node:20 AS build
 # Create app directory
 WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# Copy package files, scripts, and patches first (needed for postinstall)
 COPY package*.json ./
+COPY scripts/ ./scripts/
+COPY patches/ ./patches/
 
-# Install only production dependencies for smaller image size
+# Install dependencies (postinstall will auto-patch node_modules)
 RUN npm install --legacy-peer-deps --force
 
 # Bundle app source
