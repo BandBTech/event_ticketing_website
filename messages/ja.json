@@ -911,7 +911,8 @@
     "pending": "保留中",
     "failed": "失敗",
     "processing": "処理",
-    "rejected": "却下"
+    "rejected": "却下",
+    "undefined": ""
   },
   "payment": {
     "stripe": "ストライプ",

@@ -209,7 +209,7 @@
       "sales_end": "Vendite Terminate",
       "sales_upcoming": "Vendite Future",
       "live": "Live",
-      "scheduled": "Scheduled",
+      "scheduled": "Programmato",
       "cancel_pending": "Cancellazione in sospeso",
       "featured": "In primo piano"
     },
@@ -909,7 +909,8 @@
     "pending": "In attesa",
     "failed": "Fallito",
     "processing": "elaborazione",
-    "rejected": "respinto"
+    "rejected": "respinto",
+    "undefined": ""
     
   },
   "payment": {

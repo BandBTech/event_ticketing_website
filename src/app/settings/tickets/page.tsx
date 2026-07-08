@@ -887,7 +887,7 @@ export default function TicketsPage() {
                       detailTickets?.event?.imageUrl || "/placeholder-event.jpg"
                     }
                     fill
-                    alt="Event"
+                    alt=""
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="w-full md:w-40 h-40 object-cover rounded-lg shadow-md border-2 border-white"
                   />
@@ -906,7 +906,7 @@ export default function TicketsPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h2 className="text-2xl font-bold text-gray-900 leading-tight break-words w-full">
-                        {detailTickets.event?.title || "Loading Event..."}
+                        {detailTickets.event?.title }
                       </h2>
                     </div>
 
