@@ -37,7 +37,13 @@ import {
 import { ApiUserTicket, TicketItems, ViewTicketDetails } from "@/types/ticket";
 import { useTransactionDetails, useUserTickets } from "@/hooks/useTickets";
 import { QRCodeSVG } from "qrcode.react";
-import { cn, formatDate, formatTime, formatTransactionDate, formatTransactionTime } from "@/lib/utils";
+import {
+  cn,
+  formatDate,
+  formatTime,
+  formatTransactionDate,
+  formatTransactionTime,
+} from "@/lib/utils";
 
 import { ArrowLeftIcon, CheckCircleIcon } from "@phosphor-icons/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -747,16 +753,19 @@ export default function TicketsPage() {
                         "bg-white/60 backdrop-blur-[20px]",
                         "border border-white/10 shadow-[0px_8px_8px_0px_rgba(0,0,0,0.05)]",
                         "rounded-[10px] cursor-pointer",
+                        "transform translate-z-0",
                       )}
                     >
                       <CardContent className="p-0 flex flex-col md:flex-row">
                         {/* 1. Image: Full width on mobile, fixed width on desktop */}
-                        <div
-                          className="w-full h-48 md:w-48 md:h-auto shrink-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                          style={{
-                            backgroundImage: `url(${order.event.imageUrl})`,
-                          }}
-                        />
+                        <div className="w-full h-48 md:w-48 md:h-auto shrink-0 overflow-hidden relative">
+                          <div
+                            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                            style={{
+                              backgroundImage: `url('${ order.event.imageUrl}')`,
+                            }}
+                          />
+                        </div>
 
                         {/* 2. Main Wrapper: Spreads content and status apart */}
                         <div className="flex-1 flex flex-col sm:flex-row justify-between p-5 gap-6">
@@ -772,7 +781,9 @@ export default function TicketsPage() {
                               >
                                 <TicketIcon className="w-3 h-3 mr-1" />
                                 {order.ticketCount}{" "}
-                                {order.ticketCount === 1 ? t("ticket.count_pural_one","ticket"): t("ticket.count_pural_other","tickets")}
+                                {order.ticketCount === 1
+                                  ? t("ticket.count_pural_one", "ticket")
+                                  : t("ticket.count_pural_other", "tickets")}
                               </Badge>
                             </div>
 
@@ -780,12 +791,20 @@ export default function TicketsPage() {
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-primary shrink-0" />
                                 <span className="truncate">
-                                  {formatTransactionDate(order.event.startDate, locale)}
+                                  {formatTransactionDate(
+                                    order.event.startDate,
+                                    locale,
+                                  )}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-primary shrink-0" />
-                                <span>{formatTransactionTime(order.event.startDate, locale)}</span>
+                                <span>
+                                  {formatTransactionTime(
+                                    order.event.startDate,
+                                    locale,
+                                  )}
+                                </span>
                               </div>
                               <div className="flex items-center gap-2 col-span-full">
                                 <MapPin className="h-4 w-4 text-primary shrink-0" />
@@ -817,8 +836,10 @@ export default function TicketsPage() {
                                       : "text-amber-600",
                                   )}
                                 >
-                                 
-                                  {t(`status.${order.transactionStatus}`, order.transactionStatus)}
+                                  {t(
+                                    `status.${order.transactionStatus}`,
+                                    order.transactionStatus,
+                                  )}
                                 </p>
                               </div>
                             </div>
@@ -853,7 +874,7 @@ export default function TicketsPage() {
                         {isFetching ? (
                           <span className="flex items-center gap-2">
                             <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-                            Loading...
+                            {t("common.loading", "Loading...")}
                           </span>
                         ) : (
                           t("ticket.button.loadmore", "Load More")
@@ -906,7 +927,7 @@ export default function TicketsPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h2 className="text-2xl font-bold text-gray-900 leading-tight break-words w-full">
-                        {detailTickets.event?.title }
+                        {detailTickets.event?.title}
                       </h2>
                     </div>
 
@@ -919,11 +940,17 @@ export default function TicketsPage() {
                             <span className="text-xs text-muted-foreground uppercase font-bold mr-1">
                               {t("ticket.details.starts", "Starts:")}
                             </span>
-                            {formatTransactionDate(detailTickets.event.startDate, locale)}
+                            {formatTransactionDate(
+                              detailTickets.event.startDate,
+                              locale,
+                            )}
                           </div>
                           <div className="flex items-center gap-1.5 font-medium">
                             <Clock className="h-4 w-4 text-primary" />
-                            {formatTransactionTime(detailTickets.event.startDate, locale)}
+                            {formatTransactionTime(
+                              detailTickets.event.startDate,
+                              locale,
+                            )}
                           </div>
                         </div>
 
@@ -934,11 +961,17 @@ export default function TicketsPage() {
                             <span className="text-xs text-muted-foreground uppercase font-bold mr-1">
                               {t("ticket.details.ends", "Ends:")}
                             </span>
-                            {formatTransactionDate(detailTickets.event.endDate, locale)}
+                            {formatTransactionDate(
+                              detailTickets.event.endDate,
+                              locale,
+                            )}
                           </div>
                           <div className="flex items-center gap-1.5 font-medium">
                             <Clock className="h-4 w-4 text-primary" />
-                            {formatTransactionTime(detailTickets.event.endDate, locale)}
+                            {formatTransactionTime(
+                              detailTickets.event.endDate,
+                              locale,
+                            )}
                           </div>
                         </div>
                       </>
@@ -967,18 +1000,26 @@ export default function TicketsPage() {
                       className="bg-white/50 text-[10px] uppercase tracking-wider"
                     >
                       {t("ticket.details.paymentstatus", "Payment Status: ")}
-                      
-                       {t(`status.${detailTickets.transactionStatus}`, detailTickets.transactionStatus)}
-                      
+
+                      {t(
+                        `status.${detailTickets.transactionStatus}`,
+                        detailTickets.transactionStatus,
+                      )}
                     </Badge>
                     <Badge
                       variant="outline"
                       className="bg-white/50 text-[10px] uppercase tracking-wider"
                     >
                       {t("ticket.details.purchased", "Purchased: ")}
-                      {formatTransactionDate(detailTickets.purchaseDate, locale)}
+                      {formatTransactionDate(
+                        detailTickets.purchaseDate,
+                        locale,
+                      )}
                       <Clock className="h-4 w-4 text-primary" />{" "}
-                      {formatTransactionTime(detailTickets.purchaseDate, locale)}
+                      {formatTransactionTime(
+                        detailTickets.purchaseDate,
+                        locale,
+                      )}
                     </Badge>
                   </div>
 
@@ -1139,7 +1180,10 @@ export default function TicketsPage() {
                                 {ticket.status === "canceled" && "Canceled"}
                                 {ticket.status === "checked_in" && "Checked In"} */}
 
-                                {t(`ticket.status.${ticket.status}`, ticket.status)}
+                                {t(
+                                  `ticket.status.${ticket.status}`,
+                                  ticket.status,
+                                )}
                               </Badge>
                             )}
                           </div>
