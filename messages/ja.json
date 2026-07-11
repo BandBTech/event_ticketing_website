@@ -764,7 +764,8 @@
       },
       "downloading": "ダウンロード中...",
       "filename": "チケット",
-      "sharing": "共有中..."
+      "sharing": "共有中...",
+      "preparing": "共有の準備中..."
     },
     "qr": {
       "number": "チケット番号:"

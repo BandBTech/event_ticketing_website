@@ -96,6 +96,10 @@ export default function TicketsPage() {
 
   const searchParams = useSearchParams();
   const selectedOrderId = searchParams.get("id");
+  const [preGeneratedPdfBlob, setPreGeneratedPdfBlob] = useState<Blob | null>(
+    null,
+  );
+  const [isPreGenerating, setIsPreGenerating] = useState(false);
 
   // const [view, setView] = useState<"list" | "detail">(
   //   selectedOrderId ? "detail" : "list");
@@ -278,6 +282,28 @@ export default function TicketsPage() {
   }, [responseData, currentPage]);
 
   useEffect(() => {
+    if (!detailTickets) return;
+
+    setPreGeneratedPdfBlob(null);
+    const preCompileTickets = async () => {
+      setIsPreGenerating(true);
+      try {
+        // Small initialization delay to ensure the container DOM nodes are fully painted
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
+        const pdfBlob = await generateTicketsPdf(detailTickets);
+        setPreGeneratedPdfBlob(pdfBlob);
+      } catch (err) {
+        console.warn("Background ticket compilation warm-up stalled:", err);
+      } finally {
+        setIsPreGenerating(false);
+      }
+    };
+
+    preCompileTickets();
+  }, [detailTickets]);
+
+  useEffect(() => {
     if (error) console.error("User Tickets Error:", error);
     if (isDetailError) console.error("Detail Tickets Error:", isDetailError);
   }, [error, isDetailError]);
@@ -442,76 +468,174 @@ export default function TicketsPage() {
     }
   };
 
+  //   const handleShareAllTickets = async (order: ViewTicketDetails) => {
+  //   const loadingToastId = "share-tickets";
+  //   setIsSharing(true);
+
+  //   const isMultiTicket = order.ticketCount > 1;
+
+  //   // Keep a reference to the compiled blob outside the try block so the catch block can reuse it
+  //   let compiledBlob: Blob | null = null;
+
+  //   try {
+  //     const loadingMessage = isMultiTicket
+  //       ? t("ticket.toast.generatingbulkshare", "Processing bulk tickets for sharing...")
+  //       : t("ticket.toast.shareticket", "Preparing ticket for sharing...");
+
+  //     toast.loading(loadingMessage, { id: loadingToastId });
+
+  //     // 1. Generate the PDF once and save it to our reference variable
+  //     compiledBlob = await generateTicketsPdf(order);
+
+  //     const eventName = order.event.title
+  //       ? order.event.title
+  //           .toLowerCase()
+  //           .replace(/[^a-z0-9]+/g, "_")
+  //           .replace(/(^-|-$)/g, "")
+  //       : "tickets";
+  //     const fileName = `${eventName} ${t("ticket.details.filename", "Tickets")}.pdf`;
+  //     const pdfFile = new File([compiledBlob], fileName, { type: "application/pdf" });
+
+  //     // 2. Browser capability verification
+  //     const canShareFiles =
+  //       typeof navigator !== "undefined" &&
+  //       typeof navigator.canShare === "function" &&
+  //       navigator.canShare({ files: [pdfFile] });
+
+  //     if (canShareFiles) {
+  //       // 3. Fire the native device share sheet layout menu
+  //       await navigator.share({
+  //         title: `${order.event.title} ${t("ticket.details.filename", "Tickets")}`,
+  //         text: `My tickets for ${order.event.title}`,
+  //         files: [pdfFile],
+  //       });
+
+  //       toast.success(t("ticket.toast.ticketshared", "Tickets shared!"), { id: loadingToastId });
+  //     } else {
+  //       throw new Error("WebShareAPI Unsupported or payload volume limits exceeded");
+  //     }
+
+  //   } catch (error) {
+  //     const errName = (error as Error).name;
+
+  //     // 4. Safe dismissal if user changes their mind and exits the menu panel manually
+  //     if (errName === "AbortError" || errName === "NotAllowedError") {
+  //       toast.dismiss(loadingToastId);
+  //     } else {
+  //       console.warn("Share sheet blocked or timed out, running direct file download:", error);
+
+  //       // 5. Clean, fast download fallback reusing the ALREADY generated PDF blob asset
+  //       try {
+  //         // Fallback safety layer: If for some reason line 18 crashed completely, re-try generation once
+  //         const finalBlob = compiledBlob || await generateTicketsPdf(order);
+
+  //         const fallbackUrl = URL.createObjectURL(finalBlob);
+  //         const link = document.createElement("a");
+  //         link.href = fallbackUrl;
+
+  //         const formattedName = order.event.title
+  //           ? order.event.title.toLowerCase().replace(/[^a-z0-9]+/g, "_")
+  //           : "tickets";
+
+  //         link.download = `${formattedName}_tickets.pdf`;
+  //         link.click();
+  //         URL.revokeObjectURL(fallbackUrl);
+
+  //         toast.success(
+  //           t("ticket.toast.downloadfallback", "PDF downloaded (sharing sheet unavailable for bulk layout sizes)"),
+  //           { id: loadingToastId }
+  //         );
+  //       } catch (fallbackError) {
+  //         console.error("Critical export system failure:", fallbackError);
+  //         toast.error(t("ticket.toast.errorshare", "Could not process tickets. Please try again."), { id: loadingToastId });
+  //       }
+  //     }
+  //   } finally {
+  //     setIsSharing(false);
+  //   }
+  // };
+
   const handleShareAllTickets = async (order: ViewTicketDetails) => {
+    // If the file is still compiling in the background, run the generator inline as a backup
+    let targetBlob = preGeneratedPdfBlob;
+
     const loadingToastId = "share-tickets";
     setIsSharing(true);
+
     try {
-      toast.loading(
-        t("ticket.toast.shareticket", "Preparing tickets for sharing...", {
+      if (!targetBlob) {
+        toast.loading(t("ticket.toast.shareticket", "Preparing tickets..."), {
           id: loadingToastId,
-        }),
-      );
-      const pdfBlob = await generateTicketsPdf(order);
+        });
+        targetBlob = await generateTicketsPdf(order);
+        setPreGeneratedPdfBlob(targetBlob);
+      }
+
       const eventName = order.event.title
         ? order.event.title
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "_")
             .replace(/(^-|-$)/g, "")
         : "tickets";
-      const shortId = order.orderId.split("-")[0];
       const fileName = `${eventName} ${t("ticket.details.filename", "Tickets")}.pdf`;
 
-      const pdfFile = new File([pdfBlob], fileName, {
+      const pdfFile = new File([targetBlob], fileName, {
         type: "application/pdf",
       });
+
       const canShareFiles =
         typeof navigator !== "undefined" &&
         typeof navigator.canShare === "function" &&
         navigator.canShare({ files: [pdfFile] });
 
       if (canShareFiles) {
+        // ⚡ This now opens instantly, safely satisfying browser security restrictions!
         await navigator.share({
           title: `${order.event.title} ${t("ticket.details.filename", "Tickets")}`,
-          text: `My tickets for ${order.event.title} on ${formatDate(order.event.startDate)}`,
+          text: `My tickets for ${order.event.title}`,
           files: [pdfFile],
         });
-        toast.success(
-          t("ticket.toast.ticketshared", "Tickets shared!", {
-            id: loadingToastId,
-          }),
-        );
+
+        toast.dismiss(loadingToastId);
       } else {
-        // Fallback: download when Web Share API (with files) is unavailable
-        const url = URL.createObjectURL(pdfBlob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        link.click();
-        URL.revokeObjectURL(url);
-        toast.success(
-          t(
-            "ticket.toast.downloadpdf",
-            "PDF downloaded (sharing not supported in this browser)",
-            {
-              id: loadingToastId,
-            },
-          ),
+        throw new Error(
+          "Sharing files unsupported on this device layout layout profile",
         );
       }
     } catch (error) {
-      if ((error as Error).name !== "AbortError") {
-        console.error("Share error:", error);
-        toast.error(
-          t(
-            "ticket.toast.errorshare",
-            "Could not share tickets. Please try again.",
-            {
-              id: loadingToastId,
-            },
-          ),
-        );
-      } else {
+      const errName = (error as Error).name;
+
+      if (errName === "AbortError" || errName === "NotAllowedError") {
         toast.dismiss(loadingToastId);
+      } else {
+        console.warn(
+          "Share sheet blocked, falling back to direct device download channel:",
+          error,
+        );
+
+        // High-reliability download path using the pre-cached blob file layer
+        try {
+          if (!targetBlob) throw new Error("No payload asset available");
+
+          const fallbackUrl = URL.createObjectURL(targetBlob);
+          const link = document.createElement("a");
+          link.href = fallbackUrl;
+          link.download = `${order.event.title ? order.event.title.toLowerCase().replace(/[^a-z0-9]+/g, "_") : "tickets"}_tickets.pdf`;
+
+          link.click();
+          URL.revokeObjectURL(fallbackUrl);
+
+          toast.success(
+            t("ticket.toast.downloadfallback", "Tickets downloaded!"),
+            { id: loadingToastId },
+          );
+        } catch (fallbackErr) {
+          console.error("Critical download crash:", fallbackErr);
+          toast.error(
+            t("ticket.toast.errorshare", "Could not export tickets."),
+            { id: loadingToastId },
+          );
+        }
       }
     } finally {
       setIsSharing(false);
@@ -762,7 +886,7 @@ export default function TicketsPage() {
                           <div
                             className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                             style={{
-                              backgroundImage: `url('${ order.event.imageUrl}')`,
+                              backgroundImage: `url('${order.event.imageUrl}')`,
                             }}
                           />
                         </div>
@@ -1062,7 +1186,7 @@ export default function TicketsPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleShareAllTickets(detailTickets)}
-                      disabled={isDownloading || isSharing}
+                      disabled={isDownloading || isSharing || (isPreGenerating && !preGeneratedPdfBlob)}
                     >
                       {isSharing ? (
                         <svg
@@ -1089,7 +1213,12 @@ export default function TicketsPage() {
                       )}
                       {isSharing
                         ? t("ticket.details.sharing", "Sharing...")
-                        : t("ticket.details.shareall", "Share All")}
+                        : isPreGenerating && !preGeneratedPdfBlob
+                          ? t(
+                              "ticket.details.preparing",
+                              "Preparing to share...",
+                            )
+                          : t("ticket.details.shareall", "Share All")}
                     </Button>
                   </div>
                 </div>

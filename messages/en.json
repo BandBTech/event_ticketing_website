@@ -828,7 +828,8 @@
       },
       "downloading": "Downloading...",
       "filename": "Tickets",
-      "sharing": "Sharing..."
+      "sharing": "Sharing...",
+      "preparing": "Preparing to share..."
     },
     "qr": {
       "number": "Ticket Number:"

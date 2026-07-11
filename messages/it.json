@@ -762,7 +762,8 @@
       },
       "downloading": "Download in corso...",
       "filename": "Biglietti",
-      "sharing": "Condivisione..."
+      "sharing": "Condivisione...",
+      "preparing": "Prepararsi a condividere..."
     },
     "qr": {
       "number": "Numero del biglietto:"
@@ -911,7 +912,6 @@
     "processing": "elaborazione",
     "rejected": "respinto",
     "undefined": ""
-    
   },
   "payment": {
     "stripe": "Pagamento tramite Stripe",
