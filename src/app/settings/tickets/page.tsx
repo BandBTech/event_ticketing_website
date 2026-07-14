@@ -301,7 +301,7 @@ export default function TicketsPage() {
     };
 
     preCompileTickets();
-  }, [detailTickets]);
+  }, [detailTickets, locale]);
 
   useEffect(() => {
     if (error) console.error("User Tickets Error:", error);
@@ -440,11 +440,11 @@ export default function TicketsPage() {
       const pdfBlob = await generateTicketsPdf(order);
 
       const eventName = order.event.title
-        ? order.event.title
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "_")
+         ? order.event.title
+        //     .toLowerCase()
+        //     .replace(/[^a-z0-9]+/g, "_")
             .replace(/(^-|-$)/g, "")
-        : "tickets";
+         : "tickets";
       // const shortId = order.orderId.split("-")[0];
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement("a");
@@ -573,8 +573,8 @@ export default function TicketsPage() {
 
       const eventName = order.event.title
         ? order.event.title
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "_")
+           // .toLowerCase()
+           // .replace(/[^a-z0-9]+/g, "_")
             .replace(/(^-|-$)/g, "")
         : "tickets";
       const fileName = `${eventName} ${t("ticket.details.filename", "Tickets")}.pdf`;
@@ -589,7 +589,7 @@ export default function TicketsPage() {
         navigator.canShare({ files: [pdfFile] });
 
       if (canShareFiles) {
-        // ⚡ This now opens instantly, safely satisfying browser security restrictions!
+     
         await navigator.share({
           title: `${order.event.title} ${t("ticket.details.filename", "Tickets")}`,
           text: `My tickets for ${order.event.title}`,
@@ -613,7 +613,6 @@ export default function TicketsPage() {
           error,
         );
 
-        // High-reliability download path using the pre-cached blob file layer
         try {
           if (!targetBlob) throw new Error("No payload asset available");
 

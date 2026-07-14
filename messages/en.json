@@ -769,7 +769,9 @@
       "corsWarning": "Exported without some images due to CORS restrictions (banner/logo).",
       "exportSuccess": "Ticket downloaded successfully!",
       "exportError": "Failed to generate PDF. Please try printing explicitly."
-    }
+    },
+    "end": "End:",
+    "start": "Start:"
   },
   "ticket": {
     "eventTicket": "Event Ticket",
@@ -782,7 +784,8 @@
       "shareticket": "Preparing tickets for sharing...",
       "ticketshared": "Tickets shared!",
       "downloadpdf": "PDF downloaded (sharing not supported in this browser)",
-      "errorshare": "Could not share tickets. Please try again."
+      "errorshare": "Could not share tickets. Please try again.",
+      "downloadfallback": "Tickets downloaded!"
     },
     "status": {
       "active": "Active",

@@ -6,7 +6,8 @@ import { QRCodeSVG } from "qrcode.react";
 import type { ViewTicketDetails, TicketItem } from "@/types/ticket";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Calendar, MapPin, Ticket, User, Building2 } from "lucide-react";
+import { Calendar, MapPin, Ticket, User, Building2, Clock } from "lucide-react";
+import { formatTransactionDate, formatTransactionTime } from "@/lib/utils";
 
 interface TicketDisplayProps {
   order: ViewTicketDetails;
@@ -58,12 +59,6 @@ function SingleTicketCard({
 }) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-
-  // Combined date and time format
-  const dateTimeString = format(
-    new Date(event.startDate),
-    "EEE, MMM d, yyyy • h:mm a",
-  );
 
   const isCoordinates = (addr: string) =>
     /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(addr?.trim() ?? "");
@@ -135,29 +130,80 @@ function SingleTicketCard({
             {/* Event Details - Compact */}
             <div className="flex-1 space-y-3 bg-gray-500/5 p-4 border-y border-gray-200 w-full">
               {/* Combined Date & Time Row */}
-              <div className="flex items-center gap-3 text-gray-700">
+              {/* <div className="flex items-center gap-3 text-gray-700">
                 <Calendar className="size-9 text-primary bg-primary/10 p-2.5 rounded-md" />
                 <div className="flex-1">
                   <p className="text-[10px] text-black/50 font-medium uppercase tracking-wider">
                     {t("ticketView.dateTime", "Date & Time")}
                   </p>
-                  <div className="flex gap-2">
-                    <p className="text-sm font-semibold">{dateTimeString}</p>
+                  <div className="flex flex-wrap items-center gap-1.5 text-sm font-semibold">
+                    <span>{dateTimeString}</span>
+
+                    <span className="text-black/40 font-normal">→</span>
+                    <span>{enddateTimeString}</span>
+                  </div>
+                </div>
+              </div> */}
+              <div className="flex flex-col gap-2 w-full">
+                {/* Field Title Label */}
+                <p className="text-[10px] text-black/50 font-medium uppercase tracking-wider mb-1">
+                  {t("ticketView.dateTime", "Date & Time")}
+                </p>
+
+                {/* Row-based Grid Structure */}
+                <div className="grid grid-cols-1 text-sm font-semibold ">
+                  {/* Start Date & Time Row */}
+                  <div className="flex flex-wrap items-center pb-2  gap-2 text-gray-800">
+                    <Calendar className="h-4 w-4 text-primary shrink-0" />
+                    <span className="text-[11px] font-medium text-black/40 uppercase tracking-wide min-w-[45px]">
+                      {t("ticketView.start", "Start:")}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="truncate">
+                        {formatTransactionDate(event.startDate, locale)}
+
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-primary shrink-0" />
+                      <span>{formatTransactionTime(event.startDate, locale)}</span>
+                    </div>
+                  </div>
+
+                  {/* End Date & Time Row */}
+                  <div className="flex flex-wrap items-center gap-2 text-gray-800 border-t border-black/5 pt-2 ">
+                    <Calendar className="h-4 w-4 text-primary shrink-0" />
+                    <span className="text-[11px] font-medium text-black/40 uppercase tracking-wide min-w-[45px]">
+                      {t("ticketView.end", "End:")}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="truncate">
+                       {formatTransactionDate(event.endDate, locale)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-primary shrink-0" />
+                      <span>{formatTransactionTime(event.endDate, locale)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Venue Row */}
-              <div className="flex items-start gap-3 text-gray-700 min-w-0 w-full">
-                <MapPin className="size-9 text-primary bg-primary/10 p-2.5 rounded-md shrink-0" />
+              <div className="flex items-start gap-2 text-gray-700 min-w-0 w-full border-t border-black/5 pt-2 ">
+                <MapPin className="h-4 w-4 text-primary  shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] text-black/50 font-medium uppercase tracking-wider">
                     {t("ticketView.venue", "Venue")}
                   </p>
                   <div className="flex flex-col gap-1 w-full">
-                    <p className="text-sm font-semibold  break-all w-full">{event.venueName}</p>
+                    <p className="text-sm font-semibold  break-all w-full">
+                      {event.venueName}
+                    </p>
                     {event.address && !isCoordinates(event.address) && (
-                      <p className="text-sm text-black/60 break-all w-full">{event.address}</p>
+                      <p className="text-sm text-black/60 break-all w-full">
+                        {event.address}
+                      </p>
                     )}
                   </div>
                 </div>

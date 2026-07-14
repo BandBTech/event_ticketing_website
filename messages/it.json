@@ -704,7 +704,9 @@
       "corsWarning": "Esportato senza alcune immagini a causa delle restrizioni CORS (banner/logo).",
       "exportSuccess": "Biglietto scaricato con successo!",
       "exportError": "Impossibile generare il PDF. \nProva a stampare esplicitamente."
-    }
+    },
+    "end": "FINE:",
+    "start": "Inizio:"
   },
   "ticket": {
     "eventTicket": "Biglietto per eventi",
@@ -717,7 +719,8 @@
       "shareticket": "Preparazione dei ticket per la condivisione...",
       "ticketshared": "Biglietti condivisi!",
       "downloadpdf": "PDF scaricato (condivisione non supportata in questo browser)",
-      "errorshare": "Impossibile condividere i biglietti. \nPer favore riprova."
+      "errorshare": "Impossibile condividere i biglietti. \nPer favore riprova.",
+      "downloadfallback": "Biglietti scaricati!"
     },
     "status": {
       "active": "Attivo",

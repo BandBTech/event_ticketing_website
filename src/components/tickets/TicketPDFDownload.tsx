@@ -74,6 +74,17 @@ export const TicketPDFDownload = ({
               )}
             </p>
             <p style={{ margin: 0, fontSize: "16px", color: "#334155" }}>
+              {format(new Date(detailTickets.event.endDate), "p")}
+            </p>
+               <p
+              style={{ margin: "4px 0", fontSize: "18px", fontWeight: "bold" }}
+            >
+              {format(
+                new Date(detailTickets.event.endDate),
+                "eeee, MMMM do, yyyy",
+              )}
+            </p>
+            <p style={{ margin: 0, fontSize: "16px", color: "#334155" }}>
               {format(new Date(detailTickets.event.startDate), "p")}
             </p>
           </div>
