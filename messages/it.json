@@ -706,7 +706,8 @@
       "exportError": "Impossibile generare il PDF. \nProva a stampare esplicitamente."
     },
     "end": "FINE:",
-    "start": "Inizio:"
+    "start": "Inizio:",
+    "downloadTicket": "Scarica il biglietto"
   },
   "ticket": {
     "eventTicket": "Biglietto per eventi",

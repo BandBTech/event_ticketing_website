@@ -706,7 +706,8 @@
       "exportError": "PDFの生成に失敗しました。\n明示的に印刷してみてください。"
     },
     "end": "終わり：",
-    "start": "始める："
+    "start": "始める：",
+    "downloadTicket": "チケットをダウンロード"
   },
   "ticket": {
     "eventTicket": "イベントチケット",

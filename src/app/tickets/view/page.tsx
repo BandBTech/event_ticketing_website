@@ -23,7 +23,7 @@ function TicketVerification() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const token = searchParams.get("token") || "";
-  const [isExporting,  setIsExporting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const { data: validationData } = useSuspenseQuery({
     queryKey: queryKeys.tickets.validate(token),
@@ -48,15 +48,14 @@ function TicketVerification() {
     }
   }, [isValid, token, router]);
 
-
-  // Logic: 
+  // Logic:
   // 1. Component mounts -> useSuspenseQuery(validate) starts -> THROWS promise -> <Suspense> shows fallback.
   // 2. Validate finishes -> Component re-renders with data.
   // 3. usageSuspenseQuery(view) starts. If token valid, fetches. -> THROWS promise -> <Suspense> shows fallback (again).
   // 4. View finishes -> Component re-renders with details.
 
   // Minimizers of flash:
-  // If useSuspenseQuery(view) is fast, it might just blink. 
+  // If useSuspenseQuery(view) is fast, it might just blink.
 
   if (!isValid) return null; // Wait for redirect
 
@@ -173,30 +172,34 @@ function TicketVerification() {
 
       if (exportedWithoutImages) {
         toast.message(
-         t(
-          "ticketView.toast.corsWarning",
-          "Exported without some images due to CORS restrictions (banner/logo).",
-        ),);
+          t(
+            "ticketView.toast.corsWarning",
+            "Exported without some images due to CORS restrictions (banner/logo).",
+          ),
+        );
       }
 
       const eventName = ticketDetails?.event?.title || "Event";
-      const localizedTicketsName= t("ticket.details.filename", "Tickets");
+      const localizedTicketsName = t("ticket.details.filename", "Tickets");
       // const orderId = ticketDetails?.orderId;
       // const shortId = orderId ? orderId.split("-")[0] : "tickets";
       pdf.save(`${eventName} ${localizedTicketsName}.pdf`);
 
-      toast.success(t("ticketView.toast.exportSuccess", "Ticket downloaded successfully!"));
+      toast.success(
+        t("ticketView.toast.exportSuccess", "Ticket downloaded successfully!"),
+      );
     } catch (err) {
       const message =
         err instanceof Error ? `${err.name}: ${err.message}` : String(err);
       console.error("Failed to generate PDF:", message, err);
-      toast.error(   t(
-        "ticketView.toast.exportError",
-        "Failed to generate PDF. Please try printing explicitly.",
-      ),);
-    }finally {
+      toast.error(
+        t(
+          "ticketView.toast.exportError",
+          "Failed to generate PDF. Please try printing explicitly.",
+        ),
+      );
+    } finally {
       setIsExporting(false);
-
     }
   };
 
@@ -206,12 +209,17 @@ function TicketVerification() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-400/5 blur-[120px] rounded-full -z-10 print:hidden" />
 
       <div className="max-w-6xl mx-auto">
-
         {/* Actions - Hidden on Print */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4 print:hidden">
           <Link href="/">
-            <Button variant="ghost" className="text-neutral-500 hover:text-neutral-900 font-bold flex items-center gap-2 group">
-              <CaretLeft weight="bold" className="group-hover:-translate-x-1 transition-transform" />
+            <Button
+              variant="ghost"
+              className="text-neutral-500 hover:text-neutral-900 font-bold flex items-center gap-2 group"
+            >
+              <CaretLeft
+                weight="bold"
+                className="group-hover:-translate-x-1 transition-transform"
+              />
               {t("ticketView.backHome")}
             </Button>
           </Link>
@@ -223,31 +231,44 @@ function TicketVerification() {
               <Ticket weight="bold" size={18} />
               {t("ticketView.printTicket")}
             </Button>
-        <Button
-  onClick={handleDownload}
-  disabled={isExporting}
-  className="bg-primary hover:bg-primary/90 text-white font-bold h-11 px-6 rounded-xl flex items-center gap-2.5 shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-75 disabled:pointer-events-none"
->
-  {isExporting ? (
-    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-    </svg>
-  ) : (
-    <DownloadSimple weight="bold" size={18} />
-  )}
-  {isExporting 
-    ? t("ticketView.downloading", "Downloading...") 
-    : t("ticketView.downloadTicket", "Download")
-  }
-</Button>
+            <Button
+              onClick={handleDownload}
+              disabled={isExporting}
+              className="bg-primary hover:bg-primary/90 text-white font-bold h-11 px-6 rounded-xl flex items-center gap-2.5 shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-75 disabled:pointer-events-none"
+            >
+              {isExporting ? (
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              ) : (
+                <DownloadSimple weight="bold" size={18} />
+              )}
+              {isExporting
+                ? t("ticketView.downloading", "Downloading...")
+                : t("ticketView.downloadTicket", "Download Ticket")}
+            </Button>
           </div>
         </div>
 
         {ticketDetails ? (
           <TicketDisplay order={ticketDetails} onPrint={handlePrint} />
         ) : null}
-
       </div>
     </div>
   );
