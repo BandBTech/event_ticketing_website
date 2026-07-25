@@ -94,6 +94,7 @@ export function Header() {
               <Link
                 key={item.name}
                 href={item.href}
+                suppressHydrationWarning={true} 
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
               >
                 {item.name}

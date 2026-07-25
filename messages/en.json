@@ -1596,5 +1596,8 @@
         "provider": "Provider"
       }
     }
+  },
+  "commomn": {
+    "loading": "Loading..."
   }
 }

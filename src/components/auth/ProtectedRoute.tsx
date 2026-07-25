@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
+import { useLanguageStore } from '@/store/languageStore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -31,7 +33,8 @@ export function ProtectedRoute({
       setAuthChecked(true);
     }
   }, [authChecked, checkAuth]);
-
+const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   useEffect(() => {
     // Only redirect after auth has been checked and is not loading
     if (authChecked && !isLoading && requireAuth && !isAuthenticated) {
@@ -45,7 +48,12 @@ export function ProtectedRoute({
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">
+            {t(
+                "commomn.loading",
+                "Loading...",
+              )}
+          </p>
         </div>
       </div>
     );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Globe, CaretDown } from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 import { useLanguageStore } from '@/store/languageStore';
@@ -24,9 +24,14 @@ interface LanguageSelectorProps {
 
 export function LanguageSelector({ className }: LanguageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { locale, setLocale } = useLanguageStore();
-  
-  const currentLang = languages.find(lang => lang.code === locale) || languages[0];
+
+   useEffect(() => {
+    setMounted(true);
+  }, []);
+  const activeLocale = mounted ? locale : 'ja';
+  const currentLang = languages.find(lang => lang.code === activeLocale) || languages[0];
 
   const handleLanguageSelect = (langCode: 'en' | 'ja' | 'it') => {
     setLocale(langCode);
@@ -45,7 +50,7 @@ export function LanguageSelector({ className }: LanguageSelectorProps) {
         )}
       >
         <Globe size={16} className="text-gray-600" />
-        <span className="text-sm font-medium">{currentLang.name}</span>
+        <span className="text-sm font-medium" suppressHydrationWarning={true} >{currentLang.name}</span>
         <CaretDown 
           size={12} 
           className={cn(
@@ -75,12 +80,12 @@ export function LanguageSelector({ className }: LanguageSelectorProps) {
                   "w-full flex items-center gap-2.5 px-4 py-2 text-left cursor-pointer",
                   "hover:bg-gray-50 transition-colors duration-200",
                   "text-sm font-medium text-gray-700",
-                  locale === language.code && "bg-blue-50/80 text-blue-700"
+                  activeLocale === language.code && "bg-blue-50/80 text-blue-700"
                 )}
               >
                 <span className="text-lg">{language.flag}</span>
                 <span>{language.name}</span>
-                {locale === language.code && (
+                {activeLocale === language.code && (
                   <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
                 )}
               </button>
