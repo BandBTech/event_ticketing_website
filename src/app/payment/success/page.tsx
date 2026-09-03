@@ -136,7 +136,13 @@ function PaymentSuccessContent() {
 
 export default function PaymentSuccessPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <Loader2 className="animate-spin size-12 text-primary" />
+        </div>
+      }
+    >
       <PaymentSuccessContent />
     </Suspense>
   );

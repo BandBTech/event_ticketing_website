@@ -3,7 +3,6 @@
 import en from '../../messages/en.json';
 import ja from '../../messages/ja.json';
 import it from '../../messages/it.json';
-import { useEffect, useState } from 'react';
 
 type Locale = 'en' | 'ja' | 'it';
 
@@ -17,15 +16,9 @@ const messagesMap: Record<Locale, TranslationMessages> = {
   it,
 };
 
-export function useTranslation(locale: Locale = 'ja') {
- const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-const activeLocale = isMounted ? locale : 'ja'; 
-  const messages = messagesMap[activeLocale] || messagesMap['ja'];
+export function useTranslation(locale: Locale = 'en') {
+  const activeLocale = messagesMap[locale] ? locale : 'en';
+  const messages = messagesMap[activeLocale];
 
   const t = (key: string, fallback?: string, variables?: Record<string, string | number>): string => {
     const keys = key.split('.');
@@ -51,7 +44,7 @@ const activeLocale = isMounted ? locale : 'ja';
     return result;
   };
 
-  return { t, isLoading: !isMounted, locale:activeLocale };
+  return { t, isLoading: false, locale: activeLocale };
 }
 
 export const locales: Locale[] = ['en', 'ja', 'it'];

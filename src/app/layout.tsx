@@ -53,11 +53,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var e=window.localStorage.getItem('language-storage');if(e){var t=JSON.parse(e);var n=t&&t.state&&t.state.locale;if(n==='en'||n==='ja'||n==='it'){window.__INITIAL_LOCALE__=n;document.documentElement.lang=n;}}}catch(e){}})()`,
+            __html: `(function(){try{var n;var e=window.localStorage.getItem('language-storage');if(e){var t=JSON.parse(e);n=t&&t.state&&t.state.locale;}if(!(n==='en'||n==='ja'||n==='it')){var l=(window.navigator.language||'').toLowerCase();n=l.indexOf('ja')===0?'ja':l.indexOf('it')===0?'it':'en';}window.__INITIAL_LOCALE__=n;document.documentElement.lang=n;}catch(e){}})()`,
           }}
         />
       </head>

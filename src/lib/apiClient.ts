@@ -59,7 +59,7 @@ export async function apiRequest<T>(
   // Prepare headers
   const requestHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
-    'Accept-Language': useLanguageStore.getState().locale || 'ja',
+    'Accept-Language': useLanguageStore.getState().locale || 'en',
     ...headers as Record<string, string>,
   };
 

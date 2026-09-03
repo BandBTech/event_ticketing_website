@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Globe, CaretDown } from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 import { useLanguageStore } from '@/store/languageStore';
@@ -24,13 +24,9 @@ interface LanguageSelectorProps {
 
 export function LanguageSelector({ className }: LanguageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const { locale, setLocale } = useLanguageStore();
 
-   useEffect(() => {
-    setMounted(true);
-  }, []);
-  const activeLocale = mounted ? locale : 'ja';
+  const activeLocale = locale;
   const currentLang = languages.find(lang => lang.code === activeLocale) || languages[0];
 
   const handleLanguageSelect = (langCode: 'en' | 'ja' | 'it') => {
