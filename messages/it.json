@@ -664,6 +664,9 @@
     "networkIssue": "Problema di rete... riprovo",
     "attempt": "Tentativo",
     "invalidCheckoutSession": "Sessione di checkout non valida",
+    "toast": {
+      "purchaseSuccess": "Acquisto completato."
+    },
     "paymentFailed": "Conferma del pagamento non riuscita",
     "invalidAccess": "Accesso non valido",
     "invalidAccessMessage": "Non siamo riusciti a verificare i dettagli del tuo pagamento.",
@@ -889,7 +892,7 @@
       "reasonMaxLength": "Il motivo non può superare i 500 caratteri"
     },
     "toast": {
-      "success": "Ordine annullato con successo. Il rimborso sarà elaborato.",
+      "success": "Biglietto annullato. Ti invieremo un'e-mail quando il rimborso sarà aggiornato.",
       "error": "Impossibile annullare l'ordine"
     }
   },

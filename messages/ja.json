@@ -664,6 +664,9 @@
     "networkIssue": "ネットワークの問題が発生しました... 再試行中",
     "attempt": "試行",
     "invalidCheckoutSession": "無効なチェックアウトセッション",
+    "toast": {
+      "purchaseSuccess": "購入が完了しました。"
+    },
     "paymentFailed": "支払い確認に失敗しました",
     "invalidAccess": "無効なアクセス",
     "invalidAccessMessage": "お支払いの詳細を確認できませんでした。",
@@ -891,7 +894,7 @@
       "reasonMaxLength": "理由は 500 文字を超えることはできません"
     },
     "toast": {
-      "success": "注文が正常にキャンセルされました。返金が処理されます。",
+      "success": "チケットはキャンセルされました。返金情報が更新され次第、メールでお知らせします。",
       "error": "注文のキャンセルに失敗しました"
     }
   },

@@ -1,5 +1,6 @@
 import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "@/lib/toast";
+import { persistSelectedLocale, useLanguageStore } from "@/store/languageStore";
 import {
   CancelTicketRequest,
   PaginatedUserTickets,
@@ -10,6 +11,10 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
+function preserveLocaleBeforeExternalRedirect() {
+  persistSelectedLocale(useLanguageStore.getState().locale);
+}
+
 export const useGuestPurchaseMutation = () => {
   const router = useRouter();
   return useMutation({
@@ -19,6 +24,7 @@ export const useGuestPurchaseMutation = () => {
         // Stripe flow: redirect to Stripe Checkout URL
         const gatewayData = res.data;
         if (gatewayData?.redirect_url) {
+          preserveLocaleBeforeExternalRedirect();
           toast.message("Redirecting to payment...", "success");
           window.location.href = gatewayData.redirect_url;
           return;
@@ -57,6 +63,7 @@ export const useUserPurchaseMutation = () => {
         // Stripe flow: redirect to Stripe Checkout URL
         const gatewayData = res.data;
         if (gatewayData?.redirect_url) {
+          preserveLocaleBeforeExternalRedirect();
           toast.message("Redirecting to payment...", "success");
           window.location.href = gatewayData.redirect_url;
           return;

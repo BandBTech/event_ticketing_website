@@ -3,9 +3,11 @@ import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { LocaleProvider } from "@/components/providers/LocaleProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import type { Locale } from "@/store/languageStore";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,12 +54,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialLocale: Locale = "en";
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={initialLocale} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var n;var e=window.localStorage.getItem('language-storage');if(e){var t=JSON.parse(e);n=t&&t.state&&t.state.locale;}if(!(n==='en'||n==='ja'||n==='it')){var l=(window.navigator.language||'').toLowerCase();n=l.indexOf('ja')===0?'ja':l.indexOf('it')===0?'it':'en';}window.__INITIAL_LOCALE__=n;document.documentElement.lang=n;}catch(e){}})()`,
+            __html: `window.__INITIAL_LOCALE__=${JSON.stringify(initialLocale)};document.documentElement.lang=${JSON.stringify(initialLocale)};`,
           }}
         />
       </head>
@@ -84,13 +88,15 @@ export default function RootLayout({
 
           <QueryProvider>
             <AuthProvider>
-              <div className="relative z-10 min-h-screen flex flex-col">
-                <Header />
-                <main className="flex-grow">
-                  {children}
-                </main>
-                <Footer />
-              </div>
+              <LocaleProvider initialLocale={initialLocale}>
+                <div className="relative z-10 min-h-screen flex flex-col">
+                  <Header />
+                  <main className="flex-grow">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+              </LocaleProvider>
               <Toaster closeButton offset={{ top: "88px", right: "16px" }} />
             </AuthProvider>
           </QueryProvider>

@@ -724,6 +724,9 @@
     "networkIssue": "Network issue... retrying",
     "attempt": "Attempt",
     "invalidCheckoutSession": "Invalid checkout session",
+    "toast": {
+      "purchaseSuccess": "Purchase successful."
+    },
     "paymentFailed": "Payment Confirmation Failed",
     "invalidAccess": "Invalid Access",
     "invalidAccessMessage": "We could not verify your payment details.",
@@ -954,7 +957,7 @@
       "reasonMaxLength": "Reason must not exceed 500 characters"
     },
     "toast": {
-      "success": "Order cancelled successfully. Refund will be processed.",
+      "success": "Ticket cancelled. We’ll email you when your refund is updated.",
       "error": "Failed to cancel order"
     }
   },

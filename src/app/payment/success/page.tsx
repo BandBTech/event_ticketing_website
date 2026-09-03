@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { toast } from "@/lib/toast";
 
 interface CheckoutStatus {
   success: boolean;
@@ -37,6 +38,7 @@ function PaymentSuccessContent() {
   const [attempt, setAttempt] = useState(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const hasShownSuccessToastRef = useRef(false);
 
   useEffect(() => {
     if (!checkoutToken) return;
@@ -70,6 +72,14 @@ function PaymentSuccessContent() {
 
           const url =
             res.ticket.url || `/tickets/view?token=${res.ticket.token}`;
+
+          if (!hasShownSuccessToastRef.current) {
+            hasShownSuccessToastRef.current = true;
+            toast.success(
+              "ticketPurchase.toast.purchaseSuccess",
+              "Purchase successful.",
+            );
+          }
 
           setTimeout(() => {
             router.push(url);
