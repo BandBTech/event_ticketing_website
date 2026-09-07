@@ -41,12 +41,12 @@ function PaymentCancelledContent() {
             <WarningCircleIcon size={32} weight="duotone" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {t("ticketPurchase.invalidAccess", "Invalid Access")}
+            {t("ticketPurchase.invalidAccess", "Purchase Cancelled")}
           </h1>
           <p className="text-gray-600 mb-6">
             {t(
               "ticketPurchase.invalidAccessMessage",
-              "We could not verify your payment details.",
+              "Payment was not completed.",
             )}
           </p>
           <Button onClick={() => router.push("/")} className="w-full">
@@ -107,13 +107,13 @@ function PaymentCancelledContent() {
         </div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {t("ticketPurchase.cancelledTitle", "Ticket Purchase Cancelled")}
+          {t("ticketPurchase.cancelledTitle", "Purchase Cancelled")}
         </h1>
 
         <p className="text-gray-600 mb-6 text-lg">
           {t(
             "ticketPurchase.cancelledMessage",
-            "Your payment has been cancelled.",
+            "Payment was not completed.",
           )}
         </p>
 

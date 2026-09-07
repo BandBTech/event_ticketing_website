@@ -728,10 +728,10 @@
       "purchaseSuccess": "Purchase successful."
     },
     "paymentFailed": "Payment Confirmation Failed",
-    "invalidAccess": "Invalid Access",
-    "invalidAccessMessage": "We could not verify your payment details.",
+    "invalidAccess": "Purchase Cancelled",
+    "invalidAccessMessage": "Payment was not completed.",
     "cancelledTitle": "Purchase Cancelled",
-    "cancelledMessage": "Your payment has been cancelled.",
+    "cancelledMessage": "Payment was not completed.",
     "cancellationFailed": "Payment Cancellation Failed",
     "noTicketsCurrentlyAvailable": "No tickets currently available",
     "noTicketsCurrentlyAvailableDesc": "Tickets for this event are not on sale at the moment. Please check back later.",
