@@ -824,6 +824,8 @@
         "viewqr": "View QR Code"
       },
       "cancelNotAllowed": "Cancellations are not allowed within 24 hours of the event.",
+      "cancelNotAllowedLive": "This event is currently live. Cancellation is no longer available.",
+      "cancelNotAllowedEnded": "This event has ended. Cancellation is no longer available.",
       "expired": "The Ticket has expired.",
       "used": "Ticket already used.",
       "refunded": "The Ticket has been refunded.",

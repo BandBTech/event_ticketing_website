@@ -759,6 +759,8 @@
         "viewqr": "Visualizza il codice QR"
       },
       "cancelNotAllowed": "Non sono ammesse cancellazioni entro 24 ore dall'evento.",
+      "cancelNotAllowedLive": "Questo evento è attualmente live. La cancellazione non è più disponibile.",
+      "cancelNotAllowedEnded": "Questo evento è terminato. La cancellazione non è più disponibile.",
       "expired": "Il biglietto è scaduto.",
       "used": "Biglietto già utilizzato.",
       "refunded": "Il biglietto è stato rimborsato.",

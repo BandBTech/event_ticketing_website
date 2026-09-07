@@ -192,6 +192,48 @@ export default function TicketsPage() {
     return eventStartTime - currentTime > twentyFourHoursInMs;
   }, [detailTickets?.event?.startDate]);
 
+  const cancellationUnavailableMessage = useMemo(() => {
+    const startDate = detailTickets?.event?.startDate;
+    const endDate = detailTickets?.event?.endDate;
+
+    if (!startDate || !endDate) {
+      return t(
+        "ticket.details.cancelNotAllowed",
+        "Cancellations are not allowed within 24 hours of the event.",
+      );
+    }
+
+    const currentTime = new Date().getTime();
+    const eventStartTime = new Date(startDate).getTime();
+    const eventEndTime = new Date(endDate).getTime();
+
+    if (Number.isNaN(eventStartTime) || Number.isNaN(eventEndTime)) {
+      return t(
+        "ticket.details.cancelNotAllowed",
+        "Cancellations are not allowed within 24 hours of the event.",
+      );
+    }
+
+    if (currentTime > eventEndTime) {
+      return t(
+        "ticket.details.cancelNotAllowedEnded",
+        "This event has ended. Cancellation is no longer available.",
+      );
+    }
+
+    if (currentTime >= eventStartTime) {
+      return t(
+        "ticket.details.cancelNotAllowedLive",
+        "This event is currently live. Cancellation is no longer available.",
+      );
+    }
+
+    return t(
+      "ticket.details.cancelNotAllowed",
+      "Cancellations are not allowed within 24 hours of the event.",
+    );
+  }, [detailTickets?.event?.endDate, detailTickets?.event?.startDate, t]);
+
   const handleCancelOrder = (orderId: string) => {
     setSelectedOrderForCancel(orderId);
     setSelectedTicketForCancel(null);
@@ -1343,10 +1385,7 @@ export default function TicketsPage() {
                               !ticket.is_checked_in &&
                               !isRefundAllowed && (
                                 <span className="text-xs font-semibold  text-amber-600 ">
-                                  {t(
-                                    "ticket.details.cancelNotAllowed",
-                                    "Cancellations are not allowed within 24 hours of the event.",
-                                  )}
+                                  {cancellationUnavailableMessage}
                                 </span>
                               )}
 
