@@ -252,6 +252,7 @@ export const ticketService = {
         address: d.event.address,
         startDate: d.event.start_date,
         endDate: d.event.end_date,
+        status: d.event.status,
       },
       tickets: d.tickets.map((t) => {
         const isCheckedIn = !!(t.check_in_time ?? t.is_checked_in);

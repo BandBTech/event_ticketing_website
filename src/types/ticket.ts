@@ -88,6 +88,7 @@ export interface ViewTicketDetails {
     address: string;
     startDate: string;
     endDate: string;
+    status?: string;
     timezone?: string;
     organizer?: {
       id: string;
@@ -299,6 +300,7 @@ export interface ViewTicketDetail {
     address: string;
     startDate: string;
     endDate: string;
+    status?: string;
   };
   tickets: TicketItems[];
 }
