@@ -665,13 +665,15 @@
     "attempt": "試行",
     "invalidCheckoutSession": "無効なチェックアウトセッション",
     "toast": {
-      "purchaseSuccess": "購入が完了しました。"
+      "purchaseSuccess": "購入が完了しました。",
+      "orderPlaced": "注文が正常に完了しました。",
+      "purchaseFailed": "購入に失敗しました"
     },
     "paymentFailed": "支払い確認に失敗しました",
-    "invalidAccess": "Purchase Cancelled",
-    "invalidAccessMessage": "Payment was not completed.",
-    "cancelledTitle": "Purchase Cancelled",
-    "cancelledMessage": "Payment was not completed.",
+    "invalidAccess": "購入がキャンセルされました",
+    "invalidAccessMessage": "お支払いは完了していません。",
+    "cancelledTitle": "購入がキャンセルされました",
+    "cancelledMessage": "お支払いは完了していません。",
     "cancellationFailed": "支払いのキャンセルに失敗しました",
     "securePayment": "安全な支払いを活用した",
     "onlyTicketsLeft": "残りは {count} 個だけです!",

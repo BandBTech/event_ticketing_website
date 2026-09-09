@@ -665,13 +665,15 @@
     "attempt": "Tentativo",
     "invalidCheckoutSession": "Sessione di checkout non valida",
     "toast": {
-      "purchaseSuccess": "Acquisto completato."
+      "purchaseSuccess": "Acquisto completato.",
+      "orderPlaced": "Ordine effettuato con successo!",
+      "purchaseFailed": "Acquisto non riuscito"
     },
     "paymentFailed": "Conferma del pagamento non riuscita",
-    "invalidAccess": "Purchase Cancelled",
-    "invalidAccessMessage": "Payment was not completed.",
-    "cancelledTitle": "Purchase Cancelled",
-    "cancelledMessage": "Payment was not completed.",
+    "invalidAccess": "Acquisto annullato",
+    "invalidAccessMessage": "Il pagamento non è stato completato.",
+    "cancelledTitle": "Acquisto annullato",
+    "cancelledMessage": "Il pagamento non è stato completato.",
     "cancellationFailed": "Annullamento del pagamento non riuscito",
     "securePayment": "Pagamento sicuro fornito da",
     "onlyTicketsLeft": "Rimangono solo {count}!",

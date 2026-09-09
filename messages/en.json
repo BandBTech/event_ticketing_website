@@ -725,7 +725,9 @@
     "attempt": "Attempt",
     "invalidCheckoutSession": "Invalid checkout session",
     "toast": {
-      "purchaseSuccess": "Purchase successful."
+      "purchaseSuccess": "Purchase successful.",
+      "orderPlaced": "Order placed successfully!",
+      "purchaseFailed": "Purchase failed"
     },
     "paymentFailed": "Payment Confirmation Failed",
     "invalidAccess": "Purchase Cancelled",

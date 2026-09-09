@@ -25,13 +25,19 @@ export const useGuestPurchaseMutation = () => {
         const gatewayData = res.data;
         if (gatewayData?.redirect_url) {
           preserveLocaleBeforeExternalRedirect();
-          toast.message("Redirecting to payment...", "success");
+          toast.success(
+            "ticketPurchase.redirectingToPayment",
+            "Redirecting to payment...",
+          );
           window.location.href = gatewayData.redirect_url;
           return;
         }
 
         // Cash flow: redirect to local success page
-        toast.message(res.message || "Order placed successfully!", "success");
+        toast.success(
+          "ticketPurchase.toast.orderPlaced",
+          res.message || "Order placed successfully!",
+        );
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
         const totalQuantity = variables.tiers.reduce(
@@ -48,7 +54,10 @@ export const useGuestPurchaseMutation = () => {
 
         router.push(`/payment/success?${query.toString()}`);
       } else {
-        toast.message(res.message || "Purchase failed", "error");
+        toast.error(
+          "ticketPurchase.toast.purchaseFailed",
+          res.message || "Purchase failed",
+        );
       }
     },
   });
@@ -64,13 +73,19 @@ export const useUserPurchaseMutation = () => {
         const gatewayData = res.data;
         if (gatewayData?.redirect_url) {
           preserveLocaleBeforeExternalRedirect();
-          toast.message("Redirecting to payment...", "success");
+          toast.success(
+            "ticketPurchase.redirectingToPayment",
+            "Redirecting to payment...",
+          );
           window.location.href = gatewayData.redirect_url;
           return;
         }
 
         // Cash flow: redirect to local success page
-        toast.message(res.message || "Order placed successfully!", "success");
+        toast.success(
+          "ticketPurchase.toast.orderPlaced",
+          res.message || "Order placed successfully!",
+        );
         const query = new URLSearchParams();
         query.append("eventId", variables.event_id);
         const totalQuantity = variables.tiers.reduce(
@@ -86,7 +101,10 @@ export const useUserPurchaseMutation = () => {
 
         router.push(`/payment/success?${query.toString()}`);
       } else {
-        toast.message(res.message || "Purchase failed", "error");
+        toast.error(
+          "ticketPurchase.toast.purchaseFailed",
+          res.message || "Purchase failed",
+        );
       }
     },
   });

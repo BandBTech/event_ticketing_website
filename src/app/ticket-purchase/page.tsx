@@ -55,7 +55,7 @@ import { formatCurrency, formatEventDateTime } from "@/lib/utils";
 
 import { PurchasePayload } from "@/services/ticketService";
 import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 // Max total tickets allowed
