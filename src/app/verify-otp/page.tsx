@@ -105,12 +105,12 @@ function VerifyOTPContent() {
       // Show error toast
       if (err instanceof AuthError) {
         toast.error(
-          "",
-          err.message || "Invalid OTP. Please try again.",
+          "auth.verifyOTP.errors.verificationFailed",
+          "Invalid OTP. Please try again.",
           err.details,
         );
       } else {
-        toast.error("auth.toast.serverError", "Invalid OTP. Please try again.");
+        toast.error("auth.verifyOTP.errors.verificationFailed", "Invalid OTP. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -137,12 +137,15 @@ function VerifyOTPContent() {
       // Show error toast
       if (err instanceof AuthError) {
         toast.error(
-          "",
-          err.message || "Failed to resend OTP. Please try again.",
+          "auth.verifyOTP.errors.resendFailed",
+          "Failed to resend OTP. Please try again.",
           err.details,
         );
       } else {
-        toast.error("", "Failed to resend OTP. Please try again.");
+        toast.error(
+          "auth.verifyOTP.errors.resendFailed",
+          "Failed to resend OTP. Please try again.",
+        );
       }
     } finally {
       setIsResending(false);

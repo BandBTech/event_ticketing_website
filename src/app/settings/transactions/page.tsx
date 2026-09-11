@@ -39,7 +39,7 @@ import {
   format,
   subMonths,
 } from "date-fns";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { PageTitle } from "@/components/pagetitle/PageTitle";
 
 export default function BillingPage() {
@@ -78,11 +78,10 @@ export default function BillingPage() {
 
     if (!appliedFilters.start_date) return filters;
 
-    filters.date_from = format(appliedFilters.start_date, "yyyy-MM-dd");
-    filters.date_to = format(
-      appliedFilters.end_date ?? appliedFilters.start_date,
-      "yyyy-MM-dd",
-    );
+    filters.start_date = appliedFilters.start_date.toISOString();
+    filters.end_date = (
+      appliedFilters.end_date ?? appliedFilters.start_date
+    ).toISOString();
 
     return filters;
   }, [appliedFilters.start_date, appliedFilters.end_date]);
@@ -107,7 +106,7 @@ export default function BillingPage() {
   // Reset to page 1 when search or filters change
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, apiFilters.date_from, apiFilters.date_to]);
+  }, [debouncedSearch, apiFilters.start_date, apiFilters.end_date]);
 
   // Handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,17 +135,17 @@ export default function BillingPage() {
   const handleClear = () => {
     if (dateRange?.from || dateRange?.to) {
       setDateRange({ from: undefined, to: undefined });
-      toast.info(t("transaction.toast.dateclear","Date selection cleared"));
+      toast.info("transaction.toast.dateclear", "Date selection cleared");
       return;
     }
 
     if (hasActiveFilters) {
       handleClearAll();
-      toast.success(t("transaction.toast.filterclear","All filters cleared"));
+      toast.success("transaction.toast.filterclear", "All filters cleared");
       return;
     }
 
-    toast.info(t("transaction.toast.noclear","Nothing to clear"));
+    toast.info("transaction.toast.noclear", "Nothing to clear");
   };
   const getClearButtonStyle = () => {
     if (dateRange?.from || dateRange?.to) {
@@ -179,7 +178,7 @@ const getClearButtonIcon = () => {
 
   const handleDateRangeApply = () => {
     if (!dateRange?.from) {
-      toast.error(t("transaction.toast.daterange","Please select a date range"));
+      toast.error("transaction.toast.daterange", "Please select a date range");
       return;
     }
 
@@ -193,7 +192,7 @@ const getClearButtonIcon = () => {
 
     // Validation
     if (normalizedEnd < normalizedStart) {
-      toast.error(t("transaction.toast.startenddate","End date cannot be before start date"));
+      toast.error("transaction.toast.startenddate", "End date cannot be before start date");
       return;
     }
 
@@ -201,7 +200,7 @@ const getClearButtonIcon = () => {
       (normalizedEnd.getFullYear() - normalizedStart.getFullYear()) * 12 +
       (normalizedEnd.getMonth() - normalizedStart.getMonth());
     if (monthDiff > 3) {
-      toast.error(t("transaction.toast.dateexceed","Date Range cannot exceed 3 months"));
+      toast.error("transaction.toast.dateexceed", "Date Range cannot exceed 3 months");
       return;
     }
 
@@ -215,7 +214,7 @@ const getClearButtonIcon = () => {
     });
 
     setIsFilterOpen(false);
-    toast.success("Filters applied");
+    toast.success("transaction.toast.filterApplied", "Filters applied");
   };
 
 

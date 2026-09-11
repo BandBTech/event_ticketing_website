@@ -66,13 +66,13 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const result = await authService.requestPasswordReset(data.email);
+      await authService.requestPasswordReset(data.email);
 
       // Save email to sessionStorage for potential back navigation
       sessionStorage.setItem("password_reset_email", data.email);
 
       // Show success toast
-      toast.success("", result.message);
+      toast.success("auth.toast.passwordResetSent", "Password reset code sent to your email");
 
       // Redirect immediately to OTP verification page
       router.push(
@@ -84,12 +84,15 @@ export default function ForgotPasswordPage() {
       // Show error toast
       if (err instanceof AuthError) {
         toast.error(
-          "",
-          err.message || "Failed to send reset email. Please try again later.",
+          "auth.forgotPassword.errors.requestFailed",
+          "Failed to send reset email. Please try again.",
           err.details,
         );
       } else {
-        toast.error("", "Failed to send reset email. Please try again later.");
+        toast.error(
+          "auth.forgotPassword.errors.requestFailed",
+          "Failed to send reset email. Please try again.",
+        );
       }
 
       setIsLoading(false);

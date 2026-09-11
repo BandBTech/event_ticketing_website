@@ -84,29 +84,29 @@ export function LoginModal({ open, onOpenChange, onSuccess }: LoginModalProps) {
         data.rememberMe,
       );
 
-      toast.success(t("auth.toast.loginSuccess", "Welcome back!"));
+      toast.success("auth.toast.loginSuccess", "Welcome back!");
       reset();
       onSuccess?.();
     } catch (error) {
       if (error instanceof AuthError) {
         switch (error.code) {
           case "UNAUTHORIZED":
-            toast.error(t("auth.toast.unauthorized", error.message || "Invalid email or password"));
+            toast.error("auth.toast.unauthorized", "Invalid email or password");
             break;
           case "NETWORK_ERROR":
             toast.error(
-              t("auth.toast.networkError",
-              "Network error. Please check your connection."),
+              "auth.toast.networkError",
+              "Network error. Please check your connection.",
             );
             break;
           default:
             toast.error(
-              t("auth.toast.loginError",
-              error.message || "Login failed. Please try again."),
+              "auth.toast.loginError",
+              "Login failed. Please try again.",
             );
         }
       } else {
-        toast.error(t("auth.toast.loginError", "Login failed. Please try again."));
+        toast.error("auth.toast.loginError", "Login failed. Please try again.");
       }
     }
   };

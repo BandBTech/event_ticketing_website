@@ -113,14 +113,14 @@ export default function ContactPage() {
       const result = await response.json();
 
       if (result.success) {
-        toast.success(t("contact.toast.success", "Message sent successfully!"));
+        toast.success("contact.toast.success", "Message sent successfully!");
         reset();
         setSelectedCategory("");
       } else {
-        toast.error("Failed to send message. Please try again.");
+        toast.error("contact.toast.error", "Failed to send message. Please try again.");
       }
     } catch (error) {
-      toast.error("An error occurred. Check your connection.");
+      toast.error("contact.toast.networkError", "An error occurred. Check your connection.");
     } finally {
       setIsSubmitting(false);
     }

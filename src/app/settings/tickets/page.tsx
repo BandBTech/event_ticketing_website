@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Ticket as TicketIcon,
   QrCode,
@@ -64,6 +64,13 @@ const isUpcoming = (startDate: string) => {
   return new Date(startDate) > new Date();
 };
 
+const DOWNLOADABLE_TICKET_STATUSES = new Set(["active", "checked_in", "used"]);
+
+const hasDownloadableTickets = (order: ViewTicketDetails) =>
+  order.tickets.some((ticket) =>
+    DOWNLOADABLE_TICKET_STATUSES.has(ticket.status),
+  );
+
 export default function TicketsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [allTickets, setAllTickets] = useState<ViewTicketDetails[]>([]);
@@ -87,7 +94,7 @@ export default function TicketsPage() {
   const [selectedTicketForCancel, setSelectedTicketForCancel] = useState<
     string | null
   >(null);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const pdfExportRef = useRef<HTMLDivElement | null>(null);
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -288,6 +295,8 @@ export default function TicketsPage() {
 
     setPreGeneratedPdfBlob(null);
     const preCompileTickets = async () => {
+      if (!hasDownloadableTickets(detailTickets)) return;
+
       setIsPreGenerating(true);
       try {
         // Small initialization delay to ensure the container DOM nodes are fully painted
@@ -362,78 +371,89 @@ export default function TicketsPage() {
   const generateTicketsPdf = async (
     order: ViewTicketDetails,
   ): Promise<Blob> => {
-    setIsGeneratingPdf(true);
-    try {
-      // Give React time to render TicketDisplay and QR codes to mount
-      await new Promise((resolve) => setTimeout(resolve, 600));
+    if (!hasDownloadableTickets(order)) {
+      throw new Error("No downloadable tickets available.");
+    }
 
-      const container = document.getElementById("ticket-container");
-      if (!container) throw new Error("Ticket container not found");
-      await waitForImages(container);
+    const container = pdfExportRef.current;
+    if (!container) throw new Error("Ticket export container not found");
 
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
+    // Give QR codes and images a paint cycle before html-to-image captures them.
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    await waitForImages(container);
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const maxWidth = pageWidth - margin * 2;
+    const maxHeight = pageHeight - margin * 2;
+
+    const ticketNodes = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-ticket-card="true"]'),
+    );
+    const nodesToExport = ticketNodes.length > 0 ? ticketNodes : [container];
+
+    const renderPng = async (
+      node: HTMLElement,
+      opts?: Parameters<typeof toPng>[1],
+    ) =>
+      toPng(node, {
+        cacheBust: true,
+        backgroundColor: "white",
+        pixelRatio: 2,
+        ...opts,
       });
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10;
-      const maxWidth = pageWidth - margin * 2;
-      const maxHeight = pageHeight - margin * 2;
 
-      const ticketNodes = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-ticket-card="true"]'),
-      );
-      const nodesToExport = ticketNodes.length > 0 ? ticketNodes : [container];
+    for (let i = 0; i < nodesToExport.length; i++) {
+      const node = nodesToExport[i]!;
+      await waitForImages(node);
 
-      const renderPng = async (
-        node: HTMLElement,
-        opts?: Parameters<typeof toPng>[1],
-      ) =>
-        toPng(node, {
-          cacheBust: true,
-          backgroundColor: "white",
-          pixelRatio: 2,
-          ...opts,
+      let dataUrl: string;
+      try {
+        dataUrl = await renderPng(node);
+      } catch (err) {
+        // CORS fallback: retry without <img> tags (banner/logo may taint canvas)
+        console.warn("Ticket export failed, retrying without images:", err);
+        dataUrl = await renderPng(node, {
+          filter: (n) => (n as Element).tagName !== "IMG",
         });
-
-      for (let i = 0; i < nodesToExport.length; i++) {
-        const node = nodesToExport[i]!;
-        await waitForImages(node);
-
-        let dataUrl: string;
-        try {
-          dataUrl = await renderPng(node);
-        } catch (err) {
-          // CORS fallback: retry without <img> tags (banner/logo may taint canvas)
-          console.warn("Ticket export failed, retrying without images:", err);
-          dataUrl = await renderPng(node, {
-            filter: (n) => (n as Element).tagName !== "IMG",
-          });
-        }
-
-        if (i > 0) pdf.addPage();
-        const imgProps = pdf.getImageProperties(dataUrl);
-        const scale = Math.min(
-          maxWidth / imgProps.width,
-          maxHeight / imgProps.height,
-        );
-        const drawWidth = imgProps.width * scale;
-        const drawHeight = imgProps.height * scale;
-        const x = Math.max(margin, (pageWidth - drawWidth) / 2);
-        const y = Math.max(margin, (pageHeight - drawHeight) / 2);
-        pdf.addImage(dataUrl, "PNG", x, y, drawWidth, drawHeight);
       }
 
-      return pdf.output("blob");
-    } finally {
-      setIsGeneratingPdf(false);
+      if (i > 0) pdf.addPage();
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const scale = Math.min(
+        maxWidth / imgProps.width,
+        maxHeight / imgProps.height,
+      );
+      const drawWidth = imgProps.width * scale;
+      const drawHeight = imgProps.height * scale;
+      const x = Math.max(margin, (pageWidth - drawWidth) / 2);
+      const y = Math.max(margin, (pageHeight - drawHeight) / 2);
+      pdf.addImage(dataUrl, "PNG", x, y, drawWidth, drawHeight);
     }
+
+    return pdf.output("blob");
   };
 
   const handleDownloadAllTickets = async (order: ViewTicketDetails) => {
     const loadingToastId = "download-tickets";
+    if (!hasDownloadableTickets(order)) {
+      toast.error(
+        t("ticketView.noDownloadableTickets", "No downloadable tickets available."),
+        {
+          id: loadingToastId,
+        },
+      );
+      return;
+    }
+
     setIsDownloading(true);
     try {
       toast.loading(t("ticket.toast.generatingpdf", "Generating PDF..."), {
@@ -558,6 +578,13 @@ export default function TicketsPage() {
   // };
 
   const handleShareAllTickets = async (order: ViewTicketDetails) => {
+    if (!hasDownloadableTickets(order)) {
+      toast.error(
+        t("ticketView.noDownloadableTickets", "No downloadable tickets available."),
+      );
+      return;
+    }
+
     // If the file is still compiling in the background, run the generator inline as a backup
     let targetBlob = preGeneratedPdfBlob;
 
@@ -1523,8 +1550,9 @@ export default function TicketsPage() {
 
       {/* Hidden render target for PDF export — off-screen but NOT visibility:hidden
           so html-to-image can capture it correctly */}
-      {isGeneratingPdf && detailTickets && (
+      {detailTickets && (
         <div
+          ref={pdfExportRef}
           aria-hidden="true"
           style={{
             position: "fixed",

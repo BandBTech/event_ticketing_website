@@ -9,6 +9,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { Calendar, MapPin, Ticket, User, Building2, Clock } from "lucide-react";
 import { formatTransactionDate, formatTransactionTime } from "@/lib/utils";
 
+const DOWNLOADABLE_TICKET_STATUSES = new Set(["active", "checked_in", "used"]);
+
 interface TicketDisplayProps {
   order: ViewTicketDetails;
   onPrint?: () => void;
@@ -280,6 +282,9 @@ export function TicketDisplay({
 }: TicketDisplayProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const downloadableTickets = order.tickets.filter((ticket) =>
+    DOWNLOADABLE_TICKET_STATUSES.has(ticket.status),
+  );
 
   if (isLoading) {
     return (
@@ -305,6 +310,20 @@ export function TicketDisplay({
     );
   }
 
+  if (downloadableTickets.length === 0) {
+    return (
+      <div
+        id="ticket-container"
+        className="w-full rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center text-sm font-medium text-gray-500"
+      >
+        {t(
+          "ticketView.noDownloadableTickets",
+          "No downloadable tickets available.",
+        )}
+      </div>
+    );
+  }
+
   return (
     <div
       id="ticket-container"
@@ -312,7 +331,7 @@ export function TicketDisplay({
     >
       {/* 3-Column Grid on Desktop */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 print:grid-cols-1 print:max-w-md print:mx-auto print:gap-0">
-        {order.tickets.map((ticket, index) => (
+        {downloadableTickets.map((ticket, index) => (
           <SingleTicketCard
             key={ticket.ticketId}
             ticket={ticket}
@@ -320,7 +339,7 @@ export function TicketDisplay({
             currency={order.currency}
             company={order.company}
             index={index}
-            total={order.tickets.length}
+            total={downloadableTickets.length}
           />
         ))}
       </div>

@@ -89,7 +89,7 @@ export default function LoginPage() {
       if (error instanceof AuthError) {
         switch (error.code) {
           case "UNAUTHORIZED":
-            toast.error("", error.message || "Invalid email or password");
+            toast.error("auth.toast.unauthorized", "Invalid email or password");
             break;
           case "NETWORK_ERROR":
             toast.error(
@@ -98,12 +98,12 @@ export default function LoginPage() {
             );
             break;
           case "INTERNAL_SERVER_ERROR":
-            toast.error("", "Login failed.", error.details);
+            toast.error("auth.toast.loginError", "Login failed.", error.details);
             break;
           default:
             toast.error(
-              "",
-              error.message || "Login failed. Please try again.",
+              "auth.toast.loginError",
+              "Login failed. Please try again.",
               error.details,
             );
         }

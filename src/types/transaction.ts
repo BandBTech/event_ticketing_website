@@ -166,6 +166,6 @@ export const getDefaultFilters = (): TransactionFilters => ({
 
 export interface TransactionApiFilters {
   payment_gateway?: string;
-  date_from?: string;
-  date_to?: string;
+  start_date?: string;
+  end_date?: string;
 }

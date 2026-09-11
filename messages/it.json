@@ -285,6 +285,7 @@
         "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri",
         "passwordSpecialChar": "Deve contenere almeno un carattere speciale",
         "passwordUpperLower": "Deve contenere almeno una lettera maiuscola e una minuscola",
+        "otpLength": "L'OTP deve essere di 6 cifre.",
         "passwordNumber": "La password deve contenere almeno un numero.",
         "emailInvalid": "Si prega di inserire un indirizzo email valido.",
         "phoneInvalid": "Inserisci un numero di telefono valido.",
@@ -336,13 +337,29 @@
       "resend": "Invia nuovamente",
       "resending": "Invio in corso...",
       "resendIn": "Invia di nuovo in {seconds}s",
-      "checkSpam": "Controlla la cartella spam se non vedi l'e-mail"
+      "checkSpam": "Controlla la cartella spam se non vedi l'e-mail",
+      "errors": {
+        "otpIncomplete": "Inserisci il codice completo di 6 cifre",
+        "verificationFailed": "OTP non valido. Riprova.",
+        "resendFailed": "Impossibile inviare nuovamente l'OTP. Riprova."
+      }
     },
     "toast": {
       "passwordChangedLogin": "Effettua il login con la tua nuova password.",
       "loginSuccess": "Bentornato!",
+      "signupSuccess": "Account creato con successo!",
+      "signupError": "Registrazione non riuscita. Riprova.",
+      "otpSent": "Codice di verifica inviato alla tua email",
+      "otpVerified": "Email verificata con successo!",
+      "otpResent": "Nuovo codice inviato alla tua email",
+      "passwordResetSent": "Codice di reimpostazione password inviato alla tua email",
+      "passwordResetSuccess": "Password reimpostata con successo!",
+      "logoutSuccess": "Sei stato disconnesso",
+      "invalidCredentials": "Email o password non validi",
       "networkError": "Errore di rete. \nPer favore controlla la tua connessione.",
       "loginError": "Accesso non riuscito. \nPer favore riprova.",
+      "serverError": "Qualcosa è andato storto. Riprova.",
+      "passwordChanged": "Password modificata con successo!",
       "unauthorized": "E-mail o password non valide"
     },
     "forgotPassword": {
@@ -497,7 +514,8 @@
     },
     "toast": {
       "success": "Messaggio inviato con successo.",
-      "error": "Qualcosa è andato storto! \nPer favore riprova più tardi."
+      "error": "Impossibile inviare il messaggio. Riprova.",
+      "networkError": "Si è verificato un errore. Controlla la connessione."
     },
     "validation": {
       "nameRequired": "Il nome è obbligatorio.",
@@ -908,7 +926,19 @@
       "noclear": "Niente da chiarire",
       "daterange": "Seleziona un intervallo di date",
       "startenddate": "La data di fine non può essere anteriore alla data di inizio",
-      "dateexceed": "L'intervallo di date non può superare i 3 mesi"
+      "dateexceed": "L'intervallo di date non può superare i 3 mesi",
+      "filterApplied": "Filtri applicati"
+    }
+  },
+  "share": {
+    "title": "Guarda questo evento",
+    "button": "Condividi",
+    "sharing": "Condivisione...",
+    "copied": "Copiato!",
+    "toast": {
+      "success": "Condiviso con successo!",
+      "copied": "Link copiato negli appunti!",
+      "copyFailed": "Impossibile copiare il link"
     }
   },
   "upcomming": {

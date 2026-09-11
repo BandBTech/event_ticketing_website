@@ -64,7 +64,7 @@ const basicInfoSchema = z.object({
 
 // Step 2: OTP Schema
 const otpSchema = z.object({
-  otp: z.string().length(6, "OTP must be 6 digits"),
+  otp: z.string().length(6, "auth.signup.validation.otpLength"),
 });
 
 // Step 3: Password Schema
@@ -232,12 +232,12 @@ export default function MultiStepRegister() {
     } catch (error) {
       if (error instanceof AuthError) {
         toast.error(
-          "",
-          error.message || "Registration failed. Please try again.",
+          "auth.toast.signupError",
+          "Registration failed. Please try again.",
           error.details,
         );
       } else {
-        toast.error("", "Registration failed. Please try again.");
+        toast.error("auth.toast.signupError", "Registration failed. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -275,13 +275,13 @@ export default function MultiStepRegister() {
     } catch (error) {
       if (error instanceof AuthError) {
         toast.error(
-          "auth.toast.verificationFailed",
-          error.message || "Invalid OTP. Please try again.",
+          "auth.verifyOTP.errors.verificationFailed",
+          "Invalid OTP. Please try again.",
           error.details,
         );
       } else {
         toast.error(
-          "auth.toast.verificationFailed",
+          "auth.verifyOTP.errors.verificationFailed",
           "Verification failed. Please try again.",
         );
       }
@@ -332,14 +332,14 @@ export default function MultiStepRegister() {
 
     try {
       // Set password to complete registration
-      const result = await authService.setPassword({
+      await authService.setPassword({
         email: registrationData.email,
         password: data.password,
       });
 
       toast.success(
         "auth.toast.signupSuccess",
-        result.message || "Account created successfully!",
+        "Account created successfully!",
       );
 
       // Clear sessionStorage on successful registration
@@ -350,8 +350,8 @@ export default function MultiStepRegister() {
     } catch (error) {
       if (error instanceof AuthError) {
         toast.error(
-          "",
-          error.message || "Failed to set password. Please try again.",
+          "auth.toast.signupError",
+          "Failed to complete registration.",
           error.details,
         );
       } else {
@@ -680,7 +680,7 @@ export default function MultiStepRegister() {
                       />
                       {otpForm.formState.errors.otp && (
                         <p className="text-sm text-destructive text-center">
-                          {otpForm.formState.errors.otp.message}
+                          {t(otpForm.formState.errors.otp.message as string)}
                         </p>
                       )}
                     </div>
@@ -700,7 +700,9 @@ export default function MultiStepRegister() {
                         disabled={isLoading || otpForm.watch("otp").length < 6}
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                       >
-                        {isLoading ? "Verifying..." : "Verify OTP"}
+                        {isLoading
+                          ? t("auth.verifyOTP.verifying", "Verifying...")
+                          : t("auth.verifyOTP.verifyButton", "Verify OTP")}
                       </Button>
                     </div>
 

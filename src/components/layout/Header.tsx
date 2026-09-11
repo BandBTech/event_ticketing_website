@@ -42,9 +42,8 @@ export function Header() {
 
     const { data: company, isLoading } = useCompanyInfo();
   const handleLogout = async () => {
-    const result = await logout();
-    // [TODO: Translate Setup]
-    toast.success("", result?.message || "Logout Successful");
+    await logout();
+    toast.success("auth.toast.logoutSuccess", "You have been logged out");
     router.push("/");
   };
   const handleOrganizeRedirect = () => {

@@ -285,6 +285,7 @@
         "lastNameTooShort": "姓は少なくとも 2 文字である必要があります",
         "passwordSpecialChar": "少なくとも 1 つの特殊文字を含める必要があります",
         "passwordUpperLower": "少なくとも 1 つの大文字と 1 つの小文字を含める必要があります",
+        "otpLength": "OTPは6桁で入力してください。",
         "passwordNumber": "パスワードには少なくとも 1 つの数字が含まれている必要があります。",
         "emailInvalid": "有効なメールアドレスを入力してください。",
         "phoneInvalid": "有効な電話番号を入力してください。",
@@ -336,13 +337,29 @@
       "resend": "再送信",
       "resending": "再送信中...",
       "resendIn": "{seconds}秒後に再送信",
-      "checkSpam": "メールが見つからない場合は迷惑メールフォルダを確認してください"
+      "checkSpam": "メールが見つからない場合は迷惑メールフォルダを確認してください",
+      "errors": {
+        "otpIncomplete": "6桁のコードをすべて入力してください",
+        "verificationFailed": "OTPが無効です。もう一度お試しください。",
+        "resendFailed": "OTPの再送信に失敗しました。もう一度お試しください。"
+      }
     },
     "toast": {
       "passwordChangedLogin": "新しいパスワードでログインしてください。",
       "loginSuccess": "おかえり！",
+      "signupSuccess": "アカウントが正常に作成されました！",
+      "signupError": "登録に失敗しました。もう一度お試しください。",
+      "otpSent": "確認コードをメールに送信しました",
+      "otpVerified": "メールアドレスが確認されました！",
+      "otpResent": "新しいコードをメールに送信しました",
+      "passwordResetSent": "パスワードリセットコードをメールに送信しました",
+      "passwordResetSuccess": "パスワードのリセットに成功しました！",
+      "logoutSuccess": "ログアウトしました",
+      "invalidCredentials": "メールアドレスまたはパスワードが無効です",
       "networkError": "ネットワークエラー。\n接続を確認してください。",
       "loginError": "ログインに失敗しました。\nもう一度試してください。",
+      "serverError": "問題が発生しました。もう一度お試しください。",
+      "passwordChanged": "パスワードが正常に変更されました！",
       "unauthorized": "無効な電子メールまたはパスワード"
     },
     "forgotPassword": {
@@ -498,7 +515,8 @@
     },
     "toast": {
       "success": "メッセージは正常に送信されました。",
-      "error": "何か問題が発生しました!\n後でもう一度試してください。"
+      "error": "メッセージの送信に失敗しました。もう一度お試しください。",
+      "networkError": "エラーが発生しました。接続を確認してください。"
     },
     "validation": {
       "nameRequired": "名前は必須です。",
@@ -910,7 +928,19 @@
       "noclear": "クリアするものは何もありません",
       "daterange": "日付範囲を選択してください",
       "startenddate": "終了日を開始日より前にすることはできません",
-      "dateexceed": "期間は 3 か月を超えることはできません"
+      "dateexceed": "期間は 3 か月を超えることはできません",
+      "filterApplied": "フィルターを適用しました"
+    }
+  },
+  "share": {
+    "title": "このイベントをチェック",
+    "button": "共有",
+    "sharing": "共有中...",
+    "copied": "コピーしました！",
+    "toast": {
+      "success": "共有しました！",
+      "copied": "リンクをクリップボードにコピーしました！",
+      "copyFailed": "リンクのコピーに失敗しました"
     }
   },
   "upcomming": {

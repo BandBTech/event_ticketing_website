@@ -329,7 +329,8 @@
         "passwordRequired": "Password is required.",
         "confirmPasswordRequired": "Please confirm your password.",
         "passwordSpecialChar": "Must contain at least one special character.",
-        "passwordUpperLower": "Must contain at least one uppercase and one lowercase."
+        "passwordUpperLower": "Must contain at least one uppercase and one lowercase.",
+        "otpLength": "OTP must be 6 digits."
       },
       "errors": {
         "signupFailed": "Registration failed. Please try again."
@@ -567,7 +568,8 @@
     },
     "toast": {
       "success": "Message sent successfully.",
-      "error": "Something went wrong ! Please try again later."
+      "error": "Failed to send message. Please try again.",
+      "networkError": "An error occurred. Check your connection."
     },
     "validation": {
       "nameRequired": "Name is required.",
@@ -973,7 +975,19 @@
       "noclear": "Nothing to clear",
       "daterange": "Please select a date range",
       "startenddate": "End date cannot be before start date",
-      "dateexceed": "Date Range cannot exceed 3 months"
+      "dateexceed": "Date Range cannot exceed 3 months",
+      "filterApplied": "Filters applied"
+    }
+  },
+  "share": {
+    "title": "Check out this event",
+    "button": "Share",
+    "sharing": "Sharing...",
+    "copied": "Copied!",
+    "toast": {
+      "success": "Shared successfully!",
+      "copied": "Link copied to clipboard!",
+      "copyFailed": "Failed to copy link"
     }
   },
   "upcomming": {
